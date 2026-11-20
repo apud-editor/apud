@@ -28,6 +28,7 @@ const exemplo: Documento = {
       ],
     },
     { tipo: "titulo", nivel: 1, trechos: [{ texto: "Desenvolvimento" }] },
+    { tipo: "titulo", nivel: 2, trechos: [{ texto: "Nota sem número" }], numerado: false },
     { tipo: "lista", sequencia: true, itens: [{ trechos: [{ texto: "primeiro passo" }] }] },
     { tipo: "paragrafo", trechos: [] },
   ],
@@ -99,7 +100,18 @@ describe("estrutura", () => {
       "1 Introdução",
       "1.1 Contexto do estágio",
       "2 Desenvolvimento",
+      " Nota sem número",
     ]);
+  });
+
+  it("título sem número não conta na numeração dos seguintes", () => {
+    const blocos: Documento["blocos"] = [
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Resumo" }], numerado: false },
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "Sem" }], numerado: false },
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "Contexto" }] },
+    ];
+    expect(estrutura(blocos).map((e) => e.numero)).toEqual(["", "1", "", "1.1"]);
   });
 
   it("mostra 0 no nível que foi pulado", () => {

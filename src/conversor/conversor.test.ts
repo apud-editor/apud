@@ -100,6 +100,25 @@ describe("conversor para o Typst", () => {
   });
 });
 
+describe("títulos sem número", () => {
+  it("saem sem número e não contam na numeração dos outros", () => {
+    const doc: Documento = {
+      versao: 1,
+      blocos: [
+        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Apresentação" }], numerado: false },
+        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
+        { tipo: "titulo", nivel: 2, trechos: [{ texto: "Nota" }], numerado: false },
+        { tipo: "titulo", nivel: 2, trechos: [{ texto: "Contexto" }] },
+      ],
+    };
+    const typst =
+      documentoParaTypst(doc, perfil) +
+      `#context [#metadata(query(heading).map(h => if h.numbering == none { "-" } else { numbering(h.numbering, ..counter(heading).at(h.location())) })) <n>]\n`;
+    const r = compilador.query({ mainFileContent: typst }, { selector: "<n>" });
+    expect(r[0].value).toEqual(["-", "1", "-", "1.1"]);
+  });
+});
+
 describe("pedaços do conversor", () => {
   it("escapa os sinais do Typst, mas deixa as aspas virarem aspas curvas", () => {
     expect(escaparTexto("#a *b* @c")).toBe("\\#a \\*b\\* \\@c");

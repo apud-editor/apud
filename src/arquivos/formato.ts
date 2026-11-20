@@ -118,7 +118,10 @@ function conferirBloco(b: unknown): Bloco | null {
       const trechos = conferirTrechos(b.trechos);
       const nivel = b.nivel;
       if (!trechos || ![1, 2, 3, 4, 5].includes(nivel as number)) return null;
-      return { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos };
+      if (b.numerado !== undefined && b.numerado !== false) return null;
+      const titulo: Bloco = { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos };
+      if (b.numerado === false) titulo.numerado = false;
+      return titulo;
     }
     case "lista": {
       const itens = conferirItens(b.itens);

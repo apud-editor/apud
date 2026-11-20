@@ -4,6 +4,7 @@
 import { Extension, type Editor, type Range } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Superscript from "@tiptap/extension-superscript";
+import Heading from "@tiptap/extension-heading";
 import Placeholder from "@tiptap/extension-placeholder";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
 import { Plugin, PluginKey, Selection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
@@ -248,11 +249,34 @@ function barraDeBlocos(controle: ControleDaBarra) {
 }
 
 // ---------------------------------------------------------------------------
+// Título com a escolha de ter número ou não
+
+const Titulo = Heading.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      numerado: {
+        default: true,
+        parseHTML: (el: HTMLElement) => el.getAttribute("data-numerado") !== "false",
+        renderHTML: (a: { numerado?: boolean }) => (a.numerado === false ? { "data-numerado": "false" } : {}),
+      },
+    };
+  },
+}).configure({ levels: [1, 2, 3, 4, 5] });
+
+/** Liga ou desliga o número do título onde está o cursor. */
+export function alternarNumero(editor: Editor) {
+  const atual = editor.getAttributes("heading").numerado !== false;
+  editor.chain().focus().updateAttributes("heading", { numerado: !atual }).run();
+}
+
+// ---------------------------------------------------------------------------
 
 export function extensoesDoApud(controle: ControleDaBarra) {
   return [
+    Titulo,
     StarterKit.configure({
-      heading: { levels: [1, 2, 3, 4, 5] },
+      heading: false,
       // Fora do Apud de propósito: são formatação, não significado,
       // ou chegam depois como blocos próprios (citação longa, na fase 3).
       blockquote: false,

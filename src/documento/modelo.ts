@@ -27,6 +27,8 @@ export interface Titulo {
   tipo: "titulo";
   nivel: NivelDeTitulo;
   trechos: Trecho[];
+  /** false quando a pessoa pediu este título sem número. Ausente = numerado. */
+  numerado?: false;
 }
 
 export interface Paragrafo {

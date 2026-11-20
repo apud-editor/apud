@@ -262,6 +262,26 @@ select {
 .texto > h5::after {
   content: "Título 5";
 }
+.texto > h1[data-numerado="false"]::after {
+  content: "Título 1\A sem número";
+  white-space: pre;
+}
+.texto > h2[data-numerado="false"]::after {
+  content: "Título 2\A sem número";
+  white-space: pre;
+}
+.texto > h3[data-numerado="false"]::after {
+  content: "Título 3\A sem número";
+  white-space: pre;
+}
+.texto > h4[data-numerado="false"]::after {
+  content: "Título 4\A sem número";
+  white-space: pre;
+}
+.texto > h5[data-numerado="false"]::after {
+  content: "Título 5\A sem número";
+  white-space: pre;
+}
 .texto > ul::after {
   content: "Lista";
 }

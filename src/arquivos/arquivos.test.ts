@@ -12,6 +12,7 @@ const trabalho: Trabalho = {
     versao: 1,
     blocos: [
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "Sem número" }], numerado: false },
       { tipo: "paragrafo", trechos: [{ texto: "Texto com " }, { texto: "itálico", marcas: ["italico"] }] },
       { tipo: "lista", sequencia: false, itens: [{ trechos: [{ texto: "a" }], subitens: [{ trechos: [{ texto: "b" }] }] }] },
     ],
@@ -47,6 +48,13 @@ describe("formato do arquivo .apud", () => {
     const ruim = JSON.parse(escreverArquivo(trabalho));
     ruim.documento.blocos[1].trechos = "texto solto";
     expect(lerArquivo(JSON.stringify(ruim))).toEqual({ ok: false, erro: "o bloco 2 do texto está estragado" });
+  });
+
+  it("arquivos antigos, sem a escolha de número, abrem com os títulos numerados", () => {
+    const antigo = JSON.parse(escreverArquivo(trabalho));
+    delete antigo.documento.blocos[1].numerado;
+    const r = lerArquivo(JSON.stringify(antigo));
+    expect(r.ok && r.trabalho.documento.blocos[1]).toEqual({ tipo: "titulo", nivel: 2, trechos: [{ texto: "Sem número" }] });
   });
 
   it("recusa outros arquivos JSON", () => {

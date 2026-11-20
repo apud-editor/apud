@@ -23,8 +23,8 @@ export function estrutura(blocos: Bloco[], numerar = true): EntradaDaEstrutura[]
   blocos.forEach((b, indice) => {
     if (b.tipo !== "titulo") return;
     const texto = textoSimples(b.trechos).trim();
-    // Um título vazio não aparece no PDF, então também não ganha número aqui.
-    if (!texto) {
+    // Um título vazio não aparece no PDF, e um título sem número não conta na numeração.
+    if (!texto || b.numerado === false) {
       saida.push({ indice, nivel: b.nivel, numero: "", texto });
       return;
     }

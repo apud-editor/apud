@@ -4,7 +4,7 @@ import { documentoDoEditor, editorDoDocumento } from "../documento/tiptap";
 import { estrutura } from "../documento/estrutura";
 import type { Documento } from "../documento/modelo";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
-import { ControleDaBarra, extensoesDoApud } from "./extensoes";
+import { alternarNumero, ControleDaBarra, extensoesDoApud } from "./extensoes";
 
 interface Props {
   inicial: Documento;
@@ -74,6 +74,8 @@ function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; e
             negrito: e.isActive("bold"),
             italico: e.isActive("italic"),
             sobrescrito: e.isActive("superscript"),
+            titulo: e.isActive("heading"),
+            numerado: e.getAttributes("heading").numerado !== false,
           }
         : null,
   });
@@ -99,6 +101,26 @@ function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; e
           </option>
         ))}
       </select>
+      {estado.titulo && (
+        <button
+          type="button"
+          className={`btn ${estado.numerado ? "on" : ""}`}
+          aria-pressed={estado.numerado}
+          title="Liga ou desliga o número deste título (1, 1.1...). Sem número, ele também não conta na numeração dos outros."
+          onMouseDown={(ev) => {
+            ev.preventDefault();
+            alternarNumero(editor);
+          }}
+          onKeyDown={(ev) => {
+            if (ev.key === "Enter" || ev.key === " ") {
+              ev.preventDefault();
+              alternarNumero(editor);
+            }
+          }}
+        >
+          Numerar
+        </button>
+      )}
       <span className="divisor" aria-hidden="true" />
       <Botao rotulo="Negrito (Ctrl+B)" ligado={estado.negrito} aoClicar={() => editor.chain().focus().toggleBold().run()}>
         <b>B</b>

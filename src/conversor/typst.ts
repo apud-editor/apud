@@ -156,10 +156,12 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   l(`    else { x }`);
   l(`  }`);
   // Número, um espaço e o título; as linhas seguintes ficam sob a primeira letra do título.
+  // Título sem número (escolha da pessoa): só o texto, com o mesmo destaque do nível.
   l(`  set par(justify: false, first-line-indent: 0pt)`);
   l(
-    `  block(above: ${entre} + ${antes} * ${passo}, below: ${entre} + ${depois} * ${passo}, sticky: true, grid(columns: (auto, 1fr), column-gutter: 0.25em, destaque(counter(heading).display(it.numbering)), destaque(it.body)))`,
+    `  let corpo = if it.numbering == none { destaque(it.body) } else { grid(columns: (auto, 1fr), column-gutter: 0.25em, destaque(counter(heading).display(it.numbering)), destaque(it.body)) }`,
   );
+  l(`  block(above: ${entre} + ${antes} * ${passo}, below: ${entre} + ${depois} * ${passo}, sticky: true, corpo)`);
   l(`}`);
   // Os títulos não têm tamanho próprio: usam o da fonte do texto.
   l(`#show heading: set text(size: ${r.medida("tamanho da fonte")}, weight: "regular")`);
@@ -189,7 +191,9 @@ function blocoParaTypst(b: Bloco, recuos: { recuoAlinea: string; recuoSub: strin
     }
     case "titulo": {
       const corpo = trechosParaTypst(b.trechos);
-      return corpo.trim() ? `#heading(level: ${b.nivel})[${corpo}]\n` : "";
+      // Sem número: o título não aparece numerado nem conta na numeração dos seguintes.
+      const semNumero = b.numerado === false ? ", numbering: none" : "";
+      return corpo.trim() ? `#heading(level: ${b.nivel}${semNumero})[${corpo}]\n` : "";
     }
     case "lista":
       return listaParaTypst(b.itens, 0, recuos) + "\n";
