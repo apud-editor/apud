@@ -2,7 +2,7 @@
 
 Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplica a norma (ABNT ou APA) sozinha.
 
-**Estado atual:** etapa 0, esqueleto do projeto. A janela abre, mas o editor ainda não existe.
+**Estado atual:** etapa 0 (esqueleto do projeto) e perfis de norma ABNT e APA. A janela abre, mas o editor ainda não existe.
 
 ## Como o projeto é organizado
 
@@ -12,7 +12,11 @@ Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplic
 | `src-tauri/` | O programa de computador em volta da interface, feito com Tauri (Rust) |
 | `src-tauri/tauri.conf.json` | Nome, versão, tamanho da janela e opções do instalador |
 | `src-tauri/icons/` | Ícones do programa |
-| `.github/workflows/` | Receita que o GitHub usa para montar o instalador de Windows |
+| `.github/workflows/` | Receitas do GitHub: montar o instalador de Windows e rodar os testes |
+| `perfis/` | Perfis de norma (ABNT e APA), estilos de citação e documento de prova. Guia em `perfis/LEIA-ME.md` |
+| `src/perfis/` | Leitura e conferência dos perfis, com as mensagens de erro em português |
+| `src/citacoes/` | Primeiro pedaço do motor de citações: prepara as referências e monta as chamadas |
+| `scripts/` | Comandos de conferência: `npm run conferir-perfis` e `npm run prova` |
 
 ## Como baixar a versão de teste
 
@@ -30,4 +34,7 @@ npm install        # instala as dependências
 npm run dev        # abre a interface no navegador (modo de prévia)
 npm run tauri dev  # abre o programa de computador (precisa de Rust instalado)
 npm run build      # confere e compila a interface
+npm test           # testes (perfis, cobertura do checklist, documento de prova)
+npm run conferir-perfis  # confere os perfis da pasta perfis/
+npm run prova      # documento de prova no Typst, comparado com os gabaritos
 ```

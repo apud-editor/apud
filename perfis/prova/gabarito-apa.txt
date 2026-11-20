@@ -1,0 +1,57 @@
+# Gabarito do documento de prova: APA 7, revisão 1
+#
+# Como cada chamada do documento de prova deve sair, e a lista de referências
+# completa, na ordem. O comando “npm run prova” compara a saída com este arquivo.
+# Negrito entre ** **, itálico entre * *, sublinhado entre __ __.
+# Só mude este arquivo depois de conferir a mudança contra a norma.
+
+== Chamadas ==
+[@silva2019, p. 15]  →  (J. P. Silva, 2019, p. 15)
+@lima2018  →  Lima et al. (2018)
+[@brasil2001]  →  (Lei nº 10.216, de 6 de abril de 2001, 2001)
+[@abep2023]  →  (Associação Brasileira de Ensino de Psicologia, 2023)
+[@inpsi2011]  →  (INPSI, 2011)
+[@souza2020a; @souza2020b]  →  (Souza, 2020a, 2020b)
+[sem referência: Usuária A]  →  (Usuária A)
+[sem referência: R. Melo, comunicação pessoal, 3 de março de 2026]  →  (R. Melo, comunicação pessoal, 3 de março de 2026)
+[@costa2021, p. 12]  →  (Costa, 2021, p. 12)
+[@alves2022]  →  (Alves et al., 2022)
+@alves2022 [p. 40]  →  Alves et al. (2022, p. 40)
+@dias2025 [p. 4]  →  Dias e Lopes (2025, p. 4)
+[@dias2025, p. 4]  →  (Dias & Lopes, 2025, p. 4)
+[@ferraz2024]  →  (Ferraz, 2024)
+[Freud, 1915 apud @costa2021, p. 12]  →  (Freud, 1915, como citado em Costa, 2021, p. 12)
+[@silvaj2021; @silvam2021]  →  (J. Silva, 2021; M. Silva, 2021)
+[@rudio2002; @rudio2003]  →  (Rudio, 2002, 2003)
+[@silva2019, p. 47, +grifo]  →  (J. P. Silva, 2019, p. 47)
+[@smith2019, p. 4, +tradução]  →  (Smith, 2019, p. 4, tradução nossa)
+[@garcia2015, local. 7]  →  (Garcia, 2015, local. 7)
+[@morais2024]  →  (Morais, 2024)
+[@guia2025, p. 3]  →  (*Guia de normalização de trabalhos acadêmicos*, 2025, p. 3)
+[@moura201x]  →  (Moura, s.d.)
+[@pinto2017; @nunes2016]  →  (Nunes, 2016; Pinto, 2017)
+[@lima2018; @silva2019]  →  (Lima et al., 2018; J. P. Silva, 2019)
+
+== Referências ==
+Alves, A. M., Brito, B., Cunha, C., & Dias, D. (2022). *Avaliação psicológica*. Summus.
+Associação Brasileira de Ensino de Psicologia. (2023). *Diretrizes para o estágio em psicologia*. ABEP.
+Costa, H. (2021). O acolhimento no serviço de saúde mental. Em R. Melo & S. Nunes (Orgs.), *Psicologia e saúde coletiva: Práticas no SUS* (p. 9–30). Artmed.
+Dias, E., & Lopes, I. (2025). Vínculo terapêutico na atenção psicossocial. *Psicologia em Estudo*, *10*(2), 1–15. https://doi.org/10.0000/pe.2025.0102
+Ferraz, L. (2024). Grupos terapêuticos com adolescentes. *Revista Brasileira de Psicoterapia*, *26*, Artigo e2024017.
+Garcia, P. (2015). *Terapia cognitiva*. Sinopsys.
+*Guia de normalização de trabalhos acadêmicos*. (2025). Editora Universitária.
+INPSI. (2011). *Censo da psicologia no Brasil*. INPSI.
+Lei nº 10.216, de 6 de abril de 2001 (2001). https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm
+Lima, A., Costa, B., & Reis, C. (2018). *Saúde mental na atenção básica*. Artmed.
+Morais, T. (2024, 2 de maio). *Saúde mental de estudantes universitários*. Portal Psicologia Hoje. https://psicologiahoje.example.org/saude-mental-estudantes
+Moura, L. (s.d.). *Memórias do hospício*. Livraria Central.
+Nunes, T. (2016). *Diário de campo*.
+Pinto, R. (2017). *Cartas a uma jovem terapeuta*.
+Rudio, F. (2002). *Introdução ao projeto de pesquisa*. Vozes.
+Rudio, F. (2003). *Orientação não diretiva*. Vozes.
+Silva, J. (2021). *Psicopatologia descritiva*. Manole.
+Silva, J. P. (2019). *Psicologia clínica: Fundamentos e prática* (2ª ed.). Vozes.
+Silva, M. (2021). *Psicoterapia breve*. Manole.
+Smith, J. (2019). *Clinical supervision in practice*. Northfield Press.
+Souza, M. (2020a). *Clínica ampliada*. Hucitec.
+Souza, M. (2020b). *Escuta qualificada*. Hucitec.

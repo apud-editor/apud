@@ -6,3 +6,4 @@ dist
 # Arquivos gerados pelo Tauri / Rust
 src-tauri/target
 src-tauri/gen/schemas
+perfis/prova/saida/
