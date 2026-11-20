@@ -26,7 +26,16 @@ export interface Armazenamento {
   /** Troca o nome do arquivo; devolve o nome novo. */
   renomear(arquivo: string, nome: string): Promise<string>;
   mostrarPasta(): Promise<void>;
+  /** A Times New Roman e a Arial instaladas no computador, para o PDF usar as fontes de verdade. */
+  fontesDoComputador(): Promise<Array<{ nome: string; dados: Uint8Array }>>;
+  /** Pergunta onde salvar e grava o PDF. Devolve onde ficou, ou null se a pessoa cancelou. */
+  exportarPdf(nomeSugerido: string, pdf: Uint8Array): Promise<string | null>;
+  /** Abre o último PDF exportado no leitor de PDF do computador. */
+  abrirPdfExportado(): Promise<void>;
 }
+
+/** Arquivos das fontes do Windows que o Apud procura. */
+const FONTES_DO_WINDOWS = ["times.ttf", "timesbd.ttf", "timesi.ttf", "timesbi.ttf", "arial.ttf", "arialbd.ttf", "ariali.ttf", "arialbi.ttf"];
 
 export const rodandoNoPrograma = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
@@ -54,6 +63,27 @@ const noPrograma: Armazenamento = {
   salvar: (arquivo, conteudo) => chamar("salvar_trabalho", { arquivo, conteudo }),
   renomear: (arquivo, nome) => chamar("renomear_trabalho", { arquivo, nome }),
   mostrarPasta: () => chamar("mostrar_pasta"),
+  fontesDoComputador: async () => {
+    const lidas = await Promise.all(
+      FONTES_DO_WINDOWS.map(async (nome) => {
+        try {
+          const dados = await invoke<ArrayBuffer>("ler_fonte", { nome });
+          return { nome, dados: new Uint8Array(dados) };
+        } catch {
+          return null; // essa fonte não está instalada: o Apud usa a de reserva
+        }
+      }),
+    );
+    return lidas.filter((f): f is { nome: string; dados: Uint8Array } => f !== null);
+  },
+  exportarPdf: async (nomeSugerido, pdf) => {
+    try {
+      return await invoke<string | null>("exportar_pdf", pdf, { headers: { nome: encodeURIComponent(nomeSugerido) } });
+    } catch (e) {
+      throw erro(e);
+    }
+  },
+  abrirPdfExportado: () => chamar("abrir_pdf_exportado"),
 };
 
 // ---------------------------------------------------------------------------
@@ -113,6 +143,18 @@ export function armazenamentoDoNavegador(): Armazenamento {
       return novo;
     },
     mostrarPasta: async () => {},
+    fontesDoComputador: async () => [],
+    exportarPdf: async (nomeSugerido, pdf) => {
+      // Na prévia no navegador, o PDF vai para os downloads.
+      const url = URL.createObjectURL(new Blob([pdf as BlobPart], { type: "application/pdf" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nomeSugerido;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      return `Downloads/${nomeSugerido}`;
+    },
+    abrirPdfExportado: async () => {},
   };
 }
 

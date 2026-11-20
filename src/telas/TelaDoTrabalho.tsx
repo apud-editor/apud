@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Editor from "../editor/Editor";
 import type { Documento } from "../documento/modelo";
-import { armazenamento } from "../arquivos/armazenamento";
+import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
 import { escreverArquivo, type Trabalho } from "../arquivos/formato";
 import { SalvamentoAutomatico, type SituacaoDoSalvamento } from "../arquivos/salvamento";
 import { registrarAntesDeSair } from "./sair";
+import Previa from "./Previa";
+import { documentoParaTypst } from "../conversor/typst";
+import { motor } from "../conversor/motor";
+import { perfilAbnt } from "../perfis/embutidos";
 
 interface Props {
   arquivo: string;
@@ -22,6 +26,10 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   const [situacao, setSituacao] = useState<SituacaoDoSalvamento>({ tipo: "salvo", quando: null });
   const [problema, setProblema] = useState<string | null>(null);
   const campoDoNome = useRef<HTMLInputElement>(null);
+  const mudancas = useMemo(() => new EventTarget(), []);
+  const [previaAberta, setPreviaAberta] = useState(false);
+  const [exportando, setExportando] = useState(false);
+  const [exportado, setExportado] = useState<string | null>(null);
 
   const salvamento = useMemo(
     () =>
@@ -86,6 +94,22 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
     }
   };
 
+  const exportar = async () => {
+    setExportando(true);
+    setProblema(null);
+    setExportado(null);
+    try {
+      if (lerTexto.current) ultimoTexto.current = lerTexto.current();
+      const pdf = await motor.pdf(documentoParaTypst(ultimoTexto.current, perfilAbnt(), { titulo: nomeSalvo.current }));
+      const onde = await armazenamento.exportarPdf(`${nomeSalvo.current}.pdf`, pdf);
+      if (onde) setExportado(onde);
+    } catch (e) {
+      setProblema(`Não consegui exportar o PDF: ${(e as Error).message}.`);
+    } finally {
+      setExportando(false);
+    }
+  };
+
   const voltar = async (mesmoSemSalvar = false) => {
     if (!mesmoSemSalvar) {
       try {
@@ -131,7 +155,26 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         <span className="selo-norma" title={`${trabalho.perfil.perfil} ${trabalho.perfil.versao}, revisão ${trabalho.perfil.revisao}`}>
           {trabalho.perfil.perfil}
         </span>
+        <button type="button" className="btn primario" onClick={exportar} disabled={exportando}>
+          {exportando ? "Montando o PDF…" : "Exportar PDF"}
+        </button>
       </header>
+      {exportado && (
+        <div className="faixa-ok" role="status">
+          <span>
+            PDF salvo em <b>{exportado}</b>
+          </span>
+          <span style={{ flex: 1 }} />
+          {rodandoNoPrograma && (
+            <button type="button" className="btn" onClick={() => armazenamento.abrirPdfExportado().catch((e) => setProblema((e as Error).message))}>
+              Abrir o PDF
+            </button>
+          )}
+          <button type="button" className="btn" onClick={() => setExportado(null)}>
+            Fechar aviso
+          </button>
+        </div>
+      )}
       {problema && (
         <div className="faixa-erro" role="alert">
           <span>{problema} O texto continua aqui na tela.</span>
@@ -157,8 +200,24 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
       )}
       <Editor
         inicial={trabalho.documento}
-        aoMudar={() => salvamento.houveMudanca()}
+        aoMudar={() => {
+          salvamento.houveMudanca();
+          mudancas.dispatchEvent(new Event("mudou"));
+        }}
         lerTexto={lerTexto}
+        extrasDaBarra={
+          <button
+            type="button"
+            className={`btn ${previaAberta ? "on" : ""}`}
+            aria-pressed={previaAberta}
+            onClick={() => setPreviaAberta((a) => !a)}
+          >
+            Prévia
+          </button>
+        }
+        lateral={
+          previaAberta ? <Previa lerTexto={lerTexto} mudancas={mudancas} nome={nome} aoFechar={() => setPreviaAberta(false)} /> : null
+        }
       />
     </div>
   );

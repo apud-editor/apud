@@ -4,6 +4,7 @@
 import { Extension, type Editor, type Range } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Superscript from "@tiptap/extension-superscript";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Placeholder from "@tiptap/extension-placeholder";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
 import { Plugin, PluginKey, Selection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
@@ -248,6 +249,31 @@ function barraDeBlocos(controle: ControleDaBarra) {
 }
 
 // ---------------------------------------------------------------------------
+// Quebra de página: um bloco que a pessoa põe onde quiser (Ctrl+Enter, como no Word)
+
+const QuebraDePagina = HorizontalRule.extend({
+  name: "quebraDePagina",
+  parseHTML() {
+    return [{ tag: "div[data-quebra]" }];
+  },
+  renderHTML() {
+    return ["div", { "data-quebra": "", class: "quebra", contenteditable: "false" }, ["span", {}, "Quebra de página"]];
+  },
+  // Sem atalhos de digitação ("---"): a quebra só entra quando a pessoa pede.
+  addInputRules() {
+    return [];
+  },
+  addKeyboardShortcuts() {
+    return { "Mod-Enter": () => this.editor.commands.setHorizontalRule() };
+  },
+});
+
+/** Insere uma quebra de página onde está o cursor; o texto depois do cursor vai para a página nova. */
+export function inserirQuebra(editor: Editor) {
+  editor.chain().focus().setHorizontalRule().run();
+}
+
+// ---------------------------------------------------------------------------
 
 export function extensoesDoApud(controle: ControleDaBarra) {
   return [
@@ -265,9 +291,12 @@ export function extensoesDoApud(controle: ControleDaBarra) {
       underline: false,
     }),
     Superscript,
+    QuebraDePagina,
     Placeholder.configure({
       placeholder: ({ node }) =>
-        node.type.name === "heading" ? "Título" : "Escreva aqui. Digite / para escolher o tipo de bloco.",
+        node.type.name === "heading"
+          ? "Título. Para numerar, escreva o número antes: 1.1 Contexto"
+          : "Escreva aqui. Digite / para escolher o tipo de bloco.",
     }),
     ColarSemFormatacao,
     ListasFaceis,

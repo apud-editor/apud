@@ -43,6 +43,8 @@ function blocosDoNo(no: JSONContent): Bloco[] {
       return [{ tipo: "paragrafo", trechos: trechosDe(no) }];
     case "heading":
       return [{ tipo: "titulo", nivel: nivelValido(no.attrs?.level), trechos: trechosDe(no) }];
+    case "quebraDePagina":
+      return [{ tipo: "quebra" }];
     case "bulletList":
     case "orderedList":
       return [{ tipo: "lista", sequencia: no.type === "orderedList", itens: itensDe(no) }];
@@ -125,6 +127,8 @@ function noDoBloco(b: Bloco): JSONContent {
       return comTexto({ type: "paragraph" }, b.trechos);
     case "titulo":
       return comTexto({ type: "heading", attrs: { level: b.nivel } }, b.trechos);
+    case "quebra":
+      return { type: "quebraDePagina" };
     case "lista":
       return noDaLista(b.itens, b.sequencia);
   }

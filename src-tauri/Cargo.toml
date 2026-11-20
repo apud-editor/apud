@@ -17,3 +17,5 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 # Leitura e gravação segura dos arquivos .apud (pasta arquivos/, com testes próprios).
 apud-arquivos = { path = "arquivos" }
+# Janela "Salvar como" do Windows, para exportar o PDF.
+tauri-plugin-dialog = "2"

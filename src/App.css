@@ -262,6 +262,39 @@ select {
 .texto > h5::after {
   content: "Título 5";
 }
+/* A quebra de página aparece como uma linha tracejada com o nome. */
+.texto > .quebra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 24px;
+  color: var(--tinta-suave);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.texto > .quebra::before {
+  content: "";
+  flex: 1;
+  border-top: 1px dashed var(--borda-forte);
+}
+
+.texto > .quebra > span {
+  order: -1;
+}
+
+.texto > .quebra.ProseMirror-selectednode {
+  color: var(--destaque);
+  outline: 2px solid var(--destaque-claro);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.texto > .quebra::after {
+  content: "";
+}
+
 .texto > ul::after {
   content: "Lista";
 }
@@ -560,4 +593,85 @@ button.linha:hover {
 .rodape-painel {
   margin: 16px 4px 0;
   font-size: 13px;
+}
+
+/* Exportação */
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.faixa-ok {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: #e9f3ec;
+  border-bottom: 1px solid #c4dfcc;
+  color: #1d4a2a;
+  font-size: 13.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+/* Prévia do PDF */
+
+.previa {
+  width: 560px;
+  flex: none;
+  overflow: auto;
+  padding: 16px 24px 24px;
+  background: #e4e5e0;
+  border-left: 1px solid var(--borda);
+}
+
+.previa-topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.previa-titulo {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.previa-aviso {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff8e1;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.previa-aviso.erro {
+  background: #fbeceb;
+  color: #7d1d14;
+  white-space: pre-wrap;
+}
+
+.previa-espera {
+  margin: 24px 0;
+}
+
+/* As páginas vêm do Typst como um SVG; aqui ele ocupa a largura da coluna. */
+.previa-paginas svg.typst-doc {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.folha-da-previa {
+  fill: #fff;
+  filter: drop-shadow(0 1px 2px rgba(28, 36, 48, 0.25));
+}
+
+@media (max-width: 1100px) {
+  .previa {
+    width: 420px;
+  }
 }

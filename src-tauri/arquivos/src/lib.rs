@@ -81,7 +81,7 @@ impl Pasta {
         if !destino.is_file() {
             return Err(format!("o arquivo {arquivo} não está mais na pasta (foi apagado ou renomeado?)"));
         }
-        self.gravar_atomico(&destino, conteudo)
+        gravar_atomico(&destino, conteudo.as_bytes())
             .map_err(|e| format!("não consegui salvar {arquivo}: {}", traduzir(&e)))
     }
 
@@ -146,23 +146,32 @@ impl Pasta {
             .find(|n| !ocupado(n))
             .unwrap()
     }
+}
 
-    fn gravar_atomico(&self, destino: &Path, conteudo: &str) -> io::Result<()> {
-        // O temporário começa com ponto, para o painel não listá-lo, e fica na mesma
-        // pasta, para a troca final ser instantânea.
-        let nome = destino.file_name().unwrap().to_string_lossy();
-        let temporario = self.raiz.join(format!(".{nome}.salvando"));
-        {
-            let mut f = File::create(&temporario)?;
-            f.write_all(conteudo.as_bytes())?;
-            f.sync_all()?; // garante que está no disco antes da troca
-        }
-        if let Err(e) = renomear_com_tentativas(&temporario, destino) {
-            let _ = fs::remove_file(&temporario);
-            return Err(e);
-        }
-        Ok(())
+/// Grava um arquivo inteiro sem risco de deixá-lo pela metade: o conteúdo vai
+/// para um temporário na mesma pasta, que é gravado até o fim no disco e só
+/// então toma o lugar do arquivo. Serve para os .apud e para os PDFs exportados.
+pub fn gravar_atomico(destino: &Path, conteudo: &[u8]) -> io::Result<()> {
+    // O temporário começa com ponto, para o painel não listá-lo, e fica na mesma
+    // pasta, para a troca final ser instantânea.
+    let pasta = destino.parent().ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "pasta inválida"))?;
+    let nome = destino.file_name().ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "nome inválido"))?;
+    let temporario = pasta.join(format!(".{}.salvando", nome.to_string_lossy()));
+    {
+        let mut f = File::create(&temporario)?;
+        f.write_all(conteudo)?;
+        f.sync_all()?; // garante que está no disco antes da troca
     }
+    if let Err(e) = renomear_com_tentativas(&temporario, destino) {
+        let _ = fs::remove_file(&temporario);
+        return Err(e);
+    }
+    Ok(())
+}
+
+/// Mensagens de erro do sistema em português.
+pub fn traduzir_erro(e: &io::Error) -> String {
+    traduzir(e)
 }
 
 /// No Windows, o antivírus ou o OneDrive às vezes seguram o arquivo por um
@@ -312,6 +321,16 @@ mod testes {
         fs::write(p.raiz().join("anotacoes.txt"), "x").unwrap();
         let nomes: Vec<_> = p.listar().unwrap().into_iter().map(|a| a.arquivo).collect();
         assert_eq!(nomes, vec!["A.apud"]);
+    }
+
+    #[test]
+    fn gravar_atomico_substitui_inteiro_e_nao_deixa_temporario() {
+        let p = pasta_de_teste("atomico");
+        let destino = p.raiz().join("trabalho.pdf");
+        gravar_atomico(&destino, b"primeiro").unwrap();
+        gravar_atomico(&destino, b"segundo").unwrap();
+        assert_eq!(fs::read(&destino).unwrap(), b"segundo");
+        assert_eq!(fs::read_dir(p.raiz()).unwrap().count(), 1);
     }
 
     #[test]

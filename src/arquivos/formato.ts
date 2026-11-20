@@ -118,6 +118,7 @@ function conferirBloco(b: unknown): Bloco | null {
       const trechos = conferirTrechos(b.trechos);
       const nivel = b.nivel;
       if (!trechos || ![1, 2, 3, 4, 5].includes(nivel as number)) return null;
+      // (Uma versão de teste guardava "numerado"; hoje o número é escrito no texto, e o campo é ignorado.)
       return { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos };
     }
     case "lista": {
@@ -125,6 +126,8 @@ function conferirBloco(b: unknown): Bloco | null {
       if (!itens || typeof b.sequencia !== "boolean") return null;
       return { tipo: "lista", sequencia: b.sequencia, itens };
     }
+    case "quebra":
+      return { tipo: "quebra" };
     default:
       return null;
   }

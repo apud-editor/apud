@@ -37,6 +37,10 @@ jobs:
       - name: Documento de prova
         run: npm run prova
 
+      # 5. Texto de exemplo em ABNT, para conferir a paginação (margens, títulos, alíneas).
+      - name: PDF de exemplo
+        run: npm run exemplo-pdf
+
       # Os PDFs ficam disponíveis para baixar na página desta execução, em "Artifacts".
       - name: Guardar os PDFs do documento de prova
         if: always()

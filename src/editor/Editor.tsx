@@ -4,17 +4,21 @@ import { documentoDoEditor, editorDoDocumento } from "../documento/tiptap";
 import { estrutura } from "../documento/estrutura";
 import type { Documento } from "../documento/modelo";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
-import { ControleDaBarra, extensoesDoApud } from "./extensoes";
+import { ControleDaBarra, extensoesDoApud, inserirQuebra } from "./extensoes";
 
 interface Props {
   inicial: Documento;
   /** Chamado na hora, a cada mudança no texto. */
   aoMudar?: () => void;
-  /** Recebe a função que lê o texto atual, para quem precisa dele (o salvamento). */
+  /** Recebe a função que lê o texto atual, para quem precisa dele (o salvamento e a prévia). */
   lerTexto?: React.MutableRefObject<(() => Documento) | null>;
+  /** Botões a mais, no lado direito da barra de ferramentas (como "Prévia"). */
+  extrasDaBarra?: React.ReactNode;
+  /** Um painel ao lado do texto (como a prévia do PDF). */
+  lateral?: React.ReactNode;
 }
 
-export default function Editor({ inicial, aoMudar, lerTexto }: Props) {
+export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, lateral }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
   const [documento, setDocumento] = useState(inicial);
   const espera = useRef<number>(0);
@@ -45,12 +49,13 @@ export default function Editor({ inicial, aoMudar, lerTexto }: Props) {
 
   return (
     <div className="area">
-      <BarraDeFerramentas editor={editor} />
+      <BarraDeFerramentas editor={editor} extras={extrasDaBarra} />
       <div className="colunas">
         <Estrutura documento={documento} editor={editor} />
         <main className="folha">
           <EditorContent editor={editor} />
         </main>
+        {lateral}
       </div>
       <MenuDeBlocos controle={controle} />
     </div>
@@ -59,7 +64,7 @@ export default function Editor({ inicial, aoMudar, lerTexto }: Props) {
 
 // ---------------------------------------------------------------------------
 
-function BarraDeFerramentas({ editor }: { editor: EditorTipTap | null }) {
+function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; extras?: React.ReactNode }) {
   const estado = useEditorState({
     editor,
     selector: ({ editor: e }) =>
@@ -72,7 +77,7 @@ function BarraDeFerramentas({ editor }: { editor: EditorTipTap | null }) {
           }
         : null,
   });
-  if (!editor || !estado) return <div className="ferramentas" />;
+  if (!editor || !estado) return <div className="ferramentas">{extras}</div>;
 
   return (
     <div className="ferramentas" role="toolbar" aria-label="Formatação do texto">
@@ -88,12 +93,13 @@ function BarraDeFerramentas({ editor }: { editor: EditorTipTap | null }) {
           if (t) t.aplicar(editor.chain().focus()).run();
         }}
       >
-        {TIPOS_DE_BLOCO.map((t) => (
+        {TIPOS_DE_BLOCO.filter((t) => !t.soNaBarra).map((t) => (
           <option key={t.id} value={t.id}>
             {t.rotulo}
           </option>
         ))}
       </select>
+
       <span className="divisor" aria-hidden="true" />
       <Botao rotulo="Negrito (Ctrl+B)" ligado={estado.negrito} aoClicar={() => editor.chain().focus().toggleBold().run()}>
         <b>B</b>
@@ -110,6 +116,26 @@ function BarraDeFerramentas({ editor }: { editor: EditorTipTap | null }) {
           x<sup>2</sup>
         </span>
       </Botao>
+      <span className="divisor" aria-hidden="true" />
+      <button
+        type="button"
+        className="btn"
+        title="O que vem depois começa numa página nova (Ctrl+Enter)"
+        onMouseDown={(ev) => {
+          ev.preventDefault();
+          inserirQuebra(editor);
+        }}
+        onKeyDown={(ev) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            inserirQuebra(editor);
+          }
+        }}
+      >
+        Quebra de página
+      </button>
+      <span style={{ flex: 1 }} />
+      {extras}
     </div>
   );
 }
@@ -158,7 +184,7 @@ function Estrutura({ documento, editor }: { documento: Documento; editor: Editor
     <nav className="estrutura" aria-label="Estrutura do trabalho">
       <p className="rotulo-secao">Estrutura</p>
       {titulos.length === 0 ? (
-        <p className="dica">Os títulos que você escrever aparecem aqui, numerados como na ABNT.</p>
+        <p className="dica">Os títulos que você escrever aparecem aqui. Para numerar, escreva o número antes do título: 1.1 Contexto.</p>
       ) : (
         titulos.map((t) => (
           <button
@@ -168,7 +194,7 @@ function Estrutura({ documento, editor }: { documento: Documento; editor: Editor
             style={{ paddingLeft: 8 + (t.nivel - 1) * 14 }}
             onClick={() => irPara(t.indice)}
           >
-            {t.numero} {t.texto || <span className="dica">(título vazio)</span>}
+            {t.texto || <span className="dica">(título vazio)</span>}
           </button>
         ))
       )}
