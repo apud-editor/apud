@@ -1,0 +1,43 @@
+# Confere os perfis de norma e roda os testes a cada mudança.
+# Roda em todo pull request e em todo envio de branch. O resultado aparece
+# como um sinal verde (passou) ou vermelho (falhou) no PR.
+name: Testes
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 1. Os perfis em perfis/ estão escritos certo? Mostra os erros em português.
+      - name: Conferir os perfis
+        run: npm run conferir-perfis
+
+      # 2. Testes do código, inclusive a cobertura do checklist.
+      - name: Testes
+        run: npm test
+
+      # 3. Documento de prova: compara com os gabaritos e gera os PDFs.
+      - name: Documento de prova
+        run: npm run prova
+
+      # Os PDFs ficam disponíveis para baixar na página desta execução, em "Artifacts".
+      - name: Guardar os PDFs do documento de prova
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documento-de-prova
+          path: perfis/prova/saida/*.pdf
+          if-no-files-found: ignore

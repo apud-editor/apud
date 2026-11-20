@@ -1,0 +1,150 @@
+# ==============================================================================
+# Perfil de norma do Apud: APA
+#
+# Cada linha é uma regra:   nome da regra: valor | norma de origem | situação
+#
+# A situação é opcional:
+#   (nada)          confirmada na norma
+#   faculdade       a norma não fixa; é o padrão, e cada pessoa pode trocar
+#                   nas configurações do trabalho
+#   escolha: a, b   a norma aceita mais de uma forma; a pessoa escolhe entre as
+#                   opções, e o valor da linha é o padrão
+#   desligada       guardada para depois (fora da versão 1); ainda não tem efeito
+#
+# Linhas que começam com # são comentários e não contam.
+# Ao mudar qualquer coisa: aumente a revisão, troque a data e escreva na nota
+# da revisão o que mudou. O guia completo está em perfis/LEIA-ME.md.
+#
+# A origem cita a página do site da APA (apastyle.apa.org) ou o guia da APA
+# onde a regra foi conferida.
+# ==============================================================================
+
+perfil: APA
+versão: 7
+revisão: 1
+data da revisão: 20/11/2026
+nota da revisão: Primeira revisão, feita a partir do checklist de regras aprovado em 20/11/2026.
+
+== APA 7: página, estrutura e títulos ==
+# A APA tem dois modos. O trabalho começa no modo estudante e passa para o
+# profissional quando o tipo escolhido no assistente é artigo.
+modo: estudante                                                 | APA 7 (Student Paper Setup Guide)
+modo, quando o trabalho é artigo: profissional                  | APA 7 (Student Paper Setup Guide)
+papel: A4                                                       | APA 7 (site da APA)
+margens: 2,54 cm                                                | APA 7 (site da APA)
+fonte: Times New Roman 12 pt                                    | APA 7 (Student Paper Setup Guide) | escolha: Times New Roman 12 pt, Arial 11 pt, Calibri 11 pt, Georgia 11 pt, Aptos 12 pt
+entrelinhas: duplo                                              | APA 7 (site da APA)
+entrelinhas, vale para: tudo, inclusive citação em bloco e referências  | APA 7 (site da APA)
+espaço extra entre parágrafos: nenhum                           | APA 7 (site da APA)
+# Margem direita irregular; nunca justificado.
+alinhamento: à esquerda                                         | APA 7 (Student Paper Setup Guide)
+recuo de parágrafo: 1,27 cm                                     | APA 7 (Student Paper Setup Guide)
+número de página, posição: canto superior direito               | APA 7 (Student Paper Setup Guide)
+número de página, desde: página de título                       | APA 7 (Student Paper Setup Guide)
+cabeçalho com título curto: só no modo profissional             | APA 7 (Student Title Page Guide) | escolha: só no modo profissional, sempre
+# Página de título do modo estudante: tudo centralizado, em espaço duplo.
+página de título (estudante), campos: título, autor, departamento e universidade, código e nome da disciplina, professor, data de entrega  | APA 7 (site da APA; checklist da APA)
+página de título (estudante), alinhamento: centralizado         | APA 7 (site da APA)
+página de título (estudante), espaçamento: duplo                | APA 7 (site da APA)
+página de título (estudante), destaque do título: negrito       | APA 7 (site da APA)
+# A APA aceita 3 ou 4 linhas abaixo do topo.
+página de título (estudante), linhas antes do título: 3 linhas  | APA 7 (site da APA)
+página de título (estudante), data: por extenso                 | APA 7 (site da APA)
+página de título (profissional), campos: título, autores, afiliação, nota do autor, título curto  | APA 7 (site da APA)
+resumo, no modo estudante: só se o professor pedir              | APA 7 (Abstract and Keywords Guide) | escolha: só se o professor pedir, sempre
+resumo, no modo profissional: obrigatório                       | APA 7 (Abstract and Keywords Guide)
+resumo, extensão máxima: 250 palavras                           | APA 7 (Abstract and Keywords Guide)
+palavras-chave: opcionais                                       | APA 7 (Abstract and Keywords Guide) | escolha: opcionais, obrigatórias
+ordem das partes: página de título, resumo, texto, referências, notas, tabelas, figuras, apêndices  | APA 7 (checklist do Concise Guide)
+ordem das partes, página nova: cada parte                       | APA 7 (checklist do Concise Guide)
+# Os rótulos vão em português.
+rótulos de seção, alinhamento: centralizado                     | APA 7 (site da APA)
+rótulos de seção, destaque: negrito                             | APA 7 (site da APA)
+rótulo do resumo: Resumo                                        | APA 7 (site da APA)
+rótulo das referências: Referências                             | APA 7 (site da APA)
+rótulo do apêndice: Apêndice                                    | APA 7 (site da APA)
+início do texto: repete o título do trabalho                    | APA 7 (Heading Template)
+início do texto, destaque: igual ao nível 1                     | APA 7 (Heading Template)
+início do texto, título introdução: não usar                    | APA 7 (Heading Template)
+título nível 1, posição: centralizado                           | APA 7 (Student Paper Setup Guide)
+título nível 1, destaque: negrito                               | APA 7 (Student Paper Setup Guide)
+título nível 1, texto depois: parágrafo novo                    | APA 7 (Student Paper Setup Guide)
+título nível 2, posição: à esquerda                             | APA 7 (Student Paper Setup Guide)
+título nível 2, destaque: negrito                               | APA 7 (Student Paper Setup Guide)
+título nível 2, texto depois: parágrafo novo                    | APA 7 (Student Paper Setup Guide)
+título nível 3, posição: à esquerda                             | APA 7 (Student Paper Setup Guide)
+título nível 3, destaque: negrito, itálico                      | APA 7 (Student Paper Setup Guide)
+título nível 3, texto depois: parágrafo novo                    | APA 7 (Student Paper Setup Guide)
+título nível 4, posição: com recuo                              | APA 7 (Student Paper Setup Guide)
+título nível 4, destaque: negrito                               | APA 7 (Student Paper Setup Guide)
+título nível 4, texto depois: na mesma linha                    | APA 7 (Student Paper Setup Guide)
+título nível 5, posição: com recuo                              | APA 7 (Student Paper Setup Guide)
+título nível 5, destaque: negrito, itálico                      | APA 7 (Student Paper Setup Guide)
+título nível 5, texto depois: na mesma linha                    | APA 7 (Student Paper Setup Guide)
+títulos na mesma linha, final: ponto                            | APA 7 (Student Paper Setup Guide)
+títulos, numeração: nenhuma                                     | APA 7 (site da APA)
+títulos, linhas em branco antes e depois: nenhuma               | APA 7 (site da APA)
+# A APA pede maiúscula nas palavras principais (regra do inglês). Há faculdades
+# brasileiras que pedem maiúscula só na primeira palavra.
+títulos, maiúsculas: palavras principais                        | APA 7 (site da APA) | faculdade
+# Exemplo: Tabela 1 (negrito), e o título em itálico na linha de baixo.
+tabela, rótulo: Tabela                                          | APA 7 (site da APA)
+figura, rótulo: Figura                                          | APA 7 (site da APA)
+tabelas e figuras, número: acima, em negrito                    | APA 7 (site da APA; checklist da APA)
+tabelas e figuras, título: itálico, na linha seguinte ao número  | APA 7 (site da APA; checklist da APA)
+tabelas e figuras, nota: abaixo                                 | APA 7 (site da APA; checklist da APA)
+tabelas e figuras, posição: no texto, depois da primeira menção  | APA 7 (checklist da APA)
+# O corpo da tabela pode ser simples, 1,5 ou duplo; o padrão segue o resto do trabalho.
+tabelas, espaçamento do corpo: duplo                            | APA 7 (site da APA) | escolha: simples, 1,5 ou duplo
+tabelas, espaçamento de número, título e nota: duplo            | APA 7 (site da APA)
+
+== APA 7: citações e referências ==
+# Onde a APA escreve "and", o perfil em português escreve "e".
+estilo csl: apa.csl                                      | APA 7, capítulos 8 e 9
+modelo, citação entre parênteses: (Autor, ano)           | APA 7 (checklist para iniciantes)
+modelo, citação narrativa: Autor (ano)                   | APA 7 (checklist para iniciantes)
+# Exemplos: (Lima & Costa, 2020) ou Lima e Costa (2020)
+citação, dois autores entre parênteses: &                | APA 7 (site da APA)
+citação narrativa, separador entre autores: vírgula      | APA 7 (site da APA)
+citação narrativa, antes do último autor: e              | APA 7 (site da APA)
+# Exemplo: (Zheng et al., 2023), desde a primeira citação.
+citação, três ou mais autores: primeiro autor e et al.   | APA 7 (site da APA)
+citação, obras iguais com et al.: nomes até diferenciar  | APA 7 (site da APA)
+# Menos de 40 palavras: no parágrafo, entre aspas. 40 ou mais: em bloco.
+citação em bloco, a partir de: 40 palavras               | APA 7 (site da APA)
+citação curta, aspas: duplas                             | APA 7 (site da APA)
+citação, página na citação direta: obrigatória           | APA 7 (site da APA)
+citação, rótulo da página: p.                            | APA 7 (site da APA)
+# Decisão de 20/11/2026: o Apud avisa, sem trocar sozinho por citação em bloco.
+citação curta, passou do limite: avisar                  | decisão de 20/11/2026 sobre a APA 7
+# Decisão de 20/11/2026: o Apud avisa quando falta a página, sem impedir.
+citação direta sem página: avisar                        | decisão de 20/11/2026 sobre a APA 7
+citação em bloco, recuo: 1,27 cm                         | APA 7 (site da APA)
+citação em bloco, aspas: não                             | APA 7 (site da APA)
+comunicação pessoal: só no texto, sem referência         | APA 7 (site da APA)
+# Decisão de 20/11/2026: o tipo de citação "sem referência" entra na versão 1.
+falas de participantes: no texto, sem referência         | APA 7 (site da APA)
+# Fora do checklist: estas regras deixam trocar de ABNT para APA sem reescrever
+# o trabalho. Exemplo: (Freud, 1915, como citado em Costa, 2021).
+citação de citação, expressão: como citado em            | APA 7 (site da APA: fontes secundárias)
+citação de citação, vírgula antes: sim                   | APA 7 (site da APA: fontes secundárias)
+# A APA põe [ênfase adicionada] logo depois do trecho em itálico, dentro da citação.
+citação, destaque seu: ênfase adicionada                 | APA 7 (site da APA: alterações em citações)
+citação, destaque seu, onde: entre colchetes, depois do trecho destacado  | APA 7 (site da APA: alterações em citações)
+# A APA trata a tradução como paráfrase; "tradução nossa" é o uso comum em português.
+citação, tradução sua: tradução nossa                    | uso em trabalhos em português; a APA 7 não fixa
+# Exemplo: (Souza, 2020a), (Souza, 2020b), também na lista de referências.
+citação, mesmo autor e ano: letras depois do ano         | APA 7 (site da APA: mesmo autor e mesma data)
+referências, página nova: sim                            | APA 7 (site da APA)
+referências, linhas em branco entre elas: nenhuma        | APA 7 (site da APA)
+referências, recuo das linhas seguintes: 1,27 cm         | APA 7 (site da APA)
+referências, ordem: alfabética pelo sobrenome do primeiro autor  | APA 7 (site da APA)
+# Exemplo: Sanders, F. A., & Jang, T. D.
+referências, autor: Sobrenome, iniciais com ponto        | APA 7 (site da APA)
+referências, antes do último autor: &                    | APA 7 (site da APA)
+referências, quantos autores: até 20, todos; com 21 ou mais, os 19 primeiros, reticências e o último  | APA 7 (site da APA)
+referências, título da obra: maiúscula só na primeira palavra e em nomes próprios  | APA 7 (site da APA)
+# Os modelos servem para conferência: quem monta a referência é o estilo CSL.
+# Negrito entre ** **, itálico entre * *.
+modelo, artigo: Sobrenome, A. A., & Sobrenome, B. B. (2020). Título do artigo. *Nome da Revista*, *10*(2), 1–15. https://doi.org/10.0000/xxxx  | APA 7 (site da APA)
+modelo, livro: Sobrenome, A. A. (2020). *Título do livro: Subtítulo* (2ª ed.). Editora. https://doi.org/10.0000/xxxx  | APA 7 (site da APA)

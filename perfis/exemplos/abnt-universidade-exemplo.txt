@@ -1,0 +1,24 @@
+# ==============================================================================
+# Exemplo de perfil personalizado (herança)
+#
+# Um perfil personalizado guarda só o que muda em relação ao original. Todas
+# as outras regras vêm do perfil ABNT. Quando o original ganhar uma revisão
+# nova, o Apud avisa, e você confere se as mudanças abaixo continuam valendo.
+#
+# A linha "herda de" diz o perfil original, a versão e a revisão sobre a qual
+# este foi feito. A situação (faculdade, escolha, desligada) também vem do
+# original, a não ser que você escreva outra.
+#
+# Este arquivo é só um exemplo; a versão 2 do Apud vai criar perfis assim por
+# um formulário. Ele fica na pasta exemplos/ para não aparecer no programa.
+# ==============================================================================
+
+perfil: ABNT – Universidade Exemplo
+herda de: ABNT 2025, revisão 1
+revisão: 1
+data da revisão: 20/11/2026
+nota da revisão: Fonte Arial, recuo de 1,5 cm e prenomes abreviados, como pede o manual da Universidade Exemplo.
+
+família da fonte: Arial                | Manual de normalização da Universidade Exemplo (2025)
+recuo de parágrafo: 1,5 cm             | Manual de normalização da Universidade Exemplo (2025)
+referências, prenomes: abreviados      | Manual de normalização da Universidade Exemplo (2025)

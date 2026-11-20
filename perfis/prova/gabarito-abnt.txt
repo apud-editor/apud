@@ -1,0 +1,57 @@
+# Gabarito do documento de prova: ABNT 2025, revisão 1
+#
+# Como cada chamada do documento de prova deve sair, e a lista de referências
+# completa, na ordem. O comando “npm run prova” compara a saída com este arquivo.
+# Negrito entre ** **, itálico entre * *, sublinhado entre __ __.
+# Só mude este arquivo depois de conferir a mudança contra a norma.
+
+== Chamadas ==
+[@silva2019, p. 15]  →  (Silva, 2019, p. 15)
+@lima2018  →  Lima, Costa e Reis (2018)
+[@brasil2001]  →  (Brasil, 2001)
+[@abep2023]  →  (Associação Brasileira de Ensino de Psicologia, 2023)
+[@inpsi2011]  →  (INPSI, 2011)
+[@souza2020a; @souza2020b]  →  (Souza, 2020a, 2020b)
+[sem referência: Usuária A]  →  (Usuária A)
+[sem referência: R. Melo, comunicação pessoal, 3 de março de 2026]  →  (R. Melo, comunicação pessoal, 3 de março de 2026)
+[@costa2021, p. 12]  →  (Costa, 2021, p. 12)
+[@alves2022]  →  (Alves; Brito; Cunha; Dias, 2022)
+@alves2022 [p. 40]  →  Alves, Brito, Cunha e Dias (2022, p. 40)
+@dias2025 [p. 4]  →  Dias e Lopes (2025, p. 4)
+[@dias2025, p. 4]  →  (Dias; Lopes, 2025, p. 4)
+[@ferraz2024]  →  (Ferraz, 2024)
+[Freud, 1915 apud @costa2021, p. 12]  →  (Freud, 1915 *apud* Costa, 2021, p. 12)
+[@silvaj2021; @silvam2021]  →  (Silva, J., 2021; Silva, M., 2021)
+[@rudio2002; @rudio2003]  →  (Rudio, 2002, 2003)
+[@silva2019, p. 47, +grifo]  →  (Silva, 2019, p. 47, grifo nosso)
+[@smith2019, p. 4, +tradução]  →  (Smith, 2019, p. 4, tradução nossa)
+[@garcia2015, local. 7]  →  (Garcia, 2015, local. 7)
+[@morais2024]  →  (Morais, 2024)
+[@guia2025, p. 3]  →  (Guia [...], 2025, p. 3)
+[@moura201x]  →  (Moura, [201-?])
+[@pinto2017; @nunes2016]  →  (Nunes, 2016; Pinto, 2017)
+[@lima2018; @silva2019]  →  (Lima; Costa; Reis, 2018; Silva, 2019)
+
+== Referências ==
+ALVES, Ana Maria; BRITO, Bruno; CUNHA, Carla; DIAS, Davi. **Avaliação psicológica**. São Paulo: Summus, 2022.
+ASSOCIAÇÃO BRASILEIRA DE ENSINO DE PSICOLOGIA. **Diretrizes para o estágio em psicologia**. Brasília: ABEP, 2023.
+BRASIL. Lei nº 10.216, de 6 de abril de 2001. Dispõe sobre a proteção e os direitos das pessoas portadoras de transtornos mentais e redireciona o modelo assistencial em saúde mental. Brasília, DF: Presidência da República, 2001. Disponível em: https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm. Acesso em: 15 maio 2025.
+COSTA, Helena. O acolhimento no serviço de saúde mental. *In*: MELO, Rui; NUNES, Sara (org.). **Psicologia e saúde coletiva**: práticas no SUS. Porto Alegre: Artmed, 2021. p. 9-30.
+DIAS, Eva; LOPES, Ivo. Vínculo terapêutico na atenção psicossocial. **Psicologia em Estudo**, Maringá, v. 10, n. 2, p. 1-15, mar. 2025. DOI: 10.0000/pe.2025.0102. Disponível em: https://doi.org/10.0000/pe.2025.0102. Acesso em: 15 maio 2025.
+FERRAZ, Lia. Grupos terapêuticos com adolescentes. **Revista Brasileira de Psicoterapia**, Porto Alegre, v. 26, e2024017, 2024.
+GARCIA, Paulo. **Terapia cognitiva**. Novo Hamburgo: Sinopsys, 2015.
+GUIA de normalização de trabalhos acadêmicos. Curitiba: Editora Universitária, 2025.
+INPSI. **Censo da psicologia no Brasil**. Rio de Janeiro: INPSI, 2011.
+LIMA, Ana; COSTA, Bruno; REIS, Carla. **Saúde mental na atenção básica**. Porto Alegre: Artmed, 2018.
+MORAIS, Tânia. **Saúde mental de estudantes universitários**. São Paulo: Portal Psicologia Hoje, 2 maio 2024. Disponível em: https://psicologiahoje.example.org/saude-mental-estudantes. Acesso em: 15 maio 2025.
+MOURA, Lúcia. **Memórias do hospício**. *[S. l.]*: Livraria Central, [201-?].
+NUNES, Teresa. **Diário de campo**. *[S. l.: s. n.]*, 2016.
+PINTO, Rosa. **Cartas a uma jovem terapeuta**. Recife: *[s. n.]*, 2017.
+RUDIO, Franz. **Introdução ao projeto de pesquisa**. Petrópolis: Vozes, 2002.
+RUDIO, Franz. **Orientação não diretiva**. Petrópolis: Vozes, 2003.
+SILVA, João Pedro. **Psicologia clínica**: fundamentos e prática. 2. ed. Petrópolis: Vozes, 2019.
+SILVA, José. **Psicopatologia descritiva**. Barueri: Manole, 2021.
+SILVA, Marta. **Psicoterapia breve**. Barueri: Manole, 2021.
+SMITH, John. **Clinical supervision in practice**. New York: Northfield Press, 2019.
+SOUZA, Maria. **Clínica ampliada**. São Paulo: Hucitec, 2020a.
+SOUZA, Maria. **Escuta qualificada**. São Paulo: Hucitec, 2020b.
