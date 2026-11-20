@@ -21,9 +21,9 @@
 
 perfil: APA
 versão: 7
-revisão: 2
+revisão: 3
 data da revisão: 20/11/2026
-nota da revisão: Nova escolha: primeira citação com três a cinco autores (et al. ou todos os autores), para revistas que pedem.
+nota da revisão: Novos tipos de referência (tese, relatório, trabalho em evento, notícia, rede social) e duas escolhas de revista: prenomes por extenso e cidade da editora.
 
 == APA 7: página, estrutura e títulos ==
 # A APA tem dois modos. O trabalho começa no modo estudante e passa para o
@@ -146,9 +146,19 @@ referências, ordem: alfabética pelo sobrenome do primeiro autor  | APA 7 (site
 # Exemplo: Sanders, F. A., & Jang, T. D.
 referências, autor: Sobrenome, iniciais com ponto        | APA 7 (site da APA)
 referências, antes do último autor: &                    | APA 7 (site da APA)
+# Fora do checklist: regras de revista (APA 6), registradas em 20/11/2026.
+# Exemplo com as duas ligadas: Silva, Maria Lucia. (2009). *Trabalho e população*. São Paulo: Cortez.
+referências, prenomes: iniciais                          | APA 7 (site da APA); por extenso é pedido por revistas | escolha: iniciais, por extenso
+referências, cidade da editora: não mostrar              | APA 7 (site da APA); mostrar é pedido por revistas | escolha: não mostrar, mostrar
 referências, quantos autores: até 20, todos; com 21 ou mais, os 19 primeiros, reticências e o último  | APA 7 (site da APA)
 referências, título da obra: maiúscula só na primeira palavra e em nomes próprios  | APA 7 (site da APA)
 # Os modelos servem para conferência: quem monta a referência é o estilo CSL.
 # Negrito entre ** **, itálico entre * *.
 modelo, artigo: Sobrenome, A. A., & Sobrenome, B. B. (2020). Título do artigo. *Nome da Revista*, *10*(2), 1–15. https://doi.org/10.0000/xxxx  | APA 7 (site da APA)
 modelo, livro: Sobrenome, A. A. (2020). *Título do livro: Subtítulo* (2ª ed.). Editora. https://doi.org/10.0000/xxxx  | APA 7 (site da APA)
+# Tipos acrescentados em 20/11/2026, a partir de dois artigos reais.
+modelo, tese: Sobrenome, A. A. (2017). *Título: Subtítulo* [Tese de doutorado, Universidade]. https://exemplo.org  | APA 7 (site da APA: tese publicada)
+modelo, relatório: Sobrenome, A. A. (2023). *Título* (Nota Técnica nº 103). Editora. https://exemplo.org  | APA 7 (site da APA: relatório)
+modelo, trabalho em evento: Sobrenome, A. A., & Sobrenome, B. B. (2024). Título do trabalho. Em *Anais do Evento* (p. 15–30). Editora. https://exemplo.org  | APA 7 (site da APA: anais publicados como livro)
+modelo, notícia: Título da notícia. (2024, 3 de julho). *Nome do Jornal*. https://exemplo.org  | APA 7 (site da APA: artigo de jornal)
+modelo, rede social: Sobrenome, A. A. [@perfil]. (2025, 16 de fevereiro). *Texto da postagem* [Vídeo]. Instagram. https://exemplo.org  | APA 7 (site da APA: Instagram)

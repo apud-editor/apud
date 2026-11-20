@@ -87,8 +87,15 @@ export function aplicarPerfilNoCsl(csl: string, perfil: PerfilResolvido, esquema
       cursor += etiqueta[0].length;
     } else if (ligacao.tipo === "atributos") {
       const opcao = regra.valor.tipo === "opcao" ? regra.valor.valor : regra.texto;
-      const mudancas = ligacao.porOpcao[opcao];
-      if (!mudancas) throw new Error(`a opção “${opcao}” de “${chave}” não tem ajuste no CSL`);
+      const todas = ligacao.porOpcao[opcao];
+      if (!todas) throw new Error(`a opção “${opcao}” de “${chave}” não tem ajuste no CSL`);
+      // "citation@atributo" só vale na etiqueta <citation>.
+      const elemento = abertura.match(/^<([\w:-]+)/)![1];
+      const mudancas: Record<string, string | null> = {};
+      for (const [nome, valor] of Object.entries(todas)) {
+        const [alvo, atributo] = nome.includes("@") ? nome.split("@") : [elemento, nome];
+        if (alvo === elemento) mudancas[atributo] = valor;
+      }
       resultado += espaco + ajustarAtributos(abertura, mudancas);
       cursor += etiqueta[0].length;
     } else if (ligacao.tipo === "meses") {

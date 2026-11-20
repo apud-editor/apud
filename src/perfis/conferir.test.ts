@@ -43,7 +43,7 @@ function personalizado(texto: string) {
 }
 
 const FICHA = `perfil: ABNT – Universidade X
-herda de: ABNT 2025, revisão 2
+herda de: ABNT 2025, revisão 3
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: teste
@@ -59,8 +59,8 @@ describe("perfis originais", () => {
       ESTILOS,
     );
     for (const r of resultados) expect(r.mensagens.map(formatarMensagem)).toEqual([]);
-    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 2 });
-    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 2 });
+    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 3 });
+    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 3 });
   });
 
   it("guarda os valores já entendidos", () => {
@@ -239,7 +239,7 @@ describe("perfis personalizados (herança)", () => {
       perfil: "ABNT – Universidade X",
       norma: "ABNT",
       versao: "2025",
-      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 2 },
+      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 3 },
     });
   });
 
@@ -251,11 +251,11 @@ describe("perfis personalizados (herança)", () => {
   });
 
   it("avisa quando o original mudou de revisão", () => {
-    const r = personalizado(FICHA.replace("revisão 2", "revisão 3"));
+    const r = personalizado(FICHA.replace("revisão 3", "revisão 4"));
     expect(r.perfil).toBeDefined();
     expect(r.mensagens.map(formatarMensagem)).toEqual([
-      "aviso, linha 2: este perfil foi feito sobre a revisão 3 de ABNT 2025, e o original está na revisão 2 " +
-        "(“A posição do número da página passa a depender da faculdade (no alto, à direita, continua o padrão).”). " +
+      "aviso, linha 2: este perfil foi feito sobre a revisão 4 de ABNT 2025, e o original está na revisão 3 " +
+        "(“Novos tipos de referência: tese, relatório (nota técnica), trabalho em evento, notícia e rede social.”). " +
         "Confira se as suas mudanças continuam valendo e depois atualize o número em “herda de”.",
     ]);
   });

@@ -110,6 +110,8 @@ A supervisão clínica ajuda o estagiário a “sustentar o não saber diante do
 
 Na universidade, o sofrimento psíquico de estudantes tem crescido [@morais2024]. As normas de trabalhos acadêmicos também orientam como relatar essas experiências [@guia2025, p. 3]. Relatos antigos de internação ajudam a entender o modelo que a reforma superou [@moura201x], assim como cartas e diários de profissionais [@pinto2017; @nunes2016].
 
+A população em situação de rua cresceu na última década [@nogueira2023], e a proteção social a esse grupo ainda é frágil [@freitas2017]. Discursos de gestores circulam em redes sociais [@prado2025] e na imprensa [@abrigo2024], e já foram estudados em eventos científicos [@teles2024].
+
 # Considerações finais
 
 O estágio mostrou que o acolhimento é uma prática de toda a equipe [@lima2018; @silva2019].

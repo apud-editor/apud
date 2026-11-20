@@ -10,6 +10,12 @@
 #   uncertain-date   data incerta, já escrita: [2019?], [201-], [201-?]
 #   e-number         número eletrônico de artigo sem página
 #   parent.location  cidade da revista
+#   degree           grau da tese ou dissertação: "Doutorado em Psicologia"
+#   event            evento de um trabalho em anais: nome, número, ano e cidade
+#   handle           perfil na rede social: "@perfil"
+#
+# Prenomes que terminam em partícula ("Freitas, Lucas Moreira de") ficam com a
+# partícula no fim também nas iniciais da APA: Freitas, L. M. de.
 
 # Livro com um autor, subtítulo e edição.
 silva2019:
@@ -202,3 +208,59 @@ nunes2016:
   title: Diário de campo
   author: ["Nunes, Teresa"]
   date: 2016
+
+# Tese, com subtítulo, folhas e partícula no fim dos prenomes.
+freitas2017:
+  type: thesis
+  title: A proteção social à população em situação de rua
+  subtitle: entre o direito e a tutela
+  author: ["Freitas, Lucas Moreira de"]
+  date: 2017
+  genre: Tese
+  degree: Doutorado em Serviço Social
+  publisher: {name: Universidade Estadual de Londrina, location: Londrina}
+  page-total: 312
+  url: {value: "https://repositorio.example.org/freitas2017", date: 2026-05-20}
+
+# Nota técnica de uma série, com número.
+nogueira2023:
+  type: report
+  title: Estimativa da população em situação de rua no Brasil
+  author: ["Nogueira, Marcos"]
+  date: 2023
+  genre: Nota Técnica
+  serial-number: 103
+  publisher: {name: Instituto de Pesquisa Social, location: Brasília}
+
+# Notícia de jornal online, sem autor: entra pelo título.
+abrigo2024:
+  type: article
+  title: Abrigo municipal amplia vagas no inverno
+  date: 2024-07-03
+  parent: {type: newspaper, title: Jornal do Litoral, location: Itajaí}
+  url: {value: "https://jornaldolitoral.example.org/abrigo", date: 2024-07-03}
+
+# Trabalho em anais de evento, com páginas.
+teles2024:
+  type: article
+  title: Categorizações de pessoas em situação de rua
+  author: ["Teles, Luísa", "Andrade, Marcos"]
+  date: 2024
+  page-range: 15-30
+  event: {name: Seminário de Políticas Públicas, number: 20, date: 2024, location: Diamantina}
+  url: {value: "https://anais.example.org/teles2024.pdf", date: 2026-05-20}
+  parent:
+    type: proceedings
+    title: Anais do Seminário de Políticas Públicas
+    publisher: {name: Editora do Seminário, location: Belo Horizonte}
+
+# Postagem em rede social (vídeo no Instagram), com o perfil.
+prado2025:
+  type: post
+  title: "Acolhimento na orla: nossa equipe está nas ruas"
+  author: ["Prado, Juliana"]
+  handle: "@juprado"
+  date: 2025-02-16
+  genre: Vídeo
+  parent: {type: web, title: Instagram}
+  url: {value: "https://www.instagram.com/reel/exemplo/", date: 2026-05-20}

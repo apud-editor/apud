@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { compararComGabarito, lerGabarito, rodarProva } from "../../scripts/prova-lib";
 import { encontrarChamadas } from "./chamadas";
-import { primeirasPalavras } from "./preparar";
+import { designacaoDosAnais, primeirasPalavras } from "./preparar";
 
 describe("leitura das chamadas", () => {
   it("reconhece cada tipo de chamada", () => {
@@ -33,6 +33,14 @@ describe("leitura das chamadas", () => {
 
   it("não confunde colchetes de supressão nem endereços de e-mail", () => {
     expect(encontrarChamadas("“O cuidado [...] é ético” e escreva para ana@exemplo.org.")).toEqual([]);
+  });
+});
+
+describe("anais de evento (ABNT)", () => {
+  it("mostra só a designação dos anais, e avisa quando cortou o resto", () => {
+    expect(designacaoDosAnais("Anais do Seminário de Diamantina")).toEqual({ designacao: "Anais", cortou: true });
+    expect(designacaoDosAnais("Anais eletrônicos da Reunião Anual")).toEqual({ designacao: "Anais eletrônicos", cortou: true });
+    expect(designacaoDosAnais("Proceedings")).toEqual({ designacao: "Proceedings", cortou: false });
   });
 });
 
@@ -83,6 +91,26 @@ describe("documento de prova no Typst", () => {
     expect(saidas("[@dias2025, p. 4]")).toEqual(["(Dias & Lopes, 2025, p. 4)"]);
     // A lista de referências continua igual.
     expect(r.referencias).toEqual(lerGabarito("gabarito-apa.txt").referencias);
+  });
+
+  it("APA com prenomes por extenso e cidade da editora, como pedem algumas revistas", () => {
+    const r = rodarProva("apa.txt", {
+      "referências, prenomes": "por extenso",
+      "referências, cidade da editora": "mostrar",
+    });
+    const chamada = (escrita: string) => r.chamadas.find((c) => c.escrita === escrita)?.saida;
+    // Na lista, por extenso; no texto, iniciais para desempatar (J. Pavan, 2025a).
+    expect(r.referencias).toContain("Silva, João Pedro. (2019). *Psicologia clínica: Fundamentos e prática* (2ª ed.). Petrópolis: Vozes.");
+    expect(r.referencias).toContain("Silva, José. (2021). *Psicopatologia descritiva*. Barueri: Manole.");
+    expect(chamada("[@silva2019, p. 15]")).toBe("(J. P. Silva, 2019, p. 15)");
+    expect(chamada("[@silvaj2021; @silvam2021]")).toBe("(J. Silva, 2021; M. Silva, 2021)");
+    expect(chamada("@lima2018")).toBe("Lima et al. (2018)");
+    expect(chamada("[@dias2025, p. 4]")).toBe("(Dias & Lopes, 2025, p. 4)");
+    // A cidade entra em livros, relatórios e no livro dos capítulos e anais; não em teses e sites.
+    expect(r.referencias).toContain(
+      "Costa, Helena. (2021). O acolhimento no serviço de saúde mental. Em Rui Melo & Sara Nunes (Orgs.), *Psicologia e saúde coletiva: Práticas no SUS* (p. 9–30). Porto Alegre: Artmed.",
+    );
+    expect(r.referencias.find((x) => x.startsWith("Freitas"))).toContain("[Tese de doutorado, Universidade Estadual de Londrina]");
   });
 
   it("APA sem a escolha: et al. desde a primeira citação", () => {
