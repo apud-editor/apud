@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 3
+revisão: 4
 data da revisão: 20/11/2026
-nota da revisão: Novos tipos de referência: tese, relatório (nota técnica), trabalho em evento, notícia e rede social.
+nota da revisão: Regras para o Apud montar as citações: intervalo de páginas, obra sem data e título da lista de referências.
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -192,6 +192,9 @@ citação, órgão de governo: pela jurisdição ou órgão superior   | NBR 105
 citação, página na citação direta: obrigatória                 | NBR 10520:2023 (FZEA-USP; UFC)
 citação, página na citação indireta: opcional                  | NBR 10520:2023 (FZEA-USP; UFC)
 citação, rótulo da página: p.                                  | NBR 10520:2023 (FZEA-USP; UFC)
+# Acrescentadas na revisão 4 (20/11/2026): intervalo de páginas, como em (Silva, 2019, p. 4-5).
+citação, rótulo de várias páginas: p.                          | NBR 10520:2023 (UFC)
+citação, traço entre páginas: -                                | NBR 10520:2023 (UFC)
 # Quando não há página. Exemplo: (Garcia, 2015, local. 7)
 citação, outros localizadores: cap., art., slide, min, local.  | NBR 10520:2023 (Furb)
 citação curta, até: 3 linhas                                   | NBR 10520:2023 (UFC)
@@ -220,6 +223,9 @@ autores, quatro ou mais: todos                                 | NBR 10520:2023 
 citação, mesmo sobrenome e ano: acrescentar iniciais           | NBR 10520:2023 (UFC)
 # Exemplo: (Souza, 2020a) e (Souza, 2020b). Citadas juntas: (Souza, 2020a, 2020b).
 citação, mesmo autor e ano: letras depois do ano               | NBR 10520:2023 (UFC)
+# A NBR 6023 pede a data provável entre colchetes ([2019?]) quando não há data.
+# Enquanto a pessoa não escreve a data, a chamada mostra este marcador, e o Apud avisa.
+citação, sem data, marcador: s.d.                              | decisão de 20/11/2026: o Apud monta e avisa
 # Exemplo: (Rudio, 2002, 2003)
 citação, mesmo autor em anos diferentes: anos separados por vírgula  | NBR 10520:2023 (UFC)
 # Exemplo: (Ferreira, 2006; Silva, 2007)
@@ -238,6 +244,8 @@ expressões latinas, destaque: itálico                          | NBR 10520:202
 sistema numérico, com notas explicativas: não pode             | NBR 10520:2023 (UFC) | desligada
 
 == ABNT: referências ==
+# Título da lista, que o Apud escreve sozinho no fim do trabalho (revisão 4).
+rótulo das referências: REFERÊNCIAS                       | NBR 14724:2024 (UFV 2026)
 referências, alinhamento: à esquerda                     | NBR 6023:2025 (UFRB)
 referências, entre uma e outra: 1 linha em branco        | NBR 6023:2025 (UFRB)
 referências, ordem: alfabética pelo sobrenome do primeiro autor  | NBR 6023:2025 (UFV 2026)

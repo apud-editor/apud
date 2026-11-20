@@ -47,5 +47,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: documento-de-prova
-          path: perfis/prova/saida/*.pdf
+          path: |
+            perfis/prova/saida/*.pdf
+            perfis/prova/saida/*.apud
           if-no-files-found: ignore

@@ -97,7 +97,7 @@ Um perfil personalizado guarda só o que muda e herda o resto do original. Veja
 
 ```
 perfil: ABNT – Universidade Exemplo
-herda de: ABNT 2025, revisão 3
+herda de: ABNT 2025, revisão 4
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: Fonte Arial e recuo de 1,5 cm, como pede o manual.
@@ -118,18 +118,26 @@ recuo de parágrafo: 1,5 cm      | Manual da Universidade Exemplo (2025)
 `prova/documento-de-prova.md` é um trabalho de exemplo que usa todas as regras:
 títulos dos 5 níveis, alíneas, nota, figura, tabela, citação curta e longa,
 cada tipo de chamada e cada tipo de referência. As referências estão em
-`prova/referencias.yml`. As obras são fictícias, menos a Lei nº 10.216.
-
-`prova/referencias.json` tem as mesmas obras no formato que o Apud grava no
-arquivo .apud. Um teste confere que as duas versões dizem a mesma coisa: se
-mudar uma, mude a outra.
+`prova/referencias.json`, no mesmo formato que o Apud grava no arquivo .apud.
+As obras são fictícias, menos a Lei nº 10.216.
 
 `prova/gabarito-abnt.txt` e `prova/gabarito-apa.txt` dizem como cada chamada e
-cada referência devem sair. O comando `npm run prova` monta o documento no
-Typst (o motor de PDF do Apud) e compara.
+cada referência devem sair. O comando `npm run prova` transforma o documento
+num trabalho do Apud, monta as chamadas com o motor de citações do Apud e a
+lista com o estilo CSL, no Typst (o motor de PDF), e compara com o gabarito.
 
-Hoje o teste confere as chamadas e as referências. A página inteira (margens,
-títulos, capa) passa a ser conferida quando o conversor para PDF existir.
+O comando também grava, em `prova/saida/`:
+
+- `prova-abnt.pdf` e `prova-apa.pdf`: só as chamadas, numeradas, e a lista;
+- `documento-de-prova-abnt.pdf`: o trabalho inteiro, montado pelo conversor do
+  Apud, com as citações no texto e a lista no fim (a APA entra quando o
+  conversor aplicar o perfil APA);
+- `documento-de-prova.apud`: o mesmo trabalho, para abrir no Apud (copie para
+  a pasta Documentos\Apud).
+
+O editor ainda não tem notas de rodapé, figuras, tabelas e citação longa
+(fase 3). Até lá, o documento de prova deixa as três primeiras de fora e põe a
+citação longa como parágrafo comum.
 
 Depois de mudar um perfil **de propósito**, a comparação vai mostrar as
 diferenças. Confira cada uma contra a norma. Se estiverem certas, grave o novo
@@ -166,9 +174,16 @@ Mais duas escolhas de revista ficam no perfil da APA, com o padrão da APA 7:
 Os dois estilos montam livro, capítulo, artigo, site, lei, tese ou
 dissertação, relatório de uma série (como uma nota técnica), trabalho em anais
 de evento, notícia de jornal e postagem em rede social. Cada tipo tem uma linha
-`modelo, ...` no perfil. Os campos que o Apud acrescenta aos dados (grau da
-tese, evento, perfil na rede social) estão explicados no começo de
-`prova/referencias.yml`.
+`modelo, ...` no perfil. Os campos de cada tipo (grau da tese, evento, perfil
+na rede social) estão explicados em `src/documento/referencias.ts`, e o
+`prova/referencias.json` tem um exemplo de cada tipo.
+
+## Quem monta as citações
+
+As chamadas no texto, como (Silva, 2019, p. 15) ou Lima, Costa e Reis (2018),
+são montadas pelo próprio Apud, com as regras `citação, ...` do perfil. O
+estilo CSL monta só a lista de referências. Por isso uma regra de citação
+nova (como o `pp.` da APA para várias páginas) entra no perfil, e não no CSL.
 
 ## Licença dos estilos CSL
 

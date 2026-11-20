@@ -2,11 +2,13 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Documento } from "../documento/modelo";
 import { documentoParaTypst } from "../conversor/typst";
 import { motor } from "../conversor/motor";
-import { perfilAbnt } from "../perfis/embutidos";
+import type { NormaDoTrabalho } from "../perfis/norma";
 import { rodandoNoPrograma } from "../arquivos/armazenamento";
 
 interface Props {
   lerTexto: React.MutableRefObject<(() => Documento) | null>;
+  /** A norma do trabalho (perfil com os ajustes e estilo CSL), lida a cada montagem. */
+  lerNorma: React.MutableRefObject<() => NormaDoTrabalho>;
   /** Avisa quando o texto muda (a prévia espera uma pausa e remonta). */
   mudancas: EventTarget;
   nome: string;
@@ -14,7 +16,7 @@ interface Props {
 }
 
 /** A prévia do PDF: as páginas de verdade, montadas pelo mesmo motor da exportação. */
-export default function Previa({ lerTexto, mudancas, nome, aoFechar }: Props) {
+export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }: Props) {
   const [svg, setSvg] = useState<string | null>(null);
   const [situacao, setSituacao] = useState<"montando" | "pronta" | "erro">("montando");
   const [erro, setErro] = useState("");
@@ -69,8 +71,8 @@ export default function Previa({ lerTexto, mudancas, nome, aoFechar }: Props) {
       ocupado.current = true;
       setSituacao((s) => (s === "pronta" ? s : "montando"));
       try {
-        const perfil = perfilAbnt();
-        const pronto = await motor.previa(documentoParaTypst(ler(), perfil, { titulo: nomeRef.current }));
+        const { perfil, csl } = lerNorma.current();
+        const pronto = await motor.previa(documentoParaTypst(ler(), perfil, { titulo: nomeRef.current, csl }));
         if (!ativo) return;
         setSvg(pronto);
         setSituacao("pronta");
@@ -100,7 +102,7 @@ export default function Previa({ lerTexto, mudancas, nome, aoFechar }: Props) {
       clearTimeout(relogio);
       mudancas.removeEventListener("mudou", aoMudar);
     };
-  }, [lerTexto, mudancas]);
+  }, [lerTexto, lerNorma, mudancas]);
 
   return (
     <aside className="previa" aria-label="Prévia do PDF">

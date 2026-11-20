@@ -8,7 +8,8 @@ import { registrarAntesDeSair } from "./sair";
 import Previa from "./Previa";
 import { documentoParaTypst } from "../conversor/typst";
 import { motor } from "../conversor/motor";
-import { perfilAbnt } from "../perfis/embutidos";
+import { normaEmbutida } from "../perfis/embutidos";
+import type { NormaDoTrabalho } from "../perfis/norma";
 
 interface Props {
   arquivo: string;
@@ -24,6 +25,15 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   // As referências não passam pelo editor: ficam aqui, e o documento é montado
   // na hora de gravar. Assim, nada que aconteça no editor apaga uma referência.
   const referencias = useRef<Referencia[]>(trabalho.documento.referencias);
+  // A norma do trabalho, com os ajustes que ele guarda para ela (escolhas do autor).
+  const norma = useRef<NormaDoTrabalho | null>(null);
+  const lerNorma = useRef<() => NormaDoTrabalho>(() => {
+    if (!norma.current) {
+      const nome = trabalho.perfil.perfil;
+      norma.current = normaEmbutida(nome, trabalho.ajustes[nome] ?? {});
+    }
+    return norma.current;
+  });
   /** O documento inteiro, como vai para o arquivo e para o PDF. */
   const lerDocumento = useRef<() => Documento>(() => {
     // Se o editor não estiver disponível, usa o último texto lido: nunca grava um texto vazio por engano.
@@ -105,7 +115,8 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
     setProblema(null);
     setExportado(null);
     try {
-      const pdf = await motor.pdf(documentoParaTypst(lerDocumento.current(), perfilAbnt(), { titulo: nomeSalvo.current }));
+      const { perfil, csl } = lerNorma.current();
+      const pdf = await motor.pdf(documentoParaTypst(lerDocumento.current(), perfil, { titulo: nomeSalvo.current, csl }));
       const onde = await armazenamento.exportarPdf(`${nomeSalvo.current}.pdf`, pdf);
       if (onde) setExportado(onde);
     } catch (e) {
@@ -221,7 +232,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
           </button>
         }
         lateral={
-          previaAberta ? <Previa lerTexto={lerDocumento} mudancas={mudancas} nome={nome} aoFechar={() => setPreviaAberta(false)} /> : null
+          previaAberta ? <Previa lerTexto={lerDocumento} lerNorma={lerNorma} mudancas={mudancas} nome={nome} aoFechar={() => setPreviaAberta(false)} /> : null
         }
       />
     </div>

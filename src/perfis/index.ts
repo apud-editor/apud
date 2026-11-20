@@ -3,6 +3,7 @@
 export { conferirPerfis, type Arquivo, type ResultadoDaConferencia } from "./conferir";
 export { aplicarPerfilNoCsl } from "./csl";
 export { ajustarParaTrabalho, regrasAjustaveis } from "./ajustes";
+export { normaDoTrabalho, type NormaDoTrabalho } from "./norma";
 export { ESQUEMAS } from "./normas";
 export { formatarMensagem, nomeCompleto } from "./tipos";
 export type { Mensagem, PerfilResolvido, Regra, Situacao, Valor } from "./tipos";

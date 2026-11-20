@@ -45,7 +45,7 @@ function anoDaDataIncerta(texto: string): number | undefined {
 }
 
 /** Partículas que ficam no fim dos prenomes: "Oliveira, Lucas Freitas de". */
-const PARTICULAS = new Set(["de", "da", "do", "das", "dos", "e", "d'"]);
+export const PARTICULAS = new Set(["de", "da", "do", "das", "dos", "e", "d'"]);
 
 /**
  * "Oliveira, Lucas Freitas de" vira um nome com a partícula separada. Sem

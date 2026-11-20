@@ -10,14 +10,20 @@
 // ela escreveu ("1.1 Contexto") e a página nova só acontece onde ela pôs uma
 // quebra de página.
 //
+// Citações e referências (fase 2): cada citação é montada pelo motor de
+// citações (citacoes/motor.ts) com as regras do perfil, e uma marca invisível
+// põe a obra na lista. A lista de referências sai no fim, montada pelo estilo
+// CSL dentro do Typst, só com as obras citadas.
+//
 // Entrelinhas como no Word: no Word, a linha "simples" mede 1,15 vez o tamanho
 // da fonte (Times 12 pt = 13,8 pt), e 1,5 linha mede 1,5 vez isso (20,7 pt).
 // Aqui, cada linha é uma caixa de 1,15 em, e o espaço entre as caixas completa
 // o resto.
 
-import { ehCitacao, type Bloco, type Documento, type ItemDeLista, type Trecho } from "../documento/modelo";
+import { ehCitacao, type Bloco, type Documento, type ItemDeLista, type Trecho, type TrechoDeTexto } from "../documento/modelo";
 import { separarNumero } from "../documento/estrutura";
 import type { PerfilResolvido, Valor } from "../perfis";
+import { criarMotor, temGrifo, type Motor, type Pedaco } from "../citacoes/motor";
 
 /** Altura da linha simples, em "em" (vezes o tamanho da fonte), como no Word. */
 const LINHA_SIMPLES = 1.15;
@@ -25,13 +31,24 @@ const LINHA_SIMPLES = 1.15;
 export interface OpcoesDoConversor {
   /** Nome do trabalho, que vai para as propriedades do PDF. */
   titulo?: string;
+  /**
+   * O estilo CSL da norma (perfis/norma.ts), que monta a lista de referências.
+   * Obrigatório quando o texto tem citações.
+   */
+  csl?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Leitura das regras do perfil
 
 class Regras {
-  constructor(private perfil: PerfilResolvido) {}
+  constructor(readonly perfil: PerfilResolvido) {}
+
+  /** O texto de uma regra, ou undefined se o perfil não tem a regra. */
+  talvez(chave: string): string | undefined {
+    const r = this.perfil.regras.get(chave);
+    return r && r.situacao.tipo !== "desligada" ? r.texto : undefined;
+  }
 
   private valor(chave: string): Valor {
     const r = this.perfil.regras.get(chave);
@@ -178,31 +195,125 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   l(`})))`);
   l();
 
+  // As citações são montadas na ordem do texto (algumas regras dependem da primeira citação).
+  const motor = criarMotor(doc, perfil);
+  const escrita: Escrita = { motor, enfase: enfaseDepoisDoDestaque(r) };
   for (const b of doc.blocos) {
-    const s = blocoParaTypst(b, { recuoAlinea, recuoSub });
+    const s = blocoParaTypst(b, { recuoAlinea, recuoSub }, escrita);
     if (s) l(s);
+  }
+
+  if (motor.citadas.length) {
+    if (!opcoes.csl) throw new Error("falta o estilo CSL da norma para montar a lista de referências");
+    l(listaDeReferencias(motor, r, opcoes.csl, { entre, passoSimples: `${numero(LINHA_SIMPLES)}em` }));
   }
   return linhas.join("\n") + "\n";
 }
 
-function blocoParaTypst(b: Bloco, recuos: { recuoAlinea: string; recuoSub: string }): string {
+// ---------------------------------------------------------------------------
+// Referências
+
+/**
+ * O título e a lista de referências, no fim do trabalho. O título é escrito
+ * pelo Apud, como o perfil manda (ABNT: REFERÊNCIAS, centralizado, com o
+ * destaque do nível 1). A lista vem do CSL, com espaço simples e uma linha em
+ * branco entre as referências (ABNT).
+ */
+function listaDeReferencias(motor: Motor, r: Regras, csl: string, medidas: { entre: string; passoSimples: string }): string {
+  const rotulo = r.talvez("rótulo das referências") ?? "Referências";
+  const centralizado = r.talvez("títulos sem número, alinhamento") === "centralizado";
+  const titulo = `heading(level: 1, numbering: none)[${escaparTexto(rotulo)}]`;
+  const simples = (r.talvez("espaço simples, onde") ?? "").includes("referências");
+  const linhasEmBranco = r.perfil.regras.get("referências, entre uma e outra")?.valor;
+  const branco = linhasEmBranco?.tipo === "quantidade" ? linhasEmBranco.numero : 0;
+  const entreLinhas = simples ? "0em" : medidas.entre;
+  const entreReferencias = simples
+    ? `${branco} * ${medidas.passoSimples}`
+    : `${medidas.entre} + ${branco} * ${medidas.passoSimples}`;
+  const justificar = r.talvez("referências, alinhamento") !== "à esquerda";
+  const dados = JSON.stringify(motor.referenciasDoTypst);
+  return [
+    centralizado ? `#align(center, ${titulo})` : `#${titulo}`,
+    `#{`,
+    `  set par(justify: ${justificar}, first-line-indent: 0pt, leading: ${entreLinhas}, spacing: ${entreReferencias})`,
+    `  set block(spacing: ${entreReferencias})`,
+    `  bibliography(bytes(${texto(dados)}), style: bytes(${texto(csl)}), title: none)`,
+    `}`,
+    "",
+  ].join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Texto e citações
+
+interface Escrita {
+  motor: Motor;
+  /** APA: a expressão "[ênfase adicionada]", que vai logo depois do trecho destacado. */
+  enfase?: string;
+}
+
+/** Na APA, o destaque seu vai dentro da citação, depois do trecho em itálico: "[ênfase adicionada]". */
+function enfaseDepoisDoDestaque(r: Regras): string | undefined {
+  if (r.talvez("citação, destaque seu, onde") !== "entre colchetes, depois do trecho destacado") return undefined;
+  const expressao = r.talvez("citação, destaque seu");
+  return expressao ? `[${expressao}]` : undefined;
+}
+
+/**
+ * Põe a expressão de destaque (APA) logo depois do último trecho em itálico
+ * antes de cada citação com grifo. Se não há trecho em itálico, nada muda.
+ */
+export function posicionarEnfase(trechos: Trecho[], enfase: string | undefined): Trecho[] {
+  if (!enfase || !trechos.some((t) => ehCitacao(t) && temGrifo(t.citacao))) return trechos;
+  const saida: Trecho[] = [];
+  let inicio = 0;
+  for (const t of trechos) {
+    if (ehCitacao(t)) {
+      if (temGrifo(t.citacao)) {
+        for (let j = saida.length - 1; j >= inicio; j--) {
+          const antes = saida[j];
+          if (!ehCitacao(antes) && antes.marcas?.includes("italico")) {
+            saida.splice(j + 1, 0, { texto: ` ${enfase}` } as TrechoDeTexto);
+            break;
+          }
+        }
+      }
+      saida.push(t);
+      inicio = saida.length;
+    } else {
+      saida.push(t);
+    }
+  }
+  return saida;
+}
+
+/** Os pedaços de uma citação no formato do Typst. */
+export function pedacosParaTypst(pedacos: Pedaco[]): string {
+  return pedacos.map((p) => (p.italico ? `#emph[${escaparTexto(p.texto)}]` : escaparTexto(p.texto))).join("");
+}
+
+/** Marca invisível que põe a obra na lista de referências. */
+export const registrar = (id: string) => `#cite(label(${texto(id)}), form: none)`;
+
+/** Se há algo escrito (texto ou citação), sem montar as citações. */
+const temConteudo = (trechos: Trecho[]) => trechos.some((t) => ehCitacao(t) || t.texto.trim());
+
+function blocoParaTypst(b: Bloco, recuos: { recuoAlinea: string; recuoSub: string }, e: Escrita): string {
   switch (b.tipo) {
     case "paragrafo": {
       // Parágrafos vazios não viram linhas em branco: o espaço é da norma, não da pessoa.
-      const corpo = trechosParaTypst(b.trechos);
-      return corpo.trim() ? `${corpo}\n` : "";
+      return temConteudo(b.trechos) ? `${trechosParaTypst(b.trechos, e)}\n` : "";
     }
     case "titulo": {
-      const corpo = trechosParaTypst(b.trechos);
-      if (!corpo.trim()) return "";
+      if (!temConteudo(b.trechos)) return "";
       // O número escrito pela pessoa vai como a "numeração" do título: assim ele fica
       // numa coluna própria (para o alinhamento) e, no futuro, também no sumário.
       const { numero, trechos } = numeroDoTitulo(b.trechos);
       const numeracao = numero ? `(..n) => ${texto(numero)}` : "none";
-      return `#heading(level: ${b.nivel}, numbering: ${numeracao})[${trechosParaTypst(trechos)}]\n`;
+      return `#heading(level: ${b.nivel}, numbering: ${numeracao})[${trechosParaTypst(trechos, e)}]\n`;
     }
     case "lista":
-      return listaParaTypst(b.itens, 0, recuos) + "\n";
+      return listaParaTypst(b.itens, 0, recuos, e) + "\n";
     case "quebra":
       // "weak": duas quebras seguidas não deixam uma página em branco.
       return "#pagebreak(weak: true)\n";
@@ -217,17 +328,22 @@ function numeroDoTitulo(trechos: Trecho[]): { numero: string; trechos: Trecho[] 
   return { numero, trechos: [{ ...trechos[0], texto: resto }, ...trechos.slice(1)] };
 }
 
-function listaParaTypst(itens: ItemDeLista[], nivel: number, recuos: { recuoAlinea: string; recuoSub: string }): string {
+function listaParaTypst(
+  itens: ItemDeLista[],
+  nivel: number,
+  recuos: { recuoAlinea: string; recuoSub: string },
+  e: Escrita,
+): string {
   const recuo = nivel === 0 ? recuos.recuoAlinea : `${recuos.recuoAlinea} + ${nivel} * ${recuos.recuoSub}`;
   const partes: string[] = [];
   let letra = 0;
   for (const item of itens) {
-    const corpo = trechosParaTypst(item.trechos);
-    if (corpo.trim()) {
+    if (temConteudo(item.trechos)) {
+      const corpo = trechosParaTypst(item.trechos, e);
       const marcador = nivel === 0 ? `[${letraDaAlinea(letra++)})]` : `[—]`;
       partes.push(`#alinea(${recuo}, ${marcador}, [${corpo}])`);
     }
-    if (item.subitens?.length) partes.push(listaParaTypst(item.subitens, nivel + 1, recuos));
+    if (item.subitens?.length) partes.push(listaParaTypst(item.subitens, nivel + 1, recuos, e));
   }
   return partes.join("\n");
 }
@@ -243,12 +359,14 @@ export function letraDaAlinea(i: number): string {
   return s;
 }
 
-function trechosParaTypst(trechos: Trecho[]): string {
-  return trechos
+/** O texto de um parágrafo, título ou item, com as citações montadas na norma. */
+function trechosParaTypst(trechos: Trecho[], e: Escrita): string {
+  return posicionarEnfase(trechos, e.enfase)
     .map((t) => {
-      // As citações são montadas pelo motor de citações (parte 2 da fase 2).
-      // Até lá, aparecem marcadas no PDF, para nunca sumirem sem aviso.
-      if (ehCitacao(t)) return escaparTexto("[citação]");
+      if (ehCitacao(t)) {
+        const c = e.motor.montar(t.citacao);
+        return c.obras.map(registrar).join("") + pedacosParaTypst(c.pedacos);
+      }
       let s = escaparTexto(t.texto);
       const m = t.marcas ?? [];
       if (m.includes("sobrescrito")) s = `#super[${s}]`;

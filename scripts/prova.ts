@@ -10,10 +10,15 @@
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { nomeCompleto } from "../src/perfis";
+import { documentoParaTypst } from "../src/conversor/typst";
+import { escreverArquivo } from "../src/arquivos/formato";
 import {
+  carregarNorma,
   carregarPerfil,
   compararComGabarito,
+  documentoDeProva,
   escreverGabarito,
   gerarPdf,
   lerGabarito,
@@ -30,6 +35,34 @@ const NORMAS = [
 
 let algumaDiferenca = false;
 mkdirSync(join(PASTA_PROVA, "saida"), { recursive: true });
+
+// O documento de prova como trabalho do Apud: dá para abrir no programa
+// (copie para Documentos\Apud) e para ver a página inteira no PDF.
+const { documento } = documentoDeProva();
+const agora = new Date().toISOString();
+writeFileSync(
+  join(PASTA_PROVA, "saida", "documento-de-prova.apud"),
+  escreverArquivo({
+    nome: "Documento de prova",
+    perfil: (({ perfil, versao, revisao }) => ({ perfil, versao, revisao }))(carregarPerfil("abnt.txt").perfil.identificacao),
+    ajustes: {},
+    criadoEm: agora,
+    modificadoEm: agora,
+    documento,
+  }),
+);
+// A página inteira pelo conversor do Apud. A APA entra quando o conversor aplicar o perfil APA (fase 2, parte 3).
+{
+  const { perfil, csl } = carregarNorma("abnt.txt");
+  const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "public", "fontes")] }] });
+  const r = compilador.compile({ mainFileContent: documentoParaTypst(documento, perfil, { titulo: "Documento de prova", csl }) });
+  if (!r.result) {
+    r.printDiagnostics();
+    throw new Error("o conversor não conseguiu montar o documento de prova");
+  }
+  writeFileSync(join(PASTA_PROVA, "saida", "documento-de-prova-abnt.pdf"), compilador.pdf(r.result));
+  console.log("Documento de prova inteiro, pelo conversor: perfis/prova/saida/documento-de-prova-abnt.pdf");
+}
 
 for (const norma of NORMAS) {
   const resultado = rodarProva(norma.perfil);
