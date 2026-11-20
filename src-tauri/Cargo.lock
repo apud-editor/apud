@@ -51,11 +51,16 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 name = "apud"
 version = "0.0.1"
 dependencies = [
+ "apud-arquivos",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
 ]
+
+[[package]]
+name = "apud-arquivos"
+version = "0.1.0"
 
 [[package]]
 name = "atk"

@@ -2,7 +2,7 @@
 
 Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplica a norma (ABNT ou APA) sozinha.
 
-**Estado atual:** fase 1 (esqueleto), primeira parte: o editor com títulos, parágrafos, listas, negrito, itálico, sobrescrito e a barra "/". Ainda não salva nem gera o PDF.
+**Estado atual:** fase 1 (esqueleto), partes 1 e 2: o editor (títulos, parágrafos, listas, negrito, itálico, sobrescrito e a barra "/"), o painel com a lista de trabalhos e o salvamento automático em arquivos .apud, na pasta Documentos\Apud. Ainda não gera o PDF.
 
 ## Como o projeto é organizado
 
@@ -15,6 +15,9 @@ Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplic
 | `.github/workflows/` | Receitas do GitHub: montar o instalador de Windows e rodar os testes |
 | `perfis/` | Perfis de norma (ABNT e APA), estilos de citação e documento de prova. Guia em `perfis/LEIA-ME.md` |
 | `src/documento/` | O modelo do documento: como o Apud guarda um trabalho (blocos com significado, sem formatação) |
+| `src/arquivos/` | O formato do arquivo .apud (texto JSON legível), o salvamento automático e a ponte com o disco |
+| `src/telas/` | As telas: o painel com a lista de trabalhos e a tela do trabalho |
+| `src-tauri/arquivos/` | Gravação segura dos arquivos no disco (Rust), com testes próprios: `cargo test` nesta pasta |
 | `src/editor/` | O editor de texto (TipTap): blocos aceitos, barra "/", colagem sem formatação e a tela |
 | `src/perfis/` | Leitura e conferência dos perfis, com as mensagens de erro em português |
 | `src/citacoes/` | Primeiro pedaço do motor de citações: prepara as referências e monta as chamadas |
@@ -36,7 +39,8 @@ npm install        # instala as dependências
 npm run dev        # abre a interface no navegador (modo de prévia)
 npm run tauri dev  # abre o programa de computador (precisa de Rust instalado)
 npm run build      # confere e compila a interface
-npm test           # testes (perfis, cobertura do checklist, documento de prova)
+npm test           # testes (perfis, cobertura do checklist, documento de prova, editor, arquivos)
+cargo test --manifest-path src-tauri/arquivos/Cargo.toml  # testes da gravação dos arquivos
 npm run conferir-perfis  # confere os perfis da pasta perfis/
 npm run prova      # documento de prova no Typst, comparado com os gabaritos
 ```

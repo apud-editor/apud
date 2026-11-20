@@ -29,7 +29,11 @@ jobs:
       - name: Testes
         run: npm test
 
-      # 3. Documento de prova: compara com os gabaritos e gera os PDFs.
+      # 3. Gravação dos arquivos .apud (módulo em Rust, sem precisar do Windows).
+      - name: Testes da gravação dos arquivos
+        run: cargo test --manifest-path src-tauri/arquivos/Cargo.toml
+
+      # 4. Documento de prova: compara com os gabaritos e gera os PDFs.
       - name: Documento de prova
         run: npm run prova
 

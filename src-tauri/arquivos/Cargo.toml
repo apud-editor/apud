@@ -1,0 +1,9 @@
+[package]
+name = "apud-arquivos"
+version = "0.1.0"
+description = "Leitura e gravação segura dos arquivos .apud"
+edition = "2021"
+
+# Sem dependências: só a biblioteca padrão do Rust. Assim este módulo é
+# testado sozinho (cargo test), sem precisar do Tauri nem do Windows.
+[dependencies]
