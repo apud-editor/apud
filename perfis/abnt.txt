@@ -49,6 +49,8 @@ numeração de página, posição: canto superior direito          | NBR 14724:2
 numeração de página, distância das bordas: 2 cm               | NBR 14724:2024 (UFV 2026)
 # Só vale na impressão frente e verso.
 página no verso, posição do número: canto superior esquerdo   | NBR 14724:2024 (UFV 2026) | faculdade
+# Fica a critério da pessoa (decisão de 20/11/2026): o Apud não põe página nova
+# sozinho; a pessoa insere a quebra de página onde quiser (Ctrl+Enter).
 seção primária, página nova: sim                              | NBR 14724:2024 (Unesp)
 seção primária, em frente e verso: página ímpar               | NBR 14724:2024 (Unesp)
 ficha catalográfica, contada: não                             | NBR 14724:2024 (Unesp) | desligada
@@ -142,6 +144,8 @@ sumário, elementos pré-textuais: não entram                 | NBR 6027:2012 (
 
 == ABNT: títulos e numeração ==
 # Exemplo: 2.1 Método
+# A pessoa escreve o número no começo do título (decisão de 20/11/2026). O Apud
+# não numera sozinho; só alinha as linhas seguintes sob a primeira letra do texto.
 títulos, números: arábicos                                | NBR 6024:2012 (UFSCar)
 títulos, níveis: 5 níveis                                 | NBR 6024:2012 (UFSCar)
 títulos, entre número e título: um espaço, sem pontuação  | NBR 6024:2012 (UFSCar)
@@ -151,6 +155,8 @@ títulos, espaço depois: 1 linha                           | NBR 14724:2024 (UF
 títulos, linhas seguintes: alinhadas sob a primeira letra do título  | NBR 6024:2012 (UFSCar)
 # A NBR 6024 manda diferenciar os níveis, mas não diz como. O mesmo destaque
 # vale no texto e no sumário.
+# Maiúsculas: o Apud não muda as letras do título; a pessoa escreve como preferir
+# (decisão de 20/11/2026). Negrito, itálico e sublinhado são aplicados.
 título nível 1, destaque: maiúsculas, negrito             | NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026) | faculdade
 título nível 2, destaque: maiúsculas                      | NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026) | faculdade
 título nível 3, destaque: negrito                         | NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026) | faculdade

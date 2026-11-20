@@ -4,7 +4,7 @@ import { documentoDoEditor, editorDoDocumento } from "../documento/tiptap";
 import { estrutura } from "../documento/estrutura";
 import type { Documento } from "../documento/modelo";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
-import { alternarNumero, ControleDaBarra, extensoesDoApud } from "./extensoes";
+import { ControleDaBarra, extensoesDoApud, inserirQuebra } from "./extensoes";
 
 interface Props {
   inicial: Documento;
@@ -74,8 +74,6 @@ function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; e
             negrito: e.isActive("bold"),
             italico: e.isActive("italic"),
             sobrescrito: e.isActive("superscript"),
-            titulo: e.isActive("heading"),
-            numerado: e.getAttributes("heading").numerado !== false,
           }
         : null,
   });
@@ -95,32 +93,13 @@ function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; e
           if (t) t.aplicar(editor.chain().focus()).run();
         }}
       >
-        {TIPOS_DE_BLOCO.map((t) => (
+        {TIPOS_DE_BLOCO.filter((t) => !t.soNaBarra).map((t) => (
           <option key={t.id} value={t.id}>
             {t.rotulo}
           </option>
         ))}
       </select>
-      {estado.titulo && (
-        <button
-          type="button"
-          className={`btn ${estado.numerado ? "on" : ""}`}
-          aria-pressed={estado.numerado}
-          title="Liga ou desliga o número deste título (1, 1.1...). Sem número, ele também não conta na numeração dos outros."
-          onMouseDown={(ev) => {
-            ev.preventDefault();
-            alternarNumero(editor);
-          }}
-          onKeyDown={(ev) => {
-            if (ev.key === "Enter" || ev.key === " ") {
-              ev.preventDefault();
-              alternarNumero(editor);
-            }
-          }}
-        >
-          Numerar
-        </button>
-      )}
+
       <span className="divisor" aria-hidden="true" />
       <Botao rotulo="Negrito (Ctrl+B)" ligado={estado.negrito} aoClicar={() => editor.chain().focus().toggleBold().run()}>
         <b>B</b>
@@ -137,6 +116,24 @@ function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; e
           x<sup>2</sup>
         </span>
       </Botao>
+      <span className="divisor" aria-hidden="true" />
+      <button
+        type="button"
+        className="btn"
+        title="O que vem depois começa numa página nova (Ctrl+Enter)"
+        onMouseDown={(ev) => {
+          ev.preventDefault();
+          inserirQuebra(editor);
+        }}
+        onKeyDown={(ev) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            inserirQuebra(editor);
+          }
+        }}
+      >
+        Quebra de página
+      </button>
       <span style={{ flex: 1 }} />
       {extras}
     </div>
@@ -187,7 +184,7 @@ function Estrutura({ documento, editor }: { documento: Documento; editor: Editor
     <nav className="estrutura" aria-label="Estrutura do trabalho">
       <p className="rotulo-secao">Estrutura</p>
       {titulos.length === 0 ? (
-        <p className="dica">Os títulos que você escrever aparecem aqui, numerados como na ABNT.</p>
+        <p className="dica">Os títulos que você escrever aparecem aqui. Para numerar, escreva o número antes do título: 1.1 Contexto.</p>
       ) : (
         titulos.map((t) => (
           <button
@@ -197,7 +194,7 @@ function Estrutura({ documento, editor }: { documento: Documento; editor: Editor
             style={{ paddingLeft: 8 + (t.nivel - 1) * 14 }}
             onClick={() => irPara(t.indice)}
           >
-            {t.numero} {t.texto || <span className="dica">(título vazio)</span>}
+            {t.texto || <span className="dica">(título vazio)</span>}
           </button>
         ))
       )}

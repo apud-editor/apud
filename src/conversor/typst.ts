@@ -5,12 +5,18 @@
 // alíneas, número de página). Nada de norma fica escrito aqui: mudar o perfil
 // muda o PDF.
 //
+// O que fica com a pessoa (decisão de 20/11/2026): as letras dos títulos saem
+// como ela escreveu (o Apud não põe em maiúsculas), o número do título é o que
+// ela escreveu ("1.1 Contexto") e a página nova só acontece onde ela pôs uma
+// quebra de página.
+//
 // Entrelinhas como no Word: no Word, a linha "simples" mede 1,15 vez o tamanho
 // da fonte (Times 12 pt = 13,8 pt), e 1,5 linha mede 1,5 vez isso (20,7 pt).
 // Aqui, cada linha é uma caixa de 1,15 em, e o espaço entre as caixas completa
 // o resto.
 
 import type { Bloco, Documento, ItemDeLista, Trecho } from "../documento/modelo";
+import { separarNumero } from "../documento/estrutura";
 import type { PerfilResolvido, Valor } from "../perfis";
 
 /** Altura da linha simples, em "em" (vezes o tamanho da fonte), como no Word. */
@@ -138,16 +144,13 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   // Títulos
   const antes = r.numero("títulos, espaço antes");
   const depois = r.numero("títulos, espaço depois");
-  const paginaNova = r.sim("seção primária, página nova");
-  l(`#set heading(numbering: "1.1")`);
   l(`#show heading: it => {`);
-  if (paginaNova) l(`  if it.level == 1 { pagebreak(weak: true) }`);
   l(`  let destaque(x) = {`);
   l(`    let n = it.level`);
   for (let nivel = 1; nivel <= 5; nivel++) {
     const d = r.destaque(`título nível ${nivel}, destaque`);
+    // "Maiúsculas" não é aplicado: o título sai com as letras que a pessoa escreveu.
     let x = "x";
-    if (d.maiusculas) x = `upper(${x})`;
     if (d.negrito) x = `strong(${x})`;
     if (d.italico) x = `emph(${x})`;
     if (d.sublinhado) x = `underline(${x})`;
@@ -155,8 +158,8 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   }
   l(`    else { x }`);
   l(`  }`);
-  // Número, um espaço e o título; as linhas seguintes ficam sob a primeira letra do título.
-  // Título sem número (escolha da pessoa): só o texto, com o mesmo destaque do nível.
+  // O número que a pessoa escreveu, um espaço e o título; as linhas seguintes
+  // ficam sob a primeira letra do título. Sem número escrito: só o título.
   l(`  set par(justify: false, first-line-indent: 0pt)`);
   l(
     `  let corpo = if it.numbering == none { destaque(it.body) } else { grid(columns: (auto, 1fr), column-gutter: 0.25em, destaque(counter(heading).display(it.numbering)), destaque(it.body)) }`,
@@ -191,13 +194,27 @@ function blocoParaTypst(b: Bloco, recuos: { recuoAlinea: string; recuoSub: strin
     }
     case "titulo": {
       const corpo = trechosParaTypst(b.trechos);
-      // Sem número: o título não aparece numerado nem conta na numeração dos seguintes.
-      const semNumero = b.numerado === false ? ", numbering: none" : "";
-      return corpo.trim() ? `#heading(level: ${b.nivel}${semNumero})[${corpo}]\n` : "";
+      if (!corpo.trim()) return "";
+      // O número escrito pela pessoa vai como a "numeração" do título: assim ele fica
+      // numa coluna própria (para o alinhamento) e, no futuro, também no sumário.
+      const { numero, trechos } = numeroDoTitulo(b.trechos);
+      const numeracao = numero ? `(..n) => ${texto(numero)}` : "none";
+      return `#heading(level: ${b.nivel}, numbering: ${numeracao})[${trechosParaTypst(trechos)}]\n`;
     }
     case "lista":
       return listaParaTypst(b.itens, 0, recuos) + "\n";
+    case "quebra":
+      // "weak": duas quebras seguidas não deixam uma página em branco.
+      return "#pagebreak(weak: true)\n";
   }
+}
+
+/** Tira do começo do título o número que a pessoa escreveu ("1.1 "). */
+function numeroDoTitulo(trechos: Trecho[]): { numero: string; trechos: Trecho[] } {
+  if (!trechos.length) return { numero: "", trechos };
+  const { numero, resto } = separarNumero(trechos[0].texto);
+  if (!numero) return { numero: "", trechos };
+  return { numero, trechos: [{ ...trechos[0], texto: resto }, ...trechos.slice(1)] };
 }
 
 function listaParaTypst(itens: ItemDeLista[], nivel: number, recuos: { recuoAlinea: string; recuoSub: string }): string {

@@ -262,26 +262,39 @@ select {
 .texto > h5::after {
   content: "Título 5";
 }
-.texto > h1[data-numerado="false"]::after {
-  content: "Título 1\A sem número";
-  white-space: pre;
+/* A quebra de página aparece como uma linha tracejada com o nome. */
+.texto > .quebra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 24px;
+  color: var(--tinta-suave);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
 }
-.texto > h2[data-numerado="false"]::after {
-  content: "Título 2\A sem número";
-  white-space: pre;
+
+.texto > .quebra::before {
+  content: "";
+  flex: 1;
+  border-top: 1px dashed var(--borda-forte);
 }
-.texto > h3[data-numerado="false"]::after {
-  content: "Título 3\A sem número";
-  white-space: pre;
+
+.texto > .quebra > span {
+  order: -1;
 }
-.texto > h4[data-numerado="false"]::after {
-  content: "Título 4\A sem número";
-  white-space: pre;
+
+.texto > .quebra.ProseMirror-selectednode {
+  color: var(--destaque);
+  outline: 2px solid var(--destaque-claro);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
-.texto > h5[data-numerado="false"]::after {
-  content: "Título 5\A sem número";
-  white-space: pre;
+
+.texto > .quebra::after {
+  content: "";
 }
+
 .texto > ul::after {
   content: "Lista";
 }

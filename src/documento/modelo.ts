@@ -23,12 +23,14 @@ export interface Trecho {
 
 export type NivelDeTitulo = 1 | 2 | 3 | 4 | 5;
 
+/**
+ * Um título. O número (1, 1.1, 2...) é escrito pela própria pessoa, no começo
+ * do texto ("1.1 Contexto"); sem número escrito, o título sai sem número.
+ */
 export interface Titulo {
   tipo: "titulo";
   nivel: NivelDeTitulo;
   trechos: Trecho[];
-  /** false quando a pessoa pediu este título sem número. Ausente = numerado. */
-  numerado?: false;
 }
 
 export interface Paragrafo {
@@ -52,7 +54,12 @@ export interface Lista {
   itens: ItemDeLista[];
 }
 
-export type Bloco = Titulo | Paragrafo | Lista;
+/** Quebra de página: o que vem depois começa numa página nova. A pessoa decide onde. */
+export interface QuebraDePagina {
+  tipo: "quebra";
+}
+
+export type Bloco = Titulo | Paragrafo | Lista | QuebraDePagina;
 
 /** O texto do trabalho. Dados do trabalho, referências e ajustes da norma entram nas próximas etapas. */
 export interface Documento {

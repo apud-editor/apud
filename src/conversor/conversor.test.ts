@@ -86,36 +86,50 @@ describe("conversor para o Typst", () => {
     expect(Math.abs(linhas - Math.round(linhas))).toBeLessThan(0.01);
   });
 
-  it("cada seção primária começa numa página nova", () => {
-    const doc: Documento = {
-      versao: 1,
-      blocos: [
-        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Um" }] },
-        { tipo: "paragrafo", trechos: [{ texto: "texto" }] },
-        { tipo: "titulo", nivel: 2, trechos: [{ texto: "Um ponto um" }] },
-        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Dois" }] },
-      ],
-    };
-    expect(paginas(compilar(documentoParaTypst(doc, perfil)))).toBe(2);
+  it("a página nova só acontece onde a pessoa pôs a quebra de página", () => {
+    const blocos: Documento["blocos"] = [
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Um" }] },
+      { tipo: "paragrafo", trechos: [{ texto: "texto" }] },
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "2 Dois" }] },
+    ];
+    expect(paginas(compilar(documentoParaTypst({ versao: 1, blocos }, perfil)))).toBe(1);
+    const comQuebra: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, blocos[2]];
+    expect(paginas(compilar(documentoParaTypst({ versao: 1, blocos: comQuebra }, perfil)))).toBe(2);
+    // Duas quebras seguidas não deixam uma página em branco.
+    const duas: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, { tipo: "quebra" }, blocos[2]];
+    expect(paginas(compilar(documentoParaTypst({ versao: 1, blocos: duas }, perfil)))).toBe(2);
   });
 });
 
-describe("títulos sem número", () => {
-  it("saem sem número e não contam na numeração dos outros", () => {
-    const doc: Documento = {
-      versao: 1,
-      blocos: [
-        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Apresentação" }], numerado: false },
-        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
-        { tipo: "titulo", nivel: 2, trechos: [{ texto: "Nota" }], numerado: false },
-        { tipo: "titulo", nivel: 2, trechos: [{ texto: "Contexto" }] },
-      ],
-    };
-    const typst =
-      documentoParaTypst(doc, perfil) +
-      `#context [#metadata(query(heading).map(h => if h.numbering == none { "-" } else { numbering(h.numbering, ..counter(heading).at(h.location())) })) <n>]\n`;
-    const r = compilador.query({ mainFileContent: typst }, { selector: "<n>" });
-    expect(r[0].value).toEqual(["-", "1", "-", "1.1"]);
+describe("títulos", () => {
+  const typstDe = (blocos: Documento["blocos"]) =>
+    documentoParaTypst({ versao: 1, blocos }, perfil) +
+    `#context [#metadata(query(heading).map(h => (if h.numbering == none { "" } else { numbering(h.numbering, 1) }, h.body.fields().at("text", default: repr(h.body))))) <t>]\n`;
+
+  it("o número é o que a pessoa escreveu; sem número escrito, sai sem número", () => {
+    const typst = typstDe([
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Resumo" }] },
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] },
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "3.2 Fora de ordem" }] },
+    ]);
+    const r = compilador.query({ mainFileContent: typst }, { selector: "<t>" })[0].value as Array<[string, string]>;
+    expect(r.map((x) => x[0])).toEqual(["", "1", "3.2"]);
+    expect(r[1][1]).toContain("Introdução");
+    expect(r[1][1]).not.toContain("1 ");
+  });
+
+  it("as letras saem como a pessoa escreveu (o Apud não põe em maiúsculas)", () => {
+    const typst = documentoParaTypst({ versao: 1, blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
+    expect(typst).not.toContain("upper(");
+    expect(typst).toContain("strong(x)");
+  });
+
+  it("título longo: a segunda linha fica sob a primeira letra do texto, não sob o número", () => {
+    const longo = "palavra ".repeat(30).trim();
+    const marca = `#show heading: it => { it; context [#metadata(here().position()) <fim>] }`;
+    const typst = documentoParaTypst({ versao: 1, blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
+    expect(() => compilar(typst + marca)).not.toThrow();
+    expect(typst).toContain('numbering: (..n) => "1.1.1"');
   });
 });
 

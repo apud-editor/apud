@@ -12,7 +12,8 @@ const trabalho: Trabalho = {
     versao: 1,
     blocos: [
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
-      { tipo: "titulo", nivel: 2, trechos: [{ texto: "Sem número" }], numerado: false },
+      { tipo: "quebra" },
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "1.1 Contexto" }] },
       { tipo: "paragrafo", trechos: [{ texto: "Texto com " }, { texto: "itálico", marcas: ["italico"] }] },
       { tipo: "lista", sequencia: false, itens: [{ trechos: [{ texto: "a" }], subitens: [{ trechos: [{ texto: "b" }] }] }] },
     ],
@@ -46,15 +47,15 @@ describe("formato do arquivo .apud", () => {
 
   it("aponta qual bloco está estragado, em vez de jogar o bloco fora", () => {
     const ruim = JSON.parse(escreverArquivo(trabalho));
-    ruim.documento.blocos[1].trechos = "texto solto";
-    expect(lerArquivo(JSON.stringify(ruim))).toEqual({ ok: false, erro: "o bloco 2 do texto está estragado" });
+    ruim.documento.blocos[3].trechos = "texto solto";
+    expect(lerArquivo(JSON.stringify(ruim))).toEqual({ ok: false, erro: "o bloco 4 do texto está estragado" });
   });
 
-  it("arquivos antigos, sem a escolha de número, abrem com os títulos numerados", () => {
+  it("abre os arquivos da versão de teste que guardava a escolha de numerar", () => {
     const antigo = JSON.parse(escreverArquivo(trabalho));
-    delete antigo.documento.blocos[1].numerado;
+    antigo.documento.blocos[2].numerado = false;
     const r = lerArquivo(JSON.stringify(antigo));
-    expect(r.ok && r.trabalho.documento.blocos[1]).toEqual({ tipo: "titulo", nivel: 2, trechos: [{ texto: "Sem número" }] });
+    expect(r.ok && r.trabalho.documento.blocos[2]).toEqual({ tipo: "titulo", nivel: 2, trechos: [{ texto: "1.1 Contexto" }] });
   });
 
   it("recusa outros arquivos JSON", () => {

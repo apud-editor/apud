@@ -20,6 +20,8 @@ describe("barra /", () => {
     expect(buscarBlocos("titulo").map((t) => t.rotulo)).toEqual(["Título 1", "Título 2", "Título 3", "Título 4", "Título 5"]);
     expect(buscarBlocos("t3").map((t) => t.rotulo)).toEqual(["Título 3"]);
     expect(buscarBlocos("alinea").map((t) => t.rotulo)).toEqual(["Lista"]);
-    expect(buscarBlocos("").length).toBe(8);
+    expect(buscarBlocos("").length).toBe(9);
+    expect(buscarBlocos("quebra").map((t) => t.rotulo)).toEqual(["Quebra de página"]);
+    expect(buscarBlocos("pagina").map((t) => t.rotulo)).toEqual(["Quebra de página"]);
   });
 });

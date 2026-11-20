@@ -11,6 +11,8 @@ export interface TipoDeBloco {
   /** Muda o bloco onde está o cursor para este tipo. */
   aplicar: (c: ChainedCommands) => ChainedCommands;
   ativo: (e: Editor) => boolean;
+  /** Só aparece na barra "/", não no seletor de tipo do bloco (porque insere, em vez de mudar o bloco). */
+  soNaBarra?: boolean;
 }
 
 const titulo = (nivel: 1 | 2 | 3 | 4 | 5): TipoDeBloco => ({
@@ -48,6 +50,14 @@ export const TIPOS_DE_BLOCO: TipoDeBloco[] = [
     aplicar: (c) => (c.toggleOrderedList as () => ChainedCommands)(),
     ativo: (e) => e.isActive("orderedList"),
   },
+  {
+    id: "quebra",
+    rotulo: "Quebra de página",
+    buscas: ["quebra", "pagina", "página", "nova pagina", "salto"],
+    aplicar: (c) => (c.setHorizontalRule as () => ChainedCommands)(),
+    ativo: () => false,
+    soNaBarra: true,
+  },
 ];
 
 /** Tira acentos e maiúsculas, para "titulo" achar "Título". */
@@ -63,6 +73,6 @@ export function buscarBlocos(consulta: string): TipoDeBloco[] {
 
 export function blocoAtual(e: Editor): TipoDeBloco {
   // Listas primeiro: o parágrafo dentro de um item também é "paragraph".
-  const ordem = [...TIPOS_DE_BLOCO.slice(6), ...TIPOS_DE_BLOCO.slice(0, 6)];
+  const ordem = [...TIPOS_DE_BLOCO.slice(6), ...TIPOS_DE_BLOCO.slice(0, 6)].filter((t) => !t.soNaBarra);
   return ordem.find((t) => t.ativo(e)) ?? TIPOS_DE_BLOCO[0];
 }
