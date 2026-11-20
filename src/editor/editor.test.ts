@@ -20,14 +20,16 @@ describe("barra /", () => {
     expect(buscarBlocos("titulo").map((t) => t.rotulo)).toEqual(["Título 1", "Título 2", "Título 3", "Título 4", "Título 5"]);
     expect(buscarBlocos("t3").map((t) => t.rotulo)).toEqual(["Título 3"]);
     expect(buscarBlocos("alinea").map((t) => t.rotulo)).toEqual(["Lista"]);
-    expect(buscarBlocos("").length).toBe(9);
+    expect(buscarBlocos("").length).toBe(10);
+    expect(buscarBlocos("bibliografia").map((t) => t.rotulo)).toEqual(["Lista de referências"]);
+    expect(buscarBlocos("referencias").map((t) => t.rotulo)).toEqual(["Lista de referências"]);
     expect(buscarBlocos("quebra").map((t) => t.rotulo)).toEqual(["Quebra de página"]);
     expect(buscarBlocos("pagina").map((t) => t.rotulo)).toEqual(["Quebra de página"]);
   });
 });
 
 describe("citações no editor", () => {
-  it("o editor aceita a citação em parágrafos, títulos e listas, e devolve os dados sem mudar nada", async () => {
+  it("o editor aceita a citação em parágrafos, títulos e listas, e o bloco da lista de referências, sem mudar nada", async () => {
     const { getSchema } = await import("@tiptap/core");
     const { Node: NoPM } = await import("@tiptap/pm/model");
     const { ControleDaBarra, extensoesDoApud } = await import("./extensoes");
@@ -38,6 +40,7 @@ describe("citações no editor", () => {
       { tipo: "paragrafo" as const, trechos: [{ texto: "antes " }, { citacao }, { texto: " depois", marcas: ["italico" as const] }] },
       { tipo: "titulo" as const, nivel: 2 as const, trechos: [{ citacao }] },
       { tipo: "lista" as const, sequencia: false, itens: [{ trechos: [{ citacao }], subitens: [{ trechos: [{ texto: "b " }, { citacao }] }] }] },
+      { tipo: "referencias" as const },
     ];
     // fromJSON confere o conteúdo contra o esquema do editor: um nó que ele não aceitasse daria erro aqui.
     const no = NoPM.fromJSON(esquema, editorDosBlocos(blocos));

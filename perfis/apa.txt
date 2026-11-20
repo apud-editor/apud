@@ -21,9 +21,9 @@
 
 perfil: APA
 versão: 7
-revisão: 4
+revisão: 5
 data da revisão: 20/11/2026
-nota da revisão: Regras para o Apud montar as citações: intervalo de páginas (pp.), mesmo sobrenome, obra sem autor, lei e obra sem data.
+nota da revisão: Regras para o Apud montar a página em APA: distância do número da página ao topo e listas (numeradas e com marcadores).
 
 == APA 7: página, estrutura e títulos ==
 # A APA tem dois modos. O trabalho começa no modo estudante e passa para o
@@ -41,6 +41,8 @@ alinhamento: à esquerda                                         | APA 7 (Studen
 recuo de parágrafo: 1,27 cm                                     | APA 7 (Student Paper Setup Guide)
 número de página, posição: canto superior direito               | APA 7 (Student Paper Setup Guide)
 número de página, desde: página de título                       | APA 7 (Student Paper Setup Guide)
+# Acrescentada na revisão 5: o número fica no cabeçalho, alinhado à margem direita.
+número de página, distância do topo: 1,27 cm                    | APA 7 (Student Paper Setup Guide: cabeçalho a 0,5 polegada, como no Word) | faculdade
 cabeçalho com título curto: só no modo profissional             | APA 7 (Student Title Page Guide) | escolha: só no modo profissional, sempre
 # Página de título do modo estudante: tudo centralizado, em espaço duplo.
 página de título (estudante), campos: título, autor, departamento e universidade, código e nome da disciplina, professor, data de entrega  | APA 7 (site da APA; checklist da APA)
@@ -88,6 +90,12 @@ títulos, linhas em branco antes e depois: nenhuma               | APA 7 (site d
 # brasileiras que pedem maiúscula só na primeira palavra.
 títulos, maiúsculas: palavras principais                        | APA 7 (site da APA) | faculdade
 # Exemplo: Tabela 1 (negrito), e o título em itálico na linha de baixo.
+# Listas (revisão 5). A APA numera só as listas em que a ordem importa (decisão
+# da fase 1: o bloco "Lista em sequência"); as outras levam marcadores.
+listas em sequência, marcador: 1.                              | APA 7 (6.51, listas numeradas)
+listas sem sequência, marcador: •                              | APA 7 (6.52, listas com marcadores)
+listas, recuo: 1,27 cm                                         | APA 7 (6.51 e 6.52), com o recuo de parágrafo | faculdade
+sub-listas, recuo a mais: 1,27 cm                              | APA 7, que não fixa a medida | faculdade
 tabela, rótulo: Tabela                                          | APA 7 (site da APA)
 figura, rótulo: Figura                                          | APA 7 (site da APA)
 tabelas e figuras, número: acima, em negrito                    | APA 7 (site da APA; checklist da APA)
@@ -147,6 +155,9 @@ citação, destaque seu, onde: entre colchetes, depois do trecho destacado  | AP
 citação, tradução sua: tradução nossa                    | uso em trabalhos em português; a APA 7 não fixa
 # Exemplo: (Souza, 2020a), (Souza, 2020b), também na lista de referências.
 citação, mesmo autor e ano: letras depois do ano         | APA 7 (site da APA: mesmo autor e mesma data)
+# Decisão de 20/11/2026: as quebras de página são manuais, e a lista de referências
+# é um bloco que a pessoa põe onde quiser. Esta regra fica como referência: o Apud
+# não a aplica sozinho.
 referências, página nova: sim                            | APA 7 (site da APA)
 referências, linhas em branco entre elas: nenhuma        | APA 7 (site da APA)
 referências, recuo das linhas seguintes: 1,27 cm         | APA 7 (site da APA)

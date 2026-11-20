@@ -9,7 +9,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
 import { Plugin, PluginKey, Selection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
 import { buscarBlocos, type TipoDeBloco } from "./blocos";
-import { NO_DA_CITACAO } from "../documento/tiptap";
+import { NO_DA_CITACAO, NO_DA_LISTA_DE_REFERENCIAS } from "../documento/tiptap";
 import type { Citacao } from "../documento/modelo";
 
 // ---------------------------------------------------------------------------
@@ -276,6 +276,57 @@ export function inserirQuebra(editor: Editor) {
 }
 
 // ---------------------------------------------------------------------------
+// Lista de referências: um bloco que a pessoa põe onde quiser (decisão de
+// 20/11/2026: tudo o que sai no PDF tem um lugar no editor). O bloco mostra o
+// título da norma (REFERÊNCIAS na ABNT, Referências na APA), que muda sozinho
+// quando a pessoa troca a norma.
+
+/** O que o editor mostra e que depende da norma do trabalho. Avisa quando muda. */
+export class AparenciaDaNorma extends EventTarget {
+  constructor(public rotuloDasReferencias = "Referências") {
+    super();
+  }
+
+  mudar(rotulo: string) {
+    this.rotuloDasReferencias = rotulo;
+    this.dispatchEvent(new Event("mudou"));
+  }
+}
+
+function listaDeReferenciasNoEditor(aparencia: AparenciaDaNorma) {
+  return Node.create({
+    name: NO_DA_LISTA_DE_REFERENCIAS,
+    group: "block",
+    atom: true,
+    selectable: true,
+    draggable: false,
+    parseHTML() {
+      return [{ tag: "div[data-lista-de-referencias]" }];
+    },
+    renderHTML() {
+      return ["div", { "data-lista-de-referencias": "", class: "lista-referencias" }];
+    },
+    addNodeView() {
+      return () => {
+        const caixa = document.createElement("div");
+        caixa.className = "lista-referencias";
+        caixa.setAttribute("data-lista-de-referencias", "");
+        caixa.contentEditable = "false";
+        const titulo = document.createElement("strong");
+        const nota = document.createElement("span");
+        nota.className = "dica";
+        nota.textContent = "As obras citadas entram aqui, na ordem e na forma da norma.";
+        caixa.append(titulo, nota);
+        const mostrar = () => (titulo.textContent = aparencia.rotuloDasReferencias);
+        mostrar();
+        aparencia.addEventListener("mudou", mostrar);
+        return { dom: caixa, destroy: () => aparencia.removeEventListener("mudou", mostrar) };
+      };
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Citação: uma peça dentro do texto, que não se divide. O cursor pula por
 // cima dela, e o Backspace a apaga inteira. Os dados ficam como estão no
 // modelo do Apud (documento/referencias.ts).
@@ -321,7 +372,11 @@ function citacaoNoEditor(descrever: DescreverCitacao) {
 
 // ---------------------------------------------------------------------------
 
-export function extensoesDoApud(controle: ControleDaBarra, descrever: DescreverCitacao = descricaoSimples) {
+export function extensoesDoApud(
+  controle: ControleDaBarra,
+  descrever: DescreverCitacao = descricaoSimples,
+  aparencia: AparenciaDaNorma = new AparenciaDaNorma(),
+) {
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4, 5] },
@@ -348,5 +403,6 @@ export function extensoesDoApud(controle: ControleDaBarra, descrever: DescreverC
     ListasFaceis,
     barraDeBlocos(controle),
     citacaoNoEditor(descrever),
+    listaDeReferenciasNoEditor(aparencia),
   ];
 }

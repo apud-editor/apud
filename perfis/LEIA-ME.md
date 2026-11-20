@@ -129,9 +129,9 @@ lista com o estilo CSL, no Typst (o motor de PDF), e compara com o gabarito.
 O comando também grava, em `prova/saida/`:
 
 - `prova-abnt.pdf` e `prova-apa.pdf`: só as chamadas, numeradas, e a lista;
-- `documento-de-prova-abnt.pdf`: o trabalho inteiro, montado pelo conversor do
-  Apud, com as citações no texto e a lista no fim (a APA entra quando o
-  conversor aplicar o perfil APA);
+- `documento-de-prova-abnt.pdf` e `documento-de-prova-apa.pdf`: o trabalho
+  inteiro, montado pelo conversor do Apud, com as citações no texto e a lista
+  de referências onde está o bloco `::: referências`;
 - `documento-de-prova.apud`: o mesmo trabalho, para abrir no Apud (copie para
   a pasta Documentos\Apud).
 

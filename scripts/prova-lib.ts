@@ -153,6 +153,7 @@ export function documentoDeProva(): { documento: Documento; escritas: string[] }
     if (bloco) {
       if (linha.trim() === ":::") {
         if (bloco.tipo === "citação-longa") blocos.push({ tipo: "paragrafo", trechos: texto(bloco.linhas.join(" ")) });
+        if (bloco.tipo === "referências") blocos.push({ tipo: "referencias" });
         bloco = null;
       } else bloco.linhas.push(linha.trim());
       continue;
@@ -182,7 +183,7 @@ export function documentoDeProva(): { documento: Documento; escritas: string[] }
     }
   }
   fechar();
-  return { documento: { versao: 2, blocos, referencias }, escritas };
+  return { documento: { versao: 3, blocos, referencias }, escritas };
 }
 
 // ---------------------------------------------------------------------------

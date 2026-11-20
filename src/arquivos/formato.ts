@@ -6,13 +6,13 @@
 //
 //   {
 //     "formato": "apud",
-//     "versao": 2,
+//     "versao": 3,
 //     "nome": "Relato de experiência de estágio",
 //     "perfil": { "perfil": "ABNT", "versao": "2025", "revisao": 3 },
 //     "ajustes": { "ABNT": { "referências, prenomes": "abreviados" } },
 //     "criadoEm": "2026-11-20T18:40:00.000Z",
 //     "modificadoEm": "2026-11-20T19:02:11.000Z",
-//     "documento": { "versao": 2, "blocos": [ ... ], "referencias": [ ... ] }
+//     "documento": { "versao": 3, "blocos": [ ... ], "referencias": [ ... ] }
 //   }
 //
 // "perfil" guarda com que versão da norma o trabalho foi feito: um trabalho já
@@ -25,10 +25,14 @@
 // Versões do arquivo:
 //   1. Fase 1: nome, perfil, datas e o texto (documento na versão 1).
 //   2. Fase 2: o documento ganha referências e citações (versão 2) e o arquivo
-//      ganha os ajustes. Um arquivo da versão 1 é lido normalmente e passa a
-//      ser gravado na versão 2 quando o trabalho mudar. Nada se perde: a
-//      conversão só acrescenta o que não existia (lista de referências e
-//      ajustes vazios).
+//      ganha os ajustes.
+//   3. Fase 2: o bloco "lista de referências", que a pessoa põe no texto. Nas
+//      versões de teste com a versão 2, a lista entrava sozinha no fim do
+//      trabalho; ao abrir um desses arquivos, o bloco é acrescentado no fim,
+//      para o PDF continuar igual.
+// Um arquivo antigo é lido normalmente e passa a ser gravado na versão atual
+// quando o trabalho mudar. Nada se perde: a conversão só acrescenta o que não
+// existia.
 //
 // Arquivo de uma versão mais nova, ou estragado, é recusado com o motivo, e o
 // arquivo no disco fica como está.
@@ -48,7 +52,7 @@ import {
   type Trecho,
 } from "../documento/modelo";
 
-export const VERSAO_DO_ARQUIVO = 2;
+export const VERSAO_DO_ARQUIVO = 3;
 
 export interface PerfilDoTrabalho {
   perfil: string;
@@ -149,7 +153,9 @@ function conferirAjustes(v: unknown): AjustesDoTrabalho | null {
 /** Devolve o documento conferido (já na versão atual), ou o motivo do erro. */
 function conferirDocumento(v: unknown): Documento | string {
   if (!objeto(v) || !Array.isArray(v.blocos)) return "falta o texto do trabalho";
-  if (v.versao !== 1 && v.versao !== VERSAO_DO_FORMATO) return "o texto do trabalho está numa versão que este Apud não conhece";
+  if (v.versao !== 1 && v.versao !== 2 && v.versao !== VERSAO_DO_FORMATO) {
+    return "o texto do trabalho está numa versão que este Apud não conhece";
+  }
 
   // Versão 1 → 2: não havia referências; a lista começa vazia.
   let referencias: Referencia[] = [];
@@ -167,14 +173,31 @@ function conferirDocumento(v: unknown): Documento | string {
 
   const blocos: Bloco[] = [];
   for (const [i, b] of v.blocos.entries()) {
-    const bloco = conferirBloco(b);
+    const bloco = conferirBloco(b, v.versao as number);
     if (!bloco) return `o bloco ${i + 1} do texto está estragado`;
     blocos.push(bloco);
   }
+  if (v.versao === 2) acrescentarListaNoFim(blocos);
   return { versao: VERSAO_DO_FORMATO, blocos, referencias };
 }
 
-function conferirBloco(b: unknown): Bloco | null {
+/**
+ * Versão 2 → 3: a lista de referências entrava sozinha no fim, quando havia
+ * citações. Agora é um bloco: ele entra no fim, antes dos parágrafos vazios.
+ */
+function acrescentarListaNoFim(blocos: Bloco[]) {
+  const temCitacao = (trechos: Trecho[]) => trechos.some((t) => "citacao" in t);
+  const nosItens = (itens: ItemDeLista[]): boolean => itens.some((i) => temCitacao(i.trechos) || (i.subitens ? nosItens(i.subitens) : false));
+  const citado = blocos.some((b) =>
+    b.tipo === "paragrafo" || b.tipo === "titulo" ? temCitacao(b.trechos) : b.tipo === "lista" ? nosItens(b.itens) : false,
+  );
+  if (!citado) return;
+  let fim = blocos.length;
+  while (fim > 0 && blocos[fim - 1].tipo === "paragrafo" && (blocos[fim - 1] as { trechos: Trecho[] }).trechos.length === 0) fim--;
+  blocos.splice(fim, 0, { tipo: "referencias" });
+}
+
+function conferirBloco(b: unknown, versao: number): Bloco | null {
   if (!objeto(b)) return null;
   switch (b.tipo) {
     case "paragrafo": {
@@ -195,6 +218,8 @@ function conferirBloco(b: unknown): Bloco | null {
     }
     case "quebra":
       return { tipo: "quebra" };
+    case "referencias":
+      return versao >= 3 ? { tipo: "referencias" } : null;
     default:
       return null;
   }

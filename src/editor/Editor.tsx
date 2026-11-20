@@ -4,7 +4,7 @@ import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
 import { estrutura } from "../documento/estrutura";
 import type { Bloco } from "../documento/modelo";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
-import { ControleDaBarra, extensoesDoApud, inserirQuebra } from "./extensoes";
+import { AparenciaDaNorma, ControleDaBarra, extensoesDoApud, inserirQuebra } from "./extensoes";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -17,17 +17,20 @@ interface Props {
   extrasDaBarra?: React.ReactNode;
   /** Um painel ao lado do texto (como a prévia do PDF). */
   lateral?: React.ReactNode;
+  /** O que depende da norma do trabalho (o título da lista de referências). */
+  aparencia?: AparenciaDaNorma;
 }
 
-export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, lateral }: Props) {
+export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, lateral, aparencia: aparenciaDada }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
+  const aparencia = useMemo(() => aparenciaDada ?? new AparenciaDaNorma(), [aparenciaDada]);
   const [blocos, setBlocos] = useState(inicial);
   const espera = useRef<number>(0);
   const aoMudarRef = useRef(aoMudar);
   aoMudarRef.current = aoMudar;
 
   const editor = useEditor({
-    extensions: extensoesDoApud(controle),
+    extensions: extensoesDoApud(controle, undefined, aparencia),
     content: editorDosBlocos(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
     onUpdate: ({ editor }) => {
@@ -52,7 +55,7 @@ export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, late
     <div className="area">
       <BarraDeFerramentas editor={editor} extras={extrasDaBarra} />
       <div className="colunas">
-        <Estrutura blocos={blocos} editor={editor} />
+        <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} />
         <main className="folha">
           <EditorContent editor={editor} />
         </main>
@@ -168,8 +171,15 @@ function Botao(p: { rotulo: string; ligado: boolean; aoClicar: () => void; child
 
 // ---------------------------------------------------------------------------
 
-function Estrutura({ blocos, editor }: { blocos: Bloco[]; editor: EditorTipTap | null }) {
+function Estrutura({ blocos, editor, aparencia }: { blocos: Bloco[]; editor: EditorTipTap | null; aparencia: AparenciaDaNorma }) {
   const titulos = estrutura(blocos);
+  const rotulo = useSyncExternalStore(
+    (f) => {
+      aparencia.addEventListener("mudou", f);
+      return () => aparencia.removeEventListener("mudou", f);
+    },
+    () => aparencia.rotuloDasReferencias,
+  );
 
   const irPara = (indice: number) => {
     if (!editor) return;
@@ -195,7 +205,16 @@ function Estrutura({ blocos, editor }: { blocos: Bloco[]; editor: EditorTipTap |
             style={{ paddingLeft: 8 + (t.nivel - 1) * 14 }}
             onClick={() => irPara(t.indice)}
           >
-            {t.texto || <span className="dica">(título vazio)</span>}
+            {t.referencias ? (
+              <>
+                {rotulo}
+                <span className="dica" style={{ display: "block" }}>
+                  lista montada pela norma
+                </span>
+              </>
+            ) : (
+              t.texto || <span className="dica">(título vazio)</span>
+            )}
           </button>
         ))
       )}

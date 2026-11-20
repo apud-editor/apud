@@ -17,7 +17,7 @@ const trabalho: Trabalho = {
   criadoEm: "2026-11-20T18:00:00.000Z",
   modificadoEm: "2026-11-20T18:30:00.000Z",
   documento: {
-    versao: 2,
+    versao: 3,
     blocos: [
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
       { tipo: "quebra" },
@@ -35,6 +35,7 @@ const trabalho: Trabalho = {
           { citacao: { tipo: "parenteses", obras: [{ referencia: "garcia2015", localizador: { tipo: "outro", rotulo: "local.", valor: "7" }, traducao: true }, { referencia: "rudio2002" }] } },
         ],
       },
+      { tipo: "referencias" },
     ],
     referencias,
   },
@@ -78,7 +79,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa arquivo de uma versão mais nova do Apud", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.versao = 3;
+    novo.versao = 4;
     const r = lerArquivo(JSON.stringify(novo));
     expect(r.ok).toBe(false);
     expect(!r.ok && r.erro).toContain("versão mais nova");
@@ -86,7 +87,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa texto numa versão do modelo que este Apud não conhece", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.documento.versao = 3;
+    novo.documento.versao = 4;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
   });
 
@@ -120,7 +121,7 @@ describe("arquivos da fase 1 (versão 1)", () => {
         criadoEm: "2026-11-20T18:40:00.000Z",
         modificadoEm: "2026-11-20T19:02:11.000Z",
         documento: {
-          versao: 2,
+          versao: 3,
           blocos: JSON.parse(ARQUIVO_DA_FASE_1).documento.blocos,
           referencias: [],
         },
@@ -128,12 +129,12 @@ describe("arquivos da fase 1 (versão 1)", () => {
     });
   });
 
-  it("quando o trabalho é salvo, vira versão 2, e a versão 2 abre igual", () => {
+  it("quando o trabalho é salvo, vira a versão atual (3), e ela abre igual", () => {
     const r = lerArquivo(ARQUIVO_DA_FASE_1);
     if (!r.ok) throw new Error(r.erro);
     const gravado = escreverArquivo(r.trabalho);
-    expect(JSON.parse(gravado).versao).toBe(2);
-    expect(JSON.parse(gravado).documento.versao).toBe(2);
+    expect(JSON.parse(gravado).versao).toBe(3);
+    expect(JSON.parse(gravado).documento.versao).toBe(3);
     expect(lerArquivo(gravado)).toEqual(r);
   });
 
@@ -144,7 +145,36 @@ describe("arquivos da fase 1 (versão 1)", () => {
   });
 });
 
-describe("referências e citações no .apud (versão 2)", () => {
+describe("arquivos das versões de teste da fase 2 (versão 2)", () => {
+  const daVersao2 = (blocos: unknown[]) => {
+    const a = JSON.parse(escreverArquivo(trabalho));
+    a.versao = 2;
+    a.documento.versao = 2;
+    a.documento.blocos = blocos;
+    return lerArquivo(JSON.stringify(a));
+  };
+  const citacao = { citacao: { tipo: "narrativa", obra: { referencia: "lima2018" } } };
+
+  it("com citações: o bloco da lista entra no fim (antes dos parágrafos vazios), como o PDF já saía", () => {
+    const r = daVersao2([{ tipo: "paragrafo", trechos: [citacao] }, { tipo: "paragrafo", trechos: [] }]);
+    expect(r.ok && r.trabalho.documento.blocos).toEqual([
+      { tipo: "paragrafo", trechos: [citacao] },
+      { tipo: "referencias" },
+      { tipo: "paragrafo", trechos: [] },
+    ]);
+  });
+
+  it("sem citações: nada muda", () => {
+    const r = daVersao2([{ tipo: "paragrafo", trechos: [{ texto: "a" }] }]);
+    expect(r.ok && r.trabalho.documento.blocos).toEqual([{ tipo: "paragrafo", trechos: [{ texto: "a" }] }]);
+  });
+
+  it("o bloco da lista só existe a partir da versão 3", () => {
+    expect(daVersao2([{ tipo: "referencias" }])).toEqual({ ok: false, erro: "o bloco 1 do texto está estragado" });
+  });
+});
+
+describe("referências e citações no .apud", () => {
   const comMudanca = (mudar: (a: any) => void) => {
     const a = JSON.parse(escreverArquivo(trabalho));
     mudar(a);

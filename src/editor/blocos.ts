@@ -2,6 +2,7 @@
 // de ferramentas e pela barra "/". Um lugar só, para os dois mostrarem o mesmo.
 
 import type { ChainedCommands, Editor } from "@tiptap/core";
+import { NO_DA_LISTA_DE_REFERENCIAS } from "../documento/tiptap";
 
 export interface TipoDeBloco {
   id: string;
@@ -55,6 +56,14 @@ export const TIPOS_DE_BLOCO: TipoDeBloco[] = [
     rotulo: "Quebra de página",
     buscas: ["quebra", "pagina", "página", "nova pagina", "salto"],
     aplicar: (c) => (c.setHorizontalRule as () => ChainedCommands)(),
+    ativo: () => false,
+    soNaBarra: true,
+  },
+  {
+    id: "referencias",
+    rotulo: "Lista de referências",
+    buscas: ["referencias", "referências", "bibliografia", "lista final"],
+    aplicar: (c) => c.insertContent({ type: NO_DA_LISTA_DE_REFERENCIAS }),
     ativo: () => false,
     soNaBarra: true,
   },

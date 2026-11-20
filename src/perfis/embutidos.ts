@@ -32,6 +32,11 @@ export function perfilAbnt(): PerfilResolvido {
   return p;
 }
 
+/** Os nomes das normas que vêm no programa, para a escolha da norma do trabalho ("ABNT", "APA"). */
+export function normasEmbutidas(): string[] {
+  return conferidos().flatMap((r) => (r.perfil && !r.perfil.identificacao.herdaDe ? [r.perfil.identificacao.perfil] : []));
+}
+
 /**
  * A norma de um trabalho, pelo nome do perfil ("ABNT", "APA"), com os ajustes
  * que o trabalho guarda para essa norma.

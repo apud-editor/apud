@@ -24,6 +24,8 @@ import {
 
 /** Nome do nó das citações no editor (extensão em editor/extensoes.ts). */
 export const NO_DA_CITACAO = "citacao";
+/** Nome do nó da lista de referências no editor. */
+export const NO_DA_LISTA_DE_REFERENCIAS = "listaDeReferencias";
 
 const MARCA_DO_EDITOR: Record<Marca, string> = {
   negrito: "bold",
@@ -55,6 +57,8 @@ function blocosDoNo(no: JSONContent): Bloco[] {
       return [{ tipo: "titulo", nivel: nivelValido(no.attrs?.level), trechos: trechosDe(no) }];
     case "quebraDePagina":
       return [{ tipo: "quebra" }];
+    case NO_DA_LISTA_DE_REFERENCIAS:
+      return [{ tipo: "referencias" }];
     case "bulletList":
     case "orderedList":
       return [{ tipo: "lista", sequencia: no.type === "orderedList", itens: itensDe(no) }];
@@ -141,6 +145,8 @@ function noDoBloco(b: Bloco): JSONContent {
       return comTexto({ type: "heading", attrs: { level: b.nivel } }, b.trechos);
     case "quebra":
       return { type: "quebraDePagina" };
+    case "referencias":
+      return { type: NO_DA_LISTA_DE_REFERENCIAS };
     case "lista":
       return noDaLista(b.itens, b.sequencia);
   }

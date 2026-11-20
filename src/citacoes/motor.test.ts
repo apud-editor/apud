@@ -30,7 +30,7 @@ const narr = (o: ObraCitada): Citacao => ({ tipo: "narrativa", obra: o });
 function montar(norma: "abnt.txt" | "apa.txt", referencias: Referencia[], citacoes: Citacao[], ajustes: Record<string, string> = {}) {
   const { perfil } = carregarNorma(norma, ajustes);
   const doc: Documento = {
-    versao: 2,
+    versao: 3,
     referencias,
     blocos: [{ tipo: "paragrafo", trechos: citacoes.map((citacao) => ({ citacao })) }],
   };

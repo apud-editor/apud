@@ -51,17 +51,19 @@ writeFileSync(
     documento,
   }),
 );
-// A página inteira pelo conversor do Apud. A APA entra quando o conversor aplicar o perfil APA (fase 2, parte 3).
+// A página inteira pelo conversor do Apud, nas duas normas.
 {
-  const { perfil, csl } = carregarNorma("abnt.txt");
   const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "public", "fontes")] }] });
-  const r = compilador.compile({ mainFileContent: documentoParaTypst(documento, perfil, { titulo: "Documento de prova", csl }) });
-  if (!r.result) {
-    r.printDiagnostics();
-    throw new Error("o conversor não conseguiu montar o documento de prova");
+  for (const [arquivo, sigla] of [["abnt.txt", "abnt"], ["apa.txt", "apa"]]) {
+    const { perfil, csl } = carregarNorma(arquivo);
+    const r = compilador.compile({ mainFileContent: documentoParaTypst(documento, perfil, { titulo: "Documento de prova", csl }) });
+    if (!r.result) {
+      r.printDiagnostics();
+      throw new Error(`o conversor não conseguiu montar o documento de prova em ${sigla}`);
+    }
+    writeFileSync(join(PASTA_PROVA, "saida", `documento-de-prova-${sigla}.pdf`), compilador.pdf(r.result));
+    console.log(`Documento de prova inteiro, pelo conversor: perfis/prova/saida/documento-de-prova-${sigla}.pdf`);
   }
-  writeFileSync(join(PASTA_PROVA, "saida", "documento-de-prova-abnt.pdf"), compilador.pdf(r.result));
-  console.log("Documento de prova inteiro, pelo conversor: perfis/prova/saida/documento-de-prova-abnt.pdf");
 }
 
 for (const norma of NORMAS) {

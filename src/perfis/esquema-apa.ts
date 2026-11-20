@@ -38,6 +38,8 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ["recuo de parágrafo", medida("cm", 0, 5), "Recuo de parágrafo"],
       ["número de página, posição", opcao("canto superior direito"), "Número de página"],
       ["número de página, desde", opcao("página de título"), "Número de página"],
+      // Revisão 5: o número fica no cabeçalho, alinhado à margem direita.
+      ["número de página, distância do topo", medida("cm", 0, 5), []],
       [
         "cabeçalho com título curto",
         opcao("só no modo profissional", "sempre"),
@@ -115,6 +117,11 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ["títulos, numeração", opcao("nenhuma"), "Títulos em geral"],
       ["títulos, linhas em branco antes e depois", opcao("nenhuma"), "Títulos em geral"],
       ["títulos, maiúsculas", opcao("palavras principais", "só a primeira palavra"), "Títulos em geral"],
+      // Revisão 5: listas.
+      ["listas em sequência, marcador", opcao("1.", "1)"), []],
+      ["listas sem sequência, marcador", opcao("•", "–"), []],
+      ["listas, recuo", medida("cm", 0, 5), []],
+      ["sub-listas, recuo a mais", medida("cm", 0, 5), []],
       ["tabela, rótulo", texto(), "Tabelas e figuras"],
       ["figura, rótulo", texto(), "Tabelas e figuras"],
       ["tabelas e figuras, número", opcao("acima, em negrito"), "Tabelas e figuras"],
