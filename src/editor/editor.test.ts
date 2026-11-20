@@ -25,3 +25,23 @@ describe("barra /", () => {
     expect(buscarBlocos("pagina").map((t) => t.rotulo)).toEqual(["Quebra de página"]);
   });
 });
+
+describe("citações no editor", () => {
+  it("o editor aceita a citação em parágrafos, títulos e listas, e devolve os dados sem mudar nada", async () => {
+    const { getSchema } = await import("@tiptap/core");
+    const { Node: NoPM } = await import("@tiptap/pm/model");
+    const { ControleDaBarra, extensoesDoApud } = await import("./extensoes");
+    const { blocosDoEditor, editorDosBlocos } = await import("../documento/tiptap");
+    const esquema = getSchema(extensoesDoApud(new ControleDaBarra()));
+    const citacao = { tipo: "parenteses" as const, direta: true, obras: [{ referencia: "r1", localizador: { tipo: "pagina" as const, valor: "15" } }] };
+    const blocos = [
+      { tipo: "paragrafo" as const, trechos: [{ texto: "antes " }, { citacao }, { texto: " depois", marcas: ["italico" as const] }] },
+      { tipo: "titulo" as const, nivel: 2 as const, trechos: [{ citacao }] },
+      { tipo: "lista" as const, sequencia: false, itens: [{ trechos: [{ citacao }], subitens: [{ trechos: [{ texto: "b " }, { citacao }] }] }] },
+    ];
+    // fromJSON confere o conteúdo contra o esquema do editor: um nó que ele não aceitasse daria erro aqui.
+    const no = NoPM.fromJSON(esquema, editorDosBlocos(blocos));
+    no.check();
+    expect(blocosDoEditor(no.toJSON())).toEqual(blocos);
+  });
+});

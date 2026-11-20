@@ -41,7 +41,8 @@ describe("conversor para o Typst", () => {
     const sinais = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ação — “aspas” 50% e/ou #1 *a* _b_ $x$ <c> @d \\ // /* ";
     const combinacoes: Marca[][] = [[], ["negrito"], ["italico"], ["sobrescrito"], ["negrito", "italico", "sobrescrito"]];
     const doc: Documento = {
-      versao: 1,
+      versao: 2,
+      referencias: [],
       blocos: combinacoes.flatMap((marcas) => [
         { tipo: "titulo" as const, nivel: 2 as const, trechos: [{ texto: sinais, marcas }] },
         { tipo: "paragrafo" as const, trechos: [{ texto: "antes " }, { texto: sinais, marcas }, { texto: " depois" }] },
@@ -53,7 +54,8 @@ describe("conversor para o Typst", () => {
 
   it("parágrafos e títulos vazios não viram nada", () => {
     const doc: Documento = {
-      versao: 1,
+      versao: 2,
+      referencias: [],
       blocos: [
         { tipo: "paragrafo", trechos: [] },
         { tipo: "titulo", nivel: 1, trechos: [{ texto: "  " }] },
@@ -77,7 +79,7 @@ describe("conversor para o Typst", () => {
   it("entrelinha 1,5 como no Word: 20,7 pt entre as linhas, em Times 12", () => {
     const paragrafo = "palavra ".repeat(200);
     const marca = (n: string) => `#context [#metadata(here().position()) <${n}>]`;
-    const marcado = documentoParaTypst({ versao: 1, blocos: [] }, perfil) + `${marca("a")}${paragrafo}\n\n${marca("b")}${paragrafo}\n`;
+    const marcado = documentoParaTypst({ versao: 2, referencias: [], blocos: [] }, perfil) + `${marca("a")}${paragrafo}\n\n${marca("b")}${paragrafo}\n`;
     // Do começo de um parágrafo ao começo do seguinte: um número inteiro de linhas de 20,7 pt.
     const [a, b] = [posicoes(marcado, "a")[0], posicoes(marcado, "b")[0]];
     const linhas = (b.y - a.y) / 20.7;
@@ -92,18 +94,18 @@ describe("conversor para o Typst", () => {
       { tipo: "paragrafo", trechos: [{ texto: "texto" }] },
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "2 Dois" }] },
     ];
-    expect(paginas(compilar(documentoParaTypst({ versao: 1, blocos }, perfil)))).toBe(1);
+    expect(paginas(compilar(documentoParaTypst({ versao: 2, referencias: [], blocos }, perfil)))).toBe(1);
     const comQuebra: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ versao: 1, blocos: comQuebra }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ versao: 2, referencias: [], blocos: comQuebra }, perfil)))).toBe(2);
     // Duas quebras seguidas não deixam uma página em branco.
     const duas: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ versao: 1, blocos: duas }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ versao: 2, referencias: [], blocos: duas }, perfil)))).toBe(2);
   });
 });
 
 describe("títulos", () => {
   const typstDe = (blocos: Documento["blocos"]) =>
-    documentoParaTypst({ versao: 1, blocos }, perfil) +
+    documentoParaTypst({ versao: 2, referencias: [], blocos }, perfil) +
     `#context [#metadata(query(heading).map(h => (if h.numbering == none { "" } else { numbering(h.numbering, 1) }, h.body.fields().at("text", default: repr(h.body))))) <t>]\n`;
 
   it("o número é o que a pessoa escreveu; sem número escrito, sai sem número", () => {
@@ -119,7 +121,7 @@ describe("títulos", () => {
   });
 
   it("as letras saem como a pessoa escreveu (o Apud não põe em maiúsculas)", () => {
-    const typst = documentoParaTypst({ versao: 1, blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
+    const typst = documentoParaTypst({ versao: 2, referencias: [], blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
     expect(typst).not.toContain("upper(");
     expect(typst).toContain("strong(x)");
   });
@@ -127,7 +129,7 @@ describe("títulos", () => {
   it("título longo: a segunda linha fica sob a primeira letra do texto, não sob o número", () => {
     const longo = "palavra ".repeat(30).trim();
     const marca = `#show heading: it => { it; context [#metadata(here().position()) <fim>] }`;
-    const typst = documentoParaTypst({ versao: 1, blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
+    const typst = documentoParaTypst({ versao: 2, referencias: [], blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
     expect(() => compilar(typst + marca)).not.toThrow();
     expect(typst).toContain('numbering: (..n) => "1.1.1"');
   });

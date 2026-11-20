@@ -2,18 +2,28 @@
 //
 // Regra principal: nenhum texto pode se perder. Se o editor tiver algo que o
 // modelo não conhece, o texto vira parágrafo comum em vez de sumir.
+//
+// O editor só cuida dos blocos do texto. As referências do trabalho não passam
+// por ele: quem guarda e grava o documento inteiro é a tela do trabalho. Assim,
+// nada que o editor faça pode apagar uma referência.
+//
+// Cada citação é um nó "citacao" do editor, que não se divide (o cursor pula
+// por cima dele), com os dados da citação guardados como estão no modelo.
 
 import type { JSONContent } from "@tiptap/core";
 import {
+  ehCitacao,
   ORDEM_DAS_MARCAS,
-  VERSAO_DO_FORMATO,
   type Bloco,
-  type Documento,
+  type Citacao,
   type ItemDeLista,
   type Marca,
   type NivelDeTitulo,
   type Trecho,
 } from "./modelo";
+
+/** Nome do nó das citações no editor (extensão em editor/extensoes.ts). */
+export const NO_DA_CITACAO = "citacao";
 
 const MARCA_DO_EDITOR: Record<Marca, string> = {
   negrito: "bold",
@@ -29,12 +39,12 @@ const MARCA_DO_APUD: Record<string, Marca> = {
 // ---------------------------------------------------------------------------
 // Do editor para o Apud
 
-/** Converte o conteúdo do editor no documento do Apud. */
-export function documentoDoEditor(json: JSONContent): Documento {
+/** Converte o conteúdo do editor nos blocos do texto do Apud. */
+export function blocosDoEditor(json: JSONContent): Bloco[] {
   const blocos: Bloco[] = [];
   for (const no of json.content ?? []) blocos.push(...blocosDoNo(no));
   if (blocos.length === 0) blocos.push({ tipo: "paragrafo", trechos: [] });
-  return { versao: VERSAO_DO_FORMATO, blocos };
+  return blocos;
 }
 
 function blocosDoNo(no: JSONContent): Bloco[] {
@@ -89,6 +99,8 @@ function trechosDe(no: JSONContent): Trecho[] {
       trechos.push(marcas.length ? { texto: n.text, marcas } : { texto: n.text });
     } else if (n.type === "hardBreak") {
       trechos.push({ texto: " " });
+    } else if (n.type === NO_DA_CITACAO && n.attrs?.dados) {
+      trechos.push({ citacao: structuredClone(n.attrs.dados as Citacao) });
     }
     n.content?.forEach(visitar);
   };
@@ -96,28 +108,28 @@ function trechosDe(no: JSONContent): Trecho[] {
   return normalizar(trechos);
 }
 
-/** Junta trechos vizinhos com as mesmas marcas e tira os vazios. */
+/** Junta trechos de texto vizinhos com as mesmas marcas e tira os vazios. As citações ficam como estão. */
 export function normalizar(trechos: Trecho[]): Trecho[] {
   const saida: Trecho[] = [];
   for (const t of trechos) {
+    if (ehCitacao(t)) {
+      saida.push(t);
+      continue;
+    }
     if (!t.texto) continue;
     const ultimo = saida[saida.length - 1];
-    if (ultimo && mesmasMarcas(ultimo, t)) ultimo.texto += t.texto;
+    if (ultimo && !ehCitacao(ultimo) && (ultimo.marcas ?? []).join() === (t.marcas ?? []).join()) ultimo.texto += t.texto;
     else saida.push(t.marcas?.length ? { texto: t.texto, marcas: [...t.marcas] } : { texto: t.texto });
   }
   return saida;
 }
 
-function mesmasMarcas(a: Trecho, b: Trecho): boolean {
-  return (a.marcas ?? []).join() === (b.marcas ?? []).join();
-}
-
 // ---------------------------------------------------------------------------
 // Do Apud para o editor
 
-/** Converte o documento do Apud no conteúdo que o editor abre. */
-export function editorDoDocumento(doc: Documento): JSONContent {
-  const content = doc.blocos.map(noDoBloco);
+/** Converte os blocos do texto no conteúdo que o editor abre. */
+export function editorDosBlocos(blocos: Bloco[]): JSONContent {
+  const content = blocos.map(noDoBloco);
   return { type: "doc", content: content.length ? content : [{ type: "paragraph" }] };
 }
 
@@ -149,12 +161,17 @@ function noDaLista(itens: ItemDeLista[], sequencia: boolean): JSONContent {
 }
 
 function comTexto(no: JSONContent, trechos: Trecho[]): JSONContent {
-  const content = trechos
-    .filter((t) => t.texto)
-    .map((t) => ({
-      type: "text",
-      text: t.texto,
-      ...(t.marcas?.length ? { marks: t.marcas.map((m) => ({ type: MARCA_DO_EDITOR[m] })) } : {}),
-    }));
+  const content: JSONContent[] = [];
+  for (const t of trechos) {
+    if (ehCitacao(t)) {
+      content.push({ type: NO_DA_CITACAO, attrs: { dados: structuredClone(t.citacao) } });
+    } else if (t.texto) {
+      content.push({
+        type: "text",
+        text: t.texto,
+        ...(t.marcas?.length ? { marks: t.marcas.map((m) => ({ type: MARCA_DO_EDITOR[m] })) } : {}),
+      });
+    }
+  }
   return content.length ? { ...no, content } : no;
 }

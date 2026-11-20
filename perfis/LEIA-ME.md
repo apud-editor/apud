@@ -120,6 +120,10 @@ títulos dos 5 níveis, alíneas, nota, figura, tabela, citação curta e longa,
 cada tipo de chamada e cada tipo de referência. As referências estão em
 `prova/referencias.yml`. As obras são fictícias, menos a Lei nº 10.216.
 
+`prova/referencias.json` tem as mesmas obras no formato que o Apud grava no
+arquivo .apud. Um teste confere que as duas versões dizem a mesma coisa: se
+mudar uma, mude a outra.
+
 `prova/gabarito-abnt.txt` e `prova/gabarito-apa.txt` dizem como cada chamada e
 cada referência devem sair. O comando `npm run prova` monta o documento no
 Typst (o motor de PDF do Apud) e compara.

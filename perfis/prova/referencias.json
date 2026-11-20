@@ -1,0 +1,541 @@
+[
+  {
+    "id": "silva2019",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Silva",
+        "prenomes": "João Pedro"
+      }
+    ],
+    "titulo": "Psicologia clínica",
+    "subtitulo": "fundamentos e prática",
+    "data": {
+      "ano": 2019
+    },
+    "edicao": "2",
+    "cidade": "Petrópolis",
+    "editora": "Vozes"
+  },
+  {
+    "id": "lima2018",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Lima",
+        "prenomes": "Ana"
+      },
+      {
+        "sobrenome": "Costa",
+        "prenomes": "Bruno"
+      },
+      {
+        "sobrenome": "Reis",
+        "prenomes": "Carla"
+      }
+    ],
+    "titulo": "Saúde mental na atenção básica",
+    "data": {
+      "ano": 2018
+    },
+    "cidade": "Porto Alegre",
+    "editora": "Artmed"
+  },
+  {
+    "id": "alves2022",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Alves",
+        "prenomes": "Ana Maria"
+      },
+      {
+        "sobrenome": "Brito",
+        "prenomes": "Bruno"
+      },
+      {
+        "sobrenome": "Cunha",
+        "prenomes": "Carla"
+      },
+      {
+        "sobrenome": "Dias",
+        "prenomes": "Davi"
+      }
+    ],
+    "titulo": "Avaliação psicológica",
+    "data": {
+      "ano": 2022
+    },
+    "cidade": "São Paulo",
+    "editora": "Summus"
+  },
+  {
+    "id": "costa2021",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Costa",
+        "prenomes": "Helena"
+      }
+    ],
+    "titulo": "O acolhimento no serviço de saúde mental",
+    "data": {
+      "ano": 2021
+    },
+    "cidade": "Porto Alegre",
+    "editora": "Artmed",
+    "paginas": "9-30",
+    "publicacao": {
+      "titulo": "Psicologia e saúde coletiva",
+      "subtitulo": "práticas no SUS",
+      "organizadores": [
+        {
+          "sobrenome": "Melo",
+          "prenomes": "Rui"
+        },
+        {
+          "sobrenome": "Nunes",
+          "prenomes": "Sara"
+        }
+      ]
+    }
+  },
+  {
+    "id": "dias2025",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Dias",
+        "prenomes": "Eva"
+      },
+      {
+        "sobrenome": "Lopes",
+        "prenomes": "Ivo"
+      }
+    ],
+    "titulo": "Vínculo terapêutico na atenção psicossocial",
+    "data": {
+      "ano": 2025,
+      "mes": 3
+    },
+    "paginas": "1-15",
+    "publicacao": {
+      "titulo": "Psicologia em Estudo",
+      "cidade": "Maringá",
+      "volume": "10",
+      "numero": "2"
+    },
+    "doi": "10.0000/pe.2025.0102",
+    "url": "https://doi.org/10.0000/pe.2025.0102",
+    "acesso": {
+      "ano": 2025,
+      "mes": 5,
+      "dia": 15
+    }
+  },
+  {
+    "id": "ferraz2024",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Ferraz",
+        "prenomes": "Lia"
+      }
+    ],
+    "titulo": "Grupos terapêuticos com adolescentes",
+    "data": {
+      "ano": 2024
+    },
+    "numeroEletronico": "e2024017",
+    "publicacao": {
+      "titulo": "Revista Brasileira de Psicoterapia",
+      "cidade": "Porto Alegre",
+      "volume": "26"
+    }
+  },
+  {
+    "id": "souza2020a",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Souza",
+        "prenomes": "Maria"
+      }
+    ],
+    "titulo": "Clínica ampliada",
+    "data": {
+      "ano": 2020
+    },
+    "cidade": "São Paulo",
+    "editora": "Hucitec"
+  },
+  {
+    "id": "souza2020b",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Souza",
+        "prenomes": "Maria"
+      }
+    ],
+    "titulo": "Escuta qualificada",
+    "data": {
+      "ano": 2020
+    },
+    "cidade": "São Paulo",
+    "editora": "Hucitec"
+  },
+  {
+    "id": "silvaj2021",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Silva",
+        "prenomes": "José"
+      }
+    ],
+    "titulo": "Psicopatologia descritiva",
+    "data": {
+      "ano": 2021
+    },
+    "cidade": "Barueri",
+    "editora": "Manole"
+  },
+  {
+    "id": "silvam2021",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Silva",
+        "prenomes": "Marta"
+      }
+    ],
+    "titulo": "Psicoterapia breve",
+    "data": {
+      "ano": 2021
+    },
+    "cidade": "Barueri",
+    "editora": "Manole"
+  },
+  {
+    "id": "rudio2002",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Rudio",
+        "prenomes": "Franz"
+      }
+    ],
+    "titulo": "Introdução ao projeto de pesquisa",
+    "data": {
+      "ano": 2002
+    },
+    "cidade": "Petrópolis",
+    "editora": "Vozes"
+  },
+  {
+    "id": "rudio2003",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Rudio",
+        "prenomes": "Franz"
+      }
+    ],
+    "titulo": "Orientação não diretiva",
+    "data": {
+      "ano": 2003
+    },
+    "cidade": "Petrópolis",
+    "editora": "Vozes"
+  },
+  {
+    "id": "guia2025",
+    "tipo": "livro",
+    "autores": [],
+    "titulo": "Guia de normalização de trabalhos acadêmicos",
+    "data": {
+      "ano": 2025
+    },
+    "cidade": "Curitiba",
+    "editora": "Editora Universitária"
+  },
+  {
+    "id": "abep2023",
+    "tipo": "livro",
+    "autores": [
+      {
+        "instituicao": "Associação Brasileira de Ensino de Psicologia"
+      }
+    ],
+    "titulo": "Diretrizes para o estágio em psicologia",
+    "data": {
+      "ano": 2023
+    },
+    "cidade": "Brasília",
+    "editora": "ABEP"
+  },
+  {
+    "id": "inpsi2011",
+    "tipo": "livro",
+    "autores": [
+      {
+        "instituicao": "INPSI"
+      }
+    ],
+    "titulo": "Censo da psicologia no Brasil",
+    "data": {
+      "ano": 2011
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "INPSI"
+  },
+  {
+    "id": "brasil2001",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Brasil"
+      }
+    ],
+    "titulo": "Lei nº 10.216, de 6 de abril de 2001",
+    "data": {
+      "ano": 2001
+    },
+    "cidade": "Brasília, DF",
+    "editora": "Presidência da República",
+    "ementa": "Dispõe sobre a proteção e os direitos das pessoas portadoras de transtornos mentais e redireciona o modelo assistencial em saúde mental",
+    "url": "https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm",
+    "acesso": {
+      "ano": 2025,
+      "mes": 5,
+      "dia": 15
+    }
+  },
+  {
+    "id": "garcia2015",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Garcia",
+        "prenomes": "Paulo"
+      }
+    ],
+    "titulo": "Terapia cognitiva",
+    "data": {
+      "ano": 2015
+    },
+    "cidade": "Novo Hamburgo",
+    "editora": "Sinopsys"
+  },
+  {
+    "id": "smith2019",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Smith",
+        "prenomes": "John"
+      }
+    ],
+    "titulo": "Clinical supervision in practice",
+    "data": {
+      "ano": 2019
+    },
+    "cidade": "New York",
+    "editora": "Northfield Press"
+  },
+  {
+    "id": "morais2024",
+    "tipo": "site",
+    "autores": [
+      {
+        "sobrenome": "Morais",
+        "prenomes": "Tânia"
+      }
+    ],
+    "titulo": "Saúde mental de estudantes universitários",
+    "data": {
+      "ano": 2024,
+      "mes": 5,
+      "dia": 2
+    },
+    "cidade": "São Paulo",
+    "editora": "Portal Psicologia Hoje",
+    "url": "https://psicologiahoje.example.org/saude-mental-estudantes",
+    "acesso": {
+      "ano": 2025,
+      "mes": 5,
+      "dia": 15
+    }
+  },
+  {
+    "id": "moura201x",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Moura",
+        "prenomes": "Lúcia"
+      }
+    ],
+    "titulo": "Memórias do hospício",
+    "dataIncerta": "[201-?]",
+    "editora": "Livraria Central"
+  },
+  {
+    "id": "pinto2017",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Pinto",
+        "prenomes": "Rosa"
+      }
+    ],
+    "titulo": "Cartas a uma jovem terapeuta",
+    "data": {
+      "ano": 2017
+    },
+    "cidade": "Recife"
+  },
+  {
+    "id": "nunes2016",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Nunes",
+        "prenomes": "Teresa"
+      }
+    ],
+    "titulo": "Diário de campo",
+    "data": {
+      "ano": 2016
+    }
+  },
+  {
+    "id": "freitas2017",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Freitas",
+        "prenomes": "Lucas Moreira de"
+      }
+    ],
+    "titulo": "A proteção social à população em situação de rua",
+    "subtitulo": "entre o direito e a tutela",
+    "data": {
+      "ano": 2017
+    },
+    "cidade": "Londrina",
+    "editora": "Universidade Estadual de Londrina",
+    "folhas": "312",
+    "tipoDoTrabalho": "Tese",
+    "grau": "Doutorado em Serviço Social",
+    "url": "https://repositorio.example.org/freitas2017",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "nogueira2023",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "sobrenome": "Nogueira",
+        "prenomes": "Marcos"
+      }
+    ],
+    "titulo": "Estimativa da população em situação de rua no Brasil",
+    "data": {
+      "ano": 2023
+    },
+    "cidade": "Brasília",
+    "editora": "Instituto de Pesquisa Social",
+    "serie": "Nota Técnica",
+    "numeroNaSerie": "103"
+  },
+  {
+    "id": "abrigo2024",
+    "tipo": "noticia",
+    "autores": [],
+    "titulo": "Abrigo municipal amplia vagas no inverno",
+    "data": {
+      "ano": 2024,
+      "mes": 7,
+      "dia": 3
+    },
+    "publicacao": {
+      "titulo": "Jornal do Litoral",
+      "cidade": "Itajaí"
+    },
+    "url": "https://jornaldolitoral.example.org/abrigo",
+    "acesso": {
+      "ano": 2024,
+      "mes": 7,
+      "dia": 3
+    }
+  },
+  {
+    "id": "teles2024",
+    "tipo": "evento",
+    "autores": [
+      {
+        "sobrenome": "Teles",
+        "prenomes": "Luísa"
+      },
+      {
+        "sobrenome": "Andrade",
+        "prenomes": "Marcos"
+      }
+    ],
+    "titulo": "Categorizações de pessoas em situação de rua",
+    "data": {
+      "ano": 2024
+    },
+    "cidade": "Belo Horizonte",
+    "editora": "Editora do Seminário",
+    "paginas": "15-30",
+    "evento": {
+      "nome": "Seminário de Políticas Públicas",
+      "numero": "20",
+      "ano": "2024",
+      "cidade": "Diamantina"
+    },
+    "publicacao": {
+      "titulo": "Anais do Seminário de Políticas Públicas"
+    },
+    "url": "https://anais.example.org/teles2024.pdf",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "prado2025",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Prado",
+        "prenomes": "Juliana"
+      }
+    ],
+    "titulo": "Acolhimento na orla: nossa equipe está nas ruas",
+    "data": {
+      "ano": 2025,
+      "mes": 2,
+      "dia": 16
+    },
+    "perfil": "@juprado",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "url": "https://www.instagram.com/reel/exemplo/",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  }
+]

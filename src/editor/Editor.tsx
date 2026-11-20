@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { EditorContent, useEditor, useEditorState, type Editor as EditorTipTap } from "@tiptap/react";
-import { documentoDoEditor, editorDoDocumento } from "../documento/tiptap";
+import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
 import { estrutura } from "../documento/estrutura";
-import type { Documento } from "../documento/modelo";
+import type { Bloco } from "../documento/modelo";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
 import { ControleDaBarra, extensoesDoApud, inserirQuebra } from "./extensoes";
 
 interface Props {
-  inicial: Documento;
+  /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
+  inicial: Bloco[];
   /** Chamado na hora, a cada mudança no texto. */
   aoMudar?: () => void;
   /** Recebe a função que lê o texto atual, para quem precisa dele (o salvamento e a prévia). */
-  lerTexto?: React.MutableRefObject<(() => Documento) | null>;
+  lerTexto?: React.MutableRefObject<(() => Bloco[]) | null>;
   /** Botões a mais, no lado direito da barra de ferramentas (como "Prévia"). */
   extrasDaBarra?: React.ReactNode;
   /** Um painel ao lado do texto (como a prévia do PDF). */
@@ -20,26 +21,26 @@ interface Props {
 
 export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, lateral }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
-  const [documento, setDocumento] = useState(inicial);
+  const [blocos, setBlocos] = useState(inicial);
   const espera = useRef<number>(0);
   const aoMudarRef = useRef(aoMudar);
   aoMudarRef.current = aoMudar;
 
   const editor = useEditor({
     extensions: extensoesDoApud(controle),
-    content: editorDoDocumento(inicial),
+    content: editorDosBlocos(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
     onUpdate: ({ editor }) => {
       aoMudarRef.current?.();
       // A estrutura da esquerda só é refeita depois de uma pausa, para não pesar em textos longos.
       window.clearTimeout(espera.current);
-      espera.current = window.setTimeout(() => setDocumento(documentoDoEditor(editor.getJSON())), 300);
+      espera.current = window.setTimeout(() => setBlocos(blocosDoEditor(editor.getJSON())), 300);
     },
   });
 
   useEffect(() => {
     if (!lerTexto || !editor) return;
-    lerTexto.current = () => documentoDoEditor(editor.getJSON());
+    lerTexto.current = () => blocosDoEditor(editor.getJSON());
     return () => {
       lerTexto.current = null;
     };
@@ -51,7 +52,7 @@ export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, late
     <div className="area">
       <BarraDeFerramentas editor={editor} extras={extrasDaBarra} />
       <div className="colunas">
-        <Estrutura documento={documento} editor={editor} />
+        <Estrutura blocos={blocos} editor={editor} />
         <main className="folha">
           <EditorContent editor={editor} />
         </main>
@@ -167,8 +168,8 @@ function Botao(p: { rotulo: string; ligado: boolean; aoClicar: () => void; child
 
 // ---------------------------------------------------------------------------
 
-function Estrutura({ documento, editor }: { documento: Documento; editor: EditorTipTap | null }) {
-  const titulos = estrutura(documento.blocos);
+function Estrutura({ blocos, editor }: { blocos: Bloco[]; editor: EditorTipTap | null }) {
+  const titulos = estrutura(blocos);
 
   const irPara = (indice: number) => {
     if (!editor) return;
