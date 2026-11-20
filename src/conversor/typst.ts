@@ -15,7 +15,7 @@
 // Aqui, cada linha é uma caixa de 1,15 em, e o espaço entre as caixas completa
 // o resto.
 
-import type { Bloco, Documento, ItemDeLista, Trecho } from "../documento/modelo";
+import { ehCitacao, type Bloco, type Documento, type ItemDeLista, type Trecho } from "../documento/modelo";
 import { separarNumero } from "../documento/estrutura";
 import type { PerfilResolvido, Valor } from "../perfis";
 
@@ -211,7 +211,7 @@ function blocoParaTypst(b: Bloco, recuos: { recuoAlinea: string; recuoSub: strin
 
 /** Tira do começo do título o número que a pessoa escreveu ("1.1 "). */
 function numeroDoTitulo(trechos: Trecho[]): { numero: string; trechos: Trecho[] } {
-  if (!trechos.length) return { numero: "", trechos };
+  if (!trechos.length || ehCitacao(trechos[0])) return { numero: "", trechos };
   const { numero, resto } = separarNumero(trechos[0].texto);
   if (!numero) return { numero: "", trechos };
   return { numero, trechos: [{ ...trechos[0], texto: resto }, ...trechos.slice(1)] };
@@ -246,6 +246,9 @@ export function letraDaAlinea(i: number): string {
 function trechosParaTypst(trechos: Trecho[]): string {
   return trechos
     .map((t) => {
+      // As citações são montadas pelo motor de citações (parte 2 da fase 2).
+      // Até lá, aparecem marcadas no PDF, para nunca sumirem sem aviso.
+      if (ehCitacao(t)) return escaparTexto("[citação]");
       let s = escaparTexto(t.texto);
       const m = t.marcas ?? [];
       if (m.includes("sobrescrito")) s = `#super[${s}]`;

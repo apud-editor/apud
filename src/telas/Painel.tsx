@@ -52,6 +52,7 @@ export default function Painel({ aoAbrir }: Props) {
     const trabalho: Trabalho = {
       nome: "Trabalho sem título",
       perfil: { perfil: id.perfil, versao: id.versao, revisao: id.revisao },
+      ajustes: {},
       criadoEm: agora,
       modificadoEm: agora,
       documento: documentoVazio(),

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Editor from "../editor/Editor";
-import type { Documento } from "../documento/modelo";
+import { VERSAO_DO_FORMATO, type Bloco, type Documento, type Referencia } from "../documento/modelo";
 import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
 import { escreverArquivo, type Trabalho } from "../arquivos/formato";
 import { SalvamentoAutomatico, type SituacaoDoSalvamento } from "../arquivos/salvamento";
@@ -19,8 +19,17 @@ interface Props {
 }
 
 export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Props) {
-  const lerTexto = useRef<(() => Documento) | null>(null);
-  const ultimoTexto = useRef<Documento>(trabalho.documento);
+  const lerTexto = useRef<(() => Bloco[]) | null>(null);
+  const ultimoTexto = useRef<Bloco[]>(trabalho.documento.blocos);
+  // As referências não passam pelo editor: ficam aqui, e o documento é montado
+  // na hora de gravar. Assim, nada que aconteça no editor apaga uma referência.
+  const referencias = useRef<Referencia[]>(trabalho.documento.referencias);
+  /** O documento inteiro, como vai para o arquivo e para o PDF. */
+  const lerDocumento = useRef<() => Documento>(() => {
+    // Se o editor não estiver disponível, usa o último texto lido: nunca grava um texto vazio por engano.
+    if (lerTexto.current) ultimoTexto.current = lerTexto.current();
+    return { versao: VERSAO_DO_FORMATO, blocos: ultimoTexto.current, referencias: referencias.current };
+  });
   const nomeSalvo = useRef(trabalho.nome);
   const [nome, setNome] = useState(trabalho.nome);
   const [situacao, setSituacao] = useState<SituacaoDoSalvamento>({ tipo: "salvo", quando: null });
@@ -36,16 +45,13 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
       new SalvamentoAutomatico({
         armazenamento,
         arquivo,
-        conteudo: () => {
-          // Se o editor não estiver disponível, usa o último texto lido: nunca grava um texto vazio por engano.
-          if (lerTexto.current) ultimoTexto.current = lerTexto.current();
-          return escreverArquivo({
+        conteudo: () =>
+          escreverArquivo({
             ...trabalho,
             nome: nomeSalvo.current,
             modificadoEm: new Date().toISOString(),
-            documento: ultimoTexto.current,
-          });
-        },
+            documento: lerDocumento.current(),
+          }),
       }),
     // Um salvamento por trabalho aberto.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,8 +105,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
     setProblema(null);
     setExportado(null);
     try {
-      if (lerTexto.current) ultimoTexto.current = lerTexto.current();
-      const pdf = await motor.pdf(documentoParaTypst(ultimoTexto.current, perfilAbnt(), { titulo: nomeSalvo.current }));
+      const pdf = await motor.pdf(documentoParaTypst(lerDocumento.current(), perfilAbnt(), { titulo: nomeSalvo.current }));
       const onde = await armazenamento.exportarPdf(`${nomeSalvo.current}.pdf`, pdf);
       if (onde) setExportado(onde);
     } catch (e) {
@@ -199,7 +204,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         </div>
       )}
       <Editor
-        inicial={trabalho.documento}
+        inicial={trabalho.documento.blocos}
         aoMudar={() => {
           salvamento.houveMudanca();
           mudancas.dispatchEvent(new Event("mudou"));
@@ -216,7 +221,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
           </button>
         }
         lateral={
-          previaAberta ? <Previa lerTexto={lerTexto} mudancas={mudancas} nome={nome} aoFechar={() => setPreviaAberta(false)} /> : null
+          previaAberta ? <Previa lerTexto={lerDocumento} mudancas={mudancas} nome={nome} aoFechar={() => setPreviaAberta(false)} /> : null
         }
       />
     </div>

@@ -1,7 +1,7 @@
 // As peças do editor: o que ele aceita (títulos, parágrafos, listas, negrito,
 // itálico, sobrescrito) e o que ele recusa de propósito.
 
-import { Extension, type Editor, type Range } from "@tiptap/core";
+import { Extension, Node, type Editor, type Range } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Superscript from "@tiptap/extension-superscript";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
@@ -9,6 +9,8 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
 import { Plugin, PluginKey, Selection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
 import { buscarBlocos, type TipoDeBloco } from "./blocos";
+import { NO_DA_CITACAO } from "../documento/tiptap";
+import type { Citacao } from "../documento/modelo";
 
 // ---------------------------------------------------------------------------
 // Colar sempre como texto simples (decisão da versão 1)
@@ -274,8 +276,52 @@ export function inserirQuebra(editor: Editor) {
 }
 
 // ---------------------------------------------------------------------------
+// Citação: uma peça dentro do texto, que não se divide. O cursor pula por
+// cima dela, e o Backspace a apaga inteira. Os dados ficam como estão no
+// modelo do Apud (documento/referencias.ts).
 
-export function extensoesDoApud(controle: ControleDaBarra) {
+/** Como a citação aparece no editor. A tela do trabalho troca pelo texto já na norma. */
+export type DescreverCitacao = (c: Citacao) => string;
+
+const descricaoSimples: DescreverCitacao = (c) => (c.tipo === "sem-referencia" ? `(${c.texto})` : "[citação]");
+
+function citacaoNoEditor(descrever: DescreverCitacao) {
+  return Node.create({
+    name: NO_DA_CITACAO,
+    group: "inline",
+    inline: true,
+    atom: true,
+    selectable: true,
+    addAttributes() {
+      return {
+        dados: {
+          default: null,
+          parseHTML: (el) => {
+            try {
+              return JSON.parse(el.getAttribute("data-citacao") ?? "null");
+            } catch {
+              return null;
+            }
+          },
+          renderHTML: (attrs) => ({ "data-citacao": JSON.stringify(attrs.dados) }),
+        },
+      };
+    },
+    parseHTML() {
+      return [{ tag: "span[data-citacao]" }];
+    },
+    renderHTML({ node, HTMLAttributes }) {
+      return ["span", { ...HTMLAttributes, class: "citacao" }, node.attrs.dados ? descrever(node.attrs.dados) : ""];
+    },
+    renderText({ node }) {
+      return node.attrs.dados ? descrever(node.attrs.dados) : "";
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+
+export function extensoesDoApud(controle: ControleDaBarra, descrever: DescreverCitacao = descricaoSimples) {
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4, 5] },
@@ -301,5 +347,6 @@ export function extensoesDoApud(controle: ControleDaBarra) {
     ColarSemFormatacao,
     ListasFaceis,
     barraDeBlocos(controle),
+    citacaoNoEditor(descrever),
   ];
 }
