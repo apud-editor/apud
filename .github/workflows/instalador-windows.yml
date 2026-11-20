@@ -1,0 +1,42 @@
+# Monta o instalador do Apud para Windows e publica na aba "Releases" do GitHub.
+# Roda sozinho a cada envio para a branch main, ou manualmente pela aba Actions.
+name: Instalador Windows
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Necessário para criar a página de download (release) com o instalador.
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Guarda o que o Rust já compilou, para as próximas montagens serem mais rápidas.
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: teste-${{ github.run_number }}
+          releaseName: "Apud (teste ${{ github.run_number }})"
+          releaseBody: "Instalador de teste para Windows. Baixe o arquivo .exe abaixo."
+          releaseDraft: false
+          prerelease: true

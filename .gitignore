@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+.DS_Store
+
+# Arquivos gerados pelo Tauri / Rust
+src-tauri/target
+src-tauri/gen/schemas

@@ -1,0 +1,100 @@
+:root {
+  --papel: #faf8f4;
+  --tinta: #1f2a2e;
+  --tinta-suave: #5d6b70;
+  --linha: #e3ded4;
+  --destaque: #1d6b6b;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--tinta);
+  background: var(--papel);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.pagina {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px;
+  text-align: center;
+}
+
+.marca {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 72px;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+
+.ponto {
+  color: var(--destaque);
+}
+
+.lema {
+  margin: 0 0 24px;
+  font-size: 18px;
+  color: var(--tinta-suave);
+}
+
+.cartao {
+  width: min(460px, 100%);
+  padding: 20px 24px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+
+.selo {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--destaque);
+}
+
+.detalhes {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.detalhes div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 10px;
+  border-top: 1px solid var(--linha);
+}
+
+.detalhes dt {
+  color: var(--tinta-suave);
+}
+
+.detalhes dd {
+  margin: 0;
+}
+
+.rodape {
+  margin: 24px 0 0;
+  font-size: 13px;
+  color: var(--tinta-suave);
+}
