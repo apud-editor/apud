@@ -8,7 +8,8 @@ import { registrarAntesDeSair } from "./sair";
 import Previa from "./Previa";
 import { documentoParaTypst } from "../conversor/typst";
 import { motor } from "../conversor/motor";
-import { normaEmbutida } from "../perfis/embutidos";
+import { normaEmbutida, normasEmbutidas } from "../perfis/embutidos";
+import { AparenciaDaNorma } from "../editor/extensoes";
 import type { NormaDoTrabalho } from "../perfis/norma";
 
 interface Props {
@@ -25,15 +26,22 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   // As referências não passam pelo editor: ficam aqui, e o documento é montado
   // na hora de gravar. Assim, nada que aconteça no editor apaga uma referência.
   const referencias = useRef<Referencia[]>(trabalho.documento.referencias);
-  // A norma do trabalho, com os ajustes que ele guarda para ela (escolhas do autor).
+  // A norma do trabalho, com os ajustes que ele guarda para ela (escolhas do
+  // autor). Trocar a norma muda o perfil do trabalho; os ajustes de cada norma
+  // ficam guardados, e voltar para a anterior encontra as escolhas como estavam.
+  const perfilAtual = useRef(trabalho.perfil);
+  const ajustes = useRef(trabalho.ajustes);
+  const [nomeDaNorma, setNomeDaNorma] = useState(trabalho.perfil.perfil);
   const norma = useRef<NormaDoTrabalho | null>(null);
   const lerNorma = useRef<() => NormaDoTrabalho>(() => {
     if (!norma.current) {
-      const nome = trabalho.perfil.perfil;
-      norma.current = normaEmbutida(nome, trabalho.ajustes[nome] ?? {});
+      const nome = perfilAtual.current.perfil;
+      norma.current = normaEmbutida(nome, ajustes.current[nome] ?? {});
     }
     return norma.current;
   });
+  const rotuloDaLista = () => lerNorma.current().perfil.regras.get("rótulo das referências")?.texto ?? "Referências";
+  const aparencia = useMemo(() => new AparenciaDaNorma(rotuloDaLista()), []);
   /** O documento inteiro, como vai para o arquivo e para o PDF. */
   const lerDocumento = useRef<() => Documento>(() => {
     // Se o editor não estiver disponível, usa o último texto lido: nunca grava um texto vazio por engano.
@@ -60,6 +68,8 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
             ...trabalho,
             nome: nomeSalvo.current,
             modificadoEm: new Date().toISOString(),
+            perfil: perfilAtual.current,
+            ajustes: ajustes.current,
             documento: lerDocumento.current(),
           }),
       }),
@@ -126,6 +136,21 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
     }
   };
 
+  const trocarNorma = (nome: string) => {
+    if (nome === perfilAtual.current.perfil) return;
+    try {
+      const { identificacao: id } = normaEmbutida(nome, ajustes.current[nome] ?? {}).perfil;
+      perfilAtual.current = { perfil: id.perfil, versao: id.versao, revisao: id.revisao };
+      norma.current = null;
+      setNomeDaNorma(id.perfil);
+      aparencia.mudar(rotuloDaLista());
+      salvamento.houveMudanca();
+      mudancas.dispatchEvent(new Event("mudou"));
+    } catch (e) {
+      setProblema(`Não consegui trocar a norma: ${(e as Error).message}.`);
+    }
+  };
+
   const voltar = async (mesmoSemSalvar = false) => {
     if (!mesmoSemSalvar) {
       try {
@@ -168,9 +193,20 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         />
         <Situacao s={situacao} />
         <span style={{ flex: 1 }} />
-        <span className="selo-norma" title={`${trabalho.perfil.perfil} ${trabalho.perfil.versao}, revisão ${trabalho.perfil.revisao}`}>
-          {trabalho.perfil.perfil}
-        </span>
+        <div className="seletor-norma" role="group" aria-label="Norma do trabalho">
+          {normasEmbutidas().map((n) => (
+            <button
+              key={n}
+              type="button"
+              className={`seg ${n === nomeDaNorma ? "on" : ""}`}
+              aria-pressed={n === nomeDaNorma}
+              title={n === nomeDaNorma ? `${perfilAtual.current.perfil} ${perfilAtual.current.versao}, revisão ${perfilAtual.current.revisao}` : `Trocar para ${n}`}
+              onClick={() => trocarNorma(n)}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
         <button type="button" className="btn primario" onClick={exportar} disabled={exportando}>
           {exportando ? "Montando o PDF…" : "Exportar PDF"}
         </button>
@@ -216,6 +252,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
       )}
       <Editor
         inicial={trabalho.documento.blocos}
+        aparencia={aparencia}
         aoMudar={() => {
           salvamento.houveMudanca();
           mudancas.dispatchEvent(new Event("mudou"));

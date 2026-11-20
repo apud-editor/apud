@@ -11,15 +11,16 @@
 // Versões do formato:
 //   1. Fase 1: títulos, parágrafos, listas e quebras de página.
 //   2. Fase 2: as referências do trabalho e as citações dentro do texto.
-//      Um documento da versão 1 vira versão 2 sem perder nada: ganha uma
-//      lista de referências vazia (atualizarDocumento, em arquivos/formato.ts).
+//   3. Fase 2: o bloco "lista de referências", que a pessoa põe onde quiser
+//      (decisão de 20/11/2026: tudo o que sai no PDF tem um lugar no editor).
+// Documentos antigos são convertidos ao abrir, sem perder nada (arquivos/formato.ts).
 
 import type { Citacao, Referencia } from "./referencias";
 
 export * from "./referencias";
 
 /** Versão do formato. Sobe quando o formato mudar, para os arquivos antigos serem convertidos. */
-export const VERSAO_DO_FORMATO = 2;
+export const VERSAO_DO_FORMATO = 3;
 
 /** Marcas dentro do texto. Itálico, por exemplo, para palavras estrangeiras. */
 export type Marca = "negrito" | "italico" | "sobrescrito";
@@ -79,7 +80,15 @@ export interface QuebraDePagina {
   tipo: "quebra";
 }
 
-export type Bloco = Titulo | Paragrafo | Lista | QuebraDePagina;
+/**
+ * A lista de referências: o título (da norma) e as obras citadas, na ordem da
+ * norma. A pessoa põe o bloco onde quiser, normalmente no fim do trabalho.
+ */
+export interface ListaDeReferencias {
+  tipo: "referencias";
+}
+
+export type Bloco = Titulo | Paragrafo | Lista | QuebraDePagina | ListaDeReferencias;
 
 /** O texto do trabalho e as referências que ele usa. Os dados do trabalho (capa) entram na fase 3. */
 export interface Documento {

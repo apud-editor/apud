@@ -689,3 +689,46 @@ button.linha:hover {
   outline: 2px solid #2b4c9b;
   outline-offset: 1px;
 }
+
+/* Escolha da norma no topo do editor: ABNT | APA (como no protótipo). */
+.seletor-norma {
+  display: inline-flex;
+  border: 1px solid #c5c8c0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.seletor-norma .seg {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.seletor-norma .seg + .seg {
+  border-left: 1px solid #c5c8c0;
+}
+.seletor-norma .seg.on {
+  background: #2b4c9b;
+  color: #fff;
+}
+
+/* Lista de referências no texto: um bloco que mostra o título da norma. */
+.texto .lista-referencias {
+  margin: 18px 0;
+  padding: 12px 14px;
+  border: 1px dashed #9aa4b8;
+  border-radius: 8px;
+  background: #f7f8fb;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+  user-select: none;
+}
+.texto .lista-referencias.ProseMirror-selectednode {
+  outline: 2px solid #2b4c9b;
+  outline-offset: 2px;
+}

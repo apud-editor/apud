@@ -19,7 +19,7 @@ const longo =
   "espaço para nomear o que foi visto, duvidar do que foi feito e reorganizar o que foi aprendido antes de voltar ao serviço.";
 
 export const TEXTO_DE_EXEMPLO: Documento = {
-  versao: 2,
+  versao: 3,
   blocos: [
     t(1, "1 INTRODUÇÃO"),
     p(longo),

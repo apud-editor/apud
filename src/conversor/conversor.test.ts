@@ -41,7 +41,7 @@ describe("conversor para o Typst", () => {
     const sinais = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ação — “aspas” 50% e/ou #1 *a* _b_ $x$ <c> @d \\ // /* ";
     const combinacoes: Marca[][] = [[], ["negrito"], ["italico"], ["sobrescrito"], ["negrito", "italico", "sobrescrito"]];
     const doc: Documento = {
-      versao: 2,
+      versao: 3,
       referencias: [],
       blocos: combinacoes.flatMap((marcas) => [
         { tipo: "titulo" as const, nivel: 2 as const, trechos: [{ texto: sinais, marcas }] },
@@ -54,7 +54,7 @@ describe("conversor para o Typst", () => {
 
   it("parágrafos e títulos vazios não viram nada", () => {
     const doc: Documento = {
-      versao: 2,
+      versao: 3,
       referencias: [],
       blocos: [
         { tipo: "paragrafo", trechos: [] },
@@ -79,7 +79,7 @@ describe("conversor para o Typst", () => {
   it("entrelinha 1,5 como no Word: 20,7 pt entre as linhas, em Times 12", () => {
     const paragrafo = "palavra ".repeat(200);
     const marca = (n: string) => `#context [#metadata(here().position()) <${n}>]`;
-    const marcado = documentoParaTypst({ versao: 2, referencias: [], blocos: [] }, perfil) + `${marca("a")}${paragrafo}\n\n${marca("b")}${paragrafo}\n`;
+    const marcado = documentoParaTypst({ versao: 3, referencias: [], blocos: [] }, perfil) + `${marca("a")}${paragrafo}\n\n${marca("b")}${paragrafo}\n`;
     // Do começo de um parágrafo ao começo do seguinte: um número inteiro de linhas de 20,7 pt.
     const [a, b] = [posicoes(marcado, "a")[0], posicoes(marcado, "b")[0]];
     const linhas = (b.y - a.y) / 20.7;
@@ -94,18 +94,18 @@ describe("conversor para o Typst", () => {
       { tipo: "paragrafo", trechos: [{ texto: "texto" }] },
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "2 Dois" }] },
     ];
-    expect(paginas(compilar(documentoParaTypst({ versao: 2, referencias: [], blocos }, perfil)))).toBe(1);
+    expect(paginas(compilar(documentoParaTypst({ versao: 3, referencias: [], blocos }, perfil)))).toBe(1);
     const comQuebra: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ versao: 2, referencias: [], blocos: comQuebra }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ versao: 3, referencias: [], blocos: comQuebra }, perfil)))).toBe(2);
     // Duas quebras seguidas não deixam uma página em branco.
     const duas: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ versao: 2, referencias: [], blocos: duas }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ versao: 3, referencias: [], blocos: duas }, perfil)))).toBe(2);
   });
 });
 
 describe("títulos", () => {
   const typstDe = (blocos: Documento["blocos"]) =>
-    documentoParaTypst({ versao: 2, referencias: [], blocos }, perfil) +
+    documentoParaTypst({ versao: 3, referencias: [], blocos }, perfil) +
     `#context [#metadata(query(heading).map(h => (if h.numbering == none { "" } else { numbering(h.numbering, 1) }, h.body.fields().at("text", default: repr(h.body))))) <t>]\n`;
 
   it("o número é o que a pessoa escreveu; sem número escrito, sai sem número", () => {
@@ -121,7 +121,7 @@ describe("títulos", () => {
   });
 
   it("as letras saem como a pessoa escreveu (o Apud não põe em maiúsculas)", () => {
-    const typst = documentoParaTypst({ versao: 2, referencias: [], blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
+    const typst = documentoParaTypst({ versao: 3, referencias: [], blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
     expect(typst).not.toContain("upper(");
     expect(typst).toContain("strong(x)");
   });
@@ -129,7 +129,7 @@ describe("títulos", () => {
   it("título longo: a segunda linha fica sob a primeira letra do texto, não sob o número", () => {
     const longo = "palavra ".repeat(30).trim();
     const marca = `#show heading: it => { it; context [#metadata(here().position()) <fim>] }`;
-    const typst = documentoParaTypst({ versao: 2, referencias: [], blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
+    const typst = documentoParaTypst({ versao: 3, referencias: [], blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
     expect(() => compilar(typst + marca)).not.toThrow();
     expect(typst).toContain('numbering: (..n) => "1.1.1"');
   });
@@ -149,7 +149,7 @@ describe("pedaços do conversor", () => {
 describe("citações e lista de referências no PDF", () => {
   const { csl } = carregarNorma("abnt.txt");
   const comCitacao: Documento = {
-    versao: 2,
+    versao: 3,
     referencias: [
       { id: "s", tipo: "livro", autores: [{ sobrenome: "Silva", prenomes: "João" }], titulo: "Psicologia clínica", data: { ano: 2019 } },
       { id: "nao", tipo: "livro", autores: [{ sobrenome: "Nunca", prenomes: "Citado" }], titulo: "Fora da lista", data: { ano: 2000 } },
@@ -159,14 +159,15 @@ describe("citações e lista de referências no PDF", () => {
         tipo: "paragrafo",
         trechos: [{ texto: "O acolhimento vem antes " }, { citacao: { tipo: "parenteses", obras: [{ referencia: "s", localizador: { tipo: "pagina", valor: "15" } }] } }, { texto: "." }],
       },
+      { tipo: "referencias" },
     ],
   };
 
-  it("a citação sai na norma, e a lista entra no fim, com o título do perfil", () => {
+  it("a citação sai na norma, e a lista sai onde está o bloco, com o título do perfil", () => {
     const typst = documentoParaTypst(comCitacao, perfil, { csl });
     // (sem as barras que protegem a pontuação no Typst)
     expect(typst.replace(/\\/g, "")).toContain('#cite(label("s"), form: none)(Silva, 2019, p. 15)');
-    expect(typst).toContain("#align(center, heading(level: 1, numbering: none)[REFERÊNCIAS])");
+    expect(typst).toContain("#align(center, heading(level: 1, numbering: none, outlined: true)[REFERÊNCIAS])");
     expect(() => compilar(typst)).not.toThrow();
   });
 
@@ -176,9 +177,21 @@ describe("citações e lista de referências no PDF", () => {
     expect(typst).not.toContain("Fora da lista");
   });
 
-  it("sem citações, não há lista de referências (nem precisa do estilo CSL)", () => {
-    const typst = documentoParaTypst({ ...comCitacao, blocos: [{ tipo: "paragrafo", trechos: [{ texto: "texto" }] }] }, perfil);
+  it("sem citações, o bloco da lista não mostra nada (nem precisa do estilo CSL)", () => {
+    const typst = documentoParaTypst({ ...comCitacao, blocos: [{ tipo: "paragrafo", trechos: [{ texto: "texto" }] }, { tipo: "referencias" }] }, perfil);
     expect(typst).not.toContain("REFERÊNCIAS");
+  });
+
+  it("sem o bloco, a lista não sai: tudo o que está no PDF tem um lugar no editor", () => {
+    const typst = documentoParaTypst({ ...comCitacao, blocos: comCitacao.blocos.slice(0, 1) }, perfil, { csl });
+    expect(typst).not.toContain("REFERÊNCIAS");
+    expect(typst).not.toContain("bibliography(");
+  });
+
+  it("a lista sai no lugar do bloco, mesmo antes de outros textos", () => {
+    const blocos = [comCitacao.blocos[0], { tipo: "referencias" as const }, { tipo: "titulo" as const, nivel: 1 as const, trechos: [{ texto: "APÊNDICE A" }] }];
+    const typst = documentoParaTypst({ ...comCitacao, blocos }, perfil, { csl });
+    expect(typst.indexOf("bibliography(")).toBeLessThan(typst.indexOf("APÊNDICE A"));
   });
 
   it("com citações e sem o estilo CSL, avisa em vez de sair sem a lista", () => {
@@ -188,5 +201,65 @@ describe("citações e lista de referências no PDF", () => {
   it("o documento de prova inteiro compila em ABNT", () => {
     const { documento } = documentoDeProva();
     expect(paginas(compilar(documentoParaTypst(documento, perfil, { csl })))).toBeGreaterThan(2);
+  });
+});
+
+describe("APA na página", () => {
+  const apa = carregarNorma("apa.txt");
+  const doc = (blocos: Documento["blocos"]): Documento => ({ versao: 3, referencias: [], blocos });
+
+  it("margens de 2,54 cm, espaço duplo, texto à esquerda e número no cabeçalho, alinhado à margem", () => {
+    const typst = documentoParaTypst(doc([{ tipo: "paragrafo", trechos: [{ texto: "texto" }] }]), apa.perfil);
+    expect(typst).toContain("margin: (left: 2.54cm, top: 2.54cm, right: 2.54cm, bottom: 2.54cm)");
+    expect(typst).toContain("place(top + right, dx: -2.54cm, dy: 1.27cm");
+    expect(typst).toContain("#set par(justify: false, leading: 1.15em, spacing: 1.15em, first-line-indent: (amount: 1.27cm, all: true))");
+  });
+
+  it("nível 1 centralizado; níveis 4 e 5 com recuo, na mesma linha do texto e com ponto", () => {
+    const typst = documentoParaTypst(
+      doc([
+        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Método" }] },
+        { tipo: "titulo", nivel: 4, trechos: [{ texto: "Escuta inicial" }] },
+        { tipo: "paragrafo", trechos: [{ texto: "Nos primeiros contatos." }] },
+        { tipo: "titulo", nivel: 5, trechos: [{ texto: "Já com ponto?" }] },
+        { tipo: "paragrafo", trechos: [{ texto: "Texto." }] },
+      ]),
+      apa.perfil,
+    );
+    expect(typst).toContain("if n == 1 { align(center, x) }");
+    expect(typst).toContain("#destaque-do-titulo(4, [Escuta inicial\\.]) Nos primeiros contatos\\.");
+    expect(typst).toContain("#destaque-do-titulo(5, [Já com ponto\\?]) Texto\\.");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("título de nível 4 seguido de outro título fica sozinho, com o ponto", () => {
+    const typst = documentoParaTypst(
+      doc([
+        { tipo: "titulo", nivel: 4, trechos: [{ texto: "Escuta" }] },
+        { tipo: "titulo", nivel: 5, trechos: [{ texto: "Primeiros" }] },
+      ]),
+      apa.perfil,
+    );
+    expect(typst).toContain("#heading(level: 4, numbering: none)[Escuta\\.]");
+  });
+
+  it("listas: números só na lista em sequência; marcadores nas outras (ABNT continua com alíneas)", () => {
+    const listas = doc([
+      { tipo: "lista", sequencia: true, itens: [{ trechos: [{ texto: "um" }] }, { trechos: [{ texto: "dois" }] }] },
+      { tipo: "lista", sequencia: false, itens: [{ trechos: [{ texto: "três" }] }] },
+    ]);
+    const typst = documentoParaTypst(listas, apa.perfil);
+    expect(typst).toContain("#alinea(1.27cm, [1\\.], [um])");
+    expect(typst).toContain("#alinea(1.27cm, [2\\.], [dois])");
+    expect(typst).toContain("#alinea(1.27cm, [•], [três])");
+    expect(documentoParaTypst(listas, perfil)).toContain("#alinea(1.25cm, [a\\)], [um])");
+  });
+
+  it("o documento de prova inteiro compila em APA, com a lista no fim: espaço duplo e recuo nas linhas seguintes", () => {
+    const { documento } = documentoDeProva();
+    const typst = documentoParaTypst(documento, apa.perfil, { csl: apa.csl });
+    expect(typst).toContain("#align(center, heading(level: 1, numbering: none, outlined: true)[Referências])");
+    expect(typst).toContain("hanging-indent: 1.27cm, leading: 1.15em, spacing: 1.15em + 0 * 1.15em");
+    expect(paginas(compilar(typst))).toBeGreaterThan(2);
   });
 });

@@ -27,6 +27,7 @@
   ^[texto]                      nota de rodapé
   ::: citação-longa ... :::     citação longa (ABNT) ou em bloco (APA)
   ::: figura / ::: tabela       com título, conteúdo e fonte
+  ::: referências               a lista de referências (título e obras citadas)
 -->
 
 ---
@@ -115,3 +116,6 @@ A população em situação de rua cresceu na última década [@nogueira2023], e
 # Considerações finais
 
 O estágio mostrou que o acolhimento é uma prática de toda a equipe [@lima2018; @silva2019].
+
+::: referências
+:::

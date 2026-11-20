@@ -58,6 +58,7 @@ const exemplo: { blocos: Bloco[] } = {
     },
     { tipo: "titulo", nivel: 3, trechos: [{ citacao: cNarrativa }, { texto: " e a clínica" }] },
     { tipo: "lista", sequencia: false, itens: [{ trechos: [{ texto: "segundo " }, { citacao: cNarrativa }] }] },
+    { tipo: "referencias" },
     { tipo: "paragrafo", trechos: [] },
   ],
 };
@@ -163,7 +164,9 @@ describe("estrutura", () => {
       "2 DESENVOLVIMENTO",
       "Nota sem número",
       "e a clínica",
+      "",
     ]);
+    expect(estrutura(exemplo.blocos).at(-1)).toMatchObject({ referencias: true, nivel: 1 });
   });
 
   it("acha o número escrito no começo do título", () => {

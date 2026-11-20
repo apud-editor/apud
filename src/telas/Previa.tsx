@@ -20,6 +20,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
   const [svg, setSvg] = useState<string | null>(null);
   const [situacao, setSituacao] = useState<"montando" | "pronta" | "erro">("montando");
   const [erro, setErro] = useState("");
+  const [selo, setSelo] = useState("");
   const [avisoDeFonte, setAvisoDeFonte] = useState(false);
   const ocupado = useRef(false);
   const deNovo = useRef(false);
@@ -72,6 +73,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
       setSituacao((s) => (s === "pronta" ? s : "montando"));
       try {
         const { perfil, csl } = lerNorma.current();
+        setSelo(perfil.identificacao.perfil);
         const pronto = await motor.previa(documentoParaTypst(ler(), perfil, { titulo: nomeRef.current, csl }));
         if (!ativo) return;
         setSvg(pronto);
@@ -108,7 +110,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
     <aside className="previa" aria-label="Prévia do PDF">
       <div className="previa-topo">
         <span className="previa-titulo">Prévia do PDF</span>
-        <span className="selo-norma">ABNT</span>
+        {selo && <span className="selo-norma">{selo}</span>}
         {situacao === "montando" && svg && <span className="dica">atualizando…</span>}
         <span style={{ flex: 1 }} />
         <button type="button" className="btn" style={{ minHeight: 32 }} onClick={aoFechar}>
