@@ -97,7 +97,7 @@ Um perfil personalizado guarda só o que muda e herda o resto do original. Veja
 
 ```
 perfil: ABNT – Universidade Exemplo
-herda de: ABNT 2025, revisão 1
+herda de: ABNT 2025, revisão 2
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: Fonte Arial e recuo de 1,5 cm, como pede o manual.
@@ -141,6 +141,12 @@ com um comentário dizendo que estão fora do checklist:
 - destaque seu: `[ênfase adicionada]`, dentro da citação;
 - tradução sua: `tradução nossa`;
 - mesmo autor e mesmo ano: letras depois do ano (2020a, 2020b).
+
+Também fica no perfil da APA uma escolha que vem de revistas: algumas pedem
+todos os autores na primeira citação de uma obra com 3 a 5 autores, e *et al.*
+dali em diante, como fazia a APA 6. Exemplo: (Monzelli, Navarro, & Cagnin,
+2023), depois Monzelli et al. (2023). O padrão continua o da APA 7, com
+*et al.* desde a primeira vez.
 
 ## Licença dos estilos CSL
 

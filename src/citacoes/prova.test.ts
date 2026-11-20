@@ -70,6 +70,26 @@ describe("documento de prova no Typst", () => {
     );
   });
 
+  it("APA com todos os autores na primeira citação, como pedem algumas revistas", () => {
+    const r = rodarProva("apa.txt", { "citação, primeira vez com três a cinco autores": "todos os autores" });
+    const saidas = (escrita: string) => r.chamadas.filter((c) => c.escrita === escrita).map((c) => c.saida);
+    // Lima, Costa e Reis (3 autores): a primeira vez é narrativa; depois, et al.
+    expect(saidas("@lima2018")).toEqual(["Lima, Costa e Reis (2018)"]);
+    expect(saidas("[@lima2018; @silva2019]")).toEqual(["(Lima et al., 2018; J. P. Silva, 2019)"]);
+    // Alves e outros 3 (4 autores): a primeira vez entre parênteses, com vírgula antes do &.
+    expect(saidas("[@alves2022]")[0]).toBe("(Alves, Brito, Cunha, & Dias, 2022)");
+    expect(saidas("@alves2022 [p. 40]")).toEqual(["Alves et al. (2022, p. 40)"]);
+    // Dois autores não mudam.
+    expect(saidas("[@dias2025, p. 4]")).toEqual(["(Dias & Lopes, 2025, p. 4)"]);
+    // A lista de referências continua igual.
+    expect(r.referencias).toEqual(lerGabarito("gabarito-apa.txt").referencias);
+  });
+
+  it("APA sem a escolha: et al. desde a primeira citação", () => {
+    const r = rodarProva("apa.txt");
+    expect(r.chamadas.find((c) => c.escrita === "[@alves2022]")?.saida).toBe("(Alves et al., 2022)");
+  });
+
   it("título sublinhado, quando é a escolha", () => {
     const r = rodarProva("abnt.txt", { "referências, destaque do título": "sublinhado" });
     expect(r.referencias).toContain("GARCIA, Paulo. __Terapia cognitiva__. Novo Hamburgo: Sinopsys, 2015.");

@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 1
+revisão: 2
 data da revisão: 20/11/2026
-nota da revisão: Primeira revisão, feita a partir do checklist de regras aprovado em 20/11/2026.
+nota da revisão: A posição do número da página passa a depender da faculdade (no alto, à direita, continua o padrão).
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -44,10 +44,11 @@ recuo de parágrafo: 1,25 cm                                   | NBR 14724:2024,
 numeração de página, contar desde: folha de rosto             | NBR 14724:2024 (UFV 2026)
 numeração de página, mostrar desde: primeira folha do texto   | NBR 14724:2024 (UFV 2026)
 numeração de página, algarismos: arábicos                     | NBR 14724:2024 (UFV 2026)
-numeração de página, posição: canto superior direito          | NBR 14724:2024 (UFV 2026)
+# Algumas faculdades pedem o número embaixo; o padrão segue a norma.
+numeração de página, posição: canto superior direito          | NBR 14724:2024 (UFV 2026) | faculdade
 numeração de página, distância das bordas: 2 cm               | NBR 14724:2024 (UFV 2026)
 # Só vale na impressão frente e verso.
-página no verso, posição do número: canto superior esquerdo   | NBR 14724:2024 (UFV 2026)
+página no verso, posição do número: canto superior esquerdo   | NBR 14724:2024 (UFV 2026) | faculdade
 seção primária, página nova: sim                              | NBR 14724:2024 (Unesp)
 seção primária, em frente e verso: página ímpar               | NBR 14724:2024 (Unesp)
 ficha catalográfica, contada: não                             | NBR 14724:2024 (Unesp) | desligada
