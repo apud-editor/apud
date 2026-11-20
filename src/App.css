@@ -732,3 +732,250 @@ button.linha:hover {
   outline: 2px solid #2b4c9b;
   outline-offset: 2px;
 }
+
+/* Gaveta lateral "Referências": as fontes cadastradas, o formulário e as escolhas do autor. */
+.gaveta {
+  width: 440px;
+  flex: none;
+  overflow: auto;
+  padding: 16px 24px 24px;
+  background: #fff;
+  border-left: 1px solid var(--borda);
+}
+.gaveta-topo,
+.gaveta-secao-topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gaveta-topo {
+  margin-bottom: 14px;
+}
+.gaveta-secao-topo {
+  margin: 4px 0 10px;
+}
+.gaveta-titulo {
+  font-size: 14px;
+  font-weight: 600;
+}
+.gaveta-rotulo {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+.dica-form {
+  margin: 4px 0 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--tinta-suave);
+}
+.rodape-gaveta {
+  margin-top: 18px;
+}
+.busca-de-fontes {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+}
+.mini {
+  border: 0;
+  background: none;
+  color: var(--destaque);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.mini:hover:not(:disabled) {
+  background: var(--destaque-claro);
+}
+.mini:disabled {
+  color: var(--borda-forte);
+  cursor: default;
+}
+.btn.perigo {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
+}
+.btn.perigo:hover {
+  background: #8c1d18;
+}
+
+/* Lista de fontes */
+.fontes {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+.fonte {
+  border-bottom: 1px solid #e4e5e0;
+  padding: 10px 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.fonte-linha {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+.fonte-texto {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fonte-texto .dica-form {
+  margin: 2px 0 0;
+}
+.confirmar-apagar {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fbeceb;
+  color: #7d1d14;
+  font-size: 13px;
+}
+.confirmar-apagar p {
+  margin: 0 0 8px;
+}
+
+/* Formulário de fonte */
+.form-ref {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.form-ref-titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.campo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.campo-form input,
+.campo-form select,
+.linha-autor input,
+.linha-autor select {
+  height: 36px;
+  min-width: 0;
+  padding: 0 10px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 400;
+}
+.form-ref [aria-invalid="true"] {
+  border-color: #b3261e;
+}
+.erro-campo {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #b3261e;
+}
+.erro-form {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fbeceb;
+  color: #7d1d14;
+  font-size: 13px;
+}
+.grade-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.grade-form .campo-form.inteiro {
+  grid-column: 1 / -1;
+}
+.grupo-form {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.grupo-form legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.linha-autor {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+.linha-autor input.dobro {
+  grid-column: span 2;
+}
+.linha-autor .mover {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+}
+.linha-autor .erro-campo {
+  grid-column: 1 / -1;
+}
+.adicionar-autor {
+  display: flex;
+  gap: 4px;
+}
+.data-form {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 8px;
+}
+.data-form .erro-campo.larga {
+  grid-column: 1 / -1;
+}
+.acoes-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Escolhas do autor */
+.escolhas {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--borda);
+}
+.escolha {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+}
+.escolha legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.opcao-escolha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 13.5px;
+}
+
+@media (max-width: 1100px) {
+  .gaveta {
+    width: 380px;
+  }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "../editor/Editor";
 import { VERSAO_DO_FORMATO, type Bloco, type Documento, type Referencia } from "../documento/modelo";
 import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
@@ -8,9 +8,11 @@ import { registrarAntesDeSair } from "./sair";
 import Previa from "./Previa";
 import { documentoParaTypst } from "../conversor/typst";
 import { motor } from "../conversor/motor";
-import { normaEmbutida, normasEmbutidas } from "../perfis/embutidos";
+import { normaEmbutida, normasEmbutidas, perfilEmbutido } from "../perfis/embutidos";
 import { AparenciaDaNorma } from "../editor/extensoes";
 import type { NormaDoTrabalho } from "../perfis/norma";
+import Gaveta from "./Gaveta";
+import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
 
 interface Props {
   arquivo: string;
@@ -54,7 +56,11 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   const [problema, setProblema] = useState<string | null>(null);
   const campoDoNome = useRef<HTMLInputElement>(null);
   const mudancas = useMemo(() => new EventTarget(), []);
-  const [previaAberta, setPreviaAberta] = useState(false);
+  // O painel da direita: a prévia do PDF ou a gaveta de referências. Um de cada vez, como no protótipo.
+  const [painel, setPainel] = useState<"previa" | "referencias" | null>(null);
+  const alternarPainel = (qual: "previa" | "referencias") => setPainel((atual) => (atual === qual ? null : qual));
+  // Sobe quando as referências ou os ajustes mudam, para a gaveta se redesenhar (os dados ficam nos refs).
+  const [versaoDosDados, setVersaoDosDados] = useState(0);
   const [exportando, setExportando] = useState(false);
   const [exportado, setExportado] = useState<string | null>(null);
 
@@ -150,6 +156,52 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
       setProblema(`Não consegui trocar a norma: ${(e as Error).message}.`);
     }
   };
+
+  /** Fonte nova ou editada (o código é o mesmo). O PDF e as citações se refazem. */
+  const salvarReferencia = (r: Referencia) => {
+    const existe = referencias.current.some((x) => x.id === r.id);
+    referencias.current = existe ? referencias.current.map((x) => (x.id === r.id ? r : x)) : [...referencias.current, r];
+    depoisDeMudarOsDados();
+  };
+
+  /** As citações dessa fonte continuam no texto: o motor as marca como referência apagada. */
+  const apagarReferencia = (id: string) => {
+    referencias.current = referencias.current.filter((x) => x.id !== id);
+    depoisDeMudarOsDados();
+  };
+
+  const depoisDeMudarOsDados = () => {
+    setVersaoDosDados((v) => v + 1);
+    salvamento.houveMudanca();
+    mudancas.dispatchEvent(new Event("mudou"));
+  };
+
+  /** Uma escolha do autor: grava em ajustes[norma] só o que difere do padrão do perfil. */
+  const escolher = (e: EscolhaDoAutor, valor: string) => {
+    const nome = perfilAtual.current.perfil;
+    const novos = ajustesComEscolha(ajustes.current, nome, e.chave, valor, e.padrao);
+    try {
+      // Confere antes de guardar: um ajuste que a norma não aceita nunca chega ao arquivo.
+      const { problemas } = normaEmbutida(nome, novos[nome] ?? {});
+      if (problemas.length) throw new Error(problemas.map((p) => p.texto).join(" "));
+    } catch (erro) {
+      setProblema(`Não consegui aplicar essa escolha: ${(erro as Error).message}`);
+      return;
+    }
+    ajustes.current = novos;
+    norma.current = null;
+    aparencia.mudar(rotuloDaLista());
+    depoisDeMudarOsDados();
+  };
+
+  const lerBlocos = useCallback(() => lerDocumento.current().blocos, []);
+
+  const escolhas = useMemo(
+    () => escolhasDoAutor(perfilEmbutido(nomeDaNorma), ajustes.current[nomeDaNorma]),
+    // As escolhas mudam com a norma e com os ajustes (versaoDosDados sobe a cada mudança).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nomeDaNorma, versaoDosDados],
+  );
 
   const voltar = async (mesmoSemSalvar = false) => {
     if (!mesmoSemSalvar) {
@@ -259,17 +311,41 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         }}
         lerTexto={lerTexto}
         extrasDaBarra={
-          <button
-            type="button"
-            className={`btn ${previaAberta ? "on" : ""}`}
-            aria-pressed={previaAberta}
-            onClick={() => setPreviaAberta((a) => !a)}
-          >
-            Prévia
-          </button>
+          <>
+            <button
+              type="button"
+              className={`btn ${painel === "referencias" ? "on" : ""}`}
+              aria-pressed={painel === "referencias"}
+              onClick={() => alternarPainel("referencias")}
+            >
+              Referências
+            </button>
+            <button
+              type="button"
+              className={`btn ${painel === "previa" ? "on" : ""}`}
+              aria-pressed={painel === "previa"}
+              onClick={() => alternarPainel("previa")}
+            >
+              Prévia
+            </button>
+          </>
         }
         lateral={
-          previaAberta ? <Previa lerTexto={lerDocumento} lerNorma={lerNorma} mudancas={mudancas} nome={nome} aoFechar={() => setPreviaAberta(false)} /> : null
+          painel === "previa" ? (
+            <Previa lerTexto={lerDocumento} lerNorma={lerNorma} mudancas={mudancas} nome={nome} aoFechar={() => setPainel(null)} />
+          ) : painel === "referencias" ? (
+            <Gaveta
+              referencias={referencias.current}
+              escolhas={escolhas}
+              nomeDaNorma={nomeDaNorma}
+              lerBlocos={lerBlocos}
+              mudancas={mudancas}
+              aoSalvar={salvarReferencia}
+              aoApagar={apagarReferencia}
+              aoEscolher={escolher}
+              aoFechar={() => setPainel(null)}
+            />
+          ) : null
         }
       />
     </div>
