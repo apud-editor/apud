@@ -37,6 +37,13 @@ export function normasEmbutidas(): string[] {
   return conferidos().flatMap((r) => (r.perfil && !r.perfil.identificacao.herdaDe ? [r.perfil.identificacao.perfil] : []));
 }
 
+/** O perfil de uma norma embutida, sem os ajustes do trabalho: o padrão da norma. */
+export function perfilEmbutido(nome: string): PerfilResolvido {
+  const r = conferidos().find((x) => x.perfil?.identificacao.perfil === nome && !x.perfil.identificacao.herdaDe);
+  if (!r?.perfil) throw new Error(`o Apud não tem o perfil ${nome}`);
+  return r.perfil;
+}
+
 /**
  * A norma de um trabalho, pelo nome do perfil ("ABNT", "APA"), com os ajustes
  * que o trabalho guarda para essa norma.
