@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
-import { carregarPerfil } from "../../scripts/prova-lib";
+import { carregarNorma, carregarPerfil, documentoDeProva } from "../../scripts/prova-lib";
 import { documentoParaTypst, escaparTexto, letraDaAlinea } from "./typst";
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
 import type { Documento, Marca } from "../documento/modelo";
@@ -143,5 +143,50 @@ describe("pedaços do conversor", () => {
 
   it("alíneas de a) até z) e depois aa)", () => {
     expect([0, 1, 25, 26, 27].map(letraDaAlinea)).toEqual(["a", "b", "z", "aa", "ab"]);
+  });
+});
+
+describe("citações e lista de referências no PDF", () => {
+  const { csl } = carregarNorma("abnt.txt");
+  const comCitacao: Documento = {
+    versao: 2,
+    referencias: [
+      { id: "s", tipo: "livro", autores: [{ sobrenome: "Silva", prenomes: "João" }], titulo: "Psicologia clínica", data: { ano: 2019 } },
+      { id: "nao", tipo: "livro", autores: [{ sobrenome: "Nunca", prenomes: "Citado" }], titulo: "Fora da lista", data: { ano: 2000 } },
+    ],
+    blocos: [
+      {
+        tipo: "paragrafo",
+        trechos: [{ texto: "O acolhimento vem antes " }, { citacao: { tipo: "parenteses", obras: [{ referencia: "s", localizador: { tipo: "pagina", valor: "15" } }] } }, { texto: "." }],
+      },
+    ],
+  };
+
+  it("a citação sai na norma, e a lista entra no fim, com o título do perfil", () => {
+    const typst = documentoParaTypst(comCitacao, perfil, { csl });
+    // (sem as barras que protegem a pontuação no Typst)
+    expect(typst.replace(/\\/g, "")).toContain('#cite(label("s"), form: none)(Silva, 2019, p. 15)');
+    expect(typst).toContain("#align(center, heading(level: 1, numbering: none)[REFERÊNCIAS])");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("só as obras citadas vão para a lista", () => {
+    const typst = documentoParaTypst(comCitacao, perfil, { csl });
+    expect(typst).toContain("Psicologia clínica");
+    expect(typst).not.toContain("Fora da lista");
+  });
+
+  it("sem citações, não há lista de referências (nem precisa do estilo CSL)", () => {
+    const typst = documentoParaTypst({ ...comCitacao, blocos: [{ tipo: "paragrafo", trechos: [{ texto: "texto" }] }] }, perfil);
+    expect(typst).not.toContain("REFERÊNCIAS");
+  });
+
+  it("com citações e sem o estilo CSL, avisa em vez de sair sem a lista", () => {
+    expect(() => documentoParaTypst(comCitacao, perfil)).toThrow("falta o estilo CSL");
+  });
+
+  it("o documento de prova inteiro compila em ABNT", () => {
+    const { documento } = documentoDeProva();
+    expect(paginas(compilar(documentoParaTypst(documento, perfil, { csl })))).toBeGreaterThan(2);
   });
 });

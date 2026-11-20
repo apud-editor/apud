@@ -17,7 +17,7 @@
 
     QUEM FAZ O QUÊ
     As chamadas no texto, como (Silva, 2019, p. 15), são montadas pelo Apud
-    com as regras do perfil (src/citacoes/chamadas.ts), porque o Typst não
+    com as regras do perfil (src/citacoes/motor.ts), porque o Typst não
     aplica direito algumas regras da ABNT nas chamadas. Este estilo monta a
     lista de referências. O bloco <citation> abaixo existe porque o formato
     exige, e serve a quem usar este arquivo fora do Apud.

@@ -14,8 +14,9 @@
     - o ano pode vir já escrito pelo Apud, com a letra de mesmo autor e ano
       (2020a), no campo call-number (macro date-issued-year). Por isso o
       desempate por letras do próprio CSL foi desligado (no <citation>).
-      As chamadas com várias obras e as narrativas são montadas pelo Apud
-      (src/citacoes/chamadas.ts);
+      Todas as chamadas no texto são montadas pelo Apud, com as regras do
+      perfil (src/citacoes/motor.ts); o bloco <citation> só serve a quem usar
+      este arquivo fora do Apud;
     - a lista é ordenada primeiro por uma chave sem acentos que o Apud põe no
       campo note, porque o Typst ordena "Ávila" depois de "Zé".
 

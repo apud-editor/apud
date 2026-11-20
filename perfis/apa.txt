@@ -21,9 +21,9 @@
 
 perfil: APA
 versão: 7
-revisão: 3
+revisão: 4
 data da revisão: 20/11/2026
-nota da revisão: Novos tipos de referência (tese, relatório, trabalho em evento, notícia, rede social) e duas escolhas de revista: prenomes por extenso e cidade da editora.
+nota da revisão: Regras para o Apud montar as citações: intervalo de páginas (pp.), mesmo sobrenome, obra sem autor, lei e obra sem data.
 
 == APA 7: página, estrutura e títulos ==
 # A APA tem dois modos. O trabalho começa no modo estudante e passa para o
@@ -119,6 +119,14 @@ citação em bloco, a partir de: 40 palavras               | APA 7 (site da APA)
 citação curta, aspas: duplas                             | APA 7 (site da APA)
 citação, página na citação direta: obrigatória           | APA 7 (site da APA)
 citação, rótulo da página: p.                            | APA 7 (site da APA)
+# Acrescentadas na revisão 4 (20/11/2026), para o Apud montar as chamadas.
+citação, rótulo de várias páginas: pp.                   | APA 7 (site da APA: citações diretas)
+citação, traço entre páginas: –                          | APA 7 (site da APA: citações diretas)
+citação, mesmo sobrenome: iniciais antes do sobrenome, em qualquer ano  | APA 7 (site da APA: autores com o mesmo sobrenome)
+citação, obra sem autor, título em itálico: livro, relatório, tese, site, rede social  | APA 7 (site da APA: autor ausente)
+citação, obra sem autor, título entre aspas: artigo, capítulo, trabalho em evento, notícia  | APA 7 (site da APA: autor ausente)
+citação, lei: pelo título, sem destaque                  | APA 7 (site da APA: referências jurídicas)
+citação, sem data, marcador: s.d.                        | APA 7 (site da APA: data ausente), em português
 # Decisão de 20/11/2026: o Apud avisa, sem trocar sozinho por citação em bloco.
 citação curta, passou do limite: avisar                  | decisão de 20/11/2026 sobre a APA 7
 # Decisão de 20/11/2026: o Apud avisa quando falta a página, sem impedir.

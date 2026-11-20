@@ -1,21 +1,22 @@
-// Gera as chamadas e as referências do documento de prova no Typst e compara
-// com o gabarito da norma. Usado pelo comando "npm run prova" e pelos testes.
+// O documento de prova: monta as chamadas e as referências com o motor de
+// citações do Apud e compara com o gabarito da norma. Usado pelo comando
+// "npm run prova" e pelos testes.
+//
+// O texto do documento de prova está em documento-de-prova.md, com as citações
+// escritas numa forma curta ([@silva2019, p. 15]); as referências estão em
+// referencias.json, no formato do .apud. Aqui os dois viram um trabalho do
+// Apud (o mesmo modelo que o editor grava), que passa pelo motor de citações e
+// pelo conversor de verdade.
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
-import { parse as lerYaml } from "yaml";
-import { chamadaParaTypst, criarContexto, encontrarChamadas, escaparTypst } from "../src/citacoes/chamadas";
-import { prepararReferencias, type Referencia } from "../src/citacoes/preparar";
-import {
-  aplicarPerfilNoCsl,
-  ajustarParaTrabalho,
-  conferirPerfis,
-  formatarMensagem,
-  type Arquivo,
-  type PerfilResolvido,
-} from "../src/perfis";
+import { criarMotor, citacoesDoTexto } from "../src/citacoes/motor";
+import { escaparTexto, pedacosParaTypst, registrar } from "../src/conversor/typst";
+import { conferirPerfis, formatarMensagem, normaDoTrabalho, type Arquivo, type NormaDoTrabalho } from "../src/perfis";
+import type { PerfilResolvido } from "../src/perfis";
 import type { EsquemaNorma } from "../src/perfis/esquema";
+import type { Bloco, Citacao, Documento, ItemDeLista, Localizador, ObraCitada, Referencia, Trecho } from "../src/documento/modelo";
 
 export const PASTA_PERFIS = join(import.meta.dirname, "..", "perfis");
 export const PASTA_PROVA = join(PASTA_PERFIS, "prova");
@@ -26,25 +27,171 @@ function lerPasta(pasta: string, extensao: string): Arquivo[] {
     .map((nome) => ({ nome, conteudo: readFileSync(join(pasta, nome), "utf8") }));
 }
 
-/** Lê e confere os perfis da pasta; devolve o da norma pedida. */
-export function carregarPerfil(arquivo: string): { perfil: PerfilResolvido; esquema: EsquemaNorma; csl: string } {
-  const estilos = lerPasta(join(PASTA_PERFIS, "estilos"), ".csl");
-  const resultados = conferirPerfis(lerPasta(PASTA_PERFIS, ".txt"), estilos);
+const estilos = () => lerPasta(join(PASTA_PERFIS, "estilos"), ".csl");
+
+function conferido(arquivo: string) {
+  const resultados = conferirPerfis(lerPasta(PASTA_PERFIS, ".txt"), estilos());
   const r = resultados.find((x) => x.arquivo === arquivo);
   if (!r?.perfil || !r.esquema) {
     const erros = r?.mensagens.map(formatarMensagem).join("\n") ?? "arquivo não encontrado";
     throw new Error(`o perfil ${arquivo} tem erros:\n${erros}`);
   }
-  const nomeCsl = r.perfil.regras.get("estilo csl")!.texto;
-  const csl = estilos.find((e) => e.nome === nomeCsl)!.conteudo;
-  return { perfil: r.perfil, esquema: r.esquema, csl };
+  return r;
 }
+
+/** Lê e confere os perfis da pasta; devolve o da norma pedida. */
+export function carregarPerfil(arquivo: string): { perfil: PerfilResolvido; esquema: EsquemaNorma; csl: string } {
+  const r = conferido(arquivo);
+  const { csl } = normaDoTrabalho(r, estilos());
+  return { perfil: r.perfil!, esquema: r.esquema!, csl };
+}
+
+/** A norma com os ajustes de um trabalho (escolhas do autor). Ajuste com erro para o teste. */
+export function carregarNorma(arquivo: string, ajustes: Record<string, string> = {}): NormaDoTrabalho {
+  const norma = normaDoTrabalho(conferido(arquivo), estilos(), ajustes);
+  if (norma.problemas.length) throw new Error(norma.problemas.map(formatarMensagem).join("\n"));
+  return norma;
+}
+
+// ---------------------------------------------------------------------------
+// O texto do documento de prova: da forma curta para o modelo do Apud
+
+const CHAVE = "[\\p{L}\\p{N}_-]+";
+
+/** "p. 15" vira página 15; "local. 7" vira outro localizador. */
+function lerLocalizador(texto: string): Localizador {
+  const m = texto.trim().match(/^(\S+)\s+(.+)$/);
+  if (!m) return { tipo: "outro", rotulo: "", valor: texto.trim() };
+  return m[1] === "p." ? { tipo: "pagina", valor: m[2] } : { tipo: "outro", rotulo: m[1], valor: m[2] };
+}
+
+function lerObra(trecho: string): ObraCitada | undefined {
+  const partes = trecho.trim().match(new RegExp(`^@(${CHAVE})(?:\\s*,\\s*(.*))?$`, "u"));
+  if (!partes) return undefined;
+  const obra: ObraCitada = { referencia: partes[1] };
+  const localizador: string[] = [];
+  for (const pedaco of (partes[2] ?? "").split(/,\s*/).filter(Boolean)) {
+    if (pedaco === "+grifo") obra.grifo = true;
+    else if (pedaco === "+tradução") obra.traducao = true;
+    else localizador.push(pedaco);
+  }
+  if (localizador.length) obra.localizador = lerLocalizador(localizador.join(", "));
+  return obra;
+}
+
+/**
+ * Lê um parágrafo com citações na forma curta e devolve os trechos do modelo,
+ * com a escrita original de cada citação (a chave do gabarito):
+ *   [@chave, p. 15]  [@a; @b]  @chave  @chave [p. 4]  [@chave, p. 15, +grifo]
+ *   [Autor, ano apud @chave, p. 3]  [sem referência: texto]
+ */
+export function lerTextoComCitacoes(texto: string): { trechos: Trecho[]; escritas: string[] } {
+  const achadas: Array<{ inicio: number; fim: number; citacao: Citacao }> = [];
+  for (const m of texto.matchAll(/\[([^\[\]]+)\]/g)) {
+    const dentro = m[1];
+    let citacao: Citacao | undefined;
+    const semReferencia = dentro.match(/^sem referência:\s*(.+)$/);
+    const apud = dentro.match(new RegExp(`^(.+?)\\s+apud\\s+(@${CHAVE}(?:\\s*,.*)?)$`, "u"));
+    if (semReferencia) {
+      citacao = { tipo: "sem-referencia", texto: semReferencia[1].trim() };
+    } else if (apud) {
+      const obra = lerObra(apud[2]);
+      if (obra) citacao = { tipo: "apud", original: apud[1].trim(), obra };
+    } else if (dentro.trim().startsWith("@")) {
+      const obras = dentro.split(";").map(lerObra);
+      if (obras.every((o): o is ObraCitada => o !== undefined)) citacao = { tipo: "parenteses", obras };
+    }
+    if (citacao) achadas.push({ inicio: m.index!, fim: m.index! + m[0].length, citacao });
+  }
+  for (const m of texto.matchAll(new RegExp(`(?<![\\w@])@(${CHAVE})(?: \\[([^\\[\\]]+)\\])?`, "gu"))) {
+    if (achadas.some((a) => m.index! >= a.inicio && m.index! < a.fim)) continue;
+    const obra: ObraCitada = { referencia: m[1] };
+    if (m[2]) obra.localizador = lerLocalizador(m[2]);
+    achadas.push({ inicio: m.index!, fim: m.index! + m[0].length, citacao: { tipo: "narrativa", obra } });
+  }
+  achadas.sort((a, b) => a.inicio - b.inicio);
+  const trechos: Trecho[] = [];
+  const escritas: string[] = [];
+  let cursor = 0;
+  for (const a of achadas) {
+    if (a.inicio > cursor) trechos.push({ texto: texto.slice(cursor, a.inicio) });
+    trechos.push({ citacao: a.citacao });
+    escritas.push(texto.slice(a.inicio, a.fim));
+    cursor = a.fim;
+  }
+  if (cursor < texto.length) trechos.push({ texto: texto.slice(cursor) });
+  return { trechos, escritas };
+}
+
+/**
+ * O documento de prova como trabalho do Apud. Ficam de fora, até a fase 3, o
+ * que o editor ainda não tem: notas de rodapé, figuras e tabelas. A citação
+ * longa entra como parágrafo comum.
+ */
+export function documentoDeProva(): { documento: Documento; escritas: string[] } {
+  const md = readFileSync(join(PASTA_PROVA, "documento-de-prova.md"), "utf8")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/^\s*---\n[\s\S]*?\n---\n/, "");
+  const referencias = JSON.parse(readFileSync(join(PASTA_PROVA, "referencias.json"), "utf8")) as Referencia[];
+  const blocos: Bloco[] = [];
+  const escritas: string[] = [];
+  const texto = (s: string) => {
+    const r = lerTextoComCitacoes(s.replace(/\^\[[^\]]*\]/g, "").trim());
+    escritas.push(...r.escritas);
+    return r.trechos;
+  };
+  let paragrafo: string[] = [];
+  let lista: ItemDeLista[] | null = null;
+  let bloco: { tipo: string; linhas: string[] } | null = null;
+  const fechar = () => {
+    if (paragrafo.length) blocos.push({ tipo: "paragrafo", trechos: texto(paragrafo.join(" ")) });
+    if (lista) blocos.push({ tipo: "lista", sequencia: false, itens: lista });
+    paragrafo = [];
+    lista = null;
+  };
+  for (const linha of md.split("\n")) {
+    if (bloco) {
+      if (linha.trim() === ":::") {
+        if (bloco.tipo === "citação-longa") blocos.push({ tipo: "paragrafo", trechos: texto(bloco.linhas.join(" ")) });
+        bloco = null;
+      } else bloco.linhas.push(linha.trim());
+      continue;
+    }
+    const abertura = linha.match(/^:::\s*(\S+)/);
+    const titulo = linha.match(/^(#{1,5})\s+(.*)$/);
+    const item = linha.match(/^(\s*)-\s+(.*)$/);
+    if (abertura) {
+      fechar();
+      bloco = { tipo: abertura[1], linhas: [] };
+    } else if (titulo) {
+      fechar();
+      blocos.push({ tipo: "titulo", nivel: titulo[1].length as 1 | 2 | 3 | 4 | 5, trechos: texto(titulo[2]) });
+    } else if (item) {
+      if (paragrafo.length) {
+        blocos.push({ tipo: "paragrafo", trechos: texto(paragrafo.join(" ")) });
+        paragrafo = [];
+      }
+      lista ??= [];
+      const novo: ItemDeLista = { trechos: texto(item[2]) };
+      if (item[1].length >= 2 && lista.length) (lista[lista.length - 1].subitens ??= []).push(novo);
+      else lista.push(novo);
+    } else if (!linha.trim()) {
+      fechar();
+    } else {
+      paragrafo.push(linha.trim());
+    }
+  }
+  fechar();
+  return { documento: { versao: 2, blocos, referencias }, escritas };
+}
+
+// ---------------------------------------------------------------------------
 
 export interface ResultadoDaProva {
   /** Cada chamada do documento, como está escrita, e como saiu. */
   chamadas: Array<{ escrita: string; saida: string }>;
   referencias: string[];
-  /** O código Typst montado, para gerar o PDF. */
+  /** O código Typst das chamadas e da lista, para gerar o PDF. */
   typst: string;
 }
 
@@ -65,32 +212,23 @@ export function htmlParaTexto(html: string): string {
 }
 
 /**
- * Monta o documento de prova no Typst com o perfil (e ajustes do trabalho,
- * se houver) e devolve as chamadas e referências como saíram.
+ * Monta as chamadas e a lista do documento de prova com o motor do Apud, no
+ * Typst, com o perfil (e ajustes do trabalho, se houver), e devolve como saíram.
  */
 export function rodarProva(arquivoDoPerfil: string, ajustes: Record<string, string> = {}): ResultadoDaProva {
-  const carregado = carregarPerfil(arquivoDoPerfil);
-  let perfil = carregado.perfil;
-  if (Object.keys(ajustes).length) {
-    const ajustado = ajustarParaTrabalho(perfil, carregado.esquema, ajustes);
-    if (!ajustado.perfil) throw new Error(ajustado.mensagens.map(formatarMensagem).join("\n"));
-    perfil = ajustado.perfil;
-  }
-  const csl = aplicarPerfilNoCsl(carregado.csl, perfil, carregado.esquema);
-
-  const neutras = lerYaml(readFileSync(join(PASTA_PROVA, "referencias.yml"), "utf8")) as Record<string, Referencia>;
-  const referencias = prepararReferencias(neutras, perfil);
-  // Os comentários <!-- --> explicam a escrita das citações e não fazem parte do texto.
-  const documento = readFileSync(join(PASTA_PROVA, "documento-de-prova.md"), "utf8").replace(/<!--[\s\S]*?-->/g, "");
-  const chamadas = encontrarChamadas(documento);
-
+  const { perfil, csl } = carregarNorma(arquivoDoPerfil, ajustes);
+  const { documento, escritas } = documentoDeProva();
+  const motor = criarMotor(documento, perfil);
   const titulo = perfil.regras.get("rótulo das referências")?.texto ?? "Referências";
-  // Um contexto só, para o Apud saber qual é a primeira citação de cada obra.
-  const contexto = criarContexto(perfil, referencias);
+  // Na ordem do texto, para o motor saber qual é a primeira citação de cada obra.
+  const chamadas = citacoesDoTexto(documento.blocos).map((c, i) => {
+    const m = motor.montar(c);
+    return `#block[C${i + 1}: ${m.obras.map(registrar).join("")}${pedacosParaTypst(m.pedacos)}]`;
+  });
   const typst = [
     `#set text(lang: "pt", region: "BR")`,
-    ...chamadas.map((c, i) => `#block[C${i + 1}: ${chamadaParaTypst(c, contexto)}]`),
-    `#bibliography(bytes(${JSON.stringify(JSON.stringify(referencias))}), style: bytes(${JSON.stringify(csl)}), title: [${escaparTypst(titulo)}])`,
+    ...chamadas,
+    `#bibliography(bytes(${JSON.stringify(JSON.stringify(motor.referenciasDoTypst))}), style: bytes(${JSON.stringify(csl)}), title: [${escaparTexto(titulo)}])`,
   ].join("\n");
 
   const compilador = NodeCompiler.create({ workspace: PASTA_PROVA });
@@ -103,7 +241,7 @@ export function rodarProva(arquivoDoPerfil: string, ajustes: Record<string, stri
   const blocos = [...html.matchAll(/<(?:div|p)>C(\d+): ([\s\S]*?)<\/(?:div|p)>/g)];
   const itens = [...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)];
   return {
-    chamadas: blocos.map((b) => ({ escrita: chamadas[Number(b[1]) - 1].escrita, saida: htmlParaTexto(b[2]) })),
+    chamadas: blocos.map((b) => ({ escrita: escritas[Number(b[1]) - 1], saida: htmlParaTexto(b[2]) })),
     referencias: itens.map((i) => htmlParaTexto(i[1])),
     typst,
   };

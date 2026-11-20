@@ -1,6 +1,7 @@
 // Regras que o perfil APA precisa ter, na ordem do checklist (APA 7ª edição).
 
 import { secao, type EsquemaNorma } from "./esquema";
+import { NOMES_DOS_TIPOS } from "./tipos-de-referencia";
 import {
   arquivoCsl,
   destaque,
@@ -151,6 +152,14 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ["citação curta, aspas", opcao("duplas"), "Citação curta"],
       ["citação, página na citação direta", opcao("obrigatória"), "Citação curta"],
       ["citação, rótulo da página", texto(), "Citação curta"],
+      // Revisão 4: regras para o Apud montar as chamadas (antes vinham do CSL).
+      ["citação, rótulo de várias páginas", texto(), []],
+      ["citação, traço entre páginas", opcao("–", "-"), []],
+      ["citação, mesmo sobrenome", opcao("iniciais antes do sobrenome, em qualquer ano"), []],
+      ["citação, obra sem autor, título em itálico", lista(NOMES_DOS_TIPOS), []],
+      ["citação, obra sem autor, título entre aspas", lista(NOMES_DOS_TIPOS), []],
+      ["citação, lei", opcao("pelo título, sem destaque"), []],
+      ["citação, sem data, marcador", texto(), []],
       ["citação curta, passou do limite", opcao("avisar"), "Citação curta"],
       ["citação direta sem página", opcao("avisar"), "Citação curta"],
       ["citação em bloco, recuo", medida("cm", 0, 5), "Citação em bloco"],
@@ -176,8 +185,8 @@ export const ESQUEMA_APA: EsquemaNorma = {
         opcao("iniciais", "por extenso"),
         [],
         {
-          // Por extenso: só na lista. As chamadas passam a ser montadas pelo Apud
-          // (chamadas.ts), com iniciais para desempatar: (J. Pavan, 2025a).
+          // Por extenso: só na lista. As chamadas são montadas pelo Apud
+          // (citacoes/motor.ts), com iniciais para desempatar: (J. Pavan, 2025a).
           tipo: "atributos",
           porOpcao: {
             iniciais: {},

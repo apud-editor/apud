@@ -3,36 +3,49 @@
 // é comparada com os gabaritos de perfis/prova/.
 
 import { describe, expect, it } from "vitest";
-import { compararComGabarito, lerGabarito, rodarProva } from "../../scripts/prova-lib";
-import { encontrarChamadas } from "./chamadas";
+import { compararComGabarito, documentoDeProva, lerGabarito, lerTextoComCitacoes, rodarProva } from "../../scripts/prova-lib";
 import { designacaoDosAnais, primeirasPalavras } from "./preparar";
+import { citacoesDoTexto } from "./motor";
+import { conferirCitacao } from "../arquivos/formato";
 
-describe("leitura das chamadas", () => {
-  it("reconhece cada tipo de chamada", () => {
+describe("leitura da forma curta das citações (documento de prova)", () => {
+  it("reconhece cada tipo de citação e guarda a escrita original", () => {
     const texto =
       "Segundo @lima2018, o acolhimento [@silva2019, p. 15, +grifo] vem antes [@a; @b]. " +
-      "Para @dias2025 [p. 4], é postura [Freud, 1915 apud @costa2021, p. 12] [sem referência: Usuária A].";
-    expect(encontrarChamadas(texto)).toEqual([
-      { tipo: "narrativa", escrita: "@lima2018", chave: "lima2018", localizador: undefined },
-      {
-        tipo: "parenteses",
-        escrita: "[@silva2019, p. 15, +grifo]",
-        itens: [{ chave: "silva2019", localizador: "p. 15", grifo: true }],
-      },
-      { tipo: "parenteses", escrita: "[@a; @b]", itens: [{ chave: "a" }, { chave: "b" }] },
-      { tipo: "narrativa", escrita: "@dias2025 [p. 4]", chave: "dias2025", localizador: "p. 4" },
-      {
-        tipo: "apud",
-        escrita: "[Freud, 1915 apud @costa2021, p. 12]",
-        original: "Freud, 1915",
-        item: { chave: "costa2021", localizador: "p. 12" },
-      },
-      { tipo: "sem-referencia", escrita: "[sem referência: Usuária A]", conteudo: "Usuária A" },
+      "Para @dias2025 [p. 4], é postura [Freud, 1915 apud @costa2021, p. 12] [sem referência: Usuária A] [@g, local. 7].";
+    const { trechos, escritas } = lerTextoComCitacoes(texto);
+    expect(escritas).toEqual([
+      "@lima2018",
+      "[@silva2019, p. 15, +grifo]",
+      "[@a; @b]",
+      "@dias2025 [p. 4]",
+      "[Freud, 1915 apud @costa2021, p. 12]",
+      "[sem referência: Usuária A]",
+      "[@g, local. 7]",
     ]);
+    expect(trechos.flatMap((t) => ("citacao" in t ? [t.citacao] : []))).toEqual([
+      { tipo: "narrativa", obra: { referencia: "lima2018" } },
+      { tipo: "parenteses", obras: [{ referencia: "silva2019", localizador: { tipo: "pagina", valor: "15" }, grifo: true }] },
+      { tipo: "parenteses", obras: [{ referencia: "a" }, { referencia: "b" }] },
+      { tipo: "narrativa", obra: { referencia: "dias2025", localizador: { tipo: "pagina", valor: "4" } } },
+      { tipo: "apud", original: "Freud, 1915", obra: { referencia: "costa2021", localizador: { tipo: "pagina", valor: "12" } } },
+      { tipo: "sem-referencia", texto: "Usuária A" },
+      { tipo: "parenteses", obras: [{ referencia: "g", localizador: { tipo: "outro", rotulo: "local.", valor: "7" } }] },
+    ]);
+    expect(trechos[0]).toEqual({ texto: "Segundo " });
   });
 
   it("não confunde colchetes de supressão nem endereços de e-mail", () => {
-    expect(encontrarChamadas("“O cuidado [...] é ético” e escreva para ana@exemplo.org.")).toEqual([]);
+    expect(lerTextoComCitacoes("“O cuidado [...] é ético” e escreva para ana@exemplo.org.").escritas).toEqual([]);
+  });
+
+  it("o documento de prova vira um trabalho do Apud válido, com as 30 citações e as 27 referências", () => {
+    const { documento, escritas } = documentoDeProva();
+    const citacoes = citacoesDoTexto(documento.blocos);
+    expect(citacoes).toHaveLength(30);
+    expect(escritas).toHaveLength(30);
+    for (const c of citacoes) expect(conferirCitacao(c)).toEqual(c);
+    expect(documento.referencias).toHaveLength(27);
   });
 });
 

@@ -4,12 +4,12 @@
   Um trabalho de exemplo que usa todas as regras dos perfis ABNT e APA:
   títulos dos 5 níveis, alíneas, nota de rodapé, figura, tabela, citação curta
   e longa, cada tipo de chamada e cada tipo de referência. As referências
-  estão em referencias.yml. As obras são fictícias, menos a Lei nº 10.216.
+  estão em referencias.json. As obras são fictícias, menos a Lei nº 10.216.
 
   Depois de mudar um perfil, gere o documento de prova e confira o resultado
-  com o gabarito da norma (gabarito-abnt.txt e gabarito-apa.txt). Hoje o teste
-  automático confere as chamadas e as referências; a página inteira (margens,
-  títulos, capa) será conferida quando o conversor para PDF existir.
+  com o gabarito da norma (gabarito-abnt.txt e gabarito-apa.txt). O teste
+  automático confere as chamadas e as referências; o PDF do trabalho inteiro
+  fica em saida/documento-de-prova-abnt.pdf.
 
   COMO AS CITAÇÕES ESTÃO ESCRITAS AQUI
   [@chave]                      entre parênteses: (Silva, 2019)

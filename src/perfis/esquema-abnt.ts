@@ -268,6 +268,9 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
       ["citação, página na citação direta", opcao("obrigatória"), "Página"],
       ["citação, página na citação indireta", opcao("opcional"), "Página"],
       ["citação, rótulo da página", texto(), "Página"],
+      // Revisão 4: intervalo de páginas.
+      ["citação, rótulo de várias páginas", texto(), "Página"],
+      ["citação, traço entre páginas", opcao("-", "–"), "Página"],
       ["citação, outros localizadores", lista(), "Fonte sem página"],
       ["citação curta, até", quantidade("linha", "linhas", 1, 10), "Citação direta curta"],
       ["citação curta, aspas", opcao("duplas"), "Citação direta curta"],
@@ -302,6 +305,7 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
       ],
       ["citação, mesmo sobrenome e ano", opcao("acrescentar iniciais"), "Mesmo sobrenome e ano"],
       ["citação, mesmo autor e ano", opcao("letras depois do ano"), "Mesmo autor e ano"],
+      ["citação, sem data, marcador", texto(), []],
       [
         "citação, mesmo autor em anos diferentes",
         opcao("anos separados por vírgula"),
@@ -320,6 +324,7 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
     ]),
 
     ...secao("ABNT: referências", [
+      ["rótulo das referências", texto(), "Lista"],
       ["referências, alinhamento", opcao("à esquerda"), "Lista"],
       ["referências, entre uma e outra", quantidade("linha em branco", "linhas em branco", 0, 2), "Lista"],
       ["referências, ordem", opcao("alfabética pelo sobrenome do primeiro autor"), "Ordem"],
