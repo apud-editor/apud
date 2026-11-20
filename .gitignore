@@ -7,3 +7,6 @@ dist
 src-tauri/target
 src-tauri/gen/schemas
 perfis/prova/saida/
+
+src-tauri/arquivos/target
+src-tauri/arquivos/Cargo.lock

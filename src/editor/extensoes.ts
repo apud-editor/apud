@@ -58,7 +58,9 @@ const ColarSemFormatacao = Extension.create({
 //
 // - Backspace num item vazio apaga o item e o cursor volta para o fim do item de
 //   cima, sem sair da lista. (Antes, o item virava um parágrafo depois da lista.)
-// - Shift+Enter dentro da lista sai dela: cria um parágrafo logo depois da lista.
+// - Shift+Enter dentro da lista sai dela: vai para o parágrafo em branco logo
+//   depois da lista, ou cria um, se não houver.
+// - Shift+Enter fora da lista vai para o parágrafo de baixo, se ele estiver em branco.
 
 /** Onde está o item de lista do cursor, se o cursor estiver num item. */
 function itemDoCursor(state: EditorState) {
@@ -117,7 +119,16 @@ const ListasFaceis = Extension.create({
       "Shift-Enter": ({ editor }) => {
         const { state } = editor;
         const info = itemDoCursor(state);
-        if (!info) return false;
+        if (!info) {
+          // Fora da lista (num título ou parágrafo): vai para o parágrafo de baixo, se ele estiver em branco.
+          const { $from } = state.selection;
+          if ($from.depth < 1) return false;
+          const fimDoBloco = $from.after(1);
+          const abaixo = state.doc.nodeAt(fimDoBloco);
+          if (abaixo?.type.name !== "paragraph" || abaixo.content.size !== 0) return true; // não faz nada
+          editor.view.dispatch(state.tr.setSelection(TextSelection.create(state.doc, fimDoBloco + 1)).scrollIntoView());
+          return true;
+        }
         const paragrafo = state.schema.nodes.paragraph.create();
         const [inicio, fim] = [info.$from.before(1), info.$from.after(1)];
         let tr: Transaction;

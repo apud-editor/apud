@@ -8,11 +8,13 @@ import { ControleDaBarra, extensoesDoApud } from "./extensoes";
 
 interface Props {
   inicial: Documento;
-  /** Chamado (com uma pequena espera) sempre que o texto muda. */
-  aoMudar?: (doc: Documento) => void;
+  /** Chamado na hora, a cada mudança no texto. */
+  aoMudar?: () => void;
+  /** Recebe a função que lê o texto atual, para quem precisa dele (o salvamento). */
+  lerTexto?: React.MutableRefObject<(() => Documento) | null>;
 }
 
-export default function Editor({ inicial, aoMudar }: Props) {
+export default function Editor({ inicial, aoMudar, lerTexto }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
   const [documento, setDocumento] = useState(inicial);
   const espera = useRef<number>(0);
@@ -24,15 +26,20 @@ export default function Editor({ inicial, aoMudar }: Props) {
     content: editorDoDocumento(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
     onUpdate: ({ editor }) => {
-      // Converte só depois de uma pausa na digitação, para não pesar em textos longos.
+      aoMudarRef.current?.();
+      // A estrutura da esquerda só é refeita depois de uma pausa, para não pesar em textos longos.
       window.clearTimeout(espera.current);
-      espera.current = window.setTimeout(() => {
-        const doc = documentoDoEditor(editor.getJSON());
-        setDocumento(doc);
-        aoMudarRef.current?.(doc);
-      }, 300);
+      espera.current = window.setTimeout(() => setDocumento(documentoDoEditor(editor.getJSON())), 300);
     },
   });
+
+  useEffect(() => {
+    if (!lerTexto || !editor) return;
+    lerTexto.current = () => documentoDoEditor(editor.getJSON());
+    return () => {
+      lerTexto.current = null;
+    };
+  }, [editor, lerTexto]);
 
   useEffect(() => () => window.clearTimeout(espera.current), []);
 
