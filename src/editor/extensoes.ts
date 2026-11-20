@@ -6,7 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Superscript from "@tiptap/extension-superscript";
 import Placeholder from "@tiptap/extension-placeholder";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
-import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { Plugin, PluginKey, Selection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
 import { buscarBlocos, type TipoDeBloco } from "./blocos";
 
 // ---------------------------------------------------------------------------
@@ -50,6 +50,96 @@ const ColarSemFormatacao = Extension.create({
         },
       }),
     ];
+  },
+});
+
+// ---------------------------------------------------------------------------
+// Listas mais fáceis de apagar e de sair
+//
+// - Backspace num item vazio apaga o item e o cursor volta para o fim do item de
+//   cima, sem sair da lista. (Antes, o item virava um parágrafo depois da lista.)
+// - Shift+Enter dentro da lista sai dela: cria um parágrafo logo depois da lista.
+
+/** Onde está o item de lista do cursor, se o cursor estiver num item. */
+function itemDoCursor(state: EditorState) {
+  const { $from, empty } = state.selection;
+  if (!empty) return null;
+  for (let d = $from.depth; d > 0; d--) {
+    if ($from.node(d).type.name === "listItem") {
+      const item = $from.node(d);
+      const vazio = item.childCount === 1 && item.firstChild!.content.size === 0 && $from.parent === item.firstChild;
+      return { $from, d, vazio };
+    }
+  }
+  return null;
+}
+
+/**
+ * Apaga o item vazio do cursor sem sair da lista. O cursor vai para o fim do
+ * item de cima ou, se o item era o primeiro, para o começo do item de baixo.
+ * Se o item for o único da sublista, apaga a sublista inteira (uma lista não pode ficar vazia).
+ * Devolve null quando o item é o único da lista: aí não há onde ficar na lista.
+ */
+function apagarItemVazio(state: EditorState): Transaction | null {
+  const info = itemDoCursor(state);
+  if (!info?.vazio) return null;
+  const { $from, d } = info;
+  const lista = $from.node(d - 1);
+  const sublistaInteira = lista.childCount === 1;
+  if (sublistaInteira && d - 1 === 1) return null; // o único item da lista
+  const [de, ate] = sublistaInteira ? [$from.before(d - 1), $from.after(d - 1)] : [$from.before(d), $from.after(d)];
+  const [inicioDaLista, fimDaLista] = [$from.before(1), $from.after(1)];
+
+  const anterior = Selection.findFrom(state.doc.resolve(de), -1, true);
+  const seguinte = Selection.findFrom(state.doc.resolve(ate), 1, true);
+  const tr = state.tr.delete(de, ate);
+  if (anterior && anterior.from > inicioDaLista) {
+    return tr.setSelection(TextSelection.create(tr.doc, tr.mapping.map(anterior.from, -1)));
+  }
+  if (seguinte && seguinte.from < fimDaLista) {
+    return tr.setSelection(TextSelection.create(tr.doc, tr.mapping.map(seguinte.from, 1)));
+  }
+  return null;
+}
+
+const ListasFaceis = Extension.create({
+  name: "listasFaceis",
+  // Antes dos atalhos normais das listas.
+  priority: 1000,
+  addKeyboardShortcuts() {
+    return {
+      Backspace: ({ editor }) => {
+        const tr = apagarItemVazio(editor.state);
+        if (!tr) return false; // deixa o Backspace normal agir
+        editor.view.dispatch(tr.scrollIntoView());
+        return true;
+      },
+      "Shift-Enter": ({ editor }) => {
+        const { state } = editor;
+        const info = itemDoCursor(state);
+        if (!info) return false;
+        const paragrafo = state.schema.nodes.paragraph.create();
+        const [inicio, fim] = [info.$from.before(1), info.$from.after(1)];
+        let tr: Transaction;
+        let cursor: number;
+        if (info.vazio && state.doc.nodeAt(inicio)!.childCount === 1 && info.d === 2) {
+          // A lista só tem este item, vazio: ela vira o parágrafo.
+          tr = state.tr.replaceWith(inicio, fim, paragrafo);
+          cursor = inicio + 1;
+        } else {
+          // Um item vazio some ao sair da lista.
+          tr = apagarItemVazio(state) ?? state.tr;
+          const fimDaLista = tr.mapping.map(fim);
+          const depois = tr.doc.nodeAt(fimDaLista);
+          // Se já há um parágrafo vazio logo depois da lista, o cursor vai para ele.
+          if (!(depois?.type.name === "paragraph" && depois.content.size === 0)) tr = tr.insert(fimDaLista, paragrafo);
+          cursor = fimDaLista + 1;
+        }
+        tr.setSelection(TextSelection.create(tr.doc, cursor));
+        editor.view.dispatch(tr.scrollIntoView());
+        return true;
+      },
+    };
   },
 });
 
@@ -169,6 +259,7 @@ export function extensoesDoApud(controle: ControleDaBarra) {
         node.type.name === "heading" ? "Título" : "Escreva aqui. Digite / para escolher o tipo de bloco.",
     }),
     ColarSemFormatacao,
+    ListasFaceis,
     barraDeBlocos(controle),
   ];
 }
