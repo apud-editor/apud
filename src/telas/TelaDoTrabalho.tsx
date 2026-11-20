@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "../editor/Editor";
-import { VERSAO_DO_FORMATO, type Bloco, type Documento, type Referencia } from "../documento/modelo";
+import { VERSAO_DO_FORMATO, type Bloco, type Citacao, type Documento, type Referencia } from "../documento/modelo";
 import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
 import { escreverArquivo, type Trabalho } from "../arquivos/formato";
 import { SalvamentoAutomatico, type SituacaoDoSalvamento } from "../arquivos/salvamento";
@@ -10,6 +10,8 @@ import { documentoParaTypst } from "../conversor/typst";
 import { motor } from "../conversor/motor";
 import { normaEmbutida, normasEmbutidas, perfilEmbutido } from "../perfis/embutidos";
 import { AparenciaDaNorma } from "../editor/extensoes";
+import { CitacoesNoTexto } from "../editor/citacoes";
+import { montarTodas, previaDaCitacao } from "../citacoes/todas";
 import type { NormaDoTrabalho } from "../perfis/norma";
 import Gaveta from "./Gaveta";
 import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
@@ -44,6 +46,16 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   });
   const rotuloDaLista = () => lerNorma.current().perfil.regras.get("rótulo das referências")?.texto ?? "Referências";
   const aparencia = useMemo(() => new AparenciaDaNorma(rotuloDaLista()), []);
+  // O texto de cada citação na norma: o motor monta todas juntas, na ordem do
+  // texto, depois de uma pausa, e refaz quando as referências, a norma ou as
+  // escolhas do autor mudam.
+  const citacoes = useMemo(
+    () =>
+      new CitacoesNoTexto((blocos) =>
+        montarTodas({ versao: VERSAO_DO_FORMATO, blocos, referencias: referencias.current }, lerNorma.current().perfil),
+      ),
+    [],
+  );
   /** O documento inteiro, como vai para o arquivo e para o PDF. */
   const lerDocumento = useRef<() => Documento>(() => {
     // Se o editor não estiver disponível, usa o último texto lido: nunca grava um texto vazio por engano.
@@ -150,6 +162,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
       norma.current = null;
       setNomeDaNorma(id.perfil);
       aparencia.mudar(rotuloDaLista());
+      citacoes.agendar(0);
       salvamento.houveMudanca();
       mudancas.dispatchEvent(new Event("mudou"));
     } catch (e) {
@@ -172,6 +185,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
 
   const depoisDeMudarOsDados = () => {
     setVersaoDosDados((v) => v + 1);
+    citacoes.agendar(0);
     salvamento.houveMudanca();
     mudancas.dispatchEvent(new Event("mudou"));
   };
@@ -195,6 +209,12 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   };
 
   const lerBlocos = useCallback(() => lerDocumento.current().blocos, []);
+  const lerReferencias = useCallback(() => referencias.current, []);
+  /** Como uma citação ficaria na norma, para a janela do "@". */
+  const previa = useCallback(
+    (c: Citacao) => previaDaCitacao(lerDocumento.current().blocos, referencias.current, lerNorma.current().perfil, c),
+    [],
+  );
 
   const escolhas = useMemo(
     () => escolhasDoAutor(perfilEmbutido(nomeDaNorma), ajustes.current[nomeDaNorma]),
@@ -305,6 +325,10 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
       <Editor
         inicial={trabalho.documento.blocos}
         aparencia={aparencia}
+        citacoes={citacoes}
+        lerReferencias={lerReferencias}
+        previaDaCitacao={previa}
+        aoCadastrarReferencia={() => setPainel("referencias")}
         aoMudar={() => {
           salvamento.houveMudanca();
           mudancas.dispatchEvent(new Event("mudou"));
