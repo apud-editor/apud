@@ -1,4 +1,4 @@
-# Gabarito do documento de prova: ABNT 2025, revisão 1
+# Gabarito do documento de prova: ABNT 2025, revisão 2
 #
 # Como cada chamada do documento de prova deve sair, e a lista de referências
 # completa, na ordem. O comando “npm run prova” compara a saída com este arquivo.

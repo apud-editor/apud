@@ -141,6 +141,12 @@ export const ESQUEMA_APA: EsquemaNorma = {
         opcao("nomes até diferenciar"),
         "Duas obras que ficam iguais com et al.",
       ],
+      // Fora do checklist: regra de revista (APA 6), registrada em 20/11/2026.
+      [
+        "citação, primeira vez com três a cinco autores",
+        opcao("primeiro autor e et al.", "todos os autores"),
+        [],
+      ],
       ["citação em bloco, a partir de", quantidade("palavra", "palavras", 10, 200), ["Citação curta", "Citação em bloco"]],
       ["citação curta, aspas", opcao("duplas"), "Citação curta"],
       ["citação, página na citação direta", opcao("obrigatória"), "Citação curta"],

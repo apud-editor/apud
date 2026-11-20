@@ -13,6 +13,12 @@
 // APA, o CSL monta os nomes (ele aplica bem as regras de et al. e desempate da
 // APA) e o Apud monta o resto. Nas duas, o ano vem já escrito, com as letras
 // (2020a) calculadas em preparar.ts, e o CSL cuida da lista de referências.
+//
+// Algumas revistas que usam APA pedem todos os autores (de 3 a 5) na primeira
+// vez que a obra é citada, e et al. dali em diante. Nesse caso o Apud também
+// monta os nomes na APA, mas só na primeira citação de cada obra. Para saber
+// qual é a primeira, as chamadas precisam ser escritas na ordem do texto, com
+// o mesmo contexto (criarContexto).
 
 import type { PerfilResolvido } from "../perfis";
 import { semAcentos } from "../perfis/texto";
@@ -107,6 +113,13 @@ export interface Contexto {
   perfil: PerfilResolvido;
   /** As referências citadas no trabalho, já preparadas (preparar.ts). */
   referencias: Record<string, Referencia>;
+  /** As obras já citadas antes da chamada atual. chamadaParaTypst atualiza. */
+  jaCitadas: Set<string>;
+}
+
+/** O contexto de um trabalho: escreva as chamadas na ordem do texto com ele. */
+export function criarContexto(perfil: PerfilResolvido, referencias: Record<string, Referencia>): Contexto {
+  return { perfil, referencias, jaCitadas: new Set() };
 }
 
 const valorDe = (perfil: PerfilResolvido, chave: string): string | undefined => {
@@ -152,6 +165,17 @@ function autoresDe(ref: Referencia): Autor[] {
   });
 }
 
+/**
+ * APA, quando a revista pede: na primeira citação de uma obra com 3 a 5
+ * autores, entram todos os nomes. (Monzelli, Navarro, & Cagnin, 2023)
+ */
+function todosNaPrimeira(chave: string, ctx: Contexto): boolean {
+  if (valorDe(ctx.perfil, "citação, primeira vez com três a cinco autores") !== "todos os autores") return false;
+  if (ctx.jaCitadas.has(chave)) return false;
+  const n = autoresDe(referencia(ctx, chave)).length;
+  return n >= 3 && n <= 5;
+}
+
 /** "João Pedro" vira "J. P." */
 function iniciais(prenomes: string): string {
   return prenomes
@@ -185,7 +209,12 @@ function precisaDeIniciais(ref: Referencia, ctx: Contexto): boolean {
  * Os nomes da chamada montados pelo Apud.
  * Entre parênteses: "Lima; Costa; Reis". Narrativa: "Lima, Costa e Reis".
  */
-export function nomesDaChamada(ref: Referencia, forma: "parenteses" | "narrativa", ctx: Contexto): string {
+export function nomesDaChamada(
+  ref: Referencia,
+  forma: "parenteses" | "narrativa",
+  ctx: Contexto,
+  todos = false,
+): string {
   const { perfil } = ctx;
   const autores = autoresDe(ref);
   if (autores.length === 0) {
@@ -202,7 +231,7 @@ export function nomesDaChamada(ref: Referencia, forma: "parenteses" | "narrativa
   let limite = Infinity;
   if (valorDe(perfil, "autores, quatro ou mais") === "primeiro com et al.") limite = 4;
   if (valorDe(perfil, "citação, três ou mais autores")) limite = 3;
-  if (nomes.length >= limite) {
+  if (nomes.length >= limite && !todos) {
     const italico = valorDe(perfil, "referências, em itálico")?.includes("et al.");
     return `${nomes[0]} ${italico ? `_${T("et al.")}_` : T("et al.")}`;
   }
@@ -210,8 +239,12 @@ export function nomesDaChamada(ref: Referencia, forma: "parenteses" | "narrativa
 
   if (forma === "parenteses") {
     // ABNT: (Lima; Costa; Reis, 2018). APA: (Lima & Costa, 2020).
+    // Com três ou mais nomes, a APA põe vírgula também antes do &.
     const ultimo = valorDe(perfil, "citação, dois autores entre parênteses");
-    if (ultimo) return `${nomes.slice(0, -1).join(T(", "))} ${T(ultimo)} ${nomes[nomes.length - 1]}`;
+    if (ultimo) {
+      const antes = nomes.length >= 3 ? T(",") : "";
+      return `${nomes.slice(0, -1).join(T(", "))}${antes} ${T(ultimo)} ${nomes[nomes.length - 1]}`;
+    }
     const separador = valorDe(perfil, "citação, separador entre autores") === "vírgula" ? ", " : "; ";
     return nomes.join(T(separador));
   }
@@ -220,9 +253,18 @@ export function nomesDaChamada(ref: Referencia, forma: "parenteses" | "narrativa
   return `${nomes.slice(0, -1).join(T(separador))} ${T(antesDoUltimo)} ${nomes[nomes.length - 1]}`;
 }
 
+/**
+ * Se os nomes desta obra são escritos pelo Apud (texto) ou pelo CSL (#cite).
+ * ABNT: sempre pelo Apud. APA: pelo CSL, menos na primeira citação com todos os autores.
+ */
+const nomesComoTexto = (item: ItemDaChamada, ctx: Contexto) =>
+  nomesPeloApud(ctx.perfil) || todosNaPrimeira(item.chave, ctx);
+
 /** Os nomes de uma obra numa chamada entre parênteses: do Apud (ABNT) ou do CSL (APA). */
 function nomesEntreParenteses(item: ItemDaChamada, ctx: Contexto): string {
-  if (nomesPeloApud(ctx.perfil)) return nomesDaChamada(referencia(ctx, item.chave), "parenteses", ctx);
+  if (nomesComoTexto(item, ctx)) {
+    return nomesDaChamada(referencia(ctx, item.chave), "parenteses", ctx, todosNaPrimeira(item.chave, ctx));
+  }
   return `#cite(<${item.chave}>, form: "author")`;
 }
 
@@ -251,7 +293,7 @@ function ordem(item: ItemDaChamada, ctx: Contexto): string {
  */
 function entreParenteses(itens: ItemDaChamada[], ctx: Contexto): string {
   // APA com uma obra só: o CSL monta tudo, inclusive os desempates.
-  if (!nomesPeloApud(ctx.perfil) && itens.length === 1) {
+  if (!nomesComoTexto(itens[0], ctx) && itens.length === 1) {
     const extra = complemento(itens[0], ctx.perfil);
     return extra
       ? `#cite(<${itens[0].chave}>, supplement: [${T(extra)}])`
@@ -272,9 +314,10 @@ function entreParenteses(itens: ItemDaChamada[], ctx: Contexto): string {
   const partes = grupos.map((grupo) => {
     const anos = grupo.map((i) => anoEComplemento(i, ctx)).join(T(", "));
     // As marcas não podem encostar em outro #cite, senão o Typst junta os dois.
-    // ABNT: antes dos nomes, que são texto. APA: a primeira obra já entra na
+    // Nomes em texto (ABNT, ou a primeira citação com todos os autores na
+    // APA): todas antes dos nomes. Nomes do CSL: a primeira obra já entra na
     // lista pelo #cite dos nomes; as outras, no fim do grupo.
-    if (nomesPeloApud(ctx.perfil)) {
+    if (nomesComoTexto(grupo[0], ctx)) {
       const marcas = grupo.map((i) => registrar(i.chave)).join("");
       return `${marcas}${nomesEntreParenteses(grupo[0], ctx)}${T(", ")}${anos}`;
     }
@@ -284,8 +327,30 @@ function entreParenteses(itens: ItemDaChamada[], ctx: Contexto): string {
   return `${T("(")}${partes.join(T("; "))}${T(")")}`;
 }
 
-/** Escreve uma chamada no formato do Typst. */
+/**
+ * Escreve uma chamada no formato do Typst. Chame na ordem do texto, sempre
+ * com o mesmo contexto: ele guarda quais obras já foram citadas.
+ */
 export function chamadaParaTypst(chamada: Chamada, ctx: Contexto): string {
+  const escrita = escreverChamada(chamada, ctx);
+  for (const chave of chavesDa(chamada)) ctx.jaCitadas.add(chave);
+  return escrita;
+}
+
+function chavesDa(chamada: Chamada): string[] {
+  switch (chamada.tipo) {
+    case "parenteses":
+      return chamada.itens.map((i) => i.chave);
+    case "narrativa":
+      return [chamada.chave];
+    case "apud":
+      return [chamada.item.chave];
+    case "sem-referencia":
+      return [];
+  }
+}
+
+function escreverChamada(chamada: Chamada, ctx: Contexto): string {
   const { perfil } = ctx;
   switch (chamada.tipo) {
     case "parenteses":
@@ -295,7 +360,8 @@ export function chamadaParaTypst(chamada: Chamada, ctx: Contexto): string {
       // Lima, Costa e Reis (2018, p. 4)
       const ref = referencia(ctx, chamada.chave);
       const extra = chamada.localizador ? `, ${chamada.localizador}` : "";
-      return `${registrar(chamada.chave)}${nomesDaChamada(ref, "narrativa", ctx)} ${T(`(${ano(ref)}${extra})`)}`;
+      const nomes = nomesDaChamada(ref, "narrativa", ctx, todosNaPrimeira(chamada.chave, ctx));
+      return `${registrar(chamada.chave)}${nomes} ${T(`(${ano(ref)}${extra})`)}`;
     }
 
     case "apud": {
@@ -304,7 +370,7 @@ export function chamadaParaTypst(chamada: Chamada, ctx: Contexto): string {
       const italico = valorDe(perfil, "citação de citação, destaque") === "itálico";
       const virgula = valorDe(perfil, "citação de citação, vírgula antes") === "sim" ? "," : "";
       const termo = italico ? `_${T(expressao)}_` : T(expressao);
-      const marca = nomesPeloApud(perfil) ? registrar(chamada.item.chave) : "";
+      const marca = nomesComoTexto(chamada.item, ctx) ? registrar(chamada.item.chave) : "";
       return (
         `${marca}${T(`(${chamada.original}${virgula}`)} ${termo} ` +
         `${nomesEntreParenteses(chamada.item, ctx)}${T(", ")}${anoEComplemento(chamada.item, ctx)}${T(")")}`

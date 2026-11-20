@@ -21,9 +21,9 @@
 
 perfil: APA
 versão: 7
-revisão: 1
+revisão: 2
 data da revisão: 20/11/2026
-nota da revisão: Primeira revisão, feita a partir do checklist de regras aprovado em 20/11/2026.
+nota da revisão: Nova escolha: primeira citação com três a cinco autores (et al. ou todos os autores), para revistas que pedem.
 
 == APA 7: página, estrutura e títulos ==
 # A APA tem dois modos. O trabalho começa no modo estudante e passa para o
@@ -110,6 +110,10 @@ citação narrativa, antes do último autor: e              | APA 7 (site da APA
 # Exemplo: (Zheng et al., 2023), desde a primeira citação.
 citação, três ou mais autores: primeiro autor e et al.   | APA 7 (site da APA)
 citação, obras iguais com et al.: nomes até diferenciar  | APA 7 (site da APA)
+# Fora do checklist: algumas revistas (regra da APA 6) pedem todos os autores
+# na primeira citação de uma obra com 3 a 5 autores, e et al. dali em diante.
+# Exemplo: (Monzelli, Navarro, & Cagnin, 2023), depois Monzelli et al. (2023).
+citação, primeira vez com três a cinco autores: primeiro autor e et al.  | APA 7 (site da APA); a outra forma vem da APA 6, ainda pedida por revistas | escolha: primeiro autor e et al., todos os autores
 # Menos de 40 palavras: no parágrafo, entre aspas. 40 ou mais: em bloco.
 citação em bloco, a partir de: 40 palavras               | APA 7 (site da APA)
 citação curta, aspas: duplas                             | APA 7 (site da APA)

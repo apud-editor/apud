@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { parse as lerYaml } from "yaml";
-import { chamadaParaTypst, encontrarChamadas, escaparTypst } from "../src/citacoes/chamadas";
+import { chamadaParaTypst, criarContexto, encontrarChamadas, escaparTypst } from "../src/citacoes/chamadas";
 import { prepararReferencias, type Referencia } from "../src/citacoes/preparar";
 import {
   aplicarPerfilNoCsl,
@@ -85,9 +85,11 @@ export function rodarProva(arquivoDoPerfil: string, ajustes: Record<string, stri
   const chamadas = encontrarChamadas(documento);
 
   const titulo = perfil.regras.get("rótulo das referências")?.texto ?? "Referências";
+  // Um contexto só, para o Apud saber qual é a primeira citação de cada obra.
+  const contexto = criarContexto(perfil, referencias);
   const typst = [
     `#set text(lang: "pt", region: "BR")`,
-    ...chamadas.map((c, i) => `#block[C${i + 1}: ${chamadaParaTypst(c, { perfil, referencias })}]`),
+    ...chamadas.map((c, i) => `#block[C${i + 1}: ${chamadaParaTypst(c, contexto)}]`),
     `#bibliography(bytes(${JSON.stringify(JSON.stringify(referencias))}), style: bytes(${JSON.stringify(csl)}), title: [${escaparTypst(titulo)}])`,
   ].join("\n");
 
