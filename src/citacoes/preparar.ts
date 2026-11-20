@@ -44,6 +44,41 @@ function anoDaDataIncerta(texto: string): number | undefined {
   return digitos ? Number(digitos.replace(/-/g, "0")) : undefined;
 }
 
+/** Partículas que ficam no fim dos prenomes: "Oliveira, Lucas Freitas de". */
+const PARTICULAS = new Set(["de", "da", "do", "das", "dos", "e", "d'"]);
+
+/**
+ * "Oliveira, Lucas Freitas de" vira um nome com a partícula separada. Sem
+ * isso, a APA abrevia a partícula como se fosse prenome (L. F. d.). Com ela
+ * separada, sai "Oliveira, L. F. de" na APA e "OLIVEIRA, Lucas Freitas de" na ABNT.
+ */
+function separarParticula(nome: unknown): unknown {
+  if (typeof nome !== "string" || !nome.includes(",")) return nome;
+  const [sobrenome, prenomes = ""] = nome.split(",").map((p) => p.trim());
+  const palavras = prenomes.split(/\s+/);
+  let n = palavras.length;
+  while (n > 1 && PARTICULAS.has(palavras[n - 1])) n--;
+  if (n === palavras.length) return nome;
+  return { name: sobrenome, "given-name": palavras.slice(0, n).join(" "), prefix: palavras.slice(n).join(" ") };
+}
+
+/** Nome como texto, "Sobrenome, Prenomes", também para os nomes já separados. */
+export function nomeComoTexto(nome: unknown): string {
+  if (typeof nome === "string") return nome;
+  const n = nome as { name: string; "given-name"?: string; prefix?: string };
+  const prenomes = [n["given-name"], n.prefix].filter(Boolean).join(" ");
+  return prenomes ? `${n.name}, ${prenomes}` : n.name;
+}
+
+/**
+ * "Anais do Seminário de Diamantina" vira "Anais": a ABNT mostra só a
+ * designação, seguida de [...] (NBR 6023:2025, 7.8.4).
+ */
+export function designacaoDosAnais(titulo: string): { designacao: string; cortou: boolean } {
+  const partes = titulo.split(/\s+(?=d[oa]s?\s)/);
+  return { designacao: partes[0], cortou: partes.length > 1 };
+}
+
 function temAutor(ref: Referencia): boolean {
   return ref.author !== undefined || ref.editor !== undefined;
 }
@@ -51,6 +86,10 @@ function temAutor(ref: Referencia): boolean {
 function prepararUma(original: Referencia, perfil: PerfilResolvido): Referencia {
   const ref: Referencia = structuredClone(original);
   const pai = (ref.parent ?? undefined) as Referencia | undefined;
+  // ABNT: a rede social não leva o tipo de postagem ([Vídeo] é da APA).
+  if (ref.type === "post" && perfil.identificacao.norma === "ABNT") delete ref.genre;
+  // O tipo do trabalho (Tese, Nota Técnica), antes de o subtítulo ocupar o campo genre.
+  const tipoDoTrabalho = ref.genre;
   const subtituloSemDestaque = temRegra(perfil, "referências, destaque do subtítulo");
   const tituloComMaiusculaSoNoInicio = temRegra(perfil, "referências, título da obra");
 
@@ -102,6 +141,82 @@ function prepararUma(original: Referencia, perfil: PerfilResolvido): Referencia 
     delete pai.location;
   }
 
+  // Partícula no fim dos prenomes (de, da, dos...).
+  for (const alvo of [ref, pai]) {
+    for (const papel of ["author", "editor"]) {
+      if (!alvo || alvo[papel] === undefined) continue;
+      const nomes = alvo[papel];
+      alvo[papel] = Array.isArray(nomes) ? nomes.map(separarParticula) : separarParticula(nomes);
+    }
+  }
+
+  const abnt = perfil.identificacao.norma === "ABNT";
+
+  // Tese, dissertação, TCC: tipo do trabalho e grau.
+  // ABNT: "Tese (Doutorado em Psicologia)", no campo archive (genre já guarda o
+  // subtítulo). APA: "Tese de doutorado", no campo genre.
+  if (ref.type === "thesis" && ref.degree !== undefined) {
+    const tipo = String(tipoDoTrabalho ?? "Tese");
+    const grau = String(ref.degree);
+    if (abnt) {
+      ref.archive = `${tipo} (${grau})`;
+      if (ref.genre === tipoDoTrabalho) delete ref.genre;
+    } else {
+      ref.genre = `${tipo} de ${grau.split(/\s+/)[0].toLocaleLowerCase("pt-BR")}`;
+    }
+    delete ref.degree;
+  }
+
+  // Relatório ou nota técnica de uma série: "(Nota Técnica, n. 103)" na ABNT.
+  // A ABNT lê o nome da série em archive (genre já guarda o subtítulo).
+  if (ref.type === "report" && abnt && tipoDoTrabalho !== undefined) {
+    ref.archive = tipoDoTrabalho;
+    if (ref.genre === tipoDoTrabalho) delete ref.genre;
+  }
+
+  // Trabalho em evento. O evento é campo do Apud: o Typst não o passa ao CSL.
+  // ABNT: "SEMINÁRIO DE DIAMANTINA, 20., 2024, Diamantina" em archive, e os
+  // anais só pela designação ("Anais [...]"). APA: o título completo dos anais.
+  if (ref.event !== undefined) {
+    const evento = ref.event as { name: string; number?: number | string; date?: number | string; location?: string };
+    if (abnt) {
+      ref.archive = [
+        evento.name.toLocaleUpperCase("pt-BR"),
+        evento.number !== undefined ? `${evento.number}.` : undefined,
+        evento.date,
+        evento.location,
+      ]
+        .filter((x) => x !== undefined && x !== "")
+        .join(", ");
+      if (pai?.title !== undefined) {
+        const { designacao, cortou } = designacaoDosAnais(String(pai.title));
+        pai.title = designacao;
+        if (cortou) ref["archive-location"] = "[...]";
+      }
+    }
+    delete ref.event;
+  }
+
+  // Rede social: o perfil (@jupavan). Vai em archive-location, que os dois
+  // estilos leem: "Instagram: @jupavan" na ABNT, "Pavan, J. [@jupavan]" na APA.
+  if (ref.handle !== undefined) {
+    ref["archive-location"] = String(ref.handle);
+    delete ref.handle;
+  }
+
+  // APA, quando a revista pede a cidade da editora: "São Paulo: Cortez".
+  // Só em livros, relatórios e no livro de um capítulo ou dos anais.
+  if (perfil.regras.get("referências, cidade da editora")?.texto === "mostrar") {
+    const comEditora = [
+      ["book", "anthology", "report"].includes(String(ref.type)) ? ref : undefined,
+      pai && ["book", "anthology", "proceedings"].includes(String(pai.type)) ? pai : undefined,
+    ];
+    for (const alvo of comEditora) {
+      const editora = alvo?.publisher as { name?: string; location?: string } | undefined;
+      if (editora?.name && editora.location) alvo!.publisher = { name: `${editora.location}: ${editora.name}` };
+    }
+  }
+
   // APA: com DOI, o endereço não aparece.
   if (tituloComMaiusculaSoNoInicio) {
     const doi = (ref["serial-number"] as Record<string, unknown> | undefined)?.doi;
@@ -121,7 +236,7 @@ export function anoDaReferencia(ref: Referencia): string {
 /** Identifica as pessoas autoras de uma obra, para saber se duas obras são do mesmo autor. */
 export function chaveDosAutores(ref: Referencia): string {
   const autores = ([] as unknown[]).concat(ref.author ?? ref.editor ?? []);
-  return JSON.stringify(autores.map((a) => (typeof a === "string" ? a : (a as { name: string }).name).toLowerCase()));
+  return JSON.stringify(autores.map((a) => nomeComoTexto(a).toLowerCase()));
 }
 
 function tituloParaOrdenar(ref: Referencia): string {
@@ -159,8 +274,8 @@ function marcarLetras(referencias: Record<string, Referencia>) {
 function chaveDeOrdem(ref: Referencia, perfil: PerfilResolvido): string {
   const comIniciais = perfil.regras.get("referências, prenomes")?.texto !== "por extenso";
   const autores = ([] as unknown[]).concat(ref.author ?? ref.editor ?? []).map((a) => {
-    if (typeof a !== "string") return (a as { name: string }).name;
-    const [sobrenome, prenomes = ""] = a.split(",").map((p) => p.trim());
+    if (typeof a !== "string" && !(a as { "given-name"?: string })["given-name"]) return (a as { name: string }).name;
+    const [sobrenome, prenomes = ""] = nomeComoTexto(a).split(",").map((p) => p.trim());
     const dados = comIniciais ? prenomes.split(/\s+/).map((p) => p.charAt(0)).join(" ") : prenomes;
     return `${sobrenome} ${dados}`;
   });

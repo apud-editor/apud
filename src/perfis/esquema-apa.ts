@@ -170,6 +170,22 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ["referências, ordem", opcao("alfabética pelo sobrenome do primeiro autor"), "Ordem"],
       ["referências, autor", opcao("Sobrenome, iniciais com ponto"), "Autor"],
       ["referências, antes do último autor", opcao("&"), "Autor"],
+      // Fora do checklist: regras de revista (APA 6), registradas em 20/11/2026.
+      [
+        "referências, prenomes",
+        opcao("iniciais", "por extenso"),
+        [],
+        {
+          // Por extenso: só na lista. As chamadas passam a ser montadas pelo Apud
+          // (chamadas.ts), com iniciais para desempatar: (J. Pavan, 2025a).
+          tipo: "atributos",
+          porOpcao: {
+            iniciais: {},
+            "por extenso": { "name@initialize": "false", "citation@disambiguate-add-givenname": "false" },
+          },
+        },
+      ],
+      ["referências, cidade da editora", opcao("não mostrar", "mostrar"), []],
       [
         "referências, quantos autores",
         opcao("até 20, todos; com 21 ou mais, os 19 primeiros, reticências e o último"),
@@ -182,6 +198,11 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ],
       ["modelo, artigo", modelo(), "Artigo"],
       ["modelo, livro", modelo(), "Livro"],
+      ["modelo, tese", modelo(), "Tese ou dissertação"],
+      ["modelo, relatório", modelo(), "Relatório ou nota técnica"],
+      ["modelo, trabalho em evento", modelo(), "Trabalho em evento"],
+      ["modelo, notícia", modelo(), "Notícia"],
+      ["modelo, rede social", modelo(), "Rede social"],
     ]),
   ],
 };

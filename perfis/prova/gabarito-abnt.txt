@@ -1,4 +1,4 @@
-# Gabarito do documento de prova: ABNT 2025, revisão 2
+# Gabarito do documento de prova: ABNT 2025, revisão 3
 #
 # Como cada chamada do documento de prova deve sair, e a lista de referências
 # completa, na ordem. O comando “npm run prova” compara a saída com este arquivo.
@@ -30,23 +30,32 @@
 [@guia2025, p. 3]  →  (Guia [...], 2025, p. 3)
 [@moura201x]  →  (Moura, [201-?])
 [@pinto2017; @nunes2016]  →  (Nunes, 2016; Pinto, 2017)
+[@nogueira2023]  →  (Nogueira, 2023)
+[@freitas2017]  →  (Freitas, 2017)
+[@prado2025]  →  (Prado, 2025)
+[@abrigo2024]  →  (Abrigo [...], 2024)
+[@teles2024]  →  (Teles; Andrade, 2024)
 [@lima2018; @silva2019]  →  (Lima; Costa; Reis, 2018; Silva, 2019)
 
 == Referências ==
+ABRIGO municipal amplia vagas no inverno. **Jornal do Litoral**, Itajaí, 3 jul. 2024. Disponível em: https://jornaldolitoral.example.org/abrigo. Acesso em: 3 jul. 2024.
 ALVES, Ana Maria; BRITO, Bruno; CUNHA, Carla; DIAS, Davi. **Avaliação psicológica**. São Paulo: Summus, 2022.
 ASSOCIAÇÃO BRASILEIRA DE ENSINO DE PSICOLOGIA. **Diretrizes para o estágio em psicologia**. Brasília: ABEP, 2023.
 BRASIL. Lei nº 10.216, de 6 de abril de 2001. Dispõe sobre a proteção e os direitos das pessoas portadoras de transtornos mentais e redireciona o modelo assistencial em saúde mental. Brasília, DF: Presidência da República, 2001. Disponível em: https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm. Acesso em: 15 maio 2025.
 COSTA, Helena. O acolhimento no serviço de saúde mental. *In*: MELO, Rui; NUNES, Sara (org.). **Psicologia e saúde coletiva**: práticas no SUS. Porto Alegre: Artmed, 2021. p. 9-30.
 DIAS, Eva; LOPES, Ivo. Vínculo terapêutico na atenção psicossocial. **Psicologia em Estudo**, Maringá, v. 10, n. 2, p. 1-15, mar. 2025. DOI: 10.0000/pe.2025.0102. Disponível em: https://doi.org/10.0000/pe.2025.0102. Acesso em: 15 maio 2025.
 FERRAZ, Lia. Grupos terapêuticos com adolescentes. **Revista Brasileira de Psicoterapia**, Porto Alegre, v. 26, e2024017, 2024.
+FREITAS, Lucas Moreira de. **A proteção social à população em situação de rua**: entre o direito e a tutela. 2017. 312 f. Tese (Doutorado em Serviço Social) – Universidade Estadual de Londrina, Londrina, 2017. Disponível em: https://repositorio.example.org/freitas2017. Acesso em: 20 maio 2026.
 GARCIA, Paulo. **Terapia cognitiva**. Novo Hamburgo: Sinopsys, 2015.
 GUIA de normalização de trabalhos acadêmicos. Curitiba: Editora Universitária, 2025.
 INPSI. **Censo da psicologia no Brasil**. Rio de Janeiro: INPSI, 2011.
 LIMA, Ana; COSTA, Bruno; REIS, Carla. **Saúde mental na atenção básica**. Porto Alegre: Artmed, 2018.
 MORAIS, Tânia. **Saúde mental de estudantes universitários**. São Paulo: Portal Psicologia Hoje, 2 maio 2024. Disponível em: https://psicologiahoje.example.org/saude-mental-estudantes. Acesso em: 15 maio 2025.
 MOURA, Lúcia. **Memórias do hospício**. *[S. l.]*: Livraria Central, [201-?].
+NOGUEIRA, Marcos. **Estimativa da população em situação de rua no Brasil**. Brasília: Instituto de Pesquisa Social, 2023. (Nota Técnica, n. 103).
 NUNES, Teresa. **Diário de campo**. *[S. l.: s. n.]*, 2016.
 PINTO, Rosa. **Cartas a uma jovem terapeuta**. Recife: *[s. n.]*, 2017.
+PRADO, Juliana. **Acolhimento na orla: nossa equipe está nas ruas**. *[S. l.]*, 16 fev. 2025. Instagram: @juprado. Disponível em: https://www.instagram.com/reel/exemplo/. Acesso em: 20 maio 2026.
 RUDIO, Franz. **Introdução ao projeto de pesquisa**. Petrópolis: Vozes, 2002.
 RUDIO, Franz. **Orientação não diretiva**. Petrópolis: Vozes, 2003.
 SILVA, João Pedro. **Psicologia clínica**: fundamentos e prática. 2. ed. Petrópolis: Vozes, 2019.
@@ -55,3 +64,4 @@ SILVA, Marta. **Psicoterapia breve**. Barueri: Manole, 2021.
 SMITH, John. **Clinical supervision in practice**. New York: Northfield Press, 2019.
 SOUZA, Maria. **Clínica ampliada**. São Paulo: Hucitec, 2020a.
 SOUZA, Maria. **Escuta qualificada**. São Paulo: Hucitec, 2020b.
+TELES, Luísa; ANDRADE, Marcos. Categorizações de pessoas em situação de rua. *In*: SEMINÁRIO DE POLÍTICAS PÚBLICAS, 20., 2024, Diamantina. **Anais** [...]. Belo Horizonte: Editora do Seminário, 2024. p. 15-30. Disponível em: https://anais.example.org/teles2024.pdf. Acesso em: 20 maio 2026.

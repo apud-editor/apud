@@ -97,7 +97,7 @@ Um perfil personalizado guarda só o que muda e herda o resto do original. Veja
 
 ```
 perfil: ABNT – Universidade Exemplo
-herda de: ABNT 2025, revisão 2
+herda de: ABNT 2025, revisão 3
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: Fonte Arial e recuo de 1,5 cm, como pede o manual.
@@ -147,6 +147,24 @@ todos os autores na primeira citação de uma obra com 3 a 5 autores, e *et al.*
 dali em diante, como fazia a APA 6. Exemplo: (Monzelli, Navarro, & Cagnin,
 2023), depois Monzelli et al. (2023). O padrão continua o da APA 7, com
 *et al.* desde a primeira vez.
+
+Mais duas escolhas de revista ficam no perfil da APA, com o padrão da APA 7:
+
+- `referências, prenomes`: `iniciais` (padrão) ou `por extenso`. Por extenso
+  vale só na lista; no texto, o Apud usa iniciais quando dois autores têm o
+  mesmo sobrenome, como em (J. Pavan, 2025a).
+- `referências, cidade da editora`: `não mostrar` (padrão) ou `mostrar`, como
+  em "São Paulo: Cortez". Vale para livros, relatórios e o livro de capítulos
+  e anais.
+
+## Tipos de referência
+
+Os dois estilos montam livro, capítulo, artigo, site, lei, tese ou
+dissertação, relatório de uma série (como uma nota técnica), trabalho em anais
+de evento, notícia de jornal e postagem em rede social. Cada tipo tem uma linha
+`modelo, ...` no perfil. Os campos que o Apud acrescenta aos dados (grau da
+tese, evento, perfil na rede social) estão explicados no começo de
+`prova/referencias.yml`.
 
 ## Licença dos estilos CSL
 

@@ -22,7 +22,7 @@
 
 import type { PerfilResolvido } from "../perfis";
 import { semAcentos } from "../perfis/texto";
-import { anoDaReferencia, chaveDosAutores, type Referencia } from "./preparar";
+import { anoDaReferencia, chaveDosAutores, nomeComoTexto, type Referencia } from "./preparar";
 
 export interface ItemDaChamada {
   chave: string;
@@ -127,8 +127,14 @@ const valorDe = (perfil: PerfilResolvido, chave: string): string | undefined => 
   return r && r.situacao.tipo !== "desligada" ? r.texto : undefined;
 };
 
-/** Na ABNT o Apud monta os nomes; na APA eles vêm do CSL. */
-const nomesPeloApud = (perfil: PerfilResolvido) => valorDe(perfil, "citação, autor na chamada") !== undefined;
+/**
+ * Na ABNT o Apud monta os nomes; na APA eles vêm do CSL. Exceção: na APA com
+ * prenomes por extenso na lista, o Typst levaria as iniciais do desempate
+ * para a lista; então o Apud monta os nomes e o CSL não desempata.
+ */
+const nomesPeloApud = (perfil: PerfilResolvido) =>
+  valorDe(perfil, "citação, autor na chamada") !== undefined ||
+  (perfil.identificacao.norma === "APA" && valorDe(perfil, "referências, prenomes") === "por extenso");
 
 function referencia(ctx: Contexto, chave: string): Referencia {
   const ref = ctx.referencias[chave];
@@ -159,8 +165,11 @@ interface Autor {
 
 function autoresDe(ref: Referencia): Autor[] {
   return ([] as unknown[]).concat(ref.author ?? ref.editor ?? []).map((a) => {
-    if (typeof a !== "string") return { sobrenome: String((a as { name: string }).name), prenomes: "" };
-    const [sobrenome, prenomes = ""] = a.split(",").map((p) => p.trim());
+    // Instituições: só o nome. Pessoas: "Sobrenome, Prenomes" (com a partícula, se houver).
+    if (typeof a !== "string" && !(a as { "given-name"?: string })["given-name"]) {
+      return { sobrenome: String((a as { name: string }).name), prenomes: "" };
+    }
+    const [sobrenome, prenomes = ""] = nomeComoTexto(a).split(",").map((p) => p.trim());
     return { sobrenome, prenomes };
   });
 }
@@ -186,13 +195,15 @@ function iniciais(prenomes: string): string {
 }
 
 /**
- * ABNT, mesmo sobrenome e mesmo ano, pessoas diferentes: entram as iniciais.
- * (Silva, J., 2021; Silva, M., 2021)
+ * Mesmo sobrenome, pessoas diferentes: entram as iniciais.
+ * ABNT, só no mesmo ano: (Silva, J., 2021; Silva, M., 2021).
+ * APA, em qualquer ano: (J. P. Silva, 2019), (J. Silva, 2021).
  */
 function precisaDeIniciais(ref: Referencia, ctx: Contexto): boolean {
   const meus = autoresDe(ref);
   if (meus.length === 0) return false;
   const anoBase = anoDaReferencia(ref).replace(/[a-z]$/, "");
+  const apa = ctx.perfil.identificacao.norma === "APA";
   return Object.values(ctx.referencias).some((outra) => {
     if (outra === ref) return false;
     const deles = autoresDe(outra);
@@ -200,7 +211,8 @@ function precisaDeIniciais(ref: Referencia, ctx: Contexto): boolean {
       deles.length > 0 &&
       deles[0].sobrenome.toLowerCase() === meus[0].sobrenome.toLowerCase() &&
       deles[0].prenomes.toLowerCase() !== meus[0].prenomes.toLowerCase() &&
-      anoDaReferencia(outra).replace(/[a-z]$/, "") === anoBase
+      // A APA desempata mesmo com anos diferentes (APA 7, 8.20); a ABNT, só no mesmo ano.
+      (apa || anoDaReferencia(outra).replace(/[a-z]$/, "") === anoBase)
     );
   });
 }
@@ -225,7 +237,11 @@ export function nomesDaChamada(
   const caixaAlta = valorDe(perfil, "citação, autor na chamada") === "maiúsculas";
   const formatar = (n: string) => escaparTypst(caixaAlta ? n.toLocaleUpperCase("pt-BR") : n);
   const nomes = autores.map((a) => formatar(a.sobrenome));
-  if (nomesPeloApud(perfil) && precisaDeIniciais(ref, ctx)) nomes[0] += T(`, ${iniciais(autores[0].prenomes)}`);
+  // Mesmo sobrenome e ano: ABNT (Silva, J., 2021); APA (J. Silva, 2021).
+  if (nomesPeloApud(perfil) && precisaDeIniciais(ref, ctx)) {
+    const ini = iniciais(autores[0].prenomes);
+    nomes[0] = perfil.identificacao.norma === "APA" ? `${T(`${ini} `)}${nomes[0]}` : `${nomes[0]}${T(`, ${ini}`)}`;
+  }
 
   // A partir de quantos autores entra o et al.
   let limite = Infinity;

@@ -115,6 +115,11 @@ const CHECKLIST: Record<string, Array<[linha: string, situacao: Situacao]>> = {
     ["Livro", "confirmada"],
     ["Capítulo", "confirmada"],
     ["Artigo", "confirmada"],
+    ["Tese ou dissertação", "confirmada"],
+    ["Relatório ou nota técnica", "confirmada"],
+    ["Trabalho em evento", "confirmada"],
+    ["Notícia", "confirmada"],
+    ["Rede social", "confirmada"],
     ["Artigo sem página", "confirmada"],
     ["ISSN", "confirmada"],
     ["Documento online", "confirmada"],
@@ -160,6 +165,11 @@ const CHECKLIST: Record<string, Array<[linha: string, situacao: Situacao]>> = {
     ["Título da obra", "confirmada"],
     ["Artigo", "confirmada"],
     ["Livro", "confirmada"],
+    ["Tese ou dissertação", "confirmada"],
+    ["Relatório ou nota técnica", "confirmada"],
+    ["Trabalho em evento", "confirmada"],
+    ["Notícia", "confirmada"],
+    ["Rede social", "confirmada"],
   ],
 };
 

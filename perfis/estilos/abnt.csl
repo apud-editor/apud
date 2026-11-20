@@ -297,6 +297,45 @@
     </group>
   </macro>
 
+  <!-- Só o local: Maceió, ou [S. l.] quando falta (redes sociais). -->
+  <macro name="local">
+    <choose>
+      <if variable="publisher-place">
+        <text variable="publisher-place"/>
+      </if>
+      <else>
+        <!-- apud: referências, sem local -->
+        <text value="[S. l.]" font-style="italic"/>
+      </else>
+    </choose>
+  </macro>
+
+  <!-- Série com número: (Nota Técnica, n. 103). O Apud põe o nome da série em archive. -->
+  <macro name="serie">
+    <group delimiter=", " prefix="(" suffix=")">
+      <text variable="archive"/>
+      <group delimiter=" ">
+        <text term="issue" form="short"/>
+        <text variable="number"/>
+      </group>
+    </group>
+  </macro>
+
+  <!-- Tese: 312 f. Tese (Doutorado em Psicologia) – Universidade, Cidade, ano. -->
+  <macro name="nota-de-tese">
+    <group delimiter=". ">
+      <text variable="number-of-pages" suffix=" f"/>
+      <group delimiter=" – ">
+        <text variable="archive"/>
+        <group delimiter=", ">
+          <text variable="publisher"/>
+          <text variable="publisher-place"/>
+          <text macro="ano"/>
+        </group>
+      </group>
+    </group>
+  </macro>
+
   <!-- p. 9-30 -->
   <macro name="paginas">
     <group delimiter=" ">
@@ -377,8 +416,30 @@
     </sort>
     <layout>
       <choose>
+        <!-- apud modelo: modelo, trabalho em evento = SOBRENOME, Prenome. Título do trabalho. *In*: NOME DO EVENTO, 20., 2024, Cidade. **Anais** [...]. Cidade: Editora, ano. p. 15-30. -->
+        <!-- O Apud escreve o evento (em archive) e corta o título dos anais na designação; o [...] vem em archive-location. -->
+        <if type="paper-conference">
+          <group delimiter=". " suffix=".">
+            <text macro="autor"/>
+            <text variable="title"/>
+            <group delimiter=": ">
+              <text term="in" font-style="italic"/>
+              <group delimiter=". ">
+                <text variable="archive"/>
+                <group delimiter=" ">
+                  <text macro="titulo-da-revista"/>
+                  <text variable="archive_location"/>
+                </group>
+              </group>
+            </group>
+            <text macro="publicacao"/>
+            <text macro="paginas"/>
+            <text macro="doi"/>
+            <text macro="acesso"/>
+          </group>
+        </if>
         <!-- apud modelo: modelo, capítulo = SOBRENOME, Prenome. Título do capítulo. *In*: SOBRENOME, Prenome (org.). **Título do livro**. Cidade: Editora, ano. p. 9-30. -->
-        <if type="chapter paper-conference entry-encyclopedia entry-dictionary" match="any">
+        <else-if type="chapter entry-encyclopedia entry-dictionary" match="any">
           <group delimiter=". " suffix=".">
             <text macro="autor"/>
             <text variable="title"/>
@@ -395,9 +456,24 @@
             <text macro="doi"/>
             <text macro="acesso"/>
           </group>
-        </if>
+        </else-if>
+        <!-- apud modelo: modelo, notícia = TÍTULO da notícia. **Nome do Jornal**, Cidade, 3 jul. 2024. Disponível em: https://exemplo.org. Acesso em: 3 jul. 2024. -->
+        <else-if type="article-newspaper">
+          <group delimiter=". " suffix=".">
+            <text macro="autor"/>
+            <text variable="title"/>
+            <group delimiter=", ">
+              <text macro="titulo-da-revista"/>
+              <text variable="publisher-place"/>
+              <text macro="volume-numero-paginas"/>
+              <text macro="data"/>
+            </group>
+            <text macro="doi"/>
+            <text macro="acesso"/>
+          </group>
+        </else-if>
         <!-- apud modelo: modelo, artigo = SOBRENOME, Prenome. Título do artigo. **Título da Revista**, cidade, v. 10, n. 2, p. 1-15, mar. 2025. DOI: 10.0000/xxxx. -->
-        <else-if type="article-journal article-magazine article-newspaper" match="any">
+        <else-if type="article-journal article-magazine" match="any">
           <group delimiter=". " suffix=".">
             <text macro="autor"/>
             <text variable="title"/>
@@ -411,8 +487,24 @@
             <text macro="acesso"/>
           </group>
         </else-if>
+        <!-- apud modelo: modelo, rede social = SOBRENOME, Prenome. **Texto da postagem**. Cidade, 16 fev. 2025. Instagram: @perfil. Disponível em: https://exemplo.org. Acesso em: 20 maio 2026. -->
+        <else-if type="post">
+          <group delimiter=". " suffix=".">
+            <text macro="autor"/>
+            <text macro="titulo-destacado"/>
+            <group delimiter=", ">
+              <text macro="local"/>
+              <text macro="data"/>
+            </group>
+            <group delimiter=": ">
+              <text variable="container-title"/>
+              <text variable="archive_location"/>
+            </group>
+            <text macro="acesso"/>
+          </group>
+        </else-if>
         <!-- Sites e documentos online: AUTOR. **Título**. Cidade: Editora, 2 maio 2024. Disponível em: ... Acesso em: ... -->
-        <else-if type="webpage post post-weblog" match="any">
+        <else-if type="webpage post-weblog" match="any">
           <group delimiter=". " suffix=".">
             <text macro="autor"/>
             <text macro="titulo-destacado"/>
@@ -428,6 +520,29 @@
             <text variable="title"/>
             <text variable="abstract"/>
             <text macro="publicacao"/>
+            <text macro="acesso"/>
+          </group>
+        </else-if>
+        <!-- apud modelo: modelo, tese = SOBRENOME, Prenome. **Título**: subtítulo. 2017. 312 f. Tese (Doutorado em Área) – Universidade, Cidade, 2017. -->
+        <else-if type="thesis">
+          <group delimiter=". " suffix=".">
+            <text macro="autor"/>
+            <text macro="titulo-destacado"/>
+            <text macro="ano"/>
+            <text macro="nota-de-tese"/>
+            <text macro="doi"/>
+            <text macro="acesso"/>
+          </group>
+        </else-if>
+        <!-- apud modelo: modelo, relatório = SOBRENOME, Prenome. **Título**. Cidade: Editora, ano. (Nota Técnica, n. 103). -->
+        <else-if type="report">
+          <group delimiter=". " suffix=".">
+            <text macro="autor"/>
+            <text macro="titulo-destacado"/>
+            <text macro="edicao"/>
+            <text macro="publicacao"/>
+            <text macro="serie"/>
+            <text macro="doi"/>
             <text macro="acesso"/>
           </group>
         </else-if>

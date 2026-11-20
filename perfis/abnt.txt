@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 2
+revisão: 3
 data da revisão: 20/11/2026
-nota da revisão: A posição do número da página passa a depender da faculdade (no alto, à direita, continua o padrão).
+nota da revisão: Novos tipos de referência: tese, relatório (nota técnica), trabalho em evento, notícia e rede social.
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -260,6 +260,13 @@ referências, década provável: [201-?]                    | NBR 6023:2025 (Fac
 modelo, livro: SOBRENOME, Prenome. **Título**: subtítulo. 2. ed. Cidade: Editora, ano.  | NBR 6023:2025 (Unicamp)
 modelo, capítulo: SOBRENOME, Prenome. Título do capítulo. *In*: SOBRENOME, Prenome (org.). **Título do livro**. Cidade: Editora, ano. p. 9-30.  | NBR 6023:2025 (Unicamp)
 modelo, artigo: SOBRENOME, Prenome. Título do artigo. **Título da Revista**, cidade, v. 10, n. 2, p. 1-15, mar. 2025. DOI: 10.0000/xxxx.  | NBR 6023:2025 (Unicamp)
+# Tipos acrescentados em 20/11/2026, a partir de dois artigos reais. No evento, o
+# Apud mostra só a designação dos anais (Anais [...]); na rede social, o perfil (@).
+modelo, tese: SOBRENOME, Prenome. **Título**: subtítulo. 2017. 312 f. Tese (Doutorado em Área) – Universidade, Cidade, 2017.  | NBR 6023:2025, 7.1.2 (Unicamp; UFJ)
+modelo, relatório: SOBRENOME, Prenome. **Título**. Cidade: Editora, ano. (Nota Técnica, n. 103).  | NBR 6023:2025, 8.10, série com número
+modelo, trabalho em evento: SOBRENOME, Prenome. Título do trabalho. *In*: NOME DO EVENTO, 20., 2024, Cidade. **Anais** [...]. Cidade: Editora, ano. p. 15-30.  | NBR 6023:2025, 7.8.4 (Unicamp; UFJ)
+modelo, notícia: TÍTULO da notícia. **Nome do Jornal**, Cidade, 3 jul. 2024. Disponível em: https://exemplo.org. Acesso em: 3 jul. 2024.  | NBR 6023:2025, 7.7.7 e 7.7.8 (UFJ)
+modelo, rede social: SOBRENOME, Prenome. **Texto da postagem**. Cidade, 16 fev. 2025. Instagram: @perfil. Disponível em: https://exemplo.org. Acesso em: 20 maio 2026.  | NBR 6023:2025, 7.20
 referências, artigo sem página: número eletrônico no lugar das páginas  | NBR 6023:2025 (UFRB)
 referências, issn: não mostrar                           | NBR 6023:2025, que o tornou opcional (UFRB)
 # Exemplo: Disponível em: https://exemplo.org. Acesso em: 15 maio 2025.

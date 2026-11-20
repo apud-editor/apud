@@ -12,7 +12,11 @@ import type { TipoValor } from "./valores";
 export type LigacaoCsl =
   /** Troca o atributo value="..." do elemento pelo valor da regra. */
   | { tipo: "valor" }
-  /** Cada opção liga ou desliga atributos do elemento (null = remover). */
+  /**
+   * Cada opção liga ou desliga atributos do elemento (null = remover). Um
+   * atributo escrito "elemento@atributo" só vale para esse elemento, quando a
+   * mesma regra tem marcas em elementos diferentes.
+   */
   | { tipo: "atributos"; porOpcao: Record<string, Record<string, string | null>> }
   /** Troca as abreviaturas dos meses no bloco <terms>. */
   | { tipo: "meses" };
