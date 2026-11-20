@@ -6,6 +6,9 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   clearScreen: false,
+  // O programa roda no computador, sem baixar nada pela internet: um arquivo
+  // grande de interface não atrasa nada, então o aviso de tamanho fica mais alto.
+  build: { chunkSizeWarningLimit: 2000 },
   server: {
     port: 1420,
     strictPort: true,

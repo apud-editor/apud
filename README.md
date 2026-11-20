@@ -2,7 +2,7 @@
 
 Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplica a norma (ABNT ou APA) sozinha.
 
-**Estado atual:** etapa 0 (esqueleto do projeto) e perfis de norma ABNT e APA. A janela abre, mas o editor ainda não existe.
+**Estado atual:** fase 1 (esqueleto), primeira parte: o editor com títulos, parágrafos, listas, negrito, itálico, sobrescrito e a barra "/". Ainda não salva nem gera o PDF.
 
 ## Como o projeto é organizado
 
@@ -14,6 +14,8 @@ Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplic
 | `src-tauri/icons/` | Ícones do programa |
 | `.github/workflows/` | Receitas do GitHub: montar o instalador de Windows e rodar os testes |
 | `perfis/` | Perfis de norma (ABNT e APA), estilos de citação e documento de prova. Guia em `perfis/LEIA-ME.md` |
+| `src/documento/` | O modelo do documento: como o Apud guarda um trabalho (blocos com significado, sem formatação) |
+| `src/editor/` | O editor de texto (TipTap): blocos aceitos, barra "/", colagem sem formatação e a tela |
 | `src/perfis/` | Leitura e conferência dos perfis, com as mensagens de erro em português |
 | `src/citacoes/` | Primeiro pedaço do motor de citações: prepara as referências e monta as chamadas |
 | `scripts/` | Comandos de conferência: `npm run conferir-perfis` e `npm run prova` |
