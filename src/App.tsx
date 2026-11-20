@@ -1,50 +1,20 @@
-import { useEffect, useState } from "react";
-import { getVersion } from "@tauri-apps/api/app";
+import Editor from "./editor/Editor";
+import { documentoVazio } from "./documento/modelo";
 
-// Dentro do programa de computador o Tauri injeta este objeto na página.
-// No navegador (modo de prévia) ele não existe.
-const rodandoNoPrograma = "__TAURI_INTERNALS__" in window;
-
+// Nesta etapa o Apud abre direto no editor, com um trabalho em branco.
+// O painel com a lista de trabalhos e o salvamento chegam na próxima etapa.
 export default function App() {
-  const [versao, setVersao] = useState<string>("...");
-
-  useEffect(() => {
-    if (!rodandoNoPrograma) {
-      setVersao("prévia no navegador");
-      return;
-    }
-    // Pergunta a versão ao lado "de dentro" do programa (Rust).
-    // Se isto funcionar, a ponte entre a interface e o programa está ok.
-    getVersion()
-      .then(setVersao)
-      .catch(() => setVersao("não foi possível ler"));
-  }, []);
-
   return (
-    <main className="pagina">
-      <h1 className="marca">
-        apud<span className="ponto">.</span>
-      </h1>
-      <p className="lema">Escreva o conteúdo. A norma fica por conta do Apud.</p>
-
-      <section className="cartao" aria-label="Estado do programa">
-        <p className="status">
-          <span className="selo" aria-hidden="true" />
-          Tudo certo: o programa abriu e a interface está funcionando.
-        </p>
-        <dl className="detalhes">
-          <div>
-            <dt>Versão</dt>
-            <dd>{versao}</dd>
-          </div>
-          <div>
-            <dt>Rodando como</dt>
-            <dd>{rodandoNoPrograma ? "Programa de computador" : "Navegador (prévia)"}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <p className="rodape">Etapa 0 · esqueleto do projeto. O editor vem nas próximas etapas.</p>
-    </main>
+    <div className="tela">
+      <header className="topo">
+        <span className="marca">Apud</span>
+        <span className="barra" aria-hidden="true">
+          /
+        </span>
+        <span className="nome-do-trabalho">Trabalho sem título</span>
+        <span className="aviso">Ainda não salva: o salvamento chega na próxima etapa</span>
+      </header>
+      <Editor inicial={documentoVazio()} />
+    </div>
   );
 }

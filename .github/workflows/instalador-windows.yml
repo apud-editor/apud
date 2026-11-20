@@ -1,10 +1,14 @@
-# Monta o instalador do Apud para Windows e publica na aba "Releases" do GitHub.
-# Roda sozinho a cada envio para a branch main, ou manualmente pela aba Actions.
+# Monta o instalador do Apud para Windows.
+# - Em cada pull request: o instalador fica para baixar na página da execução,
+#   em "Artifacts", para testar ANTES de juntar a mudança ao projeto.
+# - Em cada envio para a branch main: publica na aba "Releases" do GitHub.
+# Também dá para rodar manualmente pela aba Actions.
 name: Instalador Windows
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 # Necessário para criar a página de download (release) com o instalador.
@@ -31,7 +35,23 @@ jobs:
 
       - run: npm ci
 
-      - uses: tauri-apps/tauri-action@v0
+      # Pull request: só monta o instalador, sem publicar.
+      - name: Montar o instalador (teste do PR)
+        if: github.event_name == 'pull_request'
+        uses: tauri-apps/tauri-action@v0
+
+      - name: Guardar o instalador para baixar
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: instalador-apud-pr-${{ github.event.pull_request.number }}
+          path: src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error
+
+      # Branch main: monta e publica na aba Releases.
+      - name: Montar e publicar o instalador
+        if: github.event_name != 'pull_request'
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
