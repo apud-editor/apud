@@ -74,6 +74,9 @@ function falso() {
     }),
     renomear: vi.fn(async (_a: string, nome: string) => `${nome}.apud`),
     mostrarPasta: async () => {},
+    fontesDoComputador: async () => [],
+    exportarPdf: async () => null,
+    abrirPdfExportado: async () => {},
   };
   return { arm, gravados, falharProximas: (n: number) => (falhar = n) };
 }

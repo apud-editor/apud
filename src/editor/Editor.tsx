@@ -10,11 +10,15 @@ interface Props {
   inicial: Documento;
   /** Chamado na hora, a cada mudança no texto. */
   aoMudar?: () => void;
-  /** Recebe a função que lê o texto atual, para quem precisa dele (o salvamento). */
+  /** Recebe a função que lê o texto atual, para quem precisa dele (o salvamento e a prévia). */
   lerTexto?: React.MutableRefObject<(() => Documento) | null>;
+  /** Botões a mais, no lado direito da barra de ferramentas (como "Prévia"). */
+  extrasDaBarra?: React.ReactNode;
+  /** Um painel ao lado do texto (como a prévia do PDF). */
+  lateral?: React.ReactNode;
 }
 
-export default function Editor({ inicial, aoMudar, lerTexto }: Props) {
+export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, lateral }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
   const [documento, setDocumento] = useState(inicial);
   const espera = useRef<number>(0);
@@ -45,12 +49,13 @@ export default function Editor({ inicial, aoMudar, lerTexto }: Props) {
 
   return (
     <div className="area">
-      <BarraDeFerramentas editor={editor} />
+      <BarraDeFerramentas editor={editor} extras={extrasDaBarra} />
       <div className="colunas">
         <Estrutura documento={documento} editor={editor} />
         <main className="folha">
           <EditorContent editor={editor} />
         </main>
+        {lateral}
       </div>
       <MenuDeBlocos controle={controle} />
     </div>
@@ -59,7 +64,7 @@ export default function Editor({ inicial, aoMudar, lerTexto }: Props) {
 
 // ---------------------------------------------------------------------------
 
-function BarraDeFerramentas({ editor }: { editor: EditorTipTap | null }) {
+function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; extras?: React.ReactNode }) {
   const estado = useEditorState({
     editor,
     selector: ({ editor: e }) =>
@@ -72,7 +77,7 @@ function BarraDeFerramentas({ editor }: { editor: EditorTipTap | null }) {
           }
         : null,
   });
-  if (!editor || !estado) return <div className="ferramentas" />;
+  if (!editor || !estado) return <div className="ferramentas">{extras}</div>;
 
   return (
     <div className="ferramentas" role="toolbar" aria-label="Formatação do texto">
@@ -110,6 +115,8 @@ function BarraDeFerramentas({ editor }: { editor: EditorTipTap | null }) {
           x<sup>2</sup>
         </span>
       </Botao>
+      <span style={{ flex: 1 }} />
+      {extras}
     </div>
   );
 }
