@@ -685,6 +685,21 @@ button.linha:hover {
   font-weight: 500;
   white-space: nowrap;
 }
+/* Citação com aviso (falta a página, obra sem data...): cor diferente e explicação ao passar o mouse. */
+.texto .citacao.aviso {
+  background: #fdebc8;
+  color: #7a4300;
+  box-shadow: inset 0 -2px 0 #d98a00;
+}
+/* A citação aponta para uma referência que não existe mais. */
+.texto .citacao.aviso-grave {
+  background: #f9dcd8;
+  color: #8a1c12;
+  box-shadow: inset 0 -2px 0 #c0392b;
+}
+.texto .citacao {
+  cursor: pointer;
+}
 .texto .citacao.ProseMirror-selectednode {
   outline: 2px solid #2b4c9b;
   outline-offset: 1px;
@@ -982,4 +997,154 @@ button.linha:hover {
   .gaveta {
     width: 380px;
   }
+}
+
+/* Faixa de avisos sobre o texto (falta a lista de referências, ou ela repetida). */
+.faixa-aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 16px;
+  background: #fdebc8;
+  color: #7a4300;
+  border-bottom: 1px solid #e3bd72;
+  font-size: 14px;
+}
+
+/* Janela da citação ("@"). */
+.janela-fundo {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 32, 28, 0.35);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5vh 16px;
+  overflow-y: auto;
+  z-index: 50;
+}
+.janela-citacao {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  width: min(560px, 100%);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.janela-citacao h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.janela-grupo {
+  border: 1px solid #d9dcd4;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.janela-grupo legend {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 4px;
+}
+.janela-rotulo {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.janela-obras {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.janela-obra {
+  border: 1px solid #d9dcd4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.janela-obra.ativa {
+  border-color: #2b4c9b;
+  box-shadow: 0 0 0 1px #2b4c9b;
+}
+.janela-obra-topo {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.janela-obra-nome {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+}
+.janela-onde {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.janela-onde input.curto {
+  width: 150px;
+}
+.janela-onde select {
+  min-height: 34px;
+}
+.janela-marcas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.janela-fontes {
+  max-height: 200px;
+  overflow-y: auto;
+}
+.janela-fontes .fonte {
+  padding: 0;
+}
+.fonte-escolha {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.fonte-escolha:hover:not(:disabled),
+.fonte-escolha.quente {
+  background: #e6ecf8;
+}
+.fonte-escolha:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.janela-previa {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f4f5f1;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.janela-texto {
+  color: #1f3a78;
+  font-weight: 500;
+}
+.aviso-form {
+  color: #7a4300;
+  font-size: 13px;
+}
+.janela-acoes {
+  align-items: center;
 }

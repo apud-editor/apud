@@ -11,9 +11,13 @@ import { Plugin, PluginKey, Selection, TextSelection, type EditorState, type Tra
 import { buscarBlocos, type TipoDeBloco } from "./blocos";
 import { NO_DA_CITACAO, NO_DA_LISTA_DE_REFERENCIAS } from "../documento/tiptap";
 import type { Citacao } from "../documento/modelo";
+import type { CitacaoMontada } from "../citacoes/motor";
+import { CitacoesNoTexto, ControleDaJanela } from "./citacoes";
+import { citacaoSelecionada, colagemDoApud, podeAbrirAqui } from "./citar";
 
 // ---------------------------------------------------------------------------
-// Colar sempre como texto simples (decisão da versão 1)
+// Colar como texto simples (decisão da versão 1). A exceção é o que foi
+// copiado do próprio Apud com citações: aí as citações vêm junto.
 
 /** Divide o texto colado em parágrafos: cada quebra de linha é um parágrafo novo. */
 export function paragrafosColados(texto: string): string[] {
@@ -33,6 +37,8 @@ const ColarSemFormatacao = Extension.create({
         key: new PluginKey("colarSemFormatacao"),
         props: {
           handlePaste: (_view, event) => {
+            // Trecho copiado do Apud: o editor cola como está, com as citações.
+            if (colagemDoApud(event.clipboardData?.getData("text/html") ?? "")) return false;
             const partes = paragrafosColados(event.clipboardData?.getData("text/plain") ?? "");
             if (partes.length === 0) return true; // sem texto (uma imagem, por exemplo): ignora
             const conteudo =
@@ -336,7 +342,17 @@ export type DescreverCitacao = (c: Citacao) => string;
 
 const descricaoSimples: DescreverCitacao = (c) => (c.tipo === "sem-referencia" ? `(${c.texto})` : "[citação]");
 
-function citacaoNoEditor(descrever: DescreverCitacao) {
+/** Os pedaços da citação como elementos: o itálico vira <i> (et al., apud na APA...). */
+function pedacosNoDom(m: CitacaoMontada): (HTMLElement | Text)[] {
+  return m.pedacos.map((p) => {
+    if (!p.italico) return document.createTextNode(p.texto);
+    const i = document.createElement("i");
+    i.textContent = p.texto;
+    return i;
+  });
+}
+
+function citacaoNoEditor(descrever: DescreverCitacao, citacoes: CitacoesNoTexto, janela: ControleDaJanela) {
   return Node.create({
     name: NO_DA_CITACAO,
     group: "inline",
@@ -364,8 +380,85 @@ function citacaoNoEditor(descrever: DescreverCitacao) {
     renderHTML({ node, HTMLAttributes }) {
       return ["span", { ...HTMLAttributes, class: "citacao" }, node.attrs.dados ? descrever(node.attrs.dados) : ""];
     },
+    // Ao copiar para fora do Apud, a citação vai escrita na norma.
     renderText({ node }) {
+      const m = citacoes.textoDe(node);
+      if (m) return m.pedacos.map((p) => p.texto).join("");
       return node.attrs.dados ? descrever(node.attrs.dados) : "";
+    },
+    addKeyboardShortcuts() {
+      return {
+        // Com a citação selecionada (clique ou setas), Enter abre a janela para editar.
+        Enter: ({ editor }) => {
+          const sel = citacaoSelecionada(editor.state);
+          if (!sel) return false;
+          janela.abrirParaEditar(sel.pos, sel.citacao);
+          return true;
+        },
+      };
+    },
+    addNodeView() {
+      return ({ node, getPos }) => {
+        let atual = node;
+        const dom = document.createElement("span");
+        dom.setAttribute("role", "button");
+        dom.tabIndex = -1;
+        const desenhar = () => {
+          const dados = atual.attrs.dados as Citacao | null;
+          const m = citacoes.textoDe(atual);
+          const avisos = m?.avisos ?? [];
+          const apagada = avisos.some((a) => a.tipo === "referencia-apagada");
+          dom.className = `citacao${avisos.length ? (apagada ? " aviso-grave" : " aviso") : ""}`;
+          if (avisos.length) dom.title = avisos.map((a) => `Atenção: ${a.mensagem}`).join("\n");
+          else dom.title = "Clique para editar ou apagar esta citação";
+          dom.replaceChildren(...(m ? pedacosNoDom(m) : [document.createTextNode(dados ? descrever(dados) : "")]));
+          dom.setAttribute("aria-label", `Citação ${dom.textContent}${avisos.length ? ". Com aviso: " + avisos.map((a) => a.mensagem).join(" ") : ""}. Enter para editar.`);
+        };
+        desenhar();
+        citacoes.addEventListener("mudou", desenhar);
+        dom.addEventListener("click", () => {
+          const pos = getPos();
+          const dados = atual.attrs.dados as Citacao | null;
+          if (typeof pos === "number" && dados) janela.abrirParaEditar(pos, dados);
+        });
+        return {
+          dom,
+          update(novo) {
+            if (novo.type !== atual.type) return false;
+            atual = novo;
+            desenhar();
+            return true;
+          },
+          destroy() {
+            citacoes.removeEventListener("mudou", desenhar);
+          },
+        };
+      };
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// "@": abre a janela da citação. Só no começo do parágrafo ou depois de um
+// espaço (como a barra "/"), para não atrapalhar e-mails. O "@" não chega a
+// entrar no texto: quem escolhe uma obra recebe a citação no lugar dele.
+
+function arrobaAbreAJanela(janela: ControleDaJanela) {
+  return Extension.create({
+    name: "arrobaAbreAJanela",
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          key: new PluginKey("arrobaAbreAJanela"),
+          props: {
+            handleTextInput: (view, de, ate, texto) => {
+              if (texto !== "@" || !podeAbrirAqui(view.state.doc, de)) return false;
+              janela.abrirParaInserir("arroba", de, ate);
+              return true;
+            },
+          },
+        }),
+      ];
     },
   });
 }
@@ -376,6 +469,8 @@ export function extensoesDoApud(
   controle: ControleDaBarra,
   descrever: DescreverCitacao = descricaoSimples,
   aparencia: AparenciaDaNorma = new AparenciaDaNorma(),
+  citacoes: CitacoesNoTexto = new CitacoesNoTexto(() => []),
+  janela: ControleDaJanela = new ControleDaJanela(),
 ) {
   return [
     StarterKit.configure({
@@ -397,12 +492,13 @@ export function extensoesDoApud(
       placeholder: ({ node }) =>
         node.type.name === "heading"
           ? "Título. Para numerar, escreva o número antes: 1.1 Contexto"
-          : "Escreva aqui. Digite / para escolher o tipo de bloco.",
+          : "Escreva aqui. Digite / para escolher o tipo de bloco e @ para citar.",
     }),
     ColarSemFormatacao,
     ListasFaceis,
     barraDeBlocos(controle),
-    citacaoNoEditor(descrever),
+    arrobaAbreAJanela(janela),
+    citacaoNoEditor(descrever, citacoes, janela),
     listaDeReferenciasNoEditor(aparencia),
   ];
 }

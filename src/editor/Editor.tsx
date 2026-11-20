@@ -2,9 +2,13 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { EditorContent, useEditor, useEditorState, type Editor as EditorTipTap } from "@tiptap/react";
 import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
 import { estrutura } from "../documento/estrutura";
-import type { Bloco } from "../documento/modelo";
+import type { Bloco, Citacao, Referencia } from "../documento/modelo";
+import type { CitacaoMontada } from "../citacoes/motor";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
 import { AparenciaDaNorma, ControleDaBarra, extensoesDoApud, inserirQuebra } from "./extensoes";
+import { CitacoesNoTexto, ControleDaJanela } from "./citacoes";
+import { escreverArroba, inserirCitacao, trocarCitacao } from "./citar";
+import JanelaDeCitacao from "./JanelaDeCitacao";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -19,22 +23,46 @@ interface Props {
   lateral?: React.ReactNode;
   /** O que depende da norma do trabalho (o título da lista de referências). */
   aparencia?: AparenciaDaNorma;
+  /** Quem sabe escrever as citações na norma (o texto mostrado em cada citação e os avisos do texto). */
+  citacoes?: CitacoesNoTexto;
+  /** As referências do trabalho, para a janela da citação. Sem isto, não há "@" nem "Citar @". */
+  lerReferencias?: () => Referencia[];
+  /** Como uma citação ficaria na norma, para a janela. */
+  previaDaCitacao?: (c: Citacao) => CitacaoMontada | null;
+  /** A janela da citação pede para cadastrar uma referência: abre a gaveta. */
+  aoCadastrarReferencia?: () => void;
 }
 
-export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, lateral, aparencia: aparenciaDada }: Props) {
+export default function Editor({
+  inicial,
+  aoMudar,
+  lerTexto,
+  extrasDaBarra,
+  lateral,
+  aparencia: aparenciaDada,
+  citacoes: citacoesDadas,
+  lerReferencias,
+  previaDaCitacao,
+  aoCadastrarReferencia,
+}: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
+  const janela = useMemo(() => new ControleDaJanela(), []);
   const aparencia = useMemo(() => aparenciaDada ?? new AparenciaDaNorma(), [aparenciaDada]);
+  const citacoes = useMemo(() => citacoesDadas ?? new CitacoesNoTexto(() => []), [citacoesDadas]);
+  const podeCitar = !!lerReferencias;
   const [blocos, setBlocos] = useState(inicial);
   const espera = useRef<number>(0);
   const aoMudarRef = useRef(aoMudar);
   aoMudarRef.current = aoMudar;
 
   const editor = useEditor({
-    extensions: extensoesDoApud(controle, undefined, aparencia),
+    extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela),
     content: editorDosBlocos(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
     onUpdate: ({ editor }) => {
       aoMudarRef.current?.();
+      // As citações na norma dependem do texto todo: refeitas depois de uma pausa.
+      citacoes.agendar();
       // A estrutura da esquerda só é refeita depois de uma pausa, para não pesar em textos longos.
       window.clearTimeout(espera.current);
       espera.current = window.setTimeout(() => setBlocos(blocosDoEditor(editor.getJSON())), 300);
@@ -51,9 +79,33 @@ export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, late
 
   useEffect(() => () => window.clearTimeout(espera.current), []);
 
+  // O texto das citações na norma: monta a primeira vez ao abrir e depois a cada pausa.
+  useEffect(() => {
+    if (!editor) return;
+    citacoes.ligar(editor);
+    citacoes.agendar(0);
+    return () => citacoes.ligar(null);
+  }, [editor, citacoes]);
+
+  const fecharJanela = () => {
+    janela.fechar();
+    editor?.commands.focus();
+  };
+  const estadoDaJanela = useSyncExternalStore(janela.ouvir, janela.ler);
+
+  /** Aplica o que a janela decidiu e refaz as citações já. */
+  const aplicar = (fazer: (e: NonNullable<typeof editor>) => void) => {
+    if (!editor) return;
+    fazer(editor);
+    janela.fechar();
+    editor.commands.focus();
+    citacoes.agendar(0);
+  };
+
   return (
     <div className="area">
-      <BarraDeFerramentas editor={editor} extras={extrasDaBarra} />
+      <BarraDeFerramentas editor={editor} extras={extrasDaBarra} janela={podeCitar ? janela : undefined} />
+      <AvisosDoTexto citacoes={citacoes} />
       <div className="colunas">
         <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} />
         <main className="folha">
@@ -62,13 +114,58 @@ export default function Editor({ inicial, aoMudar, lerTexto, extrasDaBarra, late
         {lateral}
       </div>
       <MenuDeBlocos controle={controle} />
+      {podeCitar && estadoDaJanela.aberta && (
+        <JanelaDeCitacao
+          key={estadoDaJanela.chave}
+          estado={estadoDaJanela}
+          referencias={lerReferencias!()}
+          previa={previaDaCitacao ?? (() => null)}
+          aoFechar={fecharJanela}
+          aoCadastrar={
+            aoCadastrarReferencia &&
+            (() => {
+              fecharJanela();
+              aoCadastrarReferencia();
+            })
+          }
+          aoConfirmar={(c) =>
+            aplicar((e) => {
+              const tr =
+                estadoDaJanela.modo === "editar"
+                  ? trocarCitacao(e.state, estadoDaJanela.de, c)
+                  : inserirCitacao(e.state, estadoDaJanela.de, estadoDaJanela.ate, c);
+              if (tr) e.view.dispatch(tr);
+            })
+          }
+          aoRemover={() =>
+            aplicar((e) => {
+              const tr = trocarCitacao(e.state, estadoDaJanela.de, null);
+              if (tr) e.view.dispatch(tr);
+            })
+          }
+          aoEscreverArroba={() => aplicar((e) => e.view.dispatch(escreverArroba(e.state, estadoDaJanela.de, estadoDaJanela.ate)))}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Avisos sobre o texto todo (falta a lista de referências, ou ela aparece mais de uma vez). Não impedem o PDF. */
+function AvisosDoTexto({ citacoes }: { citacoes: CitacoesNoTexto }) {
+  useSyncExternalStore(citacoes.ouvir, citacoes.ler);
+  if (citacoes.avisosDoTexto.length === 0) return null;
+  return (
+    <div className="faixa-aviso" role="status">
+      {citacoes.avisosDoTexto.map((a) => (
+        <span key={a.tipo}>{a.mensagem}</span>
+      ))}
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
 
-function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; extras?: React.ReactNode }) {
+function BarraDeFerramentas({ editor, extras, janela }: { editor: EditorTipTap | null; extras?: React.ReactNode; janela?: ControleDaJanela }) {
   const estado = useEditorState({
     editor,
     selector: ({ editor: e }) =>
@@ -138,6 +235,25 @@ function BarraDeFerramentas({ editor, extras }: { editor: EditorTipTap | null; e
       >
         Quebra de página
       </button>
+      {janela && (
+        <button
+          type="button"
+          className="btn"
+          title="Citar uma obra, uma fala ou uma citação de citação (ou digite @ no texto)"
+          onMouseDown={(ev) => {
+            ev.preventDefault();
+            janela.abrirParaInserir("botao", editor.state.selection.to);
+          }}
+          onKeyDown={(ev) => {
+            if (ev.key === "Enter" || ev.key === " ") {
+              ev.preventDefault();
+              janela.abrirParaInserir("botao", editor.state.selection.to);
+            }
+          }}
+        >
+          Citar @
+        </button>
+      )}
       <span style={{ flex: 1 }} />
       {extras}
     </div>
