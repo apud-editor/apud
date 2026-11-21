@@ -1,9 +1,14 @@
 # Artigo da UNIVALI (ABNT): o que o Apud monta diferente do original
 
-Conferência final da fase 2, parte 5b (20/11/2026). O texto e as 43 fontes do
+Conferência final da fase 2, parte 5b (20/11/2026; leis conferidas no texto da
+NBR 6023:2025 em 21/11/2026). O texto e as 43 fontes do
 original estão em `artigo.md` e `referencias.json`. O Apud monta as citações e
-a lista com o perfil ABNT 2025, revisão 5. A comparação ponto a ponto sai com
-`npm run artigos`. A saída conferida está em `gabarito-abnt.txt`, e os testes
+a lista com o perfil ABNT 2025, revisão 6. A comparação ponto a ponto sai com
+`npm run artigos`.
+
+**Decisão do Francisco (21/11/2026):** onde o texto do artigo e a norma
+divergem, vale a norma. Por isso os itens 3 e 4 abaixo seguem a norma, e o que
+o Apud ainda não faz está marcado como tal. A saída conferida está em `gabarito-abnt.txt`, e os testes
 usam esse arquivo.
 
 Cada diferença cai num de quatro casos:
@@ -89,9 +94,9 @@ depois:
 
    **Diferença que fica:** as notas saem todas juntas, depois da editora e do ano. O original põe "Tradução de…" logo depois do título e "Observatório…" antes da cidade. A NBR 6023 aceita os elementos complementares nesse lugar quando não há campo próprio; se um dia o Apud ganhar campos de tradutor e de série, eles irão para o lugar certo.
 3. **Título terminado em "?" ou "!".** O motor de PDF põe um ponto depois: "…São Paulo?**." e "…a vida pode mais!.". A ABNT não pede esse ponto. É uma limitação do motor de PDF (Typst), sem correção fácil. Fica anotado.
-4. **Negrito no título da lei e da Constituição.** O original põe negrito em "Lei nº 10.216…" e em "Constituição da República…", mas não em "Decreto nº 7.053…" (lá, o negrito está na ementa). O Apud não põe negrito em nenhuma lei. Os guias consultados mostram as leis sem negrito, mas nenhum deixa claro o destaque da Constituição. Não mudei o perfil: só com a NBR 6023 em mãos dá para fechar essa regra. **A Constituição:** o Apud já sai como a norma pede no resto (BRASIL. [Constituição (1988)]. Constituição da República Federativa do Brasil…), escrevendo "[Constituição (1988)]." no começo do título.
-5. **Sigla na chamada.** O original cita (MPSC, 2025) e (MPF, 2025). A lista tem o nome por extenso, e a chamada deve repetir a entrada da lista. O Apud escreve o nome por extenso nos dois lugares. Se você preferir a sigla, cadastre a instituição como "MPSC". Uma opção "sigla na chamada, nome por extenso na lista" seria uma regra nova.
-6. **Nomes completos na narrativa.** O original diz "Segundo Mary Jane Spink e Benedito Medrado (2013)". O Apud escreve "Segundo Spink e Medrado (2013)": a citação só traz os sobrenomes. Para manter os prenomes, escreva-os no texto antes da citação.
+4. **Negrito na lei e na Constituição: resolvido pela NBR 6023:2025 (perfil revisão 6).** Nos exemplos da norma (7.11.1 e 7.11.2), a lei consultada sozinha tem a epígrafe em negrito, como em CURITIBA. **Lei nº 12.092, de 21 de dezembro de 2006**. Na Constituição, o negrito fica no título, depois do colchete: BRASIL. [Constituição (1988)]. **Constituição da República Federativa do Brasil**. O Apud agora faz assim nas três leis do artigo. O original tinha negrito na Lei 10.216 e na Constituição, mas punha o do Decreto 7.053 na ementa; o Apud segue a norma. A lei publicada dentro de outra obra (Diário Oficial, vade-mécum) leva o negrito na obra; esse caso ainda não existe no formulário.
+5. **Sigla na chamada: segue a norma.** A NBR 6023 (8.1.2) deixa a instituição entrar "por extenso ou abreviada", e a NBR 10520 manda a chamada repetir a entrada da lista. O que não pode é misturar: sigla na chamada e nome por extenso na lista, como no original. O Apud escreve igual nos dois lugares o que você cadastrou. Para usar MPSC, cadastre a instituição como "MPSC".
+6. **Nomes completos na narrativa: segue a norma.** A NBR 10520 pede o sobrenome na citação: "Segundo Spink e Medrado (2013)". O original diz "Segundo Mary Jane Spink e Benedito Medrado (2013)". Se quiser os prenomes mesmo assim, escreva-os no texto antes da citação.
 7. **Endereço quebrado no fim da linha.** O motor de PDF repete o hífen do endereço na linha de baixo ("contra-" / "-pessoas"), como manda a regra do português para palavras. Num endereço isso confunde. Fica anotado para a fase 3.
 
 **Fase 3 (como previsto):**

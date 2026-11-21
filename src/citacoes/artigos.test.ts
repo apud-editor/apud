@@ -303,3 +303,22 @@ describe("livro organizado e notas (decisões do Francisco, 20/11/2026)", () => 
     expect(r.referencias[0]).toMatch(/Boitempo\. Tradução de Beatriz Alves Schumann\. Originalmente publicado em 1845\.$/);
   });
 });
+
+describe("lei na lista da ABNT (NBR 6023:2025, 7.11.1 e 7.11.2; perfil revisão 6)", () => {
+  const brasil = [{ instituicao: "Brasil" }];
+  it("a epígrafe vai em negrito; a ementa, não", () => {
+    const r = montar("[@l]", [{ id: "l", tipo: "lei", autores: brasil, titulo: "Lei nº 10.216, de 6 de abril de 2001", ementa: "Dispõe sobre a proteção", cidade: "Brasília, DF", editora: "Presidência da República", data: { ano: 2001 } }]);
+    expect(r.referencias[0]).toBe("BRASIL. **Lei nº 10.216, de 6 de abril de 2001**. Dispõe sobre a proteção. Brasília, DF: Presidência da República, 2001.");
+  });
+
+  it("na Constituição, o [Constituição (1988)] fica sem negrito, e o título leva o negrito", () => {
+    const r = montar("[@c]", [{ id: "c", tipo: "lei", autores: brasil, titulo: "[Constituição (1988)]. Constituição da República Federativa do Brasil", cidade: "Brasília, DF", editora: "Presidência da República", data: { ano: 1988 } }]);
+    expect(r.referencias[0]).toBe("BRASIL. [Constituição (1988)]. **Constituição da República Federativa do Brasil**. Brasília, DF: Presidência da República, 1988.");
+    expect(chamadas(r)).toEqual(["(Brasil, 1988)"]);
+  });
+
+  it("na APA nada muda: a lei não leva negrito", () => {
+    const r = montar("[@l]", [{ id: "l", tipo: "lei", autores: brasil, titulo: "Lei nº 10.216, de 6 de abril de 2001", data: { ano: 2001 }, url: "https://exemplo.org" }], "apa.txt");
+    expect(r.referencias[0]).not.toContain("**");
+  });
+});

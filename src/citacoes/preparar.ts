@@ -130,9 +130,10 @@ function prepararUma(original: Referencia, perfil: PerfilResolvido): Referencia 
 
   // Subtítulo: na ABNT, o de um título com destaque vai para "genre", que o
   // estilo escreve sem destaque (**Psicologia clínica**: fundamentos). O de
-  // capítulos, artigos, trabalhos em evento, notícias e leis, cujo título já
-  // sai sem destaque, junta ao título depois de dois-pontos: assim ele não se
-  // confunde com o subtítulo do livro ou da revista. Nas outras normas, sempre junta.
+  // capítulos, artigos, trabalhos em evento e notícias, cujo título já sai sem
+  // destaque, junta ao título depois de dois-pontos: assim ele não se confunde
+  // com o subtítulo do livro ou da revista. Na lei também junta, porque o
+  // "genre" dela guarda o "[Constituição (1988)]". Nas outras normas, sempre junta.
   for (const alvo of [ref, pai]) {
     if (!alvo || alvo.subtitle === undefined) continue;
     const tituloSemDestaque = alvo === ref && TIPOS_COM_TITULO_SEM_DESTAQUE.has(String(ref.type));
@@ -187,6 +188,16 @@ function prepararUma(original: Referencia, perfil: PerfilResolvido): Referencia 
   }
 
   const abnt = perfil.identificacao.norma === "ABNT";
+
+  // Lei na ABNT: o "[Constituição (1988)]." do começo do título vai sem destaque
+  // (em genre), e o resto do título leva o negrito (NBR 6023:2025, 7.11.1).
+  if (abnt && ref.type === "legislation" && typeof ref.title === "string") {
+    const m = /^(\[[^\]]+\])\.?\s+(\S[\s\S]*)$/.exec(ref.title);
+    if (m) {
+      ref.genre = m[1];
+      ref.title = m[2];
+    }
+  }
 
   // Notas (campo runtime): na ABNT o estilo põe o ponto entre os elementos, então sai o ponto final escrito.
   if (abnt && typeof ref.runtime === "string") ref.runtime = ref.runtime.replace(/\.+\s*$/, "");

@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 5
-data da revisão: 20/11/2026
-nota da revisão: Instituição com subordinação (BRASIL. Ministério da Saúde; na chamada, Brasil), achada na conferência com o artigo da UNIVALI.
+revisão: 6
+data da revisão: 21/11/2026
+nota da revisão: Lei e Constituição com a epígrafe em negrito, como nos exemplos da NBR 6023:2025 (7.11.1 e 7.11.2), conferidos no texto da norma.
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -286,6 +286,15 @@ modelo, relatório: SOBRENOME, Prenome. **Título**. Cidade: Editora, ano. (Nota
 modelo, trabalho em evento: SOBRENOME, Prenome. Título do trabalho. *In*: NOME DO EVENTO, 20., 2024, Cidade. **Anais** [...]. Cidade: Editora, ano. p. 15-30.  | NBR 6023:2025, 7.8.4 (Unicamp; UFJ)
 modelo, notícia: TÍTULO da notícia. **Nome do Jornal**, Cidade, 3 jul. 2024. Disponível em: https://exemplo.org. Acesso em: 3 jul. 2024.  | NBR 6023:2025, 7.7.7 e 7.7.8 (UFJ)
 modelo, rede social: SOBRENOME, Prenome. **Texto da postagem**. Cidade, 16 fev. 2025. Instagram: @perfil. Disponível em: https://exemplo.org. Acesso em: 20 maio 2026.  | NBR 6023:2025, 7.20
+# Lei (21/11/2026): conferido no texto da NBR 6023:2025. A lei consultada sozinha
+# (no site do governo, num livro só dela) tem a epígrafe em negrito: CURITIBA.
+# **Lei nº 12.092, de 21 de dezembro de 2006**. Na Constituição, o negrito fica no
+# título, depois de [Constituição (1988)]: BRASIL. [Constituição (1988)].
+# **Constituição da República Federativa do Brasil**. Escreva o "[Constituição
+# (1988)]." no começo do título, e o Apud tira o negrito dele. A lei publicada
+# dentro de outra obra (no Diário Oficial, num vade-mécum) leva o destaque na
+# obra; o formulário do Apud ainda não tem esse caso.
+modelo, lei: JURISDIÇÃO. **Lei nº 10.216, de 6 de abril de 2001**. Ementa. Cidade: Editora, ano.  | NBR 6023:2025, 7.11.1 e 7.11.2
 referências, artigo sem página: número eletrônico no lugar das páginas  | NBR 6023:2025 (UFRB)
 referências, issn: não mostrar                           | NBR 6023:2025, que o tornou opcional (UFRB)
 # Exemplo: Disponível em: https://exemplo.org. Acesso em: 15 maio 2025.

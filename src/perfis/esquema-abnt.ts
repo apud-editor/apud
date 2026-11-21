@@ -382,6 +382,7 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
       ["modelo, trabalho em evento", modelo(), "Trabalho em evento"],
       ["modelo, notícia", modelo(), "Notícia"],
       ["modelo, rede social", modelo(), "Rede social"],
+      ["modelo, lei", modelo(), "Lei"],
       ["referências, artigo sem página", opcao("número eletrônico no lugar das páginas"), "Artigo sem página"],
       ["referências, issn", opcao("não mostrar"), "ISSN"],
       ["referências, rótulo do endereço", texto(), "Documento online", { tipo: "valor" }],

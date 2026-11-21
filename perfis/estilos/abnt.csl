@@ -196,6 +196,18 @@
     </group>
   </macro>
 
+  <!-- Lei: a epígrafe com o destaque do título (NBR 6023:2025, 7.11.1 e
+       7.11.2): BRASIL. **Lei nº 10.216, de 6 de abril de 2001**. Na
+       Constituição, o "[Constituição (1988)]" (em genre, separado pelo Apud)
+       vem antes, sem destaque. -->
+  <macro name="titulo-da-lei">
+    <group delimiter=". ">
+      <text variable="genre"/>
+      <!-- apud: referências, destaque do título -->
+      <text variable="title" font-weight="bold"/>
+    </group>
+  </macro>
+
   <!-- ===== Datas ===== -->
 
   <!-- Ano. Data incerta vem escrita pelo Apud: [2019?], [201-], [201-?]. -->
@@ -536,11 +548,11 @@
             <text macro="acesso"/>
           </group>
         </else-if>
-        <!-- Leis: BRASIL. Lei nº 10.216, de 6 de abril de 2001. Ementa. Cidade: Editora, ano. Disponível em: ... -->
+        <!-- apud modelo: modelo, lei = JURISDIÇÃO. **Lei nº 10.216, de 6 de abril de 2001**. Ementa. Cidade: Editora, ano. -->
         <else-if type="bill legislation" match="any">
           <group delimiter=". " suffix=".">
             <text macro="autor"/>
-            <text variable="title"/>
+            <text macro="titulo-da-lei"/>
             <text variable="abstract"/>
             <text macro="publicacao"/>
             <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
