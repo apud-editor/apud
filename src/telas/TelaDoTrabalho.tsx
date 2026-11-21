@@ -14,6 +14,7 @@ import { CitacoesNoTexto } from "../editor/citacoes";
 import { montarTodas, previaDaCitacao } from "../citacoes/todas";
 import type { NormaDoTrabalho } from "../perfis/norma";
 import Gaveta from "./Gaveta";
+import { ATALHOS_DOS_PAINEIS, painelDoAtalho } from "./atalhos";
 import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
 
 interface Props {
@@ -71,6 +72,18 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   // O painel da direita: a prévia do PDF ou a gaveta de referências. Um de cada vez, como no protótipo.
   const [painel, setPainel] = useState<"previa" | "referencias" | null>(null);
   const alternarPainel = (qual: "previa" | "referencias") => setPainel((atual) => (atual === qual ? null : qual));
+
+  // Alt+R: Referências; Alt+P: Prévia. Com uma janela aberta na frente (como a do "@"), os atalhos esperam.
+  useEffect(() => {
+    const aoApertar = (ev: KeyboardEvent) => {
+      const qual = painelDoAtalho(ev);
+      if (!qual || document.querySelector('[aria-modal="true"]')) return;
+      ev.preventDefault();
+      setPainel((atual) => (atual === qual ? null : qual));
+    };
+    document.addEventListener("keydown", aoApertar);
+    return () => document.removeEventListener("keydown", aoApertar);
+  }, []);
   // Sobe quando as referências ou os ajustes mudam, para a gaveta se redesenhar (os dados ficam nos refs).
   const [versaoDosDados, setVersaoDosDados] = useState(0);
   const [exportando, setExportando] = useState(false);
@@ -340,6 +353,8 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
               type="button"
               className={`btn ${painel === "referencias" ? "on" : ""}`}
               aria-pressed={painel === "referencias"}
+              aria-keyshortcuts={ATALHOS_DOS_PAINEIS.referencias.texto}
+              title={`Referências (${ATALHOS_DOS_PAINEIS.referencias.texto})`}
               onClick={() => alternarPainel("referencias")}
             >
               Referências
@@ -348,6 +363,8 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
               type="button"
               className={`btn ${painel === "previa" ? "on" : ""}`}
               aria-pressed={painel === "previa"}
+              aria-keyshortcuts={ATALHOS_DOS_PAINEIS.previa.texto}
+              title={`Prévia (${ATALHOS_DOS_PAINEIS.previa.texto})`}
               onClick={() => alternarPainel("previa")}
             >
               Prévia

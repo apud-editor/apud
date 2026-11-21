@@ -14,6 +14,7 @@ import {
 } from "../citacoes/janela";
 import { buscarReferencias, ordenarParaGaveta, resumoDaReferencia } from "../referencias/lista";
 import type { EstadoDaJanela } from "./citacoes";
+import { prenderTab } from "./foco";
 
 interface Props {
   estado: EstadoDaJanela;
@@ -98,6 +99,8 @@ export default function JanelaDeCitacao({ estado, referencias, previa, aoConfirm
     }
   }, [f, previa]);
 
+  const janela = useRef<HTMLFormElement>(null);
+
   useEffect(() => {
     const aoApertar = (ev: KeyboardEvent) => {
       if (ev.key === "Escape") {
@@ -109,9 +112,24 @@ export default function JanelaDeCitacao({ estado, referencias, previa, aoConfirm
     return () => document.removeEventListener("keydown", aoApertar);
   }, [aoFechar]);
 
+  // O Tab dá a volta dentro da janela e não sai para o texto de trás. Ouve
+  // antes de todos (captura), para o editor de trás não usar a tecla.
+  useEffect(() => {
+    const aoApertarTab = (ev: KeyboardEvent) => {
+      if (ev.key !== "Tab" || ev.altKey || ev.ctrlKey || ev.metaKey || !janela.current) return;
+      if (prenderTab(janela.current, ev.shiftKey)) {
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
+    };
+    document.addEventListener("keydown", aoApertarTab, true);
+    return () => document.removeEventListener("keydown", aoApertarTab, true);
+  }, []);
+
   return (
     <div className="janela-fundo">
       <form
+        ref={janela}
         className="janela-citacao"
         role="dialog"
         aria-modal="true"
