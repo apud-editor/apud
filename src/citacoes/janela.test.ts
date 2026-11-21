@@ -108,6 +108,20 @@ describe("janela do @: cada forma vira a citação certa", () => {
     expect(naNorma(c).abnt).toBe("(Silva, 2019, local. 7)");
   });
 
+  it("tempo do vídeo: sai sem tipo, como (Silva, 2019, 1:56), nas duas normas", () => {
+    const c = citacaoDe(com({}, { referencia: "silva", onde: "tempo", valor: " 1:56 " }));
+    expect(c).toEqual({ tipo: "parenteses", obras: [{ referencia: "silva", localizador: { tipo: "outro", rotulo: "", valor: "1:56" } }] });
+    expect(conferirCitacao(c)).toEqual(c);
+    expect(naNorma(c)).toEqual({ abnt: "(Silva, 2019, 1:56)", apa: "(Silva, 2019, 1:56)" });
+  });
+
+  it("uma citação com tempo abre na janela como tempo, e salvar sem mexer devolve a mesma", () => {
+    const c: Citacao = { tipo: "parenteses", obras: [{ referencia: "silva", localizador: { tipo: "outro", rotulo: "", valor: "1:02:30" } }] };
+    const f = citacaoParaFormulario(c);
+    expect(f.obras[0]).toMatchObject({ onde: "tempo", rotulo: "", valor: "1:02:30" });
+    expect(citacaoDe(f)).toEqual(c);
+  });
+
   it("apud: a obra original escrita por você e a obra lida da lista", () => {
     const c = citacaoDe({ ...com({ oQue: "apud", original: "Freud, 1915" }, { referencia: "costa", valor: "12" }) });
     expect(c).toEqual({ tipo: "apud", original: "Freud, 1915", obra: { referencia: "costa", localizador: { tipo: "pagina", valor: "12" } } });
@@ -134,6 +148,15 @@ describe("janela do @: o que impede e o que só avisa", () => {
     expect(erros(com({ oQue: "apud" }, { referencia: "costa" })).map((e) => e.campo)).toEqual(["original"]);
     expect(erros(com({ oQue: "apud", original: "Freud, 1915" })).map((e) => e.campo)).toEqual(["obras.0"]);
     expect(erros({ ...formularioNovo(), oQue: "fala" }).map((e) => e.campo)).toEqual(["fala"]);
+  });
+
+  it("tempo fora do formato do vídeo é recusado, com o exemplo", () => {
+    for (const valor of ["1:5", "156", "1:60", "um minuto"]) {
+      expect(erros(com({}, { referencia: "silva", onde: "tempo", valor })).map((e) => e.campo)).toEqual(["obras.0.valor"]);
+    }
+    for (const valor of ["0:04", "1:56", "1:02:30", "1:56-2:10", "1:56 – 2:10"]) {
+      expect(erros(com({}, { referencia: "silva", onde: "tempo", valor }))).toEqual([]);
+    }
   });
 
   it("outro localizador precisa do tipo e do número", () => {

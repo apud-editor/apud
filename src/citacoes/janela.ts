@@ -18,12 +18,21 @@ export type OQueSeCita =
   /** Fala de paciente, de participante ou comunicação pessoal: não entra na lista. */
   | "fala";
 
+export type OndeNaObra = "pagina" | "tempo" | "outro";
+
+/** O tempo de um vídeo ou áudio: 1:56, 0:04, 1:02:30, ou um trecho, 1:56-2:10. */
+const TEMPO = /^\d{1,2}(:[0-5]\d){1,2}(\s*[-–]\s*\d{1,2}(:[0-5]\d){1,2})?$/;
+
 /** Uma obra na janela. */
 export interface ObraNoFormulario {
   /** O código da referência ("" enquanto a pessoa não escolheu). */
   referencia: string;
-  /** "pagina": só o número ("15", "4-5"). "outro": com o tipo ("cap.", "local.", "min"). */
-  onde: "pagina" | "outro";
+  /**
+   * "pagina": só o número ("15", "4-5").
+   * "tempo": o ponto do vídeo ou do áudio ("1:56", "1:02:30"), sem tipo.
+   * "outro": com o tipo ("cap.", "local.", "§").
+   */
+  onde: OndeNaObra;
   rotulo: string;
   valor: string;
   /** Grifo nosso (ênfase adicionada, na APA). */
@@ -75,10 +84,12 @@ export const formularioNovo = (): FormularioDeCitacao => ({
 
 function obraParaFormulario(o: ObraCitada): ObraNoFormulario {
   const l = o.localizador;
+  // O tempo é guardado como um localizador sem tipo ({ tipo: "outro", rotulo: "" }).
+  const tempo = l?.tipo === "outro" && !l.rotulo.trim() && TEMPO.test(l.valor.trim());
   return {
     referencia: o.referencia,
-    onde: l?.tipo === "outro" ? "outro" : "pagina",
-    rotulo: l?.tipo === "outro" ? l.rotulo : "",
+    onde: tempo ? "tempo" : l?.tipo === "outro" ? "outro" : "pagina",
+    rotulo: l?.tipo === "outro" && !tempo ? l.rotulo : "",
     valor: l?.valor ?? "",
     grifo: !!o.grifo,
     traducao: !!o.traducao,
@@ -104,10 +115,20 @@ export function citacaoParaFormulario(c: Citacao): FormularioDeCitacao {
 
 function localizadorDaObra(o: ObraNoFormulario, indice: number, erros: ErroDoFormulario[]): Localizador | undefined {
   const valor = o.valor.trim();
+  if (o.onde === "tempo") {
+    if (!valor) return undefined;
+    if (!TEMPO.test(valor)) {
+      erros.push({ campo: `obras.${indice}.valor`, mensagem: "Escreva o tempo como no vídeo: 1:56, 0:04 ou 1:02:30." });
+      return undefined;
+    }
+    // Sem tipo: a citação sai como (Coelho, 2025a, 1:56), nas duas normas.
+    return { tipo: "outro", rotulo: "", valor };
+  }
   if (o.onde === "outro") {
     const rotulo = o.rotulo.trim();
     if (!valor && !rotulo) return undefined;
-    if (!rotulo) {
+    // Sem tipo, só um número ("7") confunde; com outro texto ("§3º"), a citação sai como está.
+    if (!rotulo && /^\d+$/.test(valor)) {
       erros.push({ campo: `obras.${indice}.rotulo`, mensagem: "Escreva o tipo do localizador, como cap. ou local." });
       return undefined;
     }

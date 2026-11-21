@@ -43,7 +43,7 @@ function personalizado(texto: string) {
 }
 
 const FICHA = `perfil: ABNT – Universidade X
-herda de: ABNT 2025, revisão 4
+herda de: ABNT 2025, revisão 6
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: teste
@@ -59,8 +59,8 @@ describe("perfis originais", () => {
       ESTILOS,
     );
     for (const r of resultados) expect(r.mensagens.map(formatarMensagem)).toEqual([]);
-    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 4 });
-    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 5 });
+    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 6 });
+    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 6 });
   });
 
   it("guarda os valores já entendidos", () => {
@@ -239,7 +239,7 @@ describe("perfis personalizados (herança)", () => {
       perfil: "ABNT – Universidade X",
       norma: "ABNT",
       versao: "2025",
-      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 4 },
+      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 6 },
     });
   });
 
@@ -251,11 +251,11 @@ describe("perfis personalizados (herança)", () => {
   });
 
   it("avisa quando o original mudou de revisão", () => {
-    const r = personalizado(FICHA.replace("revisão 4", "revisão 3"));
+    const r = personalizado(FICHA.replace("revisão 6", "revisão 5"));
     expect(r.perfil).toBeDefined();
     expect(r.mensagens.map(formatarMensagem)).toEqual([
-      "aviso, linha 2: este perfil foi feito sobre a revisão 3 de ABNT 2025, e o original está na revisão 4 " +
-        "(“Regras para o Apud montar as citações: intervalo de páginas, obra sem data e título da lista de referências.”). " +
+      "aviso, linha 2: este perfil foi feito sobre a revisão 5 de ABNT 2025, e o original está na revisão 6 " +
+        "(“Conferido no texto da NBR 6023:2025: lei e Constituição com a epígrafe em negrito (7.11.1 e 7.11.2); obras do mesmo autor pelo título, com os números em ordem crescente, e não pelo ano (9.1).”). " +
         "Confira se as suas mudanças continuam valendo e depois atualize o número em “herda de”.",
     ]);
   });

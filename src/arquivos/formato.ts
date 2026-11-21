@@ -363,6 +363,7 @@ const CAMPOS_DE_TEXTO = [
   "tipoDaPostagem",
   "doi",
   "url",
+  "notas",
 ] as const;
 
 /**
@@ -374,6 +375,7 @@ export function conferirReferencia(v: unknown): Referencia | null {
   if (!(TIPOS_DE_REFERENCIA as readonly unknown[]).includes(v.tipo)) return null;
   if (!autores(v.autores) || !texto(v.titulo)) return null;
   if (!CAMPOS_DE_TEXTO.every((c) => opcional(v[c], texto))) return null;
+  if (!opcional(v.autoresOrganizadores, simOuNao)) return null;
   if (!opcional(v.data, conferirData) || !opcional(v.acesso, conferirData)) return null;
   if (v.evento !== undefined) {
     const e = v.evento;

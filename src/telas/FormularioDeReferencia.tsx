@@ -106,6 +106,17 @@ export default function FormularioDeReferencia({ base, origemDoi, existentes, ao
         id={id}
         comDica
       />
+      {descricao.rotuloDosAutoresOrganizadores && (
+        <label className="marcar-form" htmlFor={id("autoresOrganizadores")}>
+          <input
+            type="checkbox"
+            id={id("autoresOrganizadores")}
+            checked={f.autoresOrganizadores}
+            onChange={(ev) => setF({ ...f, autoresOrganizadores: ev.target.checked })}
+          />
+          {descricao.rotuloDosAutoresOrganizadores}
+        </label>
+      )}
 
       <div className="grade-form">
         {camposDoTipo(f.tipo).map((c) => (
@@ -200,6 +211,9 @@ function Autores(p: {
       <legend>{p.rotulo}</legend>
       {p.comDica && (
         <p className="dica-form">Partículas como de, da e dos vão no fim dos prenomes: Lucas Freitas de. A ordem aqui é a ordem na referência.</p>
+      )}
+      {linhas.some((l) => l.tipo === "instituicao") && (
+        <p className="dica-form">Órgão de governo ou parte de uma instituição: escreva os níveis com ponto entre eles, como Brasil. Ministério da Saúde.</p>
       )}
       {linhas.length === 0 && <p className="dica-form">Nenhum por enquanto.</p>}
       {linhas.map((a, i) => (

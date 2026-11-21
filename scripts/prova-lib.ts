@@ -79,16 +79,24 @@ function lerObra(trecho: string): ObraCitada | undefined {
   return obra;
 }
 
+/** Tira o "+direta" (citação direta) de dentro da forma curta. */
+function tirarDireta(texto: string): { resto: string; direta: boolean } {
+  const partes = texto.split(/\s*,\s*/);
+  const resto = partes.filter((p) => p.trim() !== "+direta");
+  return { resto: resto.join(", "), direta: resto.length < partes.length };
+}
+
 /**
  * Lê um parágrafo com citações na forma curta e devolve os trechos do modelo,
  * com a escrita original de cada citação (a chave do gabarito):
  *   [@chave, p. 15]  [@a; @b]  @chave  @chave [p. 4]  [@chave, p. 15, +grifo]
  *   [Autor, ano apud @chave, p. 3]  [sem referência: texto]
+ * "+direta" marca a citação direta: [@chave, p. 15, +direta], @chave [+direta].
  */
 export function lerTextoComCitacoes(texto: string): { trechos: Trecho[]; escritas: string[] } {
   const achadas: Array<{ inicio: number; fim: number; citacao: Citacao }> = [];
   for (const m of texto.matchAll(/\[([^\[\]]+)\]/g)) {
-    const dentro = m[1];
+    const { resto: dentro, direta } = tirarDireta(m[1]);
     let citacao: Citacao | undefined;
     const semReferencia = dentro.match(/^sem referência:\s*(.+)$/);
     const apud = dentro.match(new RegExp(`^(.+?)\\s+apud\\s+(@${CHAVE}(?:\\s*,.*)?)$`, "u"));
@@ -101,13 +109,15 @@ export function lerTextoComCitacoes(texto: string): { trechos: Trecho[]; escrita
       const obras = dentro.split(";").map(lerObra);
       if (obras.every((o): o is ObraCitada => o !== undefined)) citacao = { tipo: "parenteses", obras };
     }
+    if (citacao && direta && citacao.tipo !== "sem-referencia") citacao.direta = true;
     if (citacao) achadas.push({ inicio: m.index!, fim: m.index! + m[0].length, citacao });
   }
   for (const m of texto.matchAll(new RegExp(`(?<![\\w@])@(${CHAVE})(?: \\[([^\\[\\]]+)\\])?`, "gu"))) {
     if (achadas.some((a) => m.index! >= a.inicio && m.index! < a.fim)) continue;
     const obra: ObraCitada = { referencia: m[1] };
-    if (m[2]) obra.localizador = lerLocalizador(m[2]);
-    achadas.push({ inicio: m.index!, fim: m.index! + m[0].length, citacao: { tipo: "narrativa", obra } });
+    const { resto, direta } = tirarDireta(m[2] ?? "");
+    if (resto) obra.localizador = lerLocalizador(resto);
+    achadas.push({ inicio: m.index!, fim: m.index! + m[0].length, citacao: { tipo: "narrativa", obra, ...(direta && { direta }) } });
   }
   achadas.sort((a, b) => a.inicio - b.inicio);
   const trechos: Trecho[] = [];
@@ -129,10 +139,15 @@ export function lerTextoComCitacoes(texto: string): { trechos: Trecho[]; escrita
  * longa entra como parágrafo comum.
  */
 export function documentoDeProva(): { documento: Documento; escritas: string[] } {
-  const md = readFileSync(join(PASTA_PROVA, "documento-de-prova.md"), "utf8")
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/^\s*---\n[\s\S]*?\n---\n/, "");
-  const referencias = JSON.parse(readFileSync(join(PASTA_PROVA, "referencias.json"), "utf8")) as Referencia[];
+  return documentoDoTexto(
+    readFileSync(join(PASTA_PROVA, "documento-de-prova.md"), "utf8"),
+    JSON.parse(readFileSync(join(PASTA_PROVA, "referencias.json"), "utf8")) as Referencia[],
+  );
+}
+
+/** Um texto na forma curta (como o documento de prova) e as referências viram um trabalho do Apud. */
+export function documentoDoTexto(textoCompleto: string, referencias: Referencia[]): { documento: Documento; escritas: string[] } {
+  const md = textoCompleto.replace(/<!--[\s\S]*?-->/g, "").replace(/^\s*---\n[\s\S]*?\n---\n/, "");
   const blocos: Bloco[] = [];
   const escritas: string[] = [];
   const texto = (s: string) => {
@@ -217,13 +232,19 @@ export function htmlParaTexto(html: string): string {
  * Typst, com o perfil (e ajustes do trabalho, se houver), e devolve como saíram.
  */
 export function rodarProva(arquivoDoPerfil: string, ajustes: Record<string, string> = {}): ResultadoDaProva {
-  const { perfil, csl } = carregarNorma(arquivoDoPerfil, ajustes);
-  const { documento, escritas } = documentoDeProva();
+  return rodarTrabalho(documentoDeProva(), carregarNorma(arquivoDoPerfil, ajustes));
+}
+
+/** O mesmo que rodarProva, para qualquer trabalho (os artigos de teste, por exemplo). */
+export function rodarTrabalho({ documento, escritas }: { documento: Documento; escritas: string[] }, norma: NormaDoTrabalho): ResultadoDaProva & { avisos: string[] } {
+  const { perfil, csl } = norma;
   const motor = criarMotor(documento, perfil);
   const titulo = perfil.regras.get("rótulo das referências")?.texto ?? "Referências";
   // Na ordem do texto, para o motor saber qual é a primeira citação de cada obra.
+  const avisos: string[] = [];
   const chamadas = citacoesDoTexto(documento.blocos).map((c, i) => {
     const m = motor.montar(c);
+    for (const a of m.avisos) avisos.push(`${escritas[i]}: ${a.mensagem}`);
     return `#block[C${i + 1}: ${m.obras.map(registrar).join("")}${pedacosParaTypst(m.pedacos)}]`;
   });
   const typst = [
@@ -245,6 +266,7 @@ export function rodarProva(arquivoDoPerfil: string, ajustes: Record<string, stri
     chamadas: blocos.map((b) => ({ escrita: escritas[Number(b[1]) - 1], saida: htmlParaTexto(b[2]) })),
     referencias: itens.map((i) => htmlParaTexto(i[1])),
     typst,
+    avisos,
   };
 }
 
@@ -286,11 +308,11 @@ export function escreverGabarito(resultado: ResultadoDaProva, nomeDoPerfil: stri
 }
 
 /** Lê o gabarito: "escrita  →  saída" para chamadas e uma referência por linha. */
-export function lerGabarito(arquivo: string): Gabarito {
+export function lerGabarito(arquivo: string, pasta = PASTA_PROVA): Gabarito {
   const chamadas = new Map<string, string>();
   const referencias: string[] = [];
   let secao = "";
-  for (const linha of readFileSync(join(PASTA_PROVA, arquivo), "utf8").split(/\r?\n/)) {
+  for (const linha of readFileSync(join(pasta, arquivo), "utf8").split(/\r?\n/)) {
     const t = linha.trim();
     if (!t || t.startsWith("#")) continue;
     if (t.startsWith("==")) {

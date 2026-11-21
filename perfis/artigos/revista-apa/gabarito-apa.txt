@@ -1,0 +1,123 @@
+# Aqui na rua, não (Revista Psicologia Política, APA): como o Apud monta (APA 7, revisão 6)
+
+== Chamadas ==
+[@medeiros2020; @silva2009]  →  (Medeiros, 2020; Silva, 2009)
+[@natalino2023]  →  (Natalino, 2023)
+[@monzelli2023]  →  (Monzelli, Navarro, & Cagnin, 2023)
+@oliveira2017  →  Oliveira (2017)
+[@constituicao1988]  →  (Constituição da República Federativa do Brasil, 1988)
+[@ceolin2020]  →  (Ceolin, Terra, & Carmona, 2020)
+@palhares2021  →  Palhares (2021)
+@monzelli2023  →  Monzelli et al. (2023)
+[@sds2019]  →  (Secretaria de Estado do Desenvolvimento Social de Santa Catarina, 2019)
+[@mpsc2025]  →  (Ministério Público de Santa Catarina, 2025)
+[@dias2022]  →  (Dias & Migliari, 2022)
+[@medeiros2020]  →  (Medeiros, 2020)
+[@mpsc2024]  →  (Ministério Público de Santa Catarina, 2024)
+[@cndh2024, p. 37, +direta]  →  (Conselho Nacional dos Direitos Humanos, 2024, p. 37)
+[@catie2023]  →  (Catie, 2023)
+[@cndh2024, p. 81, +direta]  →  (Conselho Nacional dos Direitos Humanos, 2024, p. 81)
+[@bernardes2007]  →  (Bernardes & Menegon, 2007)
+[@decreto2009; @constituicao1988]  →  (Constituição da República Federativa do Brasil, 1988; Decreto nº 7.053, 2009)
+@spinkorg2013  →  M. J. P. Spink (2013)
+@spinkmedrado2013 [p. 26, +direta]  →  M. J. P. Spink e Medrado (2013, p. 26)
+@spinkp2013 [p. 112]  →  P. Spink (2013, p. 112)
+[@schuch2012]  →  (Schuch & Gehlen, 2012)
+[@redacaobc2025, par. 9, +direta]  →  (Redação BC Notícias, 2025, par. 9)
+[@jpavan2025b, 1:56, +direta]  →  (J. Pavan, 2025b, 1:56)
+[@coelho2025d, 0:57, +direta]  →  (Coelho, 2025d, 0:57)
+@lpavan2025b  →  L. Pavan (2025b)
+@coelho2025e [0:04, +direta]  →  Coelho (2025e, 0:04)
+@harrits2011  →  Harrits e Møller (2011)
+[@pires2019]  →  (Pires & Lotta, 2019)
+[@pereira2017]  →  (Pereira & Guareschi, 2017)
+@lima2024  →  Lima e Assis (2024)
+[@coelho2025c, 0:54, +direta]  →  (Coelho, 2025c, 0:54)
+[@jovempan2026, 0:01, +direta]  →  (Jovem Pan News Litoral, 2026, 0:01)
+@adorno2016  →  Adorno (2016)
+[@rybka2018]  →  (Rybka, Nascimento, & Guzzo, 2018)
+[@souza2019]  →  (Souza & Gomes, 2019)
+[@jpavan2025a, 0:01, +direta]  →  (J. Pavan, 2025a, 0:01)
+[@mds2014]  →  (Ministério do Desenvolvimento Social e Combate à Fome, 2014)
+@gardella2016  →  Gardella (2016)
+[@mds2014, p. 47, +direta]  →  (Ministério do Desenvolvimento Social e Combate à Fome, 2014, p. 47)
+[@cndh2024, p. 41, +direta]  →  (Conselho Nacional dos Direitos Humanos, 2024, p. 41)
+[@coelho2026, 0:35, +direta]  →  (Coelho, 2026, 0:35)
+[@jovempan2025, 0:45, +direta]  →  (Jovem Pan News Litoral, 2025, 0:45)
+[@jpavan2025a, 0:30, +direta]  →  (J. Pavan, 2025a, 0:30)
+[@lpavan2025c, 1:10, +direta]  →  (L. Pavan, 2025c, 1:10)
+[@batista2025, par. 12, +direta]  →  (Batista, 2025, par. 12)
+[@xepa2025, 0:18, +direta]  →  (Xepa, 2025, 0:18)
+@uga2004  →  Ugá (2004)
+@silva2009  →  Silva (2009)
+[@coelho2025b, 0:12, +direta]  →  (Coelho, 2025b, 0:12)
+[@jpavan2025e, 0:40, +direta]  →  (J. Pavan, 2025e, 0:40)
+[@coelho2025d, 0:09, +direta]  →  (Coelho, 2025d, 0:09)
+[@coelho2025d, 0:43, +direta]  →  (Coelho, 2025d, 0:43)
+[@lei7839, § 3º, +direta]  →  (Lei Municipal nº 7.839, 2025, § 3º)
+[@cndh2024]  →  (Conselho Nacional dos Direitos Humanos, 2024)
+@medeiros2020  →  Medeiros (2020)
+[@mpf2025]  →  (Ministério Público Federal & Ministério Público do Trabalho, 2025)
+[@jpavan2025a, 0:19, +direta]  →  (J. Pavan, 2025a, 0:19)
+[@coelho2025a]  →  (Coelho, 2025a)
+[@jpavan2025d]  →  (J. Pavan, 2025d)
+[@jpavan2025c, 0:01, +direta]  →  (J. Pavan, 2025c, 0:01)
+[@lpavan2025a, 1:02, +direta]  →  (L. Pavan, 2025a, 1:02)
+[@coelho2025c, 0:12, +direta]  →  (Coelho, 2025c, 0:12)
+[@jpavan2025d, 0:13, +direta]  →  (J. Pavan, 2025d, 0:13)
+[@coelho2025c, 0:27, +direta]  →  (Coelho, 2025c, 0:27)
+
+== Referências ==
+Adorno, Rubens. (2016). De vestígios e de poder: “Não adianta maquiar o Minhocão, a Cracolândia anda”. Em Taniele Rui, Mariana Martinez, & Gabriel Feltran (Orgs.), *Novas faces da vida nas ruas* (pp. 350–395). São Carlos: EdUFSCar.
+Batista, João. (2025, 17 de fevereiro). Prefeita intima moradores de rua em operação com a GM e PM. *Diarinho*. https://diarinho.net/materia/659762/Prefeita-intima-moradores-de-rua-em-operacao-com-a-GM-e-PM
+Bernardes, Jefferson de Souza, & Menegon, Vera Sonia Mincoff. (2007). Documentos de domínio público como produtos e autores sociais. *Psico*, *38*(1), 11–15. https://revistaseletronicas.pucrs.br/revistapsico/article/view/1919
+Catie, Talita. (2023). Morador de rua detalha operação clandestina da PM em Itajaí: “Falaram que iam nos quebrar”. *NSC Total*. https://www.nsctotal.com.br/noticias/morador-de-rua-detalha-operacao-clandestina-da-pm-em-itajai-falaram-que-iam-nos-quebrar
+Ceolin, Bruna, Terra, Isabella Chiara, & Carmona, Rafael. (2020). População em situação de rua: Estudo da realidade vivida. *Caderno Humanidades em Perspectivas*, *4*(8), 117–126. https://www.cadernosuninter.com/index.php/humanidades/article/view/1492
+Coelho, Robison [@robisoncoelho]. (2025a, 2 de janeiro). *Primeiro dia oficial de governo: operação RECOMEÇO, ação integrada da Polícia Militar, Guarda Municipal e Prefeitura de Itajaí no bairro* [Vídeo]. Instagram. https://www.instagram.com/reels/DEUkvwrRyRo/
+Coelho, Robison [@robisoncoelho]. (2025b, 24 de fevereiro). *Segurança Pública, respeito aos itajaienses que trabalham, oportunidade de recomeço, o trabalha não vai parar!* [Vídeo]. Instagram. https://www.instagram.com/reels/DGc-Df1R5dF/
+Coelho, Robison [@robisoncoelho]. (2025c, 7 de maio). *Não dê esmola. Dê oportunidade. A gente cuida de Itajaí juntos!* [Vídeo]. Instagram. https://www.instagram.com/reels/DJW6cKsRqQM/
+Coelho, Robison [@robisoncoelho]. (2025d, 30 de julho). *Lei da Internação Involuntária, Humanizada encaminhada para a Câmara de Vereadores!* [Vídeo]. Instagram. https://www.instagram.com/reel/DMuvjqHxj9b/
+Coelho, Robison [@robisoncoelho]. (2025e, 1 de outubro). *Não vamos parar com as abordagens, em defesa das famílias!* [Vídeo]. Instagram. https://www.instagram.com/reel/DPSB6dVicul/
+Coelho, Robison [@robisoncoelho]. (2026, 25 de fevereiro). *116 pessoas enviadas de volta para suas cidades de origem* [Vídeo]. Instagram. https://www.instagram.com/reel/DVLh9XZjsEH/
+Conselho Nacional dos Direitos Humanos. (2024). *Relatório da missão do CNDH a Santa Catarina para apurar violações aos direitos humanos da população em situação de rua no estado*.
+Constituição da República Federativa do Brasil (1988). https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm
+Decreto nº 7.053, de 23 de dezembro de 2009 (2009). https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2009/decreto/d7053.htm
+Dias, André Luiz Freitas, & Migliari, Wellington. (2022). *O que o CadÚnico pode nos dizer sobre o fenômeno da população em situação de rua no Município de São Paulo?*. Belo Horizonte: Marginália Editora.
+Gardella, Édouard. (2016). A urgência como cronopolítica: O abrigo para pessoas em situação de rua. Em Taniele Rui, Mariana Martinez, & Gabriel Feltran (Orgs.), *Novas faces da vida nas ruas* (pp. 249–305). São Carlos: EdUFSCar.
+Harrits, Gitte Sommer, & Møller, Marie Østergaard. (2011). Categories and categorization: Towards a comprehensive sociological framework. *Distinktion: Journal of Social Theory*, *12*(2), 229–247. https://doi.org/10.1080/1600910X.2011.579450
+Jovem Pan News Litoral [@jpnewslitoral.sc]. (2025, 12 de dezembro). *O secretário de Assistência Social de Itajaí, Léo Severino, anunciou em primeira mão à Jovem Pan News Litoral a abertura* [Vídeo]. Instagram. https://www.instagram.com/reels/DSKvdHJEfWJ/
+Jovem Pan News Litoral [@jpnewslitoral.sc]. (2026, 6 de janeiro). *Em entrevista à Jovem Pan News Litoral SC, o secretário municipal de Assistência Social de Itajaí, Léo Severino, falou sobre* [Vídeo]. Instagram. https://www.instagram.com/reel/DTLO2iQGN7O/
+Lei Municipal nº 7.839, de 5 de novembro de 2025 (2025). https://leis.org/2v8ts
+Lima, Luísa Filizzola Costa, & Assis, Marcos Arcanjo de. (2024). Burocratas de nível de rua e categorizações de pessoas em situação de rua. Em *Anais do 20º Seminário de Diamantina*. Belo Horizonte: Cedeplar/UFMG. https://diamantina.cedeplar.ufmg.br/portal/download/diamantina-2024/D20_97.pdf
+Medeiros, Fernanda Cavalcanti de. (2020). *No fio da navalha: Entre a garantia de direitos e a higienização social nas políticas de atendimento à população em situação de rua* [Tese de doutorado, Universidade Federal do Rio Grande do Norte]. https://repositorio.ufrn.br/items/20eb08e6-e817-4ca0-96e3-d26230506197
+Ministério do Desenvolvimento Social e Combate à Fome. (2014). *Tipificação nacional de serviços socioassistenciais*. https://www.mds.gov.br/webarquivos/publicacao/assistencia_social/Normativas/tipificacao.pdf
+Ministério Público de Santa Catarina. (2024). *MPSC relata ao STF violência contra pessoas em situação de rua em Balneário Camboriú*. https://portal.mpsc.mp.br/noticias/mpsc-relata-ao-stf-violencia-contra-pessoas-em-situacao-de-rua-em-balneario-camboriu--
+Ministério Público de Santa Catarina. (2025). *Levantamento sobre a rede de atenção às pessoas em situação de rua*.
+Ministério Público Federal, & Ministério Público do Trabalho. (2025). *Relatório da inspeção nacional em comunidades terapêuticas*. https://www.mpf.mp.br/o-mpf/unidades/pr-pfdc/noticias/relatorio-nacional-aponta-graves-violacoes-de-direitos-humanos-em-comunidades-terapeuticas/2o-relatorio-da-inspecao-nacional-em-comunidades-terapeuticas-pfdc-mpt-2025.pdf
+Monzelli, Arthur Guilherme, Navarro, Érica Zavanella, & Cagnin, José Guilherme. (2023). População em situação de rua em meio à crise estrutural do capital. *Revista Katálysis*, *26*(2), 202–211. https://doi.org/10.1590/1982-0259.2023.e91260
+Natalino, Marco. (2023). *Estimativa da população em situação de rua no Brasil (2012–2022)* (Nota Técnica nº 103). Brasília: Instituto de Pesquisa Econômica Aplicada. https://doi.org/10.38116/ntdisoc103
+Oliveira, Luciano Márcio Freitas de. (2017). *O alcance da proteção social à população em situação de rua: A fuga do paradigma do direito* [Tese de doutorado, Universidade Estadual de Londrina]. https://repositorio.uel.br/handle/123456789/16410
+Palhares, Tatiane Campelo da Silva. (2021). Direitos sociais e pessoas em situação de rua: Análise da (in)visibilidade de pessoas em situação de rua. *Revista de Direitos Sociais e Políticas Públicas*, *7*(1), 102–119. https://doi.org/10.26668/IndexLawJournals/2525-9881/2021.v7i1.7868
+Pavan, Juliana [@jupavan]. (2025a, 16 de fevereiro). *RESGATE A VIDA BC: Acolhendo quem precisa, oferecendo dignidade e oportunidades. AQUI NA RUA, NÃO!* [Vídeo]. Instagram. https://www.instagram.com/reel/DGJlDYSxu4Y/
+Pavan, Juliana [@jupavan]. (2025b, 12 de março). *Pessoas em situação de rua em Balneário Camboriú: Trecho da entrevista com o @linhapopular sobre o programa Resgate a Vida* [Vídeo]. Instagram. https://www.instagram.com/reel/DHGYM2zu1X4/
+Pavan, Juliana [@jupavan]. (2025c, 4 de junho). *Segurança em pauta nesta quarta-feira* [Vídeo]. Instagram. https://www.instagram.com/reel/DKf-2UUt-Qx/
+Pavan, Juliana [@jupavan]. (2025d, 20 de junho). *Esmola Não Muda Vidas: Ligue 156 e resgate a vida em BC!* [Vídeo]. Instagram. https://www.instagram.com/reel/DLIPt60xiPo/
+Pavan, Juliana [@jupavan]. (2025e, 1 de outubro). *Aprovação da Lei da Internação Involuntária em Balneário Camboriú!* [Vídeo]. Instagram. https://www.instagram.com/reel/DPST5fLjStp/
+Pavan, Leonel [@leonelpavan]. (2025a, 30 de maio). *Hoje durante as festividades de aniversário da nossa cidade me deparei com muitas pessoas em situação de rua, conversamos e* [Vídeo]. Instagram. https://www.instagram.com/reel/DH13znbSovJ/
+Pavan, Leonel [@leonelpavan]. (2025b, 5 de agosto). *Espaço público é para todos. Ontem estive neste ponto de ônibus e pedi que os moradores em situação de rua* [Vídeo]. Instagram. https://www.instagram.com/reel/DM_RN-eyIuK/
+Pavan, Leonel [@leonelpavan]. (2025c, 20 de outubro). *Hoje encaminhei um cidadão em situação de rua para a Casa Luz da Vida, aqui em Camboriú* [Vídeo]. Instagram. https://www.instagram.com/reel/DQDJoHODFDu/
+Pereira, Vinicius Tonollier, & Guareschi, Pedrinho Arcides. (2017). A psicologia no CRAS: Um estudo de representações sociais. *Psicologia & Sociedade*, *29*, Artigo e119584. https://doi.org/10.1590/1807-0310/2017v29119584
+Pires, Roberto Rocha Coelho, & Lotta, Gabriela Spanghero. (2019). Burocracia de nível de rua e (re)produção de desigualdades sociais: Comparando perspectivas de análise. Em Roberto Rocha Coelho Pires (Org.), *Implementando desigualdades: Reprodução de desigualdades na implementação de políticas públicas* (pp. 127–152). Rio de Janeiro: Instituto de Pesquisa Econômica Aplicada.
+Redação BC Notícias. (2025, 15 de novembro). *Prefeitura de BC inicia internações involuntárias e interna dois homens em situação de rua*. BC Notícias. https://www.bcnoticias.com.br/prefeitura-de-bc-inicia-internacoes-involuntarias-e-interna-dois-homens-em-situacao-de-rua/
+Rybka, Livia Nemoto, Nascimento, Juliana Luporini do, & Guzzo, Raquel Souza Lobo. (2018). Os mortos e feridos na “guerra às drogas”: Uma crítica ao paradigma proibicionista. *Estudos de Psicologia (Campinas)*, *35*(1), 99–109. https://doi.org/10.1590/1982-02752018000100010
+Schuch, Patrice, & Gehlen, Ivaldo. (2012). A “situação de rua” para além de determinismos: Explorações conceituais. Em Aline Espindola Dornelles, Júlia Obst, & Marta Borba Silva (Orgs.), *A rua em movimento: Debates acerca da população adulta em situação de rua na cidade de Porto Alegre* (pp. 11–25). Didática Editora do Brasil.
+Secretaria de Estado do Desenvolvimento Social de Santa Catarina. (2019). *Levantamento sobre pessoas em situação de rua em Santa Catarina*. https://www.sas.sc.gov.br/images/Levantamento_Pessoa_com_Situa%C3%A7%C3%A3o_de_Rua.pdf
+Silva, Maria Lucia Lopes da. (2009). *Trabalho e população em situação de rua no Brasil*. São Paulo: Cortez.
+Souza, Tadeu de Paula, & Gomes, Carla Lopes Teixeira. (2019). Territórios em conflito e o medo das ruas: Crack, uma substância midiática. Em Maria Teresa Nobre, Ana Karenina Arraes Amorim, Fernanda Cavalcanti de Medeiros, & Anna Carolina Vidal Matos (Orgs.), *Vozes, imagens e resistências nas ruas: A vida pode mais!* (pp. 237–271). Natal: EDUFRN.
+Spink, Mary Jane Paris (Org.). (2013). *Práticas discursivas e produção de sentidos no cotidiano: Aproximações teóricas e metodológicas*. Rio de Janeiro: Centro Edelstein de Pesquisas Sociais.
+Spink, Mary Jane Paris, & Medrado, Benedito. (2013). Produção de sentido no cotidiano: Uma abordagem teórico-metodológica para análise das práticas discursivas. Em Mary Jane Paris Spink (Org.), *Práticas discursivas e produção de sentidos no cotidiano: Aproximações teóricas e metodológicas* (pp. 22–41). Rio de Janeiro: Centro Edelstein de Pesquisas Sociais.
+Spink, Peter. (2013). Análise de documentos de domínio público. Em Mary Jane Paris Spink (Org.), *Práticas discursivas e produção de sentidos no cotidiano: Aproximações teóricas e metodológicas* (pp. 100–126). Rio de Janeiro: Centro Edelstein de Pesquisas Sociais.
+Ugá, Vivian Domínguez. (2004). A categoria “pobreza” nas formulações de política social do Banco Mundial. *Revista de Sociologia e Política*, (23), 55–62. https://www.scielo.br/j/rsocp/a/mmW4c4THp9XDfXjt9mxGSqM/
+Xepa, Alexandre [@xepaitapema]. (2025, 10 de fevereiro). *Começamos a semana com ação! Nossa equipe da Abordagem Social está na orla nesta manhã para oferecer suporte a quem* [Vídeo]. Instagram. https://www.instagram.com/reel/DF5ERRnRhZh/
+
+== Avisos do motor ==

@@ -28,6 +28,7 @@ import { NOME_DO_TIPO } from "../perfis/tipos-de-referencia";
 import {
   ehCitacao,
   ehInstituicao,
+  niveisDaInstituicao,
   obrasDaCitacao,
   type Bloco,
   type Citacao,
@@ -149,7 +150,13 @@ export function criarMotor(doc: Documento, perfil: PerfilResolvido): Motor {
     Object.fromEntries(citadas.map((id) => [id, paraHayagriva(porId.get(id)!)])),
     perfil,
   );
-  const obras = new Map<string, Obra>(citadas.map((id) => [id, { modelo: porId.get(id)!, typst: referenciasDoTypst[id] }]));
+  // ABNT: a instituição com subordinação entra na chamada só pela entidade principal (Brasil, 2014).
+  const principal = regras.tem("citação, entidade subordinada");
+  const naChamada = (r: Referencia): Referencia =>
+    principal && r.autores.some(ehInstituicao)
+      ? { ...r, autores: r.autores.map((a) => (ehInstituicao(a) ? { instituicao: niveisDaInstituicao(a.instituicao)[0] } : a)) }
+      : r;
+  const obras = new Map<string, Obra>(citadas.map((id) => [id, { modelo: naChamada(porId.get(id)!), typst: referenciasDoTypst[id] }]));
   const jaCitadas = new Set<string>();
 
   const ctx: Contexto = { regras, obras, jaCitadas };
@@ -229,8 +236,9 @@ function chaveDosAutores(ref: Referencia): string {
 
 /**
  * Mesmo sobrenome, pessoas diferentes: entram as iniciais.
- * ABNT, só no mesmo ano: (Silva, J., 2021; Silva, M., 2021).
- * APA, em qualquer ano: (J. P. Silva, 2019), (J. Silva, 2021).
+ * ABNT, só no mesmo ano e quando as chamadas ficariam iguais: (Silva, J., 2021;
+ * Silva, M., 2021). "Spink (2013)" e "Spink e Medrado (2013)" já são diferentes.
+ * APA, em qualquer ano, olhando só o primeiro autor: (J. P. Silva, 2019), (J. Silva, 2021).
  */
 function desempateDoPrimeiroAutor(obra: Obra, ctx: Contexto): "depois" | "antes" | undefined {
   const { regras } = ctx;
@@ -239,6 +247,12 @@ function desempateDoPrimeiroAutor(obra: Obra, ctx: Contexto): "depois" | "antes"
   if (!abnt && !apa) return undefined;
   const [meu] = nomesDe(obra.modelo);
   if (!meu || meu.instituicao || !meu.prenomes) return undefined;
+  // Os sobrenomes como a chamada os escreve (até o et al.).
+  const limite = limiteDoEtAl(regras);
+  const naChamada = (o: Obra) => {
+    const s = nomesDe(o.modelo).map((n) => n.sobrenome.toLowerCase());
+    return JSON.stringify(s.length >= limite ? [s[0]] : s);
+  };
   const conflito = [...ctx.obras.values()].some((outra) => {
     if (outra === obra) return false;
     const [dele] = nomesDe(outra.modelo);
@@ -247,7 +261,7 @@ function desempateDoPrimeiroAutor(obra: Obra, ctx: Contexto): "depois" | "antes"
       !dele.instituicao &&
       dele.sobrenome.toLowerCase() === meu.sobrenome.toLowerCase() &&
       dele.prenomes.toLowerCase() !== meu.prenomes.toLowerCase() &&
-      (apa || anoSemLetra(outra) === anoSemLetra(obra))
+      (apa || (anoSemLetra(outra) === anoSemLetra(obra) && naChamada(outra) === naChamada(obra)))
     );
   });
   if (!conflito) return undefined;
@@ -286,6 +300,11 @@ function todosNaPrimeira(id: string, obra: Obra, ctx: Contexto): boolean {
   return n >= 3 && n <= 5;
 }
 
+/** "Lei nº 10.216, de 6 de abril de 2001" vira "Lei nº 10.216": na chamada, o ano já vem depois. */
+export function semDataNoNome(titulo: string): string {
+  return titulo.replace(/,\s*de\s+\d{1,2}º?\s+de\s+\p{L}+\s+de\s+\d{4}\.?\s*$/u, "").trim() || titulo;
+}
+
 /** Obra sem autor (ou lei, na APA): o título, na forma da norma. */
 function tituloNaChamada(obra: Obra, ctx: Contexto): Pedaco[] {
   const { regras } = ctx;
@@ -295,7 +314,7 @@ function tituloNaChamada(obra: Obra, ctx: Contexto): Pedaco[] {
   const doTypst = obra.typst.title as string | { value: string; short?: string };
   if (typeof doTypst !== "string" && doTypst.short) return [t(doTypst.short)];
   const titulo = modelo.titulo.trim();
-  if (modelo.tipo === "lei" && regras.tem("citação, lei")) return [t(titulo)];
+  if (modelo.tipo === "lei" && regras.tem("citação, lei")) return [t(semDataNoNome(titulo))];
   if (regras.itens("citação, obra sem autor, título em itálico").includes(tipo)) return [it(titulo)];
   if (regras.itens("citação, obra sem autor, título entre aspas").includes(tipo)) return [t(`“${titulo}”`)];
   return [t(titulo)];
@@ -427,7 +446,9 @@ const APAGADA = "referência apagada";
 function ordem(o: ObraCitada, ctx: Contexto): string {
   const obra = ctx.obras.get(o.referencia);
   if (!obra) return "￿";
-  const nomes = nomesDe(obra.modelo).map((n) => n.sobrenome).join(" ") || obra.modelo.titulo;
+  // Lei na APA: entra pelo título, então é o título que conta na ordem.
+  const peloTitulo = obra.modelo.tipo === "lei" && ctx.regras.tem("citação, lei");
+  const nomes = (peloTitulo ? "" : nomesDe(obra.modelo).map((n) => n.sobrenome).join(" ")) || obra.modelo.titulo;
   return `${semAcentos(nomes.toLowerCase())} ${anoDaChamada(obra, ctx.regras)}`;
 }
 
@@ -443,11 +464,14 @@ function entreParenteses(obras: ObraCitada[], ctx: Contexto): Pedaco[] {
     const anterior = grupos[grupos.length - 1];
     const obra = ctx.obras.get(o.referencia);
     const daAnterior = anterior && ctx.obras.get(anterior[0].referencia);
+    // Mesmo autor e o mesmo nome na chamada: duas leis do Brasil, na APA, são citadas pelo título e não se juntam.
+    const nomeNaChamada = (id: string, o: Obra) => pedacosComoTexto(nomesDaChamada(id, o, "parenteses", ctx));
     const mesmoAutor =
       obra !== undefined &&
       daAnterior !== undefined &&
       obra.modelo.autores.length > 0 &&
-      chaveDosAutores(daAnterior.modelo) === chaveDosAutores(obra.modelo);
+      chaveDosAutores(daAnterior.modelo) === chaveDosAutores(obra.modelo) &&
+      nomeNaChamada(anterior[0].referencia, daAnterior) === nomeNaChamada(o.referencia, obra);
     if (mesmoAutor) anterior.push(o);
     else grupos.push([o]);
   }

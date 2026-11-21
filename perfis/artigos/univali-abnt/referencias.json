@@ -1,0 +1,1005 @@
+[
+  {
+    "id": "adorno2016",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Adorno",
+        "prenomes": "Rubens"
+      }
+    ],
+    "titulo": "De vestígios e de poder",
+    "subtitulo": "\"Não adianta maquiar o Minhocão, a Cracolândia anda\"",
+    "publicacao": {
+      "titulo": "Novas faces da vida nas ruas",
+      "organizadores": [
+        {
+          "sobrenome": "Rui",
+          "prenomes": "Taniele"
+        },
+        {
+          "sobrenome": "Martinez",
+          "prenomes": "Mariana"
+        },
+        {
+          "sobrenome": "Feltran",
+          "prenomes": "Gabriel"
+        }
+      ]
+    },
+    "cidade": "São Carlos",
+    "editora": "EdUFSCAR",
+    "data": {
+      "ano": 2016
+    },
+    "paginas": "197-221"
+  },
+  {
+    "id": "abrasme2026",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Associação Brasileira de Saúde Mental"
+      }
+    ],
+    "titulo": "Nota Técnica ABRASME 01/2026",
+    "subtitulo": "inadequação técnica da inclusão das Comunidades Terapêuticas na Rede de Atenção Psicossocial (RAPS)",
+    "cidade": "São Paulo, SP",
+    "editora": "ABRASME",
+    "data": {
+      "ano": 2026
+    }
+  },
+  {
+    "id": "arantes2017",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Arantes",
+        "prenomes": "Rodrigo"
+      }
+    ],
+    "titulo": "Diagnóstico situacional da população em situação de rua de Belo Horizonte/MG e equipes Consultório na Rua",
+    "subtitulo": "desafios e limites da atenção básica nas Redes de Atenção à Saúde",
+    "cidade": "Rio de Janeiro",
+    "data": {
+      "ano": 2017
+    }
+  },
+  {
+    "id": "bernardes2007",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Bernardes",
+        "prenomes": "Jefferson de Souza"
+      },
+      {
+        "sobrenome": "Menegon",
+        "prenomes": "Vera Sonia Mincoff"
+      }
+    ],
+    "titulo": "Documentos de domínio público como produtos e autores sociais",
+    "publicacao": {
+      "titulo": "Psico",
+      "volume": "38",
+      "numero": "1"
+    },
+    "data": {
+      "ano": 2007
+    },
+    "url": "https://revistaseletronicas.pucrs.br/revistapsico/article/view/1919",
+    "acesso": {
+      "ano": 2025,
+      "mes": 10,
+      "dia": 17
+    }
+  },
+  {
+    "id": "brasil1988",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Brasil"
+      }
+    ],
+    "titulo": "[Constituição (1988)]. Constituição da República Federativa do Brasil",
+    "cidade": "Brasília, DF",
+    "editora": "Presidência da República",
+    "data": {
+      "ano": 1988
+    }
+  },
+  {
+    "id": "brasil2001",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Brasil"
+      }
+    ],
+    "titulo": "Lei nº 10.216, de 6 de abril de 2001",
+    "ementa": "Dispõe sobre a proteção e os direitos das pessoas portadoras de transtornos mentais e redireciona o modelo assistencial em saúde mental",
+    "cidade": "Brasília, DF",
+    "editora": "Presidência da República",
+    "data": {
+      "ano": 2001
+    },
+    "url": "https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "brasil2014",
+    "tipo": "livro",
+    "autores": [
+      {
+        "instituicao": "Brasil. Ministério do Desenvolvimento Social e Combate à Fome"
+      }
+    ],
+    "titulo": "Tipificação Nacional de Serviços Socioassistenciais",
+    "cidade": "Brasília, DF",
+    "editora": "MDS",
+    "data": {
+      "ano": 2014
+    },
+    "url": "https://www.gov.br/mds/pt-br/centrais-de-conteudo/assistencia-social/tipificacao-nacional-de-servicos-socioassistenciais",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "brasil2009",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Brasil"
+      }
+    ],
+    "titulo": "Decreto nº 7.053, de 23 de dezembro de 2009",
+    "ementa": "Institui a Política Nacional para a População em Situação de Rua e seu Comitê Intersetorial de Acompanhamento e Monitoramento, e dá outras providências",
+    "cidade": "Brasília, DF",
+    "editora": "Presidência da República",
+    "data": {
+      "ano": 2009
+    },
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2009/decreto/d7053.htm",
+    "acesso": {
+      "ano": 2025,
+      "mes": 10,
+      "dia": 31
+    }
+  },
+  {
+    "id": "ceolin2020",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Ceolin",
+        "prenomes": "Bruna"
+      },
+      {
+        "sobrenome": "Terra",
+        "prenomes": "Isabella Chiara"
+      },
+      {
+        "sobrenome": "Carmona",
+        "prenomes": "Rafael"
+      }
+    ],
+    "titulo": "População em situação de rua",
+    "subtitulo": "estudo da realidade vivida",
+    "publicacao": {
+      "titulo": "Humanidades em Perspectivas",
+      "volume": "4",
+      "numero": "8"
+    },
+    "data": {
+      "ano": 2020
+    }
+  },
+  {
+    "id": "cndh2024",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Conselho Nacional de Direitos Humanos"
+      }
+    ],
+    "titulo": "Relatório da missão do CNDH a Santa Catarina para apurar violações aos direitos humanos da população em situação de rua no estado",
+    "cidade": "Brasília",
+    "data": {
+      "ano": 2024
+    }
+  },
+  {
+    "id": "cunda2020",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Cunda",
+        "prenomes": "Mateus Freitas"
+      },
+      {
+        "sobrenome": "Silva",
+        "prenomes": "Rosane Neves"
+      }
+    ],
+    "titulo": "Me chamam rua, população, uma situação",
+    "subtitulo": "os nomes da rua e as políticas da cidade",
+    "publicacao": {
+      "titulo": "Psicologia & Sociedade",
+      "volume": "32"
+    },
+    "numeroEletronico": "e223876",
+    "data": {
+      "ano": 2020
+    },
+    "url": "https://doi.org/10.1590/1807-0310/2020v32223876",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "dias2022",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Dias",
+        "prenomes": "André Luiz Freitas"
+      },
+      {
+        "sobrenome": "Migliari",
+        "prenomes": "Wellington"
+      }
+    ],
+    "titulo": "O que o CadÚnico pode nos dizer sobre o fenômeno da população em situação de rua no Município de São Paulo?",
+    "cidade": "Belo Horizonte",
+    "editora": "Marginália Editora",
+    "data": {
+      "ano": 2022
+    },
+    "notas": "Observatório Brasileiro de Políticas Públicas com a População em Situação de Rua"
+  },
+  {
+    "id": "engels2008",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Engels",
+        "prenomes": "Friedrich"
+      }
+    ],
+    "titulo": "A situação da classe trabalhadora na Inglaterra",
+    "cidade": "São Paulo",
+    "editora": "Boitempo",
+    "data": {
+      "ano": 2008
+    },
+    "notas": "Tradução de Beatriz Alves Schumann. Edição de José Paulo Netto. Originalmente publicado em 1845."
+  },
+  {
+    "id": "fonseca2003",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Fonseca",
+        "prenomes": "Márcio Alves da"
+      }
+    ],
+    "titulo": "Michel Foucault e a constituição do sujeito",
+    "cidade": "São Paulo",
+    "editora": "EDUC",
+    "data": {
+      "ano": 2003
+    }
+  },
+  {
+    "id": "foucault1979",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Foucault",
+        "prenomes": "Michel"
+      }
+    ],
+    "titulo": "Microfísica do poder",
+    "edicao": "1",
+    "cidade": "Rio de Janeiro",
+    "editora": "Graal",
+    "data": {
+      "ano": 1979
+    }
+  },
+  {
+    "id": "gardella2016",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Gardella",
+        "prenomes": "Édouard"
+      }
+    ],
+    "titulo": "A urgência como cronopolítica",
+    "subtitulo": "o abrigo para pessoas em situação de rua",
+    "publicacao": {
+      "titulo": "Novas faces da vida nas ruas",
+      "organizadores": [
+        {
+          "sobrenome": "Rui",
+          "prenomes": "Taniele"
+        },
+        {
+          "sobrenome": "Martinez",
+          "prenomes": "Mariana"
+        },
+        {
+          "sobrenome": "Feltran",
+          "prenomes": "Gabriel"
+        }
+      ]
+    },
+    "cidade": "São Carlos",
+    "editora": "EdUFSCAR",
+    "data": {
+      "ano": 2016
+    },
+    "paginas": "141-174"
+  },
+  {
+    "id": "harrits2011",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Harrits",
+        "prenomes": "Gitte Sommer"
+      },
+      {
+        "sobrenome": "Møller",
+        "prenomes": "Marie Østergaard"
+      }
+    ],
+    "titulo": "Categories and categorization",
+    "subtitulo": "towards a comprehensive sociological framework",
+    "publicacao": {
+      "titulo": "Distinktion",
+      "subtitulo": "Journal of Social Theory",
+      "volume": "12",
+      "numero": "2"
+    },
+    "paginas": "229-247",
+    "data": {
+      "ano": 2011
+    }
+  },
+  {
+    "id": "itajai2025",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Itajaí"
+      }
+    ],
+    "titulo": "Lei Municipal nº 7.839, de 5 de novembro de 2025",
+    "ementa": "Dispõe sobre a internação humanizada no município de Itajaí e dá outras providências",
+    "cidade": "Itajaí",
+    "editora": "Leis Municipais",
+    "data": {
+      "ano": 2025
+    },
+    "url": "https://leis.org/2v8ts",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "lima2024",
+    "tipo": "evento",
+    "autores": [
+      {
+        "sobrenome": "Lima",
+        "prenomes": "Luísa Filizzola Costa"
+      },
+      {
+        "sobrenome": "Assis",
+        "prenomes": "Marcos Arcanjo de"
+      }
+    ],
+    "titulo": "Burocratas de nível de rua e categorizações de pessoas em situação de rua",
+    "evento": {
+      "nome": "Seminário de Diamantina",
+      "numero": "20",
+      "ano": "2024",
+      "cidade": "Diamantina"
+    },
+    "publicacao": {
+      "titulo": "Anais"
+    },
+    "cidade": "Belo Horizonte",
+    "editora": "Cedeplar/UFMG",
+    "data": {
+      "ano": 2024
+    },
+    "url": "https://diamantina.cedeplar.ufmg.br/portal/download/diamantina-2024/D20_97.pdf",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "mattos2006",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Mattos",
+        "prenomes": "Ricardo Mendes"
+      }
+    ],
+    "titulo": "Situação de rua e modernidade",
+    "subtitulo": "a saída das ruas como processo de criação de novas formas de vida na atualidade",
+    "tipoDoTrabalho": "Dissertação",
+    "grau": "Mestrado em Psicologia",
+    "editora": "Programa de Pós-Graduação em Psicologia, Universidade São Marcos",
+    "cidade": "São Paulo",
+    "data": {
+      "ano": 2006
+    }
+  },
+  {
+    "id": "medeiros2020",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Medeiros",
+        "prenomes": "Fernanda Cavalcanti de"
+      }
+    ],
+    "titulo": "No fio da navalha",
+    "subtitulo": "entre a garantia de direitos e a higienização social nas políticas de atendimento à população em situação de rua",
+    "tipoDoTrabalho": "Tese",
+    "grau": "Doutorado em Psicologia",
+    "editora": "Universidade Federal do Rio Grande do Norte",
+    "cidade": "Natal",
+    "data": {
+      "ano": 2020
+    }
+  },
+  {
+    "id": "medradospink2013",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Medrado",
+        "prenomes": "Benedito"
+      },
+      {
+        "sobrenome": "Spink",
+        "prenomes": "Mary Jane"
+      }
+    ],
+    "titulo": "Produção de Sentido no Cotidiano",
+    "publicacao": {
+      "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+      "organizadores": [
+        {
+          "sobrenome": "Spink",
+          "prenomes": "Mary Jane"
+        }
+      ]
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "Centro Edelstein de Pesquisas Sociais",
+    "data": {
+      "ano": 2013
+    }
+  },
+  {
+    "id": "mpsc2025",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Ministério Público de Santa Catarina"
+      }
+    ],
+    "titulo": "Levantamento sobre a rede de atenção às pessoas em situação de rua",
+    "cidade": "Florianópolis",
+    "editora": "MPSC",
+    "data": {
+      "ano": 2025
+    }
+  },
+  {
+    "id": "mpsc2024",
+    "tipo": "site",
+    "autores": [
+      {
+        "instituicao": "Ministério Público de Santa Catarina"
+      }
+    ],
+    "titulo": "MPSC relata ao STF violência contra pessoas em situação de rua em Balneário Camboriú",
+    "cidade": "Florianópolis",
+    "editora": "MPSC",
+    "data": {
+      "ano": 2024
+    },
+    "url": "https://portal.mpsc.mp.br/noticias/mpsc-relata-ao-stf-violencia-contra-pessoas-em-situacao-de-rua-em-balneario-camboriu--",
+    "acesso": {
+      "ano": 2024,
+      "mes": 7,
+      "dia": 3
+    }
+  },
+  {
+    "id": "mpf2025",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Ministério Público Federal. Procuradoria Federal dos Direitos do Cidadão"
+      },
+      {
+        "instituicao": "Ministério Público do Trabalho"
+      }
+    ],
+    "titulo": "Relatório da inspeção nacional em comunidades terapêuticas",
+    "cidade": "Brasília",
+    "editora": "MPF; MPT",
+    "data": {
+      "ano": 2025
+    }
+  },
+  {
+    "id": "monzelli2023",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Monzelli",
+        "prenomes": "Arthur Guilherme"
+      },
+      {
+        "sobrenome": "Navarro",
+        "prenomes": "Érica Zavanella"
+      },
+      {
+        "sobrenome": "Cagnin",
+        "prenomes": "José Guilherme"
+      }
+    ],
+    "titulo": "População em situação de rua em meio à crise estrutural do capital",
+    "publicacao": {
+      "titulo": "Revista Katálysis",
+      "volume": "26",
+      "numero": "2"
+    },
+    "paginas": "202-211",
+    "data": {
+      "ano": 2023
+    }
+  },
+  {
+    "id": "morador2024",
+    "tipo": "noticia",
+    "autores": [],
+    "titulo": "Morador de rua detalha operação clandestina da PM em Itajaí",
+    "subtitulo": "\"Falaram que iam nos quebrar\"",
+    "publicacao": {
+      "titulo": "NSC Total",
+      "cidade": "Florianópolis"
+    },
+    "data": {
+      "ano": 2024
+    },
+    "url": "https://www.nsctotal.com.br/noticias/morador-de-rua-detalha-operacao-clandestina-da-pm-em-itajai-falaram-que-iam-nos-quebrar",
+    "acesso": {
+      "ano": 2024,
+      "mes": 7,
+      "dia": 3
+    }
+  },
+  {
+    "id": "natalino2023",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "sobrenome": "Natalino",
+        "prenomes": "Marco"
+      }
+    ],
+    "titulo": "Estimativa da população em situação de rua no Brasil (2012-2022)",
+    "cidade": "Brasília",
+    "editora": "Ipea",
+    "data": {
+      "ano": 2023
+    }
+  },
+  {
+    "id": "oliveira2017",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Oliveira",
+        "prenomes": "Luciano Márcio Freitas de"
+      }
+    ],
+    "titulo": "O alcance da proteção social à população em situação de rua",
+    "subtitulo": "a fuga do paradigma do direito",
+    "tipoDoTrabalho": "Tese",
+    "grau": "Doutorado em Serviço Social e Política Social",
+    "editora": "Universidade Estadual de Londrina",
+    "cidade": "Londrina",
+    "folhas": "312",
+    "data": {
+      "ano": 2017
+    }
+  },
+  {
+    "id": "palhares2021",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Palhares",
+        "prenomes": "Tatiane"
+      }
+    ],
+    "titulo": "Direitos sociais e pessoas em situação de rua",
+    "subtitulo": "análise da (in)visibilidade de pessoas em situação de rua",
+    "publicacao": {
+      "titulo": "Revista de Direito Sociais e Políticas Públicas",
+      "volume": "7",
+      "numero": "1"
+    },
+    "paginas": "102",
+    "data": {
+      "ano": 2021,
+      "mes": 8,
+      "dia": 20
+    }
+  },
+  {
+    "id": "pereira2017",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Pereira",
+        "prenomes": "Vinicius Tonollier"
+      },
+      {
+        "sobrenome": "Guareschi",
+        "prenomes": "Pedrinho Arcides"
+      }
+    ],
+    "titulo": "A psicologia no CRAS",
+    "subtitulo": "um estudo de representações sociais",
+    "publicacao": {
+      "titulo": "Psicologia & Sociedade",
+      "volume": "29"
+    },
+    "numeroEletronico": "e119584",
+    "data": {
+      "ano": 2017
+    },
+    "url": "https://doi.org/10.1590/1807-0310/2017v29119584",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 21
+    }
+  },
+  {
+    "id": "pires2019",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Pires",
+        "prenomes": "Roberto Rocha Coelho"
+      },
+      {
+        "sobrenome": "Lotta",
+        "prenomes": "Gabriela Spanghero"
+      }
+    ],
+    "titulo": "Burocracia de nível de rua e (re)produção de desigualdades sociais",
+    "subtitulo": "comparando perspectivas de análise",
+    "publicacao": {
+      "titulo": "Implementando desigualdades",
+      "subtitulo": "reprodução de desigualdades na implementação de políticas públicas",
+      "organizadores": [
+        {
+          "sobrenome": "Pires",
+          "prenomes": "Roberto Rocha Coelho"
+        }
+      ]
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "Ipea",
+    "data": {
+      "ano": 2019
+    },
+    "paginas": "127-152"
+  },
+  {
+    "id": "rybka2018",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Rybka",
+        "prenomes": "Livia Nemoto"
+      },
+      {
+        "sobrenome": "Nascimento",
+        "prenomes": "Juliana Luporini do"
+      },
+      {
+        "sobrenome": "Guzzo",
+        "prenomes": "Raquel Souza Lobo"
+      }
+    ],
+    "titulo": "Os mortos e feridos na “guerra às drogas”",
+    "subtitulo": "uma crítica ao paradigma proibicionista",
+    "publicacao": {
+      "titulo": "Estudos de Psicologia",
+      "cidade": "Campinas",
+      "volume": "35",
+      "numero": "1"
+    },
+    "paginas": "99-109",
+    "data": {
+      "ano": 2018
+    },
+    "url": "https://doi.org/10.1590/1982-02752018000100010",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    }
+  },
+  {
+    "id": "santacatarina2019",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Santa Catarina. Secretaria de Estado do Desenvolvimento Social"
+      }
+    ],
+    "titulo": "Levantamento sobre pessoas em situação de rua em Santa Catarina",
+    "cidade": "Florianópolis",
+    "editora": "SDS",
+    "data": {
+      "ano": 2019
+    }
+  },
+  {
+    "id": "santos2014",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Santos",
+        "prenomes": "Verônica Bem dos"
+      }
+    ],
+    "titulo": "Mulheres em vivência de rua e a integralidade no cuidado em saúde",
+    "tipoDoTrabalho": "Dissertação",
+    "grau": "Mestrado em Psicologia",
+    "editora": "Programa de Pós-Graduação em Psicologia, Universidade Federal de Santa Maria",
+    "cidade": "Santa Maria",
+    "data": {
+      "ano": 2014
+    }
+  },
+  {
+    "id": "silva2006",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Silva",
+        "prenomes": "Maria Lucia Lopes da"
+      }
+    ],
+    "titulo": "Mudanças recentes no mundo do trabalho e o fenômeno população em situação de rua no Brasil",
+    "subtitulo": "1995-2005",
+    "tipoDoTrabalho": "Dissertação",
+    "grau": "Mestrado em Política Social",
+    "editora": "Departamento de Serviço Social, Universidade de Brasília",
+    "cidade": "Brasília",
+    "data": {
+      "ano": 2006
+    }
+  },
+  {
+    "id": "silva2009",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Silva",
+        "prenomes": "Maria Lucia Lopes da"
+      }
+    ],
+    "titulo": "Trabalho e população em situação de rua no Brasil",
+    "cidade": "São Paulo",
+    "editora": "Cortez",
+    "data": {
+      "ano": 2009
+    }
+  },
+  {
+    "id": "spink2011",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Spink",
+        "prenomes": "Mary Jane"
+      },
+      {
+        "sobrenome": "Figueiredo",
+        "prenomes": "Pedro"
+      },
+      {
+        "sobrenome": "Brasilino",
+        "prenomes": "Jullyane"
+      }
+    ],
+    "titulo": "Psicologia social e pessoalidade",
+    "cidade": "Rio de Janeiro",
+    "editora": "Centro Edelstein de Pesquisas Sociais: ABRAPSO",
+    "data": {
+      "ano": 2011
+    },
+    "autoresOrganizadores": true
+  },
+  {
+    "id": "spinkmedrado2013",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Spink",
+        "prenomes": "Mary Jane P."
+      },
+      {
+        "sobrenome": "Medrado",
+        "prenomes": "Benedito"
+      }
+    ],
+    "titulo": "Produção de sentidos no cotidiano",
+    "subtitulo": "uma abordagem teórico-metodológica para análise das práticas discursivas",
+    "publicacao": {
+      "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+      "organizadores": [
+        {
+          "sobrenome": "Spink",
+          "prenomes": "Mary Jane"
+        }
+      ]
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "Centro Edelstein de Pesquisas Sociais",
+    "data": {
+      "ano": 2013
+    }
+  },
+  {
+    "id": "spink2013",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Spink",
+        "prenomes": "Peter"
+      }
+    ],
+    "titulo": "Análise de Documentos de Domínio Público",
+    "publicacao": {
+      "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+      "organizadores": [
+        {
+          "sobrenome": "Spink",
+          "prenomes": "Mary Jane"
+        }
+      ]
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "Centro Edelstein de Pesquisas Sociais",
+    "data": {
+      "ano": 2013
+    }
+  },
+  {
+    "id": "souza2019",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Souza",
+        "prenomes": "Tadeu de Paula"
+      },
+      {
+        "sobrenome": "Gomes",
+        "prenomes": "Carla Lopes Teixeira"
+      }
+    ],
+    "titulo": "Territórios em conflito e o medo das ruas",
+    "subtitulo": "crack, uma substância midiática",
+    "publicacao": {
+      "titulo": "Vozes, imagens e resistências nas ruas",
+      "subtitulo": "a vida pode mais!",
+      "organizadores": [
+        {
+          "sobrenome": "Nobre",
+          "prenomes": "Maria Teresa"
+        },
+        {
+          "sobrenome": "Amorim",
+          "prenomes": "Ana Karenina Arraes"
+        },
+        {
+          "sobrenome": "Medeiros",
+          "prenomes": "Fernanda Cavalcanti de"
+        },
+        {
+          "sobrenome": "Matos",
+          "prenomes": "Anna Carolina Vidal"
+        }
+      ]
+    },
+    "cidade": "Natal",
+    "editora": "EDUFRN",
+    "data": {
+      "ano": 2019
+    },
+    "paginas": "237-271"
+  },
+  {
+    "id": "tomalih2025",
+    "tipo": "noticia",
+    "autores": [
+      {
+        "sobrenome": "Tomalih",
+        "prenomes": "Omar"
+      }
+    ],
+    "titulo": "Prefeitura de BC inicia internações involuntárias e interna dois homens em situação de rua",
+    "publicacao": {
+      "titulo": "BC Notícias",
+      "cidade": "Balneário Camboriú"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 11,
+      "dia": 15
+    },
+    "url": "https://www.bcnoticias.com.br/prefeitura-de-bc-inicia-internacoes-involuntarias-e-interna-dois-homens-em-situacao-de-rua/",
+    "acesso": {
+      "ano": 2026,
+      "mes": 5,
+      "dia": 20
+    },
+    "notas": "[Entrevista concedida à Redação BC Notícias]"
+  },
+  {
+    "id": "uga2004",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Ugá",
+        "prenomes": "Vivian Domínguez"
+      }
+    ],
+    "titulo": "A categoria “pobreza” nas formulações de política social do Banco Mundial",
+    "publicacao": {
+      "titulo": "Revista de Sociologia e Política",
+      "cidade": "Curitiba",
+      "numero": "23"
+    },
+    "paginas": "55-62",
+    "data": {
+      "ano": 2004,
+      "mes": 11
+    }
+  }
+]

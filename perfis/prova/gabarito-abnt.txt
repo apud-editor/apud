@@ -1,4 +1,4 @@
-# Gabarito do documento de prova: ABNT 2025, revisão 4
+# Gabarito do documento de prova: ABNT 2025, revisão 6
 #
 # Como cada chamada do documento de prova deve sair, e a lista de referências
 # completa, na ordem. O comando “npm run prova” compara a saída com este arquivo.
@@ -41,7 +41,7 @@
 ABRIGO municipal amplia vagas no inverno. **Jornal do Litoral**, Itajaí, 3 jul. 2024. Disponível em: https://jornaldolitoral.example.org/abrigo. Acesso em: 3 jul. 2024.
 ALVES, Ana Maria; BRITO, Bruno; CUNHA, Carla; DIAS, Davi. **Avaliação psicológica**. São Paulo: Summus, 2022.
 ASSOCIAÇÃO BRASILEIRA DE ENSINO DE PSICOLOGIA. **Diretrizes para o estágio em psicologia**. Brasília: ABEP, 2023.
-BRASIL. Lei nº 10.216, de 6 de abril de 2001. Dispõe sobre a proteção e os direitos das pessoas portadoras de transtornos mentais e redireciona o modelo assistencial em saúde mental. Brasília, DF: Presidência da República, 2001. Disponível em: https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm. Acesso em: 15 maio 2025.
+BRASIL. **Lei nº 10.216, de 6 de abril de 2001**. Dispõe sobre a proteção e os direitos das pessoas portadoras de transtornos mentais e redireciona o modelo assistencial em saúde mental. Brasília, DF: Presidência da República, 2001. Disponível em: https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm. Acesso em: 15 maio 2025.
 COSTA, Helena. O acolhimento no serviço de saúde mental. *In*: MELO, Rui; NUNES, Sara (org.). **Psicologia e saúde coletiva**: práticas no SUS. Porto Alegre: Artmed, 2021. p. 9-30.
 DIAS, Eva; LOPES, Ivo. Vínculo terapêutico na atenção psicossocial. **Psicologia em Estudo**, Maringá, v. 10, n. 2, p. 1-15, mar. 2025. DOI: 10.0000/pe.2025.0102. Disponível em: https://doi.org/10.0000/pe.2025.0102. Acesso em: 15 maio 2025.
 FERRAZ, Lia. Grupos terapêuticos com adolescentes. **Revista Brasileira de Psicoterapia**, Porto Alegre, v. 26, e2024017, 2024.

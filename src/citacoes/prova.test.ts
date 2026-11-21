@@ -121,7 +121,7 @@ describe("documento de prova no Typst", () => {
     expect(chamada("[@dias2025, p. 4]")).toBe("(Dias & Lopes, 2025, p. 4)");
     // A cidade entra em livros, relatórios e no livro dos capítulos e anais; não em teses e sites.
     expect(r.referencias).toContain(
-      "Costa, Helena. (2021). O acolhimento no serviço de saúde mental. Em Rui Melo & Sara Nunes (Orgs.), *Psicologia e saúde coletiva: Práticas no SUS* (p. 9–30). Porto Alegre: Artmed.",
+      "Costa, Helena. (2021). O acolhimento no serviço de saúde mental. Em Rui Melo & Sara Nunes (Orgs.), *Psicologia e saúde coletiva: Práticas no SUS* (pp. 9–30). Porto Alegre: Artmed.",
     );
     expect(r.referencias.find((x) => x.startsWith("Freitas"))).toContain("[Tese de doutorado, Universidade Estadual de Londrina]");
   });

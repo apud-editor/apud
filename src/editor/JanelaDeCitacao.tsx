@@ -9,6 +9,7 @@ import {
   type ErroDoFormulario,
   type FormularioDeCitacao,
   type ObraNoFormulario,
+  type OndeNaObra,
   type OQueSeCita,
 } from "../citacoes/janela";
 import { buscarReferencias, ordenarParaGaveta, resumoDaReferencia } from "../referencias/lista";
@@ -226,8 +227,9 @@ export default function JanelaDeCitacao({ estado, referencias, previa, aoConfirm
                       <label className="oculto" htmlFor={`citacao-tipo-${i}`}>
                         Onde na obra
                       </label>
-                      <select id={`citacao-tipo-${i}`} value={o.onde} onChange={(ev) => mudarObra(i, { onde: ev.target.value as "pagina" | "outro" })}>
+                      <select id={`citacao-tipo-${i}`} value={o.onde} onChange={(ev) => mudarObra(i, { onde: ev.target.value as OndeNaObra })}>
                         <option value="pagina">Página</option>
+                        <option value="tempo">Tempo do vídeo ou áudio</option>
                         <option value="outro">Outro (cap., local.…)</option>
                       </select>
                       {o.onde === "outro" && (
@@ -245,13 +247,13 @@ export default function JanelaDeCitacao({ estado, referencias, previa, aoConfirm
                         </>
                       )}
                       <label className="oculto" htmlFor={`citacao-pagina-${i}`}>
-                        {o.onde === "pagina" ? "Página" : "Número do localizador"}
+                        {o.onde === "pagina" ? "Página" : o.onde === "tempo" ? "Tempo" : "Número do localizador"}
                       </label>
                       <input
                         id={`citacao-pagina-${i}`}
                         className="curto"
                         value={o.valor}
-                        placeholder={o.onde === "pagina" ? "Página, ex.: 15 ou 4-5" : "7"}
+                        placeholder={o.onde === "pagina" ? "Página, ex.: 15 ou 4-5" : o.onde === "tempo" ? "Tempo, ex.: 1:56" : "7"}
                         onChange={(ev) => mudarObra(i, { valor: ev.target.value })}
                       />
                     </div>

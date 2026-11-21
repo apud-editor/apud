@@ -152,7 +152,10 @@ describe("formulário na tela", () => {
       expect(pagina).toContain("Ou data incerta");
       expect(pagina).not.toContain("DOI");
       expect(pagina.includes("Total de folhas")).toBe(tipo === "tese");
-      expect(pagina.includes("Organizadores")).toBe(tipo === "capitulo" || tipo === "evento");
+      expect(pagina.includes("Organizadores d")).toBe(tipo === "capitulo" || tipo === "evento");
+      // Só o livro tem a caixa "são os organizadores"; todos têm as notas.
+      expect(pagina.includes('type="checkbox"')).toBe(tipo === "livro");
+      expect(pagina).toContain("Notas (tradução, publicação original…)");
     });
   }
 

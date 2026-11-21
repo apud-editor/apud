@@ -69,6 +69,7 @@ export const CAMPOS_DE_TEXTO = [
   "ementa",
   "perfil",
   "tipoDaPostagem",
+  "notas",
   "url",
   "publicacao.titulo",
   "publicacao.subtitulo",
@@ -98,6 +99,8 @@ export interface DescricaoDoTipo {
   exemploDosAutores?: string;
   /** Quem organizou o livro ou os anais: capítulo e trabalho em evento. */
   rotuloDosOrganizadores?: string;
+  /** Livro: a caixa que diz que os autores são os organizadores (a lista escreve "(org.)"). */
+  rotuloDosAutoresOrganizadores?: string;
   campos: CampoDeTexto[];
 }
 
@@ -107,6 +110,7 @@ const c = (chave: ChaveDoCampo, rotulo: string, exemplo?: string, curto = false)
 export const DESCRICAO_DOS_TIPOS: Record<TipoDeReferencia, DescricaoDoTipo> = {
   livro: {
     rotuloDosAutores: "Autores",
+    rotuloDosAutoresOrganizadores: "São os organizadores do livro (a lista escreve “org.” depois dos nomes)",
     campos: [
       c("titulo", "Título", "Psicologia clínica"),
       c("subtitulo", "Subtítulo", "O que vem depois dos dois-pontos"),
@@ -218,9 +222,16 @@ export const DESCRICAO_DOS_TIPOS: Record<TipoDeReferencia, DescricaoDoTipo> = {
 
 const CAMPO_DO_ENDERECO = c("url", "Endereço na internet", "https://…");
 
-/** Os campos de texto que o tipo usa, na ordem da tela (o endereço fecha a lista). */
+/**
+ * Notas: elementos complementares que a norma permite e o formulário não tem
+ * campo próprio (tradução, publicação original, entrevista concedida a…).
+ * Saem como foram escritos, antes do endereço na ABNT e no fim na APA.
+ */
+const CAMPO_DAS_NOTAS = c("notas", "Notas (tradução, publicação original…)", "Tradução de Maria Souza. Originalmente publicado em 1845.");
+
+/** Os campos de texto que o tipo usa, na ordem da tela (as notas e o endereço fecham a lista). */
 export function camposDoTipo(tipo: TipoDeReferencia): CampoDeTexto[] {
-  return [...DESCRICAO_DOS_TIPOS[tipo].campos, CAMPO_DO_ENDERECO];
+  return [...DESCRICAO_DOS_TIPOS[tipo].campos, CAMPO_DAS_NOTAS, CAMPO_DO_ENDERECO];
 }
 
 // ---------------------------------------------------------------------------
@@ -241,6 +252,8 @@ export interface Formulario {
   tipo: TipoDeReferencia;
   texto: Record<ChaveDoCampo, string>;
   autores: AutorNoFormulario[];
+  /** Livro: os autores são os organizadores. */
+  autoresOrganizadores: boolean;
   /** Organizadores do livro (capítulo) ou dos anais (trabalho em evento). */
   organizadores: AutorNoFormulario[];
   data: DataNoFormulario;
@@ -259,6 +272,7 @@ export function formularioVazio(tipo: TipoDeReferencia = TIPOS_NO_FORMULARIO[0])
     tipo,
     texto: Object.fromEntries(CAMPOS_DE_TEXTO.map((k) => [k, ""])) as Record<ChaveDoCampo, string>,
     autores: [pessoaVazia()],
+    autoresOrganizadores: false,
     organizadores: [],
     data: dataVazia(),
     dataIncerta: "",
@@ -291,6 +305,7 @@ export function referenciaParaFormulario(r: Referencia): Formulario {
     if (typeof valor === "string") texto[chave] = valor;
   }
   f.autores = r.autores.length ? r.autores.map(autorNoFormulario) : [pessoaVazia()];
+  f.autoresOrganizadores = r.autoresOrganizadores === true;
   f.organizadores = (r.publicacao?.organizadores ?? []).map(autorNoFormulario);
   f.data = dataNoFormulario(r.data);
   f.dataIncerta = r.dataIncerta ?? "";
@@ -386,6 +401,7 @@ function lerAutores(linhas: AutorNoFormulario[], campo: string, erros: ErroDoFor
 const CHAVES_DO_FORMULARIO = new Set<string>([
   "tipo",
   "autores",
+  "autoresOrganizadores",
   "data",
   "dataIncerta",
   "acesso",
@@ -456,6 +472,7 @@ export function formularioParaReferencia(f: Formulario, opcoes: OpcoesDoFormular
     if (chave.includes(".") || chave === "titulo" || !usa(chave)) continue;
     if (valor(chave)) referencia[chave] = valor(chave);
   }
+  if (descricao.rotuloDosAutoresOrganizadores && f.autoresOrganizadores && autores.length) referencia.autoresOrganizadores = true;
   if (data) referencia.data = data;
   if (dataIncerta) referencia.dataIncerta = dataIncerta;
   if (acesso) referencia.acesso = acesso;

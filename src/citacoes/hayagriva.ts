@@ -68,6 +68,9 @@ export function paraHayagriva(ref: Referencia): ReferenciaDoTypst {
     "uncertain-date": ref.dataIncerta,
     url: ref.url ? sem({ value: ref.url, date: ref.acesso ? dataDoTypst(ref.acesso) : undefined }) : undefined,
     "serial-number": ref.doi ? { doi: ref.doi } : undefined,
+    // As notas vão no campo runtime do hayagriva, que o Typst passa ao CSL como
+    // "dimensions": é um campo livre que os estilos do Apud escrevem como texto.
+    runtime: ref.notas?.trim() || undefined,
   });
 
   switch (ref.tipo) {
@@ -75,6 +78,8 @@ export function paraHayagriva(ref: Referencia): ReferenciaDoTypst {
       return sem({
         type: "book",
         ...comuns,
+        // Livro organizado: os nomes vão como organizadores (editor), e o estilo escreve (org.).
+        ...(ref.autoresOrganizadores && ref.autores.length ? { author: undefined, editor: nomes(ref.autores) } : {}),
         edition: ref.edicao !== undefined ? numeroOuTexto(ref.edicao) : undefined,
         publisher: editora(ref),
       });

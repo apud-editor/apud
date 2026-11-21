@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 4
-data da revisão: 20/11/2026
-nota da revisão: Regras para o Apud montar as citações: intervalo de páginas, obra sem data e título da lista de referências.
+revisão: 6
+data da revisão: 21/11/2026
+nota da revisão: Conferido no texto da NBR 6023:2025: lei e Constituição com a epígrafe em negrito (7.11.1 e 7.11.2); obras do mesmo autor pelo título, com os números em ordem crescente, e não pelo ano (9.1).
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -221,6 +221,9 @@ citação narrativa, antes do último autor: e                    | NBR 10520:20
 autores, quatro ou mais: todos                                 | NBR 10520:2023 e NBR 6023:2025 (UFC; UFRB) | escolha: todos, primeiro com et al.
 # Exemplo: (Silva, J., 2019; Silva, M., 2019)
 citação, mesmo sobrenome e ano: acrescentar iniciais           | NBR 10520:2023 (UFC)
+# Instituição com subordinação, escrita com ponto entre os níveis (revisão 5).
+# Exemplo: BRASIL. Ministério da Saúde, na lista, vira (Brasil, 2014) na chamada.
+citação, entidade subordinada: só a entidade principal         | NBR 10520:2023: a chamada usa o primeiro elemento da referência (UFPE 2026; Unicamp)
 # Exemplo: (Souza, 2020a) e (Souza, 2020b). Citadas juntas: (Souza, 2020a, 2020b).
 citação, mesmo autor e ano: letras depois do ano               | NBR 10520:2023 (UFC)
 # A NBR 6023 pede a data provável entre colchetes ([2019?]) quando não há data.
@@ -249,8 +252,15 @@ rótulo das referências: REFERÊNCIAS                       | NBR 14724:2024 (U
 referências, alinhamento: à esquerda                     | NBR 6023:2025 (UFRB)
 referências, entre uma e outra: 1 linha em branco        | NBR 6023:2025 (UFRB)
 referências, ordem: alfabética pelo sobrenome do primeiro autor  | NBR 6023:2025 (UFV 2026)
+# Mesmo autor (21/11/2026): no exemplo da NBR 6023:2025 (9.1), "BRASIL. Lei nº
+# 9.979 (2000)" vem antes de "BRASIL. Lei nº 12.384 (1998)". A ordem segue os
+# elementos da referência (o título, depois do autor), com os números em ordem
+# crescente; o ano não decide. As letras (2020a, 2020b) seguem essa ordem.
+referências, mesmo autor: pelo título, com os números em ordem crescente  | NBR 6023:2025, 9.1
 # Exemplo: SILVA, João
 referências, sobrenome: maiúsculas                       | NBR 6023:2025 (UFRB)
+# Exemplo: BRASIL. Ministério do Desenvolvimento Social (revisão 5).
+referências, entidade subordinada: só a principal em maiúsculas  | NBR 6023:2025 (UFPE 2026; Unicamp)
 referências, entre sobrenome e prenomes: vírgula         | NBR 6023:2025 (UFRB)
 # Por extenso: SILVA, João. Abreviados: SILVA, J. Igual na lista toda.
 referências, prenomes: por extenso                       | NBR 6023:2025 (UFU) | escolha: por extenso, abreviados
@@ -281,6 +291,15 @@ modelo, relatório: SOBRENOME, Prenome. **Título**. Cidade: Editora, ano. (Nota
 modelo, trabalho em evento: SOBRENOME, Prenome. Título do trabalho. *In*: NOME DO EVENTO, 20., 2024, Cidade. **Anais** [...]. Cidade: Editora, ano. p. 15-30.  | NBR 6023:2025, 7.8.4 (Unicamp; UFJ)
 modelo, notícia: TÍTULO da notícia. **Nome do Jornal**, Cidade, 3 jul. 2024. Disponível em: https://exemplo.org. Acesso em: 3 jul. 2024.  | NBR 6023:2025, 7.7.7 e 7.7.8 (UFJ)
 modelo, rede social: SOBRENOME, Prenome. **Texto da postagem**. Cidade, 16 fev. 2025. Instagram: @perfil. Disponível em: https://exemplo.org. Acesso em: 20 maio 2026.  | NBR 6023:2025, 7.20
+# Lei (21/11/2026): conferido no texto da NBR 6023:2025. A lei consultada sozinha
+# (no site do governo, num livro só dela) tem a epígrafe em negrito: CURITIBA.
+# **Lei nº 12.092, de 21 de dezembro de 2006**. Na Constituição, o negrito fica no
+# título, depois de [Constituição (1988)]: BRASIL. [Constituição (1988)].
+# **Constituição da República Federativa do Brasil**. Escreva o "[Constituição
+# (1988)]." no começo do título, e o Apud tira o negrito dele. A lei publicada
+# dentro de outra obra (no Diário Oficial, num vade-mécum) leva o destaque na
+# obra; o formulário do Apud ainda não tem esse caso.
+modelo, lei: JURISDIÇÃO. **Lei nº 10.216, de 6 de abril de 2001**. Ementa. Cidade: Editora, ano.  | NBR 6023:2025, 7.11.1 e 7.11.2
 referências, artigo sem página: número eletrônico no lugar das páginas  | NBR 6023:2025 (UFRB)
 referências, issn: não mostrar                           | NBR 6023:2025, que o tornou opcional (UFRB)
 # Exemplo: Disponível em: https://exemplo.org. Acesso em: 15 maio 2025.

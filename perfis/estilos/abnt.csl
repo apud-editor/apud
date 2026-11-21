@@ -24,12 +24,15 @@
 
     DADOS QUE O APUD PREPARA ANTES DE CHAMAR ESTE ESTILO
     O CSL não tem campos para algumas regras da ABNT. O Apud usa estes:
-    - genre: o subtítulo de livros, sites e do livro de um capítulo, para que
-      só o título principal receba o destaque;
+    - genre: o subtítulo de livros, sites, do livro de um capítulo e da
+      revista de um artigo, para que só o título principal receba o destaque
+      (o subtítulo de capítulos e artigos vem junto do título, que não tem destaque);
     - call-number: o ano já escrito, quando não é só o número: 2020a (mesmo
       autor e ano) ou [201-?] (data incerta);
     - title-short: o título curto da obra sem autor, como "Guia [...]";
     - number: o número eletrônico de artigos sem página (e2025001);
+    - dimensions: as notas da referência (elementos complementares), antes
+      do endereço;
     - note: a chave de ordem alfabética sem acentos, porque o
       Typst ordena "Ávila" depois de "Zé".
   -->
@@ -119,8 +122,9 @@
     <names variable="author">
       <!-- apud: referências, prenomes -->
       <name name-as-sort-order="all" sort-separator=", " delimiter="; " delimiter-precedes-last="always" initialize="false" initialize-with=". ">
+        <!-- As maiúsculas vêm escritas pelo Apud: BRASIL. Ministério da Saúde. -->
         <!-- apud: referências, sobrenome -->
-        <name-part name="family" text-case="uppercase"/>
+        <name-part name="family"/>
       </name>
       <et-al font-style="italic"/>
       <label form="short" prefix=" (" suffix=")" text-case="lowercase"/>
@@ -138,8 +142,9 @@
     <names variable="editor">
       <!-- apud: referências, prenomes -->
       <name name-as-sort-order="all" sort-separator=", " delimiter="; " delimiter-precedes-last="always" initialize="false" initialize-with=". ">
+        <!-- As maiúsculas vêm escritas pelo Apud: BRASIL. Ministério da Saúde. -->
         <!-- apud: referências, sobrenome -->
-        <name-part name="family" text-case="uppercase"/>
+        <name-part name="family"/>
       </name>
       <et-al font-style="italic"/>
       <label form="short" prefix=" (" suffix=")" text-case="lowercase"/>
@@ -181,10 +186,26 @@
     </group>
   </macro>
 
-  <!-- Título da revista, num artigo, com o mesmo destaque. -->
+  <!-- Título da revista, num artigo, com o mesmo destaque; o subtítulo da
+       revista (em genre) vem sem destaque: **Distinktion**: Journal of Social Theory. -->
   <macro name="titulo-da-revista">
-    <!-- apud: referências, destaque do título -->
-    <text variable="container-title" font-weight="bold"/>
+    <group delimiter=": ">
+      <!-- apud: referências, destaque do título -->
+      <text variable="container-title" font-weight="bold"/>
+      <text variable="genre"/>
+    </group>
+  </macro>
+
+  <!-- Lei: a epígrafe com o destaque do título (NBR 6023:2025, 7.11.1 e
+       7.11.2): BRASIL. **Lei nº 10.216, de 6 de abril de 2001**. Na
+       Constituição, o "[Constituição (1988)]" (em genre, separado pelo Apud)
+       vem antes, sem destaque. -->
+  <macro name="titulo-da-lei">
+    <group delimiter=". ">
+      <text variable="genre"/>
+      <!-- apud: referências, destaque do título -->
+      <text variable="title" font-weight="bold"/>
+    </group>
   </macro>
 
   <!-- ===== Datas ===== -->
@@ -203,11 +224,20 @@
     </choose>
   </macro>
 
-  <!-- Data completa: 2 maio 2024; mar. 2025; 2019. -->
+  <!-- Data completa: 2 maio 2024; mar. 2025; 2019. Com a letra do ano
+       (call-number), o dia e o mês continuam: 2 jan. 2025a. -->
   <macro name="data">
     <choose>
       <if variable="call-number">
-        <text variable="call-number"/>
+        <group delimiter=" ">
+          <date variable="issued">
+            <date-part name="day"/>
+          </date>
+          <date variable="issued">
+            <date-part name="month" form="short"/>
+          </date>
+          <text variable="call-number"/>
+        </group>
       </if>
       <else>
         <date variable="issued">
@@ -219,11 +249,16 @@
     </choose>
   </macro>
 
-  <!-- Mês e ano, para artigos: mar. 2025. -->
+  <!-- Mês e ano, para artigos: mar. 2025 (com a letra do ano: mar. 2025a). -->
   <macro name="mes-e-ano">
     <choose>
       <if variable="call-number">
-        <text variable="call-number"/>
+        <group delimiter=" ">
+          <date variable="issued">
+            <date-part name="month" form="short"/>
+          </date>
+          <text variable="call-number"/>
+        </group>
       </if>
       <else>
         <date variable="issued">
@@ -297,7 +332,7 @@
     </group>
   </macro>
 
-  <!-- Só o local: Maceió, ou [S. l.] quando falta (redes sociais). -->
+  <!-- Só o local: Maceió, ou [S. l.] quando falta (redes sociais, revistas e jornais). -->
   <macro name="local">
     <choose>
       <if variable="publisher-place">
@@ -435,6 +470,8 @@
             <text macro="publicacao"/>
             <text macro="paginas"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </if>
@@ -454,6 +491,8 @@
             <text macro="publicacao"/>
             <text macro="paginas"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -464,11 +503,14 @@
             <text variable="title"/>
             <group delimiter=", ">
               <text macro="titulo-da-revista"/>
-              <text variable="publisher-place"/>
+              <!-- Cidade da revista ou do jornal; [S. l.] quando falta (NBR 6023:2025, elemento essencial). -->
+              <text macro="local"/>
               <text macro="volume-numero-paginas"/>
               <text macro="data"/>
             </group>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -479,11 +521,14 @@
             <text variable="title"/>
             <group delimiter=", ">
               <text macro="titulo-da-revista"/>
-              <text variable="publisher-place"/>
+              <!-- Cidade da revista ou do jornal; [S. l.] quando falta (NBR 6023:2025, elemento essencial). -->
+              <text macro="local"/>
               <text macro="volume-numero-paginas"/>
               <text macro="mes-e-ano"/>
             </group>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -500,6 +545,8 @@
               <text variable="container-title"/>
               <text variable="archive_location"/>
             </group>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -510,16 +557,20 @@
             <text macro="titulo-destacado"/>
             <text macro="publicacao-com-data"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
-        <!-- Leis: BRASIL. Lei nº 10.216, de 6 de abril de 2001. Ementa. Cidade: Editora, ano. Disponível em: ... -->
+        <!-- apud modelo: modelo, lei = JURISDIÇÃO. **Lei nº 10.216, de 6 de abril de 2001**. Ementa. Cidade: Editora, ano. -->
         <else-if type="bill legislation" match="any">
           <group delimiter=". " suffix=".">
             <text macro="autor"/>
-            <text variable="title"/>
+            <text macro="titulo-da-lei"/>
             <text variable="abstract"/>
             <text macro="publicacao"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -531,6 +582,8 @@
             <text macro="ano"/>
             <text macro="nota-de-tese"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -543,6 +596,8 @@
             <text macro="publicacao"/>
             <text macro="serie"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -554,6 +609,8 @@
             <text macro="edicao"/>
             <text macro="publicacao"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else>

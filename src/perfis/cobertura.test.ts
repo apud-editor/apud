@@ -120,6 +120,8 @@ const CHECKLIST: Record<string, Array<[linha: string, situacao: Situacao]>> = {
     ["Trabalho em evento", "confirmada"],
     ["Notícia", "confirmada"],
     ["Rede social", "confirmada"],
+    // Conferida no texto da NBR 6023:2025 em 21/11/2026.
+    ["Lei", "confirmada"],
     ["Artigo sem página", "confirmada"],
     ["ISSN", "confirmada"],
     ["Documento online", "confirmada"],
