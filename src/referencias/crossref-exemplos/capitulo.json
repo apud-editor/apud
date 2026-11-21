@@ -1,0 +1,30 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "message": {
+    "publisher": "Artmed",
+    "publisher-location": "Porto Alegre",
+    "DOI": "10.1234/cap.2020.03",
+    "type": "book-chapter",
+    "created": { "date-parts": [[2020, 4, 2]], "date-time": "2020-04-02T09:00:00Z", "timestamp": 1585818000000 },
+    "page": "9–30",
+    "source": "Crossref",
+    "title": ["O diário de campo na formação do psicólogo"],
+    "prefix": "10.1234",
+    "author": [
+      { "given": "Helena", "family": "Costa", "sequence": "first", "affiliation": [] },
+      { "given": "Marina", "family": "Souza", "sequence": "additional", "affiliation": [] }
+    ],
+    "member": "9999",
+    "container-title": ["Psicologia e saúde coletiva: práticas no SUS"],
+    "editor": [
+      { "given": "Rui", "family": "Melo", "sequence": "first", "affiliation": [] },
+      { "given": "Sara", "family": "Nunes", "sequence": "additional", "affiliation": [] }
+    ],
+    "language": "pt",
+    "published-print": { "date-parts": [[2020, 3, 15]] },
+    "issued": { "date-parts": [[2020, 3, 15]] },
+    "ISBN": ["9780000000019"]
+  }
+}

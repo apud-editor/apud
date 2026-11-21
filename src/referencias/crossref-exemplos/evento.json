@@ -1,0 +1,31 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "message": {
+    "publisher": "Universidade Exemplo",
+    "publisher-location": "Florianópolis",
+    "DOI": "10.1234/sem.2024.15",
+    "type": "proceedings-article",
+    "created": { "date-parts": [[2024, 11, 5]], "date-time": "2024-11-05T09:00:00Z", "timestamp": 1730797200000 },
+    "page": "15-30",
+    "source": "Crossref",
+    "title": ["Políticas públicas de saúde mental: <sub>um</sub> balanço"],
+    "prefix": "10.1234",
+    "author": [
+      { "given": "Paula", "family": "Matos", "sequence": "first", "affiliation": [] },
+      { "name": "Associação Brasileira de Ensino de Psicologia", "sequence": "additional", "affiliation": [] }
+    ],
+    "member": "9999",
+    "container-title": ["Anais do 20º Seminário de Políticas Públicas"],
+    "language": "pt",
+    "event": {
+      "name": "Seminário de Políticas Públicas",
+      "location": "Florianópolis, Brasil",
+      "number": "20",
+      "start": { "date-parts": [[2024, 9, 3]] },
+      "end": { "date-parts": [[2024, 9, 5]] }
+    },
+    "issued": { "date-parts": [[2024, 11]] }
+  }
+}

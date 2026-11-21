@@ -21,6 +21,11 @@ const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julh
 interface Props {
   /** A fonte que está sendo editada. Sem ela, é uma fonte nova. */
   base?: Referencia;
+  /**
+   * Quando a fonte veio da busca pelo DOI: "base" é então a fonte trazida do
+   * Crossref, que ainda não foi salva. O formulário avisa o que conferir.
+   */
+  origemDoi?: { avisos: string[] };
   /** Os códigos que já existem, para o código novo não repetir. */
   existentes: string[];
   aoSalvar: (r: Referencia) => void;
@@ -28,7 +33,7 @@ interface Props {
 }
 
 /** O formulário "Adicionar à mão": um por tipo, só com os campos que o tipo usa. */
-export default function FormularioDeReferencia({ base, existentes, aoSalvar, aoCancelar }: Props) {
+export default function FormularioDeReferencia({ base, origemDoi, existentes, aoSalvar, aoCancelar }: Props) {
   const [f, setF] = useState<Formulario>(() => (base ? referenciaParaFormulario(base) : formularioVazio()));
   const [erros, setErros] = useState<ErroDoFormulario[]>([]);
   const prefixo = useId();
@@ -50,14 +55,35 @@ export default function FormularioDeReferencia({ base, existentes, aoSalvar, aoC
   return (
     <form
       className="form-ref"
-      aria-label={base ? "Editar fonte" : "Nova fonte"}
+      aria-label={origemDoi ? "Conferir fonte do DOI" : base ? "Editar fonte" : "Nova fonte"}
       noValidate
       onSubmit={(ev) => {
         ev.preventDefault();
         salvar();
       }}
     >
-      <p className="form-ref-titulo">{base ? "Editar fonte" : "Nova fonte"}</p>
+      <p className="form-ref-titulo">{origemDoi ? "Conferir a fonte do DOI" : base ? "Editar fonte" : "Nova fonte"}</p>
+
+      {origemDoi && (
+        <div className="aviso-doi" role="status">
+          <p>
+            Estes dados vieram do Crossref. Confira cada campo e corrija o que precisar: a fonte só entra no trabalho quando você clicar em “Salvar fonte”. O que o
+            Crossref não trouxe ficou em branco.
+          </p>
+          {origemDoi.avisos.length > 0 && (
+            <ul>
+              {origemDoi.avisos.map((a) => (
+                <li key={a}>{a}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+      {base?.doi && (
+        <p className="dica-form" style={{ margin: 0 }}>
+          DOI guardado com a fonte: <b>{base.doi}</b>
+        </p>
+      )}
 
       <label className="campo-form" htmlFor={id("tipo")}>
         Tipo de fonte
