@@ -292,7 +292,13 @@ function tituloParaOrdenar(ref: Referencia): string {
  * títulos. O Apud calcula as letras e passa o ano já escrito para o estilo
  * CSL, no campo call-number, para a chamada e a lista usarem as mesmas letras.
  */
-function marcarLetras(referencias: Record<string, Referencia>, soAPrincipal: boolean) {
+/** "2025-02-16" para ordenar; só o ano vem antes de qualquer data completa do mesmo ano. */
+function dataParaOrdenar(ref: Referencia): string {
+  const d = String(ref.date ?? "");
+  return /^\d{4}-/.test(d) ? `1${d}` : `0${d}`;
+}
+
+function marcarLetras(referencias: Record<string, Referencia>, soAPrincipal: boolean, pelaData: boolean) {
   const grupos = new Map<string, Referencia[]>();
   for (const ref of Object.values(referencias)) {
     const ano = anoDaReferencia(ref);
@@ -302,7 +308,12 @@ function marcarLetras(referencias: Record<string, Referencia>, soAPrincipal: boo
   }
   for (const grupo of grupos.values()) {
     if (grupo.length < 2) continue;
-    grupo.sort((a, b) => tituloParaOrdenar(a).localeCompare(tituloParaOrdenar(b), "pt-BR"));
+    // APA: pela data completa (só o ano primeiro), depois pelo título. ABNT: pelo título.
+    grupo.sort(
+      (a, b) =>
+        (pelaData ? dataParaOrdenar(a).localeCompare(dataParaOrdenar(b)) : 0) ||
+        tituloParaOrdenar(a).localeCompare(tituloParaOrdenar(b), "pt-BR"),
+    );
     grupo.forEach((ref, i) => {
       ref["call-number"] = `${anoDaReferencia(ref)}${String.fromCharCode(97 + i)}`;
     });
@@ -338,7 +349,9 @@ export function prepararReferencias(
   const preparadas = Object.fromEntries(
     Object.entries(referencias).map(([chave, ref]) => [chave, prepararUma(ref, perfil)]),
   );
-  if (temRegra(perfil, "citação, mesmo autor e ano")) marcarLetras(preparadas, temRegra(perfil, "citação, entidade subordinada"));
+  if (temRegra(perfil, "citação, mesmo autor e ano")) {
+    marcarLetras(preparadas, temRegra(perfil, "citação, entidade subordinada"), temRegra(perfil, "citação, mesmo autor e ano, ordem das letras"));
+  }
   for (const ref of Object.values(preparadas)) ref.note = chaveDeOrdem(ref, perfil);
   return preparadas;
 }

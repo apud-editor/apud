@@ -21,9 +21,9 @@
 
 perfil: APA
 versão: 7
-revisão: 5
+revisão: 6
 data da revisão: 20/11/2026
-nota da revisão: Regras para o Apud montar a página em APA: distância do número da página ao topo e listas (numeradas e com marcadores).
+nota da revisão: Conferência com o artigo da revista: letras de mesmo autor e ano pela data completa, lei citada sem a data no nome, "pp." nas páginas da lista.
 
 == APA 7: página, estrutura e títulos ==
 # A APA tem dois modos. O trabalho começa no modo estudante e passa para o
@@ -133,6 +133,8 @@ citação, traço entre páginas: –                          | APA 7 (site da 
 citação, mesmo sobrenome: iniciais antes do sobrenome, em qualquer ano  | APA 7 (site da APA: autores com o mesmo sobrenome)
 citação, obra sem autor, título em itálico: livro, relatório, tese, site, rede social  | APA 7 (site da APA: autor ausente)
 citação, obra sem autor, título entre aspas: artigo, capítulo, trabalho em evento, notícia  | APA 7 (site da APA: autor ausente)
+# O nome da lei vai sem a data, como a APA faz com o nome das leis (Americans
+# with Disabilities Act, 1990): (Lei nº 10.216, 2001). Na lista, o nome inteiro (revisão 6).
 citação, lei: pelo título, sem destaque                  | APA 7 (site da APA: referências jurídicas)
 citação, sem data, marcador: s.d.                        | APA 7 (site da APA: data ausente), em português
 # Decisão de 20/11/2026: o Apud avisa, sem trocar sozinho por citação em bloco.
@@ -155,6 +157,9 @@ citação, destaque seu, onde: entre colchetes, depois do trecho destacado  | AP
 citação, tradução sua: tradução nossa                    | uso em trabalhos em português; a APA 7 não fixa
 # Exemplo: (Souza, 2020a), (Souza, 2020b), também na lista de referências.
 citação, mesmo autor e ano: letras depois do ano         | APA 7 (site da APA: mesmo autor e mesma data)
+# Quem tem só o ano vem antes; quem tem a data completa (postagens, notícias)
+# segue a ordem das datas; com a mesma data, a ordem do título (revisão 6).
+citação, mesmo autor e ano, ordem das letras: pela data completa, depois pelo título  | APA 7, 9.47 (Purdue OWL; UAB)
 # Decisão de 20/11/2026: as quebras de página são manuais, e a lista de referências
 # é um bloco que a pessoa põe onde quiser. Esta regra fica como referência: o Apud
 # não a aplica sozinho.
@@ -178,6 +183,6 @@ modelo, livro: Sobrenome, A. A. (2020). *Título do livro: Subtítulo* (2ª ed.)
 # Tipos acrescentados em 20/11/2026, a partir de dois artigos reais.
 modelo, tese: Sobrenome, A. A. (2017). *Título: Subtítulo* [Tese de doutorado, Universidade]. https://exemplo.org  | APA 7 (site da APA: tese publicada)
 modelo, relatório: Sobrenome, A. A. (2023). *Título* (Nota Técnica nº 103). Editora. https://exemplo.org  | APA 7 (site da APA: relatório)
-modelo, trabalho em evento: Sobrenome, A. A., & Sobrenome, B. B. (2024). Título do trabalho. Em *Anais do Evento* (p. 15–30). Editora. https://exemplo.org  | APA 7 (site da APA: anais publicados como livro)
+modelo, trabalho em evento: Sobrenome, A. A., & Sobrenome, B. B. (2024). Título do trabalho. Em *Anais do Evento* (pp. 15–30). Editora. https://exemplo.org  | APA 7 (site da APA: anais publicados como livro)
 modelo, notícia: Título da notícia. (2024, 3 de julho). *Nome do Jornal*. https://exemplo.org  | APA 7 (site da APA: artigo de jornal)
 modelo, rede social: Sobrenome, A. A. [@perfil]. (2025, 16 de fevereiro). *Texto da postagem* [Vídeo]. Instagram. https://exemplo.org  | APA 7 (site da APA: Instagram)

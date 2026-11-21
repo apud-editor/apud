@@ -180,6 +180,7 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ["citação, destaque seu, onde", opcao("entre colchetes, depois do trecho destacado", "na chamada"), []],
       ["citação, tradução sua", texto(), []],
       ["citação, mesmo autor e ano", opcao("letras depois do ano"), []],
+      ["citação, mesmo autor e ano, ordem das letras", opcao("pela data completa, depois pelo título"), []],
       ["referências, página nova", opcao("sim"), "Título da lista"],
       ["referências, linhas em branco entre elas", opcao("nenhuma"), "Forma da lista"],
       ["referências, recuo das linhas seguintes", medida("cm", 0, 5), "Forma da lista"],

@@ -60,7 +60,7 @@ describe("perfis originais", () => {
     );
     for (const r of resultados) expect(r.mensagens.map(formatarMensagem)).toEqual([]);
     expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 5 });
-    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 5 });
+    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 6 });
   });
 
   it("guarda os valores já entendidos", () => {

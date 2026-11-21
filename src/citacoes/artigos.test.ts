@@ -198,3 +198,61 @@ describe("forma curta: citação direta", () => {
     ]);
   });
 });
+
+describe("APA: o que a conferência com o artigo da revista revelou (revisão 6)", () => {
+  const post = (id: string, titulo: string, data: { ano: number; mes?: number; dia?: number }): Referencia => ({
+    id,
+    tipo: "rede-social",
+    autores: [pessoa("Coelho", "Robison")],
+    titulo,
+    perfil: "@robisoncoelho",
+    tipoDaPostagem: "Vídeo",
+    publicacao: { titulo: "Instagram" },
+    data,
+  });
+
+  it("mesmo autor e ano: as letras seguem a data completa (só o ano vem primeiro), e não o título", () => {
+    const r = montar(
+      "[@jan] [@mar] [@ano] [@fev]",
+      [post("jan", "Zebra", { ano: 2025, mes: 1, dia: 2 }), post("mar", "Abacate", { ano: 2025, mes: 3, dia: 1 }), post("ano", "Meio", { ano: 2025 }), post("fev", "Banana", { ano: 2025, mes: 2, dia: 24 })],
+      "apa.txt",
+    );
+    expect(chamadas(r)).toEqual(["(Coelho, 2025b)", "(Coelho, 2025d)", "(Coelho, 2025a)", "(Coelho, 2025c)"]);
+    expect(r.referencias.map((x) => x.match(/\(2025[a-d][^)]*\)/)![0])).toEqual(["(2025a)", "(2025b, 2 de janeiro)", "(2025c, 24 de fevereiro)", "(2025d, 1 de março)"]);
+  });
+
+  it("na ABNT as letras continuam pela ordem do título", () => {
+    const r = montar("[@jan] [@mar]", [post("jan", "Zebra", { ano: 2025, mes: 1, dia: 2 }), post("mar", "Abacate", { ano: 2025, mes: 3, dia: 1 })]);
+    expect(chamadas(r)).toEqual(["(Coelho, 2025b)", "(Coelho, 2025a)"]);
+  });
+
+  it("notícia só com o ano: (2023), sem vírgula sobrando", () => {
+    const r = montar("[@n]", [{ id: "n", tipo: "noticia", autores: [pessoa("Catie", "Talita")], titulo: "Morador de rua", publicacao: { titulo: "NSC Total" }, data: { ano: 2023 } }], "apa.txt");
+    expect(r.referencias[0]).toBe("Catie, T. (2023). Morador de rua. *NSC Total*.");
+  });
+
+  const lei = (id: string, titulo: string, ano: number): Referencia => ({ id, tipo: "lei", autores: [instituicao("Brasil")], titulo, data: { ano } });
+
+  it("lei: o nome vai sem a data na chamada, e duas leis do Brasil não se juntam como se fossem do mesmo autor", () => {
+    const r = montar(
+      "[@d; @c] e [@l, § 3º]",
+      [lei("d", "Decreto nº 7.053, de 23 de dezembro de 2009", 2009), lei("c", "Constituição da República Federativa do Brasil", 1988), lei("l", "Lei Municipal nº 7.839, de 5 de novembro de 2025", 2025)],
+      "apa.txt",
+    );
+    expect(chamadas(r)).toEqual(["(Constituição da República Federativa do Brasil, 1988; Decreto nº 7.053, 2009)", "(Lei Municipal nº 7.839, 2025, § 3º)"]);
+  });
+
+  it("na ABNT, as leis continuam pelo autor, com os anos juntos: (Brasil, 1988, 2009)", () => {
+    const r = montar("[@d; @c]", [lei("d", "Decreto nº 7.053, de 23 de dezembro de 2009", 2009), lei("c", "Constituição", 1988)]);
+    expect(chamadas(r)).toEqual(["(Brasil, 1988, 2009)"]);
+  });
+
+  it("páginas do capítulo na lista: pp.", () => {
+    const r = montar(
+      "[@cap]",
+      [{ id: "cap", tipo: "capitulo", autores: [pessoa("Spink", "Peter")], titulo: "Análise", publicacao: { titulo: "Práticas", organizadores: [pessoa("Spink", "Mary Jane")] }, editora: "Centro", data: { ano: 2013 }, paginas: "100-126" }],
+      "apa.txt",
+    );
+    expect(r.referencias[0]).toContain("(pp. 100–126)");
+  });
+});

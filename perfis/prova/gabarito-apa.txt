@@ -1,4 +1,4 @@
-# Gabarito do documento de prova: APA 7, revisão 5
+# Gabarito do documento de prova: APA 7, revisão 6
 #
 # Como cada chamada do documento de prova deve sair, e a lista de referências
 # completa, na ordem. O comando “npm run prova” compara a saída com este arquivo.
@@ -8,7 +8,7 @@
 == Chamadas ==
 [@silva2019, p. 15]  →  (J. P. Silva, 2019, p. 15)
 @lima2018  →  Lima et al. (2018)
-[@brasil2001]  →  (Lei nº 10.216, de 6 de abril de 2001, 2001)
+[@brasil2001]  →  (Lei nº 10.216, 2001)
 [@abep2023]  →  (Associação Brasileira de Ensino de Psicologia, 2023)
 [@inpsi2011]  →  (INPSI, 2011)
 [@souza2020a; @souza2020b]  →  (Souza, 2020a, 2020b)
@@ -41,7 +41,7 @@
 Abrigo municipal amplia vagas no inverno. (2024, 3 de julho). *Jornal do Litoral*. https://jornaldolitoral.example.org/abrigo
 Alves, A. M., Brito, B., Cunha, C., & Dias, D. (2022). *Avaliação psicológica*. Summus.
 Associação Brasileira de Ensino de Psicologia. (2023). *Diretrizes para o estágio em psicologia*. ABEP.
-Costa, H. (2021). O acolhimento no serviço de saúde mental. Em R. Melo & S. Nunes (Orgs.), *Psicologia e saúde coletiva: Práticas no SUS* (p. 9–30). Artmed.
+Costa, H. (2021). O acolhimento no serviço de saúde mental. Em R. Melo & S. Nunes (Orgs.), *Psicologia e saúde coletiva: Práticas no SUS* (pp. 9–30). Artmed.
 Dias, E., & Lopes, I. (2025). Vínculo terapêutico na atenção psicossocial. *Psicologia em Estudo*, *10*(2), 1–15. https://doi.org/10.0000/pe.2025.0102
 Ferraz, L. (2024). Grupos terapêuticos com adolescentes. *Revista Brasileira de Psicoterapia*, *26*, Artigo e2024017.
 Freitas, L. M. de. (2017). *A proteção social à população em situação de rua: Entre o direito e a tutela* [Tese de doutorado, Universidade Estadual de Londrina]. https://repositorio.example.org/freitas2017
@@ -64,4 +64,4 @@ Silva, M. (2021). *Psicoterapia breve*. Manole.
 Smith, J. (2019). *Clinical supervision in practice*. Northfield Press.
 Souza, M. (2020a). *Clínica ampliada*. Hucitec.
 Souza, M. (2020b). *Escuta qualificada*. Hucitec.
-Teles, L., & Andrade, M. (2024). Categorizações de pessoas em situação de rua. Em *Anais do Seminário de Políticas Públicas* (p. 15–30). Editora do Seminário. https://anais.example.org/teles2024.pdf
+Teles, L., & Andrade, M. (2024). Categorizações de pessoas em situação de rua. Em *Anais do Seminário de Políticas Públicas* (pp. 15–30). Editora do Seminário. https://anais.example.org/teles2024.pdf

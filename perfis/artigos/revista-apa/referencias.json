@@ -1,0 +1,1172 @@
+[
+  {
+    "id": "adorno2016",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Adorno",
+        "prenomes": "Rubens"
+      }
+    ],
+    "titulo": "De vestígios e de poder",
+    "subtitulo": "“Não adianta maquiar o Minhocão, a Cracolândia anda”",
+    "publicacao": {
+      "titulo": "Novas faces da vida nas ruas",
+      "organizadores": [
+        {
+          "sobrenome": "Rui",
+          "prenomes": "Taniele"
+        },
+        {
+          "sobrenome": "Martinez",
+          "prenomes": "Mariana"
+        },
+        {
+          "sobrenome": "Feltran",
+          "prenomes": "Gabriel"
+        }
+      ]
+    },
+    "cidade": "São Carlos",
+    "editora": "EdUFSCar",
+    "data": {
+      "ano": 2016
+    },
+    "paginas": "350-395"
+  },
+  {
+    "id": "batista2025",
+    "tipo": "noticia",
+    "autores": [
+      {
+        "sobrenome": "Batista",
+        "prenomes": "João"
+      }
+    ],
+    "titulo": "Prefeita intima moradores de rua em operação com a GM e PM",
+    "publicacao": {
+      "titulo": "Diarinho"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 2,
+      "dia": 17
+    },
+    "url": "https://diarinho.net/materia/659762/Prefeita-intima-moradores-de-rua-em-operacao-com-a-GM-e-PM"
+  },
+  {
+    "id": "bernardes2007",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Bernardes",
+        "prenomes": "Jefferson de Souza"
+      },
+      {
+        "sobrenome": "Menegon",
+        "prenomes": "Vera Sonia Mincoff"
+      }
+    ],
+    "titulo": "Documentos de domínio público como produtos e autores sociais",
+    "publicacao": {
+      "titulo": "Psico",
+      "volume": "38",
+      "numero": "1"
+    },
+    "paginas": "11-15",
+    "data": {
+      "ano": 2007
+    },
+    "url": "https://revistaseletronicas.pucrs.br/revistapsico/article/view/1919"
+  },
+  {
+    "id": "catie2023",
+    "tipo": "noticia",
+    "autores": [
+      {
+        "sobrenome": "Catie",
+        "prenomes": "Talita"
+      }
+    ],
+    "titulo": "Morador de rua detalha operação clandestina da PM em Itajaí",
+    "subtitulo": "“Falaram que iam nos quebrar”",
+    "publicacao": {
+      "titulo": "NSC Total"
+    },
+    "data": {
+      "ano": 2023
+    },
+    "url": "https://www.nsctotal.com.br/noticias/morador-de-rua-detalha-operacao-clandestina-da-pm-em-itajai-falaram-que-iam-nos-quebrar"
+  },
+  {
+    "id": "ceolin2020",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Ceolin",
+        "prenomes": "Bruna"
+      },
+      {
+        "sobrenome": "Terra",
+        "prenomes": "Isabella Chiara"
+      },
+      {
+        "sobrenome": "Carmona",
+        "prenomes": "Rafael"
+      }
+    ],
+    "titulo": "População em situação de rua",
+    "subtitulo": "estudo da realidade vivida",
+    "publicacao": {
+      "titulo": "Caderno Humanidades em Perspectivas",
+      "volume": "4",
+      "numero": "8"
+    },
+    "paginas": "117-126",
+    "data": {
+      "ano": 2020
+    },
+    "url": "https://www.cadernosuninter.com/index.php/humanidades/article/view/1492"
+  },
+  {
+    "id": "coelho2025a",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Coelho",
+        "prenomes": "Robison"
+      }
+    ],
+    "titulo": "Primeiro dia oficial de governo: operação RECOMEÇO, ação integrada da Polícia Militar, Guarda Municipal e Prefeitura de Itajaí no bairro",
+    "perfil": "@robisoncoelho",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 1,
+      "dia": 2
+    },
+    "url": "https://www.instagram.com/reels/DEUkvwrRyRo/"
+  },
+  {
+    "id": "coelho2025b",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Coelho",
+        "prenomes": "Robison"
+      }
+    ],
+    "titulo": "Segurança Pública, respeito aos itajaienses que trabalham, oportunidade de recomeço, o trabalha não vai parar!",
+    "perfil": "@robisoncoelho",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 2,
+      "dia": 24
+    },
+    "url": "https://www.instagram.com/reels/DGc-Df1R5dF/"
+  },
+  {
+    "id": "coelho2025c",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Coelho",
+        "prenomes": "Robison"
+      }
+    ],
+    "titulo": "Não dê esmola. Dê oportunidade. A gente cuida de Itajaí juntos!",
+    "perfil": "@robisoncoelho",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 5,
+      "dia": 7
+    },
+    "url": "https://www.instagram.com/reels/DJW6cKsRqQM/"
+  },
+  {
+    "id": "coelho2025d",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Coelho",
+        "prenomes": "Robison"
+      }
+    ],
+    "titulo": "Lei da Internação Involuntária, Humanizada encaminhada para a Câmara de Vereadores!",
+    "perfil": "@robisoncoelho",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 7,
+      "dia": 30
+    },
+    "url": "https://www.instagram.com/reel/DMuvjqHxj9b/"
+  },
+  {
+    "id": "coelho2025e",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Coelho",
+        "prenomes": "Robison"
+      }
+    ],
+    "titulo": "Não vamos parar com as abordagens, em defesa das famílias!",
+    "perfil": "@robisoncoelho",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 10,
+      "dia": 1
+    },
+    "url": "https://www.instagram.com/reel/DPSB6dVicul/"
+  },
+  {
+    "id": "coelho2026",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Coelho",
+        "prenomes": "Robison"
+      }
+    ],
+    "titulo": "116 pessoas enviadas de volta para suas cidades de origem",
+    "perfil": "@robisoncoelho",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2026,
+      "mes": 2,
+      "dia": 25
+    },
+    "url": "https://www.instagram.com/reel/DVLh9XZjsEH/"
+  },
+  {
+    "id": "cndh2024",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Conselho Nacional dos Direitos Humanos"
+      }
+    ],
+    "titulo": "Relatório da missão do CNDH a Santa Catarina para apurar violações aos direitos humanos da população em situação de rua no estado",
+    "data": {
+      "ano": 2024
+    }
+  },
+  {
+    "id": "constituicao1988",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Brasil"
+      }
+    ],
+    "titulo": "Constituição da República Federativa do Brasil",
+    "cidade": "Brasília",
+    "editora": "Presidência da República",
+    "data": {
+      "ano": 1988
+    },
+    "url": "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"
+  },
+  {
+    "id": "decreto2009",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Brasil"
+      }
+    ],
+    "titulo": "Decreto nº 7.053, de 23 de dezembro de 2009",
+    "ementa": "Institui a Política Nacional para a População em Situação de Rua e seu Comitê Intersetorial de Acompanhamento e Monitoramento, e dá outras providências",
+    "editora": "Presidência da República",
+    "data": {
+      "ano": 2009
+    },
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2009/decreto/d7053.htm"
+  },
+  {
+    "id": "dias2022",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Dias",
+        "prenomes": "André Luiz Freitas"
+      },
+      {
+        "sobrenome": "Migliari",
+        "prenomes": "Wellington"
+      }
+    ],
+    "titulo": "O que o CadÚnico pode nos dizer sobre o fenômeno da população em situação de rua no Município de São Paulo?",
+    "cidade": "Belo Horizonte",
+    "editora": "Marginália Editora",
+    "data": {
+      "ano": 2022
+    }
+  },
+  {
+    "id": "gardella2016",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Gardella",
+        "prenomes": "Édouard"
+      }
+    ],
+    "titulo": "A urgência como cronopolítica",
+    "subtitulo": "o abrigo para pessoas em situação de rua",
+    "publicacao": {
+      "titulo": "Novas faces da vida nas ruas",
+      "organizadores": [
+        {
+          "sobrenome": "Rui",
+          "prenomes": "Taniele"
+        },
+        {
+          "sobrenome": "Martinez",
+          "prenomes": "Mariana"
+        },
+        {
+          "sobrenome": "Feltran",
+          "prenomes": "Gabriel"
+        }
+      ]
+    },
+    "cidade": "São Carlos",
+    "editora": "EdUFSCar",
+    "data": {
+      "ano": 2016
+    },
+    "paginas": "249-305"
+  },
+  {
+    "id": "harrits2011",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Harrits",
+        "prenomes": "Gitte Sommer"
+      },
+      {
+        "sobrenome": "Møller",
+        "prenomes": "Marie Østergaard"
+      }
+    ],
+    "titulo": "Categories and categorization",
+    "subtitulo": "towards a comprehensive sociological framework",
+    "publicacao": {
+      "titulo": "Distinktion",
+      "subtitulo": "Journal of Social Theory",
+      "volume": "12",
+      "numero": "2"
+    },
+    "paginas": "229-247",
+    "data": {
+      "ano": 2011
+    },
+    "doi": "10.1080/1600910X.2011.579450"
+  },
+  {
+    "id": "jovempan2025",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "instituicao": "Jovem Pan News Litoral"
+      }
+    ],
+    "titulo": "O secretário de Assistência Social de Itajaí, Léo Severino, anunciou em primeira mão à Jovem Pan News Litoral a abertura",
+    "perfil": "@jpnewslitoral.sc",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 12,
+      "dia": 12
+    },
+    "url": "https://www.instagram.com/reels/DSKvdHJEfWJ/"
+  },
+  {
+    "id": "jovempan2026",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "instituicao": "Jovem Pan News Litoral"
+      }
+    ],
+    "titulo": "Em entrevista à Jovem Pan News Litoral SC, o secretário municipal de Assistência Social de Itajaí, Léo Severino, falou sobre",
+    "perfil": "@jpnewslitoral.sc",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2026,
+      "mes": 1,
+      "dia": 6
+    },
+    "url": "https://www.instagram.com/reel/DTLO2iQGN7O/"
+  },
+  {
+    "id": "lei7839",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Itajaí"
+      }
+    ],
+    "titulo": "Lei Municipal nº 7.839, de 5 de novembro de 2025",
+    "ementa": "Dispõe sobre a internação humanizada no município de Itajaí e dá outras providências",
+    "editora": "Leis Municipais",
+    "data": {
+      "ano": 2025
+    },
+    "url": "https://leis.org/2v8ts"
+  },
+  {
+    "id": "lei13840",
+    "tipo": "lei",
+    "autores": [
+      {
+        "instituicao": "Brasil"
+      }
+    ],
+    "titulo": "Lei nº 13.840, de 5 de junho de 2019",
+    "ementa": "[Altera a legislação sobre o Sistema Nacional de Políticas Públicas sobre Drogas, a atenção aos usuários ou dependentes e o financiamento das políticas sobre drogas]",
+    "editora": "Presidência da República",
+    "data": {
+      "ano": 2019
+    },
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2019/lei/l13840.htm"
+  },
+  {
+    "id": "lima2024",
+    "tipo": "evento",
+    "autores": [
+      {
+        "sobrenome": "Lima",
+        "prenomes": "Luísa Filizzola Costa"
+      },
+      {
+        "sobrenome": "Assis",
+        "prenomes": "Marcos Arcanjo de"
+      }
+    ],
+    "titulo": "Burocratas de nível de rua e categorizações de pessoas em situação de rua",
+    "evento": {
+      "nome": "Seminário de Diamantina",
+      "numero": "20",
+      "ano": "2024",
+      "cidade": "Diamantina"
+    },
+    "publicacao": {
+      "titulo": "Anais do 20º Seminário de Diamantina"
+    },
+    "cidade": "Belo Horizonte",
+    "editora": "Cedeplar/UFMG",
+    "data": {
+      "ano": 2024
+    },
+    "url": "https://diamantina.cedeplar.ufmg.br/portal/download/diamantina-2024/D20_97.pdf"
+  },
+  {
+    "id": "medeiros2020",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Medeiros",
+        "prenomes": "Fernanda Cavalcanti de"
+      }
+    ],
+    "titulo": "No fio da navalha",
+    "subtitulo": "entre a garantia de direitos e a higienização social nas políticas de atendimento à população em situação de rua",
+    "tipoDoTrabalho": "Tese",
+    "grau": "Doutorado em Psicologia",
+    "editora": "Universidade Federal do Rio Grande do Norte",
+    "cidade": "Natal",
+    "data": {
+      "ano": 2020
+    },
+    "url": "https://repositorio.ufrn.br/items/20eb08e6-e817-4ca0-96e3-d26230506197"
+  },
+  {
+    "id": "mds2014",
+    "tipo": "livro",
+    "autores": [
+      {
+        "instituicao": "Ministério do Desenvolvimento Social e Combate à Fome"
+      }
+    ],
+    "titulo": "Tipificação nacional de serviços socioassistenciais",
+    "data": {
+      "ano": 2014
+    },
+    "url": "https://www.mds.gov.br/webarquivos/publicacao/assistencia_social/Normativas/tipificacao.pdf"
+  },
+  {
+    "id": "mpsc2024",
+    "tipo": "site",
+    "autores": [
+      {
+        "instituicao": "Ministério Público de Santa Catarina"
+      }
+    ],
+    "titulo": "MPSC relata ao STF violência contra pessoas em situação de rua em Balneário Camboriú",
+    "data": {
+      "ano": 2024
+    },
+    "url": "https://portal.mpsc.mp.br/noticias/mpsc-relata-ao-stf-violencia-contra-pessoas-em-situacao-de-rua-em-balneario-camboriu--"
+  },
+  {
+    "id": "mpsc2025",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Ministério Público de Santa Catarina"
+      }
+    ],
+    "titulo": "Levantamento sobre a rede de atenção às pessoas em situação de rua",
+    "data": {
+      "ano": 2025
+    }
+  },
+  {
+    "id": "mpf2025",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Ministério Público Federal"
+      },
+      {
+        "instituicao": "Ministério Público do Trabalho"
+      }
+    ],
+    "titulo": "Relatório da inspeção nacional em comunidades terapêuticas",
+    "data": {
+      "ano": 2025
+    },
+    "url": "https://www.mpf.mp.br/o-mpf/unidades/pr-pfdc/noticias/relatorio-nacional-aponta-graves-violacoes-de-direitos-humanos-em-comunidades-terapeuticas/2o-relatorio-da-inspecao-nacional-em-comunidades-terapeuticas-pfdc-mpt-2025.pdf"
+  },
+  {
+    "id": "monzelli2023",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Monzelli",
+        "prenomes": "Arthur Guilherme"
+      },
+      {
+        "sobrenome": "Navarro",
+        "prenomes": "Érica Zavanella"
+      },
+      {
+        "sobrenome": "Cagnin",
+        "prenomes": "José Guilherme"
+      }
+    ],
+    "titulo": "População em situação de rua em meio à crise estrutural do capital",
+    "publicacao": {
+      "titulo": "Revista Katálysis",
+      "volume": "26",
+      "numero": "2"
+    },
+    "paginas": "202-211",
+    "data": {
+      "ano": 2023
+    },
+    "doi": "10.1590/1982-0259.2023.e91260"
+  },
+  {
+    "id": "natalino2023",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "sobrenome": "Natalino",
+        "prenomes": "Marco"
+      }
+    ],
+    "titulo": "Estimativa da população em situação de rua no Brasil (2012–2022)",
+    "serie": "Nota Técnica",
+    "numeroNaSerie": "103",
+    "cidade": "Brasília",
+    "editora": "Instituto de Pesquisa Econômica Aplicada",
+    "data": {
+      "ano": 2023
+    },
+    "doi": "10.38116/ntdisoc103"
+  },
+  {
+    "id": "oliveira2017",
+    "tipo": "tese",
+    "autores": [
+      {
+        "sobrenome": "Oliveira",
+        "prenomes": "Luciano Márcio Freitas de"
+      }
+    ],
+    "titulo": "O alcance da proteção social à população em situação de rua",
+    "subtitulo": "a fuga do paradigma do direito",
+    "tipoDoTrabalho": "Tese",
+    "grau": "Doutorado em Serviço Social e Política Social",
+    "editora": "Universidade Estadual de Londrina",
+    "data": {
+      "ano": 2017
+    },
+    "url": "https://repositorio.uel.br/handle/123456789/16410"
+  },
+  {
+    "id": "palhares2021",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Palhares",
+        "prenomes": "Tatiane Campelo da Silva"
+      }
+    ],
+    "titulo": "Direitos sociais e pessoas em situação de rua",
+    "subtitulo": "análise da (in)visibilidade de pessoas em situação de rua",
+    "publicacao": {
+      "titulo": "Revista de Direitos Sociais e Políticas Públicas",
+      "volume": "7",
+      "numero": "1"
+    },
+    "paginas": "102-119",
+    "data": {
+      "ano": 2021
+    },
+    "doi": "10.26668/IndexLawJournals/2525-9881/2021.v7i1.7868"
+  },
+  {
+    "id": "jpavan2025a",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Juliana"
+      }
+    ],
+    "titulo": "RESGATE A VIDA BC: Acolhendo quem precisa, oferecendo dignidade e oportunidades. AQUI NA RUA, NÃO!",
+    "perfil": "@jupavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 2,
+      "dia": 16
+    },
+    "url": "https://www.instagram.com/reel/DGJlDYSxu4Y/"
+  },
+  {
+    "id": "jpavan2025b",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Juliana"
+      }
+    ],
+    "titulo": "Pessoas em situação de rua em Balneário Camboriú: Trecho da entrevista com o @linhapopular sobre o programa Resgate a Vida",
+    "perfil": "@jupavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 3,
+      "dia": 12
+    },
+    "url": "https://www.instagram.com/reel/DHGYM2zu1X4/"
+  },
+  {
+    "id": "jpavan2025c",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Juliana"
+      }
+    ],
+    "titulo": "Segurança em pauta nesta quarta-feira",
+    "perfil": "@jupavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 6,
+      "dia": 4
+    },
+    "url": "https://www.instagram.com/reel/DKf-2UUt-Qx/"
+  },
+  {
+    "id": "jpavan2025d",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Juliana"
+      }
+    ],
+    "titulo": "Esmola Não Muda Vidas: Ligue 156 e resgate a vida em BC!",
+    "perfil": "@jupavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 6,
+      "dia": 20
+    },
+    "url": "https://www.instagram.com/reel/DLIPt60xiPo/"
+  },
+  {
+    "id": "jpavan2025e",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Juliana"
+      }
+    ],
+    "titulo": "Aprovação da Lei da Internação Involuntária em Balneário Camboriú!",
+    "perfil": "@jupavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 10,
+      "dia": 1
+    },
+    "url": "https://www.instagram.com/reel/DPST5fLjStp/"
+  },
+  {
+    "id": "lpavan2025a",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Leonel"
+      }
+    ],
+    "titulo": "Hoje durante as festividades de aniversário da nossa cidade me deparei com muitas pessoas em situação de rua, conversamos e",
+    "perfil": "@leonelpavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 5,
+      "dia": 30
+    },
+    "url": "https://www.instagram.com/reel/DH13znbSovJ/"
+  },
+  {
+    "id": "lpavan2025b",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Leonel"
+      }
+    ],
+    "titulo": "Espaço público é para todos. Ontem estive neste ponto de ônibus e pedi que os moradores em situação de rua",
+    "perfil": "@leonelpavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 8,
+      "dia": 5
+    },
+    "url": "https://www.instagram.com/reel/DM_RN-eyIuK/"
+  },
+  {
+    "id": "lpavan2025c",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Pavan",
+        "prenomes": "Leonel"
+      }
+    ],
+    "titulo": "Hoje encaminhei um cidadão em situação de rua para a Casa Luz da Vida, aqui em Camboriú",
+    "perfil": "@leonelpavan",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 10,
+      "dia": 20
+    },
+    "url": "https://www.instagram.com/reel/DQDJoHODFDu/"
+  },
+  {
+    "id": "pereira2017",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Pereira",
+        "prenomes": "Vinicius Tonollier"
+      },
+      {
+        "sobrenome": "Guareschi",
+        "prenomes": "Pedrinho Arcides"
+      }
+    ],
+    "titulo": "A psicologia no CRAS",
+    "subtitulo": "um estudo de representações sociais",
+    "publicacao": {
+      "titulo": "Psicologia & Sociedade",
+      "volume": "29"
+    },
+    "numeroEletronico": "e119584",
+    "data": {
+      "ano": 2017
+    },
+    "doi": "10.1590/1807-0310/2017v29119584"
+  },
+  {
+    "id": "pires2019",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Pires",
+        "prenomes": "Roberto Rocha Coelho"
+      },
+      {
+        "sobrenome": "Lotta",
+        "prenomes": "Gabriela Spanghero"
+      }
+    ],
+    "titulo": "Burocracia de nível de rua e (re)produção de desigualdades sociais",
+    "subtitulo": "comparando perspectivas de análise",
+    "publicacao": {
+      "titulo": "Implementando desigualdades",
+      "subtitulo": "reprodução de desigualdades na implementação de políticas públicas",
+      "organizadores": [
+        {
+          "sobrenome": "Pires",
+          "prenomes": "Roberto Rocha Coelho"
+        }
+      ]
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "Instituto de Pesquisa Econômica Aplicada",
+    "data": {
+      "ano": 2019
+    },
+    "paginas": "127-152"
+  },
+  {
+    "id": "redacaobc2025",
+    "tipo": "site",
+    "autores": [
+      {
+        "instituicao": "Redação BC Notícias"
+      }
+    ],
+    "titulo": "Prefeitura de BC inicia internações involuntárias e interna dois homens em situação de rua",
+    "data": {
+      "ano": 2025,
+      "mes": 11,
+      "dia": 15
+    },
+    "url": "https://www.bcnoticias.com.br/prefeitura-de-bc-inicia-internacoes-involuntarias-e-interna-dois-homens-em-situacao-de-rua/",
+    "editora": "BC Notícias"
+  },
+  {
+    "id": "rybka2018",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Rybka",
+        "prenomes": "Livia Nemoto"
+      },
+      {
+        "sobrenome": "Nascimento",
+        "prenomes": "Juliana Luporini do"
+      },
+      {
+        "sobrenome": "Guzzo",
+        "prenomes": "Raquel Souza Lobo"
+      }
+    ],
+    "titulo": "Os mortos e feridos na “guerra às drogas”",
+    "subtitulo": "uma crítica ao paradigma proibicionista",
+    "publicacao": {
+      "titulo": "Estudos de Psicologia (Campinas)",
+      "volume": "35",
+      "numero": "1"
+    },
+    "paginas": "99-109",
+    "data": {
+      "ano": 2018
+    },
+    "doi": "10.1590/1982-02752018000100010"
+  },
+  {
+    "id": "schuch2012",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Schuch",
+        "prenomes": "Patrice"
+      },
+      {
+        "sobrenome": "Gehlen",
+        "prenomes": "Ivaldo"
+      }
+    ],
+    "titulo": "A “situação de rua” para além de determinismos",
+    "subtitulo": "explorações conceituais",
+    "publicacao": {
+      "titulo": "A rua em movimento",
+      "subtitulo": "debates acerca da população adulta em situação de rua na cidade de Porto Alegre",
+      "organizadores": [
+        {
+          "sobrenome": "Dornelles",
+          "prenomes": "Aline Espindola"
+        },
+        {
+          "sobrenome": "Obst",
+          "prenomes": "Júlia"
+        },
+        {
+          "sobrenome": "Silva",
+          "prenomes": "Marta Borba"
+        }
+      ]
+    },
+    "editora": "Didática Editora do Brasil",
+    "data": {
+      "ano": 2012
+    },
+    "paginas": "11-25"
+  },
+  {
+    "id": "sds2019",
+    "tipo": "relatorio",
+    "autores": [
+      {
+        "instituicao": "Secretaria de Estado do Desenvolvimento Social de Santa Catarina"
+      }
+    ],
+    "titulo": "Levantamento sobre pessoas em situação de rua em Santa Catarina",
+    "data": {
+      "ano": 2019
+    },
+    "url": "https://www.sas.sc.gov.br/images/Levantamento_Pessoa_com_Situa%C3%A7%C3%A3o_de_Rua.pdf"
+  },
+  {
+    "id": "silva2009",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Silva",
+        "prenomes": "Maria Lucia Lopes da"
+      }
+    ],
+    "titulo": "Trabalho e população em situação de rua no Brasil",
+    "cidade": "São Paulo",
+    "editora": "Cortez",
+    "data": {
+      "ano": 2009
+    }
+  },
+  {
+    "id": "souza2019",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Souza",
+        "prenomes": "Tadeu de Paula"
+      },
+      {
+        "sobrenome": "Gomes",
+        "prenomes": "Carla Lopes Teixeira"
+      }
+    ],
+    "titulo": "Territórios em conflito e o medo das ruas",
+    "subtitulo": "crack, uma substância midiática",
+    "publicacao": {
+      "titulo": "Vozes, imagens e resistências nas ruas",
+      "subtitulo": "a vida pode mais!",
+      "organizadores": [
+        {
+          "sobrenome": "Nobre",
+          "prenomes": "Maria Teresa"
+        },
+        {
+          "sobrenome": "Amorim",
+          "prenomes": "Ana Karenina Arraes"
+        },
+        {
+          "sobrenome": "Medeiros",
+          "prenomes": "Fernanda Cavalcanti de"
+        },
+        {
+          "sobrenome": "Matos",
+          "prenomes": "Anna Carolina Vidal"
+        }
+      ]
+    },
+    "cidade": "Natal",
+    "editora": "EDUFRN",
+    "data": {
+      "ano": 2019
+    },
+    "paginas": "237-271"
+  },
+  {
+    "id": "spinkorg2013",
+    "tipo": "livro",
+    "autores": [
+      {
+        "sobrenome": "Spink",
+        "prenomes": "Mary Jane Paris"
+      }
+    ],
+    "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+    "subtitulo": "aproximações teóricas e metodológicas",
+    "cidade": "Rio de Janeiro",
+    "editora": "Centro Edelstein de Pesquisas Sociais",
+    "data": {
+      "ano": 2013
+    }
+  },
+  {
+    "id": "spinkmedrado2013",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Spink",
+        "prenomes": "Mary Jane Paris"
+      },
+      {
+        "sobrenome": "Medrado",
+        "prenomes": "Benedito"
+      }
+    ],
+    "titulo": "Produção de sentido no cotidiano",
+    "subtitulo": "uma abordagem teórico-metodológica para análise das práticas discursivas",
+    "publicacao": {
+      "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+      "subtitulo": "aproximações teóricas e metodológicas",
+      "organizadores": [
+        {
+          "sobrenome": "Spink",
+          "prenomes": "Mary Jane Paris"
+        }
+      ]
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "Centro Edelstein de Pesquisas Sociais",
+    "data": {
+      "ano": 2013
+    },
+    "paginas": "22-41"
+  },
+  {
+    "id": "spinkp2013",
+    "tipo": "capitulo",
+    "autores": [
+      {
+        "sobrenome": "Spink",
+        "prenomes": "Peter"
+      }
+    ],
+    "titulo": "Análise de documentos de domínio público",
+    "publicacao": {
+      "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+      "subtitulo": "aproximações teóricas e metodológicas",
+      "organizadores": [
+        {
+          "sobrenome": "Spink",
+          "prenomes": "Mary Jane Paris"
+        }
+      ]
+    },
+    "cidade": "Rio de Janeiro",
+    "editora": "Centro Edelstein de Pesquisas Sociais",
+    "data": {
+      "ano": 2013
+    },
+    "paginas": "100-126"
+  },
+  {
+    "id": "uga2004",
+    "tipo": "artigo",
+    "autores": [
+      {
+        "sobrenome": "Ugá",
+        "prenomes": "Vivian Domínguez"
+      }
+    ],
+    "titulo": "A categoria “pobreza” nas formulações de política social do Banco Mundial",
+    "publicacao": {
+      "titulo": "Revista de Sociologia e Política",
+      "numero": "23"
+    },
+    "paginas": "55-62",
+    "data": {
+      "ano": 2004
+    },
+    "url": "https://www.scielo.br/j/rsocp/a/mmW4c4THp9XDfXjt9mxGSqM/"
+  },
+  {
+    "id": "xepa2025",
+    "tipo": "rede-social",
+    "autores": [
+      {
+        "sobrenome": "Xepa",
+        "prenomes": "Alexandre"
+      }
+    ],
+    "titulo": "Começamos a semana com ação! Nossa equipe da Abordagem Social está na orla nesta manhã para oferecer suporte a quem",
+    "perfil": "@xepaitapema",
+    "tipoDaPostagem": "Vídeo",
+    "publicacao": {
+      "titulo": "Instagram"
+    },
+    "data": {
+      "ano": 2025,
+      "mes": 2,
+      "dia": 10
+    },
+    "url": "https://www.instagram.com/reel/DF5ERRnRhZh/"
+  }
+]

@@ -182,7 +182,7 @@ describe("obra sem autor, lei e instituição", () => {
     expect(montar("apa.txt", refs, citacoes).textos).toEqual([
       "(*Guia de normalização*, 2025)",
       "(“Abrigo amplia vagas”, 2024)",
-      "(Lei nº 10.216, de 6 de abril de 2001, 2001)",
+      "(Lei nº 10.216, 2001)",
       "(Associação Brasileira de Ensino de Psicologia, 2023)",
     ]);
   });

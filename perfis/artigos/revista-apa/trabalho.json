@@ -1,0 +1,12 @@
+{
+  "nome": "Aqui na rua, não (Revista Psicologia Política, APA)",
+  "arquivo": "aqui-na-rua-nao-apa.apud",
+  "norma": "apa.txt",
+  "ajustes": {
+    "citação, primeira vez com três a cinco autores": "todos os autores",
+    "referências, prenomes": "por extenso",
+    "referências, cidade da editora": "mostrar"
+  },
+  "original": "original-apa.txt",
+  "gabarito": "gabarito-apa.txt"
+}
