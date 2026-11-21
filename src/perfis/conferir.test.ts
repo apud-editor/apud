@@ -43,7 +43,7 @@ function personalizado(texto: string) {
 }
 
 const FICHA = `perfil: ABNT – Universidade X
-herda de: ABNT 2025, revisão 4
+herda de: ABNT 2025, revisão 5
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: teste
@@ -59,7 +59,7 @@ describe("perfis originais", () => {
       ESTILOS,
     );
     for (const r of resultados) expect(r.mensagens.map(formatarMensagem)).toEqual([]);
-    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 4 });
+    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 5 });
     expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 5 });
   });
 
@@ -239,7 +239,7 @@ describe("perfis personalizados (herança)", () => {
       perfil: "ABNT – Universidade X",
       norma: "ABNT",
       versao: "2025",
-      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 4 },
+      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 5 },
     });
   });
 
@@ -251,11 +251,11 @@ describe("perfis personalizados (herança)", () => {
   });
 
   it("avisa quando o original mudou de revisão", () => {
-    const r = personalizado(FICHA.replace("revisão 4", "revisão 3"));
+    const r = personalizado(FICHA.replace("revisão 5", "revisão 4"));
     expect(r.perfil).toBeDefined();
     expect(r.mensagens.map(formatarMensagem)).toEqual([
-      "aviso, linha 2: este perfil foi feito sobre a revisão 3 de ABNT 2025, e o original está na revisão 4 " +
-        "(“Regras para o Apud montar as citações: intervalo de páginas, obra sem data e título da lista de referências.”). " +
+      "aviso, linha 2: este perfil foi feito sobre a revisão 4 de ABNT 2025, e o original está na revisão 5 " +
+        "(“Instituição com subordinação (BRASIL. Ministério da Saúde; na chamada, Brasil), achada na conferência com o artigo da UNIVALI.”). " +
         "Confira se as suas mudanças continuam valendo e depois atualize o número em “herda de”.",
     ]);
   });

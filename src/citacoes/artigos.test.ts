@@ -1,0 +1,200 @@
+// Os artigos de teste (perfis/artigos) e os casos que a conferência com o
+// artigo da UNIVALI revelou (fase 2, parte 5b). Passam pelo Typst de verdade,
+// como o documento de prova.
+
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import {
+  carregarNorma,
+  compararComGabarito,
+  documentoDoTexto,
+  lerGabarito,
+  lerTextoComCitacoes,
+  PASTA_PERFIS,
+  rodarTrabalho,
+} from "../../scripts/prova-lib";
+import { lerArquivo } from "../arquivos/formato";
+import { niveisDaInstituicao, type Referencia } from "../documento/modelo";
+
+const PASTA = join(PASTA_PERFIS, "artigos");
+
+describe("artigos de teste", () => {
+  for (const pasta of readdirSync(PASTA, { withFileTypes: true }).filter((d) => d.isDirectory() && d.name !== "saida")) {
+    const dir = join(PASTA, pasta.name);
+    const trabalho = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8"));
+    const referencias = JSON.parse(readFileSync(join(dir, "referencias.json"), "utf8")) as Referencia[];
+    const lido = documentoDoTexto(readFileSync(join(dir, "artigo.md"), "utf8"), referencias);
+
+    it(`${pasta.name}: as chamadas e a lista saem iguais ao gabarito conferido`, () => {
+      const resultado = rodarTrabalho(lido, carregarNorma(trabalho.norma, trabalho.ajustes ?? {}));
+      expect(compararComGabarito(resultado, lerGabarito(trabalho.gabarito, dir))).toEqual([]);
+    });
+
+    it(`${pasta.name}: o .apud da pasta abre no Apud e tem o mesmo texto e as mesmas fontes`, () => {
+      const leitura = lerArquivo(readFileSync(join(dir, trabalho.arquivo), "utf8"));
+      expect(leitura.ok).toBe(true);
+      if (leitura.ok) expect(leitura.trabalho.documento).toEqual(lido.documento);
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Casos pequenos, um por correção
+
+const pessoa = (sobrenome: string, prenomes: string) => ({ sobrenome, prenomes });
+const instituicao = (nome: string) => ({ instituicao: nome });
+
+/** Monta um texto curto com essas fontes e devolve as chamadas e a lista. */
+function montar(texto: string, referencias: Referencia[], norma = "abnt.txt") {
+  const lido = documentoDoTexto(texto, referencias);
+  return rodarTrabalho(lido, carregarNorma(norma));
+}
+const chamadas = (r: ReturnType<typeof montar>) => r.chamadas.map((c) => c.saida);
+
+describe("subtítulos na ABNT", () => {
+  const capitulo: Referencia = {
+    id: "cap",
+    tipo: "capitulo",
+    autores: [pessoa("Gardella", "Édouard")],
+    titulo: "A urgência como cronopolítica",
+    subtitulo: "o abrigo para pessoas em situação de rua",
+    publicacao: { titulo: "Novas faces da vida nas ruas", subtitulo: "um balanço", organizadores: [pessoa("Rui", "Taniele")] },
+    cidade: "São Carlos",
+    editora: "EdUFSCAR",
+    data: { ano: 2016 },
+    paginas: "141-174",
+  };
+  const artigo: Referencia = {
+    id: "art",
+    tipo: "artigo",
+    autores: [pessoa("Harrits", "Gitte Sommer")],
+    titulo: "Categories and categorization",
+    subtitulo: "towards a comprehensive sociological framework",
+    publicacao: { titulo: "Distinktion", subtitulo: "Journal of Social Theory", volume: "12", numero: "2" },
+    paginas: "229-247",
+    data: { ano: 2011 },
+  };
+
+  it("o subtítulo do capítulo fica com o capítulo, e o do livro com o livro, sem destaque", () => {
+    const { referencias } = montar("[@cap]", [capitulo]);
+    expect(referencias).toEqual([
+      "GARDELLA, Édouard. A urgência como cronopolítica: o abrigo para pessoas em situação de rua. *In*: RUI, Taniele (org.). **Novas faces da vida nas ruas**: um balanço. São Carlos: EdUFSCAR, 2016. p. 141-174.",
+    ]);
+  });
+
+  it("o subtítulo do artigo fica com o artigo, e o da revista sai sem destaque; revista sem cidade leva [S. l.]", () => {
+    const { referencias } = montar("[@art]", [artigo]);
+    expect(referencias).toEqual([
+      "HARRITS, Gitte Sommer. Categories and categorization: towards a comprehensive sociological framework. **Distinktion**: Journal of Social Theory, *[S. l.]*, v. 12, n. 2, p. 229-247, 2011.",
+    ]);
+  });
+
+  it("na APA nada muda: o subtítulo continua junto do título", () => {
+    const { referencias } = montar("[@cap] [@art]", [capitulo, artigo], "apa.txt");
+    expect(referencias.join("\n")).toContain("A urgência como cronopolítica: O abrigo para pessoas em situação de rua");
+    expect(referencias.join("\n")).toContain("Categories and categorization: Towards a comprehensive sociological framework");
+    expect(referencias.join("\n")).not.toContain("[S. l.]");
+  });
+});
+
+describe("instituição com subordinação (ABNT, revisão 5)", () => {
+  const livro = (id: string, autor: string, titulo: string, ano = 2014): Referencia => ({
+    id,
+    tipo: "livro",
+    autores: [instituicao(autor)],
+    titulo,
+    cidade: "Brasília, DF",
+    editora: "MS",
+    data: { ano },
+  });
+
+  it("os níveis são separados pelo ponto", () => {
+    expect(niveisDaInstituicao("Brasil. Ministério da Saúde")).toEqual(["Brasil", "Ministério da Saúde"]);
+    expect(niveisDaInstituicao("Brasil. Ministério da Saúde. Secretaria de Atenção Primária")).toHaveLength(3);
+    expect(niveisDaInstituicao("Associação Brasileira de Saúde Mental")).toEqual(["Associação Brasileira de Saúde Mental"]);
+    // Ponto seguido de minúscula não separa (abreviação no meio do nome).
+    expect(niveisDaInstituicao("Instituto Prof. de estudos")).toEqual(["Instituto Prof. de estudos"]);
+  });
+
+  it("na lista, só a entidade principal vai em maiúsculas; na chamada, só ela aparece", () => {
+    const r = montar("[@ms] e @ms", [livro("ms", "Brasil. Ministério da Saúde", "Política Nacional")]);
+    expect(chamadas(r)).toEqual(["(Brasil, 2014)", "Brasil (2014)"]);
+    expect(r.referencias).toEqual(["BRASIL. Ministério da Saúde. **Política Nacional**. Brasília, DF: MS, 2014."]);
+  });
+
+  it("dois órgãos do mesmo governo no mesmo ano: as chamadas ficariam iguais, então entram as letras", () => {
+    const r = montar("[@ms] [@mec]", [livro("ms", "Brasil. Ministério da Saúde", "Saúde"), livro("mec", "Brasil. Ministério da Educação", "Educação")]);
+    expect(chamadas(r)).toEqual(["(Brasil, 2014b)", "(Brasil, 2014a)"]);
+  });
+
+  it("vários autores, um com subordinação: cada um como deve", () => {
+    const r = montar("[@mpf]", [
+      {
+        id: "mpf",
+        tipo: "relatorio",
+        autores: [instituicao("Ministério Público Federal. Procuradoria Federal dos Direitos do Cidadão"), instituicao("Ministério Público do Trabalho")],
+        titulo: "Relatório da inspeção",
+        cidade: "Brasília",
+        editora: "MPF; MPT",
+        data: { ano: 2025 },
+      },
+    ]);
+    expect(chamadas(r)).toEqual(["(Ministério Público Federal; Ministério Público do Trabalho, 2025)"]);
+    expect(r.referencias[0]).toMatch(/^MINISTÉRIO PÚBLICO FEDERAL\. Procuradoria Federal dos Direitos do Cidadão; MINISTÉRIO PÚBLICO DO TRABALHO\. /);
+  });
+
+  it("os nomes de pessoas continuam em maiúsculas, também os organizadores e com partícula", () => {
+    const r = montar("[@x]", [
+      {
+        id: "x",
+        tipo: "capitulo",
+        autores: [pessoa("Oliveira", "Luciano Márcio Freitas de")],
+        titulo: "Cap",
+        publicacao: { titulo: "Livro", organizadores: [pessoa("Ugá", "Vivian")] },
+        cidade: "Natal",
+        editora: "EDUFRN",
+        data: { ano: 2019 },
+      },
+    ]);
+    expect(r.referencias[0]).toBe("OLIVEIRA, Luciano Márcio Freitas de. Cap. *In*: UGÁ, Vivian (org.). **Livro**. Natal: EDUFRN, 2019.");
+  });
+
+  it("na APA a chamada mantém o nome inteiro (a APA não separa os níveis)", () => {
+    const r = montar("[@ms]", [livro("ms", "Brasil. Ministério da Saúde", "Política Nacional")], "apa.txt");
+    expect(chamadas(r)).toEqual(["(Brasil. Ministério da Saúde, 2014)"]);
+  });
+});
+
+describe("mesmo sobrenome no mesmo ano (ABNT)", () => {
+  const obra = (id: string, autores: { sobrenome: string; prenomes: string }[]): Referencia => ({
+    id,
+    tipo: "livro",
+    autores,
+    titulo: id,
+    cidade: "Rio de Janeiro",
+    editora: "Centro Edelstein",
+    data: { ano: 2013 },
+  });
+
+  it("chamadas que já são diferentes não ganham iniciais: Spink (2013) e Spink e Medrado (2013)", () => {
+    const r = montar("@p e @mj", [obra("p", [pessoa("Spink", "Peter")]), obra("mj", [pessoa("Spink", "Mary Jane"), pessoa("Medrado", "Benedito")])]);
+    expect(chamadas(r)).toEqual(["Spink (2013)", "Spink e Medrado (2013)"]);
+  });
+
+  it("chamadas que ficariam iguais ganham as iniciais: (Spink, P., 2013; Spink, M. J., 2013)", () => {
+    const r = montar("[@p; @mj]", [obra("p", [pessoa("Spink", "Peter")]), obra("mj", [pessoa("Spink", "Mary Jane")])]);
+    expect(chamadas(r)).toEqual(["(Spink, P., 2013; Spink, M. J., 2013)"]);
+  });
+});
+
+describe("forma curta: citação direta", () => {
+  it("+direta marca a citação direta, entre parênteses e na narrativa", () => {
+    const { trechos } = lerTextoComCitacoes("[@a, p. 3, +direta] e @b [+direta] e @c [p. 4, +direta]");
+    expect(trechos.flatMap((t) => ("citacao" in t ? [t.citacao] : []))).toEqual([
+      { tipo: "parenteses", direta: true, obras: [{ referencia: "a", localizador: { tipo: "pagina", valor: "3" } }] },
+      { tipo: "narrativa", direta: true, obra: { referencia: "b" } },
+      { tipo: "narrativa", direta: true, obra: { referencia: "c", localizador: { tipo: "pagina", valor: "4" } } },
+    ]);
+  });
+});

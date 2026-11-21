@@ -11,7 +11,8 @@
     "test": "tsc -p tsconfig.node.json && vitest run",
     "conferir-perfis": "tsx scripts/conferir-perfis.ts",
     "prova": "tsx scripts/prova.ts",
-    "exemplo-pdf": "tsx scripts/exemplo-pdf.ts"
+    "exemplo-pdf": "tsx scripts/exemplo-pdf.ts",
+    "artigos": "tsx scripts/artigos.ts"
   },
   "dependencies": {
     "@myriaddreamin/typst-ts-renderer": "^0.7.0",

@@ -13,7 +13,7 @@ Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplic
 | `src-tauri/tauri.conf.json` | Nome, versão, tamanho da janela e opções do instalador |
 | `src-tauri/icons/` | Ícones do programa |
 | `.github/workflows/` | Receitas do GitHub: montar o instalador de Windows e rodar os testes |
-| `perfis/` | Perfis de norma (ABNT e APA), estilos de citação e documento de prova. Guia em `perfis/LEIA-ME.md` |
+| `perfis/` | Perfis de norma (ABNT e APA), estilos de citação, documento de prova e artigos de teste (`perfis/artigos`). Guia em `perfis/LEIA-ME.md` |
 | `src/documento/` | O modelo do documento: como o Apud guarda um trabalho (blocos com significado, sem formatação) |
 | `src/conversor/` | O conversor: junta o texto com o perfil da norma e escreve o código Typst; e o motor Typst, que monta a prévia e o PDF |
 | `public/fontes/` | Fontes Liberation, de reserva, com as mesmas medidas da Times New Roman e da Arial (licença na mesma pasta) |
@@ -23,7 +23,7 @@ Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplic
 | `src/editor/` | O editor de texto (TipTap): blocos aceitos, barra "/", colagem sem formatação e a tela |
 | `src/perfis/` | Leitura e conferência dos perfis, com as mensagens de erro em português |
 | `src/citacoes/` | Primeiro pedaço do motor de citações: prepara as referências e monta as chamadas |
-| `scripts/` | Comandos de conferência: `npm run conferir-perfis` e `npm run prova` |
+| `scripts/` | Comandos de conferência: `npm run conferir-perfis`, `npm run prova` e `npm run artigos` |
 
 ## Como baixar a versão de teste
 
@@ -45,5 +45,6 @@ npm test           # testes (perfis, cobertura do checklist, documento de prova,
 cargo test --manifest-path src-tauri/arquivos/Cargo.toml  # testes da gravação dos arquivos
 npm run conferir-perfis  # confere os perfis da pasta perfis/
 npm run prova      # documento de prova no Typst, comparado com os gabaritos
+npm run artigos    # artigos de teste reais: .apud, PDF e comparação com o original
 npm run exemplo-pdf  # PDF de um texto de exemplo em ABNT (perfis/prova/saida/)
 ```

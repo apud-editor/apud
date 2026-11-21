@@ -24,8 +24,9 @@
 
     DADOS QUE O APUD PREPARA ANTES DE CHAMAR ESTE ESTILO
     O CSL não tem campos para algumas regras da ABNT. O Apud usa estes:
-    - genre: o subtítulo de livros, sites e do livro de um capítulo, para que
-      só o título principal receba o destaque;
+    - genre: o subtítulo de livros, sites, do livro de um capítulo e da
+      revista de um artigo, para que só o título principal receba o destaque
+      (o subtítulo de capítulos e artigos vem junto do título, que não tem destaque);
     - call-number: o ano já escrito, quando não é só o número: 2020a (mesmo
       autor e ano) ou [201-?] (data incerta);
     - title-short: o título curto da obra sem autor, como "Guia [...]";
@@ -119,8 +120,9 @@
     <names variable="author">
       <!-- apud: referências, prenomes -->
       <name name-as-sort-order="all" sort-separator=", " delimiter="; " delimiter-precedes-last="always" initialize="false" initialize-with=". ">
+        <!-- As maiúsculas vêm escritas pelo Apud: BRASIL. Ministério da Saúde. -->
         <!-- apud: referências, sobrenome -->
-        <name-part name="family" text-case="uppercase"/>
+        <name-part name="family"/>
       </name>
       <et-al font-style="italic"/>
       <label form="short" prefix=" (" suffix=")" text-case="lowercase"/>
@@ -138,8 +140,9 @@
     <names variable="editor">
       <!-- apud: referências, prenomes -->
       <name name-as-sort-order="all" sort-separator=", " delimiter="; " delimiter-precedes-last="always" initialize="false" initialize-with=". ">
+        <!-- As maiúsculas vêm escritas pelo Apud: BRASIL. Ministério da Saúde. -->
         <!-- apud: referências, sobrenome -->
-        <name-part name="family" text-case="uppercase"/>
+        <name-part name="family"/>
       </name>
       <et-al font-style="italic"/>
       <label form="short" prefix=" (" suffix=")" text-case="lowercase"/>
@@ -181,10 +184,14 @@
     </group>
   </macro>
 
-  <!-- Título da revista, num artigo, com o mesmo destaque. -->
+  <!-- Título da revista, num artigo, com o mesmo destaque; o subtítulo da
+       revista (em genre) vem sem destaque: **Distinktion**: Journal of Social Theory. -->
   <macro name="titulo-da-revista">
-    <!-- apud: referências, destaque do título -->
-    <text variable="container-title" font-weight="bold"/>
+    <group delimiter=": ">
+      <!-- apud: referências, destaque do título -->
+      <text variable="container-title" font-weight="bold"/>
+      <text variable="genre"/>
+    </group>
   </macro>
 
   <!-- ===== Datas ===== -->
@@ -297,7 +304,7 @@
     </group>
   </macro>
 
-  <!-- Só o local: Maceió, ou [S. l.] quando falta (redes sociais). -->
+  <!-- Só o local: Maceió, ou [S. l.] quando falta (redes sociais, revistas e jornais). -->
   <macro name="local">
     <choose>
       <if variable="publisher-place">
@@ -464,7 +471,8 @@
             <text variable="title"/>
             <group delimiter=", ">
               <text macro="titulo-da-revista"/>
-              <text variable="publisher-place"/>
+              <!-- Cidade da revista ou do jornal; [S. l.] quando falta (NBR 6023:2025, elemento essencial). -->
+              <text macro="local"/>
               <text macro="volume-numero-paginas"/>
               <text macro="data"/>
             </group>
@@ -479,7 +487,8 @@
             <text variable="title"/>
             <group delimiter=", ">
               <text macro="titulo-da-revista"/>
-              <text variable="publisher-place"/>
+              <!-- Cidade da revista ou do jornal; [S. l.] quando falta (NBR 6023:2025, elemento essencial). -->
+              <text macro="local"/>
               <text macro="volume-numero-paginas"/>
               <text macro="mes-e-ano"/>
             </group>

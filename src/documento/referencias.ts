@@ -46,6 +46,20 @@ export type Autor = Pessoa | Instituicao;
 
 export const ehInstituicao = (a: Autor): a is Instituicao => "instituicao" in a;
 
+/**
+ * Os níveis de uma instituição com subordinação, escrita com ponto entre eles,
+ * a entidade principal (ou a jurisdição) primeiro: "Brasil. Ministério da
+ * Saúde" vira ["Brasil", "Ministério da Saúde"]. Sem subordinação, um nível só.
+ * Na ABNT, a chamada usa só o primeiro: (Brasil, 2014).
+ */
+export function niveisDaInstituicao(nome: string): string[] {
+  const niveis = nome
+    .split(/\.\s+(?=\p{Lu})/u)
+    .map((n) => n.trim())
+    .filter(Boolean);
+  return niveis.length ? niveis : [nome.trim()];
+}
+
 /** Uma data. Só o ano é obrigatório. */
 export interface Data {
   ano: number;

@@ -8,6 +8,7 @@
 // Este é o primeiro pedaço do motor de citações. A etapa do motor vai
 // completá-lo (cadastro de referências, DOI, ISBN etc.).
 
+import { niveisDaInstituicao } from "../documento/referencias";
 import type { PerfilResolvido } from "../perfis";
 import { semAcentos } from "../perfis/texto";
 
@@ -79,6 +80,28 @@ export function designacaoDosAnais(titulo: string): { designacao: string; cortou
   return { designacao: partes[0], cortou: partes.length > 1 };
 }
 
+/** Tipos cujo título sai sem destaque na ABNT (o destaque vai na obra maior). */
+const TIPOS_COM_TITULO_SEM_DESTAQUE = new Set(["chapter", "article", "legislation"]);
+
+const maiusculas = (s: string) => s.toLocaleUpperCase("pt-BR");
+
+/**
+ * O sobrenome em maiúsculas: "Silva, João" vira "SILVA, João". Instituição:
+ * o nome inteiro, ou só a entidade principal (BRASIL. Ministério da Saúde).
+ */
+function emMaiusculas(nome: unknown, soAPrincipal: boolean): unknown {
+  if (typeof nome === "string") {
+    const virgula = nome.indexOf(",");
+    return virgula < 0 ? maiusculas(nome) : maiusculas(nome.slice(0, virgula)) + nome.slice(virgula);
+  }
+  const n = nome as { name: string; "given-name"?: string };
+  if (n["given-name"] !== undefined) return { ...n, name: maiusculas(n.name) };
+  // Instituição ({ name }), como em hayagriva.ts.
+  if (!soAPrincipal) return { ...n, name: maiusculas(n.name) };
+  const [principal, ...subordinadas] = niveisDaInstituicao(n.name);
+  return { ...n, name: [maiusculas(principal), ...subordinadas].join(". ") };
+}
+
 function temAutor(ref: Referencia): boolean {
   return ref.author !== undefined || ref.editor !== undefined;
 }
@@ -105,11 +128,15 @@ function prepararUma(original: Referencia, perfil: PerfilResolvido): Referencia 
     };
   }
 
-  // Subtítulo: na ABNT vai para "genre" (sem destaque); nas outras normas,
-  // junta ao título depois de dois-pontos.
+  // Subtítulo: na ABNT, o de um título com destaque vai para "genre", que o
+  // estilo escreve sem destaque (**Psicologia clínica**: fundamentos). O de
+  // capítulos, artigos, trabalhos em evento, notícias e leis, cujo título já
+  // sai sem destaque, junta ao título depois de dois-pontos: assim ele não se
+  // confunde com o subtítulo do livro ou da revista. Nas outras normas, sempre junta.
   for (const alvo of [ref, pai]) {
     if (!alvo || alvo.subtitle === undefined) continue;
-    if (subtituloSemDestaque) {
+    const tituloSemDestaque = alvo === ref && TIPOS_COM_TITULO_SEM_DESTAQUE.has(String(ref.type));
+    if (subtituloSemDestaque && !tituloSemDestaque) {
       alvo.genre = alvo.subtitle;
     } else {
       const sub = tituloComMaiusculaSoNoInicio ? primeiraMaiuscula(String(alvo.subtitle)) : alvo.subtitle;
@@ -141,12 +168,21 @@ function prepararUma(original: Referencia, perfil: PerfilResolvido): Referencia 
     delete pai.location;
   }
 
-  // Partícula no fim dos prenomes (de, da, dos...).
+  // Partícula no fim dos prenomes (de, da, dos...), e o sobrenome em maiúsculas
+  // (ABNT). O Apud escreve as maiúsculas, e não o estilo, por causa da
+  // instituição com subordinação: só a entidade principal vai em maiúsculas
+  // (BRASIL. Ministério da Saúde), e o estilo só sabe pôr o nome inteiro.
+  const sobrenomeEmMaiusculas = perfil.regras.get("referências, sobrenome")?.texto === "maiúsculas";
+  const soAPrincipal = temRegra(perfil, "referências, entidade subordinada");
   for (const alvo of [ref, pai]) {
     for (const papel of ["author", "editor"]) {
       if (!alvo || alvo[papel] === undefined) continue;
       const nomes = alvo[papel];
-      alvo[papel] = Array.isArray(nomes) ? nomes.map(separarParticula) : separarParticula(nomes);
+      const arrumar = (n: unknown) => {
+        const separado = separarParticula(n);
+        return sobrenomeEmMaiusculas ? emMaiusculas(separado, soAPrincipal) : separado;
+      };
+      alvo[papel] = Array.isArray(nomes) ? nomes.map(arrumar) : arrumar(nomes);
     }
   }
 
@@ -234,9 +270,16 @@ export function anoDaReferencia(ref: Referencia): string {
 }
 
 /** Identifica as pessoas autoras de uma obra, para saber se duas obras são do mesmo autor. */
-export function chaveDosAutores(ref: Referencia): string {
+export function chaveDosAutores(ref: Referencia, soAPrincipal = false): string {
   const autores = ([] as unknown[]).concat(ref.author ?? ref.editor ?? []);
-  return JSON.stringify(autores.map((a) => nomeComoTexto(a).toLowerCase()));
+  return JSON.stringify(
+    autores.map((a) => {
+      // Instituição com subordinação, na ABNT: a chamada só mostra a entidade principal, então é ela que conta.
+      const instituicao = typeof a !== "string" && (a as { "given-name"?: string })["given-name"] === undefined;
+      const nome = instituicao && soAPrincipal ? niveisDaInstituicao((a as { name: string }).name)[0] : nomeComoTexto(a);
+      return nome.toLowerCase();
+    }),
+  );
 }
 
 function tituloParaOrdenar(ref: Referencia): string {
@@ -249,12 +292,12 @@ function tituloParaOrdenar(ref: Referencia): string {
  * títulos. O Apud calcula as letras e passa o ano já escrito para o estilo
  * CSL, no campo call-number, para a chamada e a lista usarem as mesmas letras.
  */
-function marcarLetras(referencias: Record<string, Referencia>) {
+function marcarLetras(referencias: Record<string, Referencia>, soAPrincipal: boolean) {
   const grupos = new Map<string, Referencia[]>();
   for (const ref of Object.values(referencias)) {
     const ano = anoDaReferencia(ref);
     if (!ano) continue;
-    const chave = `${chaveDosAutores(ref)}|${ano}`;
+    const chave = `${chaveDosAutores(ref, soAPrincipal)}|${ano}`;
     grupos.set(chave, [...(grupos.get(chave) ?? []), ref]);
   }
   for (const grupo of grupos.values()) {
@@ -295,7 +338,7 @@ export function prepararReferencias(
   const preparadas = Object.fromEntries(
     Object.entries(referencias).map(([chave, ref]) => [chave, prepararUma(ref, perfil)]),
   );
-  if (temRegra(perfil, "citação, mesmo autor e ano")) marcarLetras(preparadas);
+  if (temRegra(perfil, "citação, mesmo autor e ano")) marcarLetras(preparadas, temRegra(perfil, "citação, entidade subordinada"));
   for (const ref of Object.values(preparadas)) ref.note = chaveDeOrdem(ref, perfil);
   return preparadas;
 }

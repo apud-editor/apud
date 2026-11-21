@@ -28,6 +28,7 @@ import { NOME_DO_TIPO } from "../perfis/tipos-de-referencia";
 import {
   ehCitacao,
   ehInstituicao,
+  niveisDaInstituicao,
   obrasDaCitacao,
   type Bloco,
   type Citacao,
@@ -149,7 +150,13 @@ export function criarMotor(doc: Documento, perfil: PerfilResolvido): Motor {
     Object.fromEntries(citadas.map((id) => [id, paraHayagriva(porId.get(id)!)])),
     perfil,
   );
-  const obras = new Map<string, Obra>(citadas.map((id) => [id, { modelo: porId.get(id)!, typst: referenciasDoTypst[id] }]));
+  // ABNT: a instituição com subordinação entra na chamada só pela entidade principal (Brasil, 2014).
+  const principal = regras.tem("citação, entidade subordinada");
+  const naChamada = (r: Referencia): Referencia =>
+    principal && r.autores.some(ehInstituicao)
+      ? { ...r, autores: r.autores.map((a) => (ehInstituicao(a) ? { instituicao: niveisDaInstituicao(a.instituicao)[0] } : a)) }
+      : r;
+  const obras = new Map<string, Obra>(citadas.map((id) => [id, { modelo: naChamada(porId.get(id)!), typst: referenciasDoTypst[id] }]));
   const jaCitadas = new Set<string>();
 
   const ctx: Contexto = { regras, obras, jaCitadas };
@@ -229,8 +236,9 @@ function chaveDosAutores(ref: Referencia): string {
 
 /**
  * Mesmo sobrenome, pessoas diferentes: entram as iniciais.
- * ABNT, só no mesmo ano: (Silva, J., 2021; Silva, M., 2021).
- * APA, em qualquer ano: (J. P. Silva, 2019), (J. Silva, 2021).
+ * ABNT, só no mesmo ano e quando as chamadas ficariam iguais: (Silva, J., 2021;
+ * Silva, M., 2021). "Spink (2013)" e "Spink e Medrado (2013)" já são diferentes.
+ * APA, em qualquer ano, olhando só o primeiro autor: (J. P. Silva, 2019), (J. Silva, 2021).
  */
 function desempateDoPrimeiroAutor(obra: Obra, ctx: Contexto): "depois" | "antes" | undefined {
   const { regras } = ctx;
@@ -239,6 +247,12 @@ function desempateDoPrimeiroAutor(obra: Obra, ctx: Contexto): "depois" | "antes"
   if (!abnt && !apa) return undefined;
   const [meu] = nomesDe(obra.modelo);
   if (!meu || meu.instituicao || !meu.prenomes) return undefined;
+  // Os sobrenomes como a chamada os escreve (até o et al.).
+  const limite = limiteDoEtAl(regras);
+  const naChamada = (o: Obra) => {
+    const s = nomesDe(o.modelo).map((n) => n.sobrenome.toLowerCase());
+    return JSON.stringify(s.length >= limite ? [s[0]] : s);
+  };
   const conflito = [...ctx.obras.values()].some((outra) => {
     if (outra === obra) return false;
     const [dele] = nomesDe(outra.modelo);
@@ -247,7 +261,7 @@ function desempateDoPrimeiroAutor(obra: Obra, ctx: Contexto): "depois" | "antes"
       !dele.instituicao &&
       dele.sobrenome.toLowerCase() === meu.sobrenome.toLowerCase() &&
       dele.prenomes.toLowerCase() !== meu.prenomes.toLowerCase() &&
-      (apa || anoSemLetra(outra) === anoSemLetra(obra))
+      (apa || (anoSemLetra(outra) === anoSemLetra(obra) && naChamada(outra) === naChamada(obra)))
     );
   });
   if (!conflito) return undefined;

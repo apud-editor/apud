@@ -41,6 +41,10 @@ jobs:
       - name: PDF de exemplo
         run: npm run exemplo-pdf
 
+      # 6. Artigos de teste: o .apud e o PDF de cada um, comparados com o gabarito.
+      - name: Artigos de teste
+        run: npm run artigos
+
       # Os PDFs ficam disponíveis para baixar na página desta execução, em "Artifacts".
       - name: Guardar os PDFs do documento de prova
         if: always()
@@ -50,4 +54,14 @@ jobs:
           path: |
             perfis/prova/saida/*.pdf
             perfis/prova/saida/*.apud
+          if-no-files-found: ignore
+
+      - name: Guardar os artigos de teste
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: artigos-de-teste
+          path: |
+            perfis/artigos/saida/*.pdf
+            perfis/artigos/*/*.apud
           if-no-files-found: ignore

@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 4
+revisão: 5
 data da revisão: 20/11/2026
-nota da revisão: Regras para o Apud montar as citações: intervalo de páginas, obra sem data e título da lista de referências.
+nota da revisão: Instituição com subordinação (BRASIL. Ministério da Saúde; na chamada, Brasil), achada na conferência com o artigo da UNIVALI.
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -221,6 +221,9 @@ citação narrativa, antes do último autor: e                    | NBR 10520:20
 autores, quatro ou mais: todos                                 | NBR 10520:2023 e NBR 6023:2025 (UFC; UFRB) | escolha: todos, primeiro com et al.
 # Exemplo: (Silva, J., 2019; Silva, M., 2019)
 citação, mesmo sobrenome e ano: acrescentar iniciais           | NBR 10520:2023 (UFC)
+# Instituição com subordinação, escrita com ponto entre os níveis (revisão 5).
+# Exemplo: BRASIL. Ministério da Saúde, na lista, vira (Brasil, 2014) na chamada.
+citação, entidade subordinada: só a entidade principal         | NBR 10520:2023: a chamada usa o primeiro elemento da referência (UFPE 2026; Unicamp)
 # Exemplo: (Souza, 2020a) e (Souza, 2020b). Citadas juntas: (Souza, 2020a, 2020b).
 citação, mesmo autor e ano: letras depois do ano               | NBR 10520:2023 (UFC)
 # A NBR 6023 pede a data provável entre colchetes ([2019?]) quando não há data.
@@ -251,6 +254,8 @@ referências, entre uma e outra: 1 linha em branco        | NBR 6023:2025 (UFRB)
 referências, ordem: alfabética pelo sobrenome do primeiro autor  | NBR 6023:2025 (UFV 2026)
 # Exemplo: SILVA, João
 referências, sobrenome: maiúsculas                       | NBR 6023:2025 (UFRB)
+# Exemplo: BRASIL. Ministério do Desenvolvimento Social (revisão 5).
+referências, entidade subordinada: só a principal em maiúsculas  | NBR 6023:2025 (UFPE 2026; Unicamp)
 referências, entre sobrenome e prenomes: vírgula         | NBR 6023:2025 (UFRB)
 # Por extenso: SILVA, João. Abreviados: SILVA, J. Igual na lista toda.
 referências, prenomes: por extenso                       | NBR 6023:2025 (UFU) | escolha: por extenso, abreviados

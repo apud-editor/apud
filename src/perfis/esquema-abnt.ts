@@ -61,7 +61,6 @@ const opcional = () => opcao("opcional", "obrigatória");
 
 // As atribuições abaixo dizem ao Apud como cada escolha muda o estilo CSL.
 const SEM_CAIXA_ALTA = { "text-case": null };
-const CAIXA_ALTA = { "text-case": "uppercase" };
 
 export const ESQUEMA_ABNT: EsquemaNorma = {
   norma: "ABNT",
@@ -304,6 +303,8 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
         },
       ],
       ["citação, mesmo sobrenome e ano", opcao("acrescentar iniciais"), "Mesmo sobrenome e ano"],
+      // Fora do checklist: achado na conferência com o artigo da UNIVALI (revisão 5).
+      ["citação, entidade subordinada", opcao("só a entidade principal"), []],
       ["citação, mesmo autor e ano", opcao("letras depois do ano"), "Mesmo autor e ano"],
       ["citação, sem data, marcador", texto(), []],
       [
@@ -332,8 +333,11 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
         "referências, sobrenome",
         opcao("maiúsculas", "maiúsculas e minúsculas"),
         "Autor",
-        { tipo: "atributos", porOpcao: { maiúsculas: CAIXA_ALTA, "maiúsculas e minúsculas": SEM_CAIXA_ALTA } },
+        // As maiúsculas são escritas pelo Apud (src/citacoes/preparar.ts), por causa
+        // da entidade subordinada: o estilo deixaria o nome inteiro em maiúsculas.
+        { tipo: "atributos", porOpcao: { maiúsculas: SEM_CAIXA_ALTA, "maiúsculas e minúsculas": SEM_CAIXA_ALTA } },
       ],
+      ["referências, entidade subordinada", opcao("só a principal em maiúsculas"), []],
       ["referências, entre sobrenome e prenomes", opcao("vírgula"), "Autor"],
       [
         "referências, prenomes",

@@ -175,6 +175,9 @@ function Autores(p: {
       {p.comDica && (
         <p className="dica-form">Partículas como de, da e dos vão no fim dos prenomes: Lucas Freitas de. A ordem aqui é a ordem na referência.</p>
       )}
+      {linhas.some((l) => l.tipo === "instituicao") && (
+        <p className="dica-form">Órgão de governo ou parte de uma instituição: escreva os níveis com ponto entre eles, como Brasil. Ministério da Saúde.</p>
+      )}
       {linhas.length === 0 && <p className="dica-form">Nenhum por enquanto.</p>}
       {linhas.map((a, i) => (
         <div key={i} className="linha-autor">
