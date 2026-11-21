@@ -2330,6 +2330,8 @@
           </group>
           <text macro="source-DOI-URL"/>
           <text macro="publication-history"/>
+          <!-- Apud: notas da referência (campo dimensions), como a pessoa escreveu. -->
+          <text variable="dimensions"/>
         </else>
       </choose>
     </group>

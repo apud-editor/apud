@@ -43,7 +43,7 @@ const CAMPOS_DO_TIPO: Record<TipoDeReferencia, string[]> = {
   noticia: ["publicacao"],
   "rede-social": ["perfil", "tipoDaPostagem", "publicacao", "cidade"],
 };
-const DE_TODOS = ["id", "tipo", "autores", "titulo", "data", "url", "acesso"];
+const DE_TODOS = ["id", "tipo", "autores", "titulo", "data", "url", "acesso", "notas"];
 
 /** Um formulário com tudo preenchido, para o tipo. */
 function completo(tipo: TipoDeReferencia): Formulario {
@@ -505,5 +505,21 @@ describe("escolhas do autor", () => {
     expect(comEtAl).not.toBe(padrao);
     expect(comEtAl.toLowerCase()).toContain("et al.");
     expect(padrao.toLowerCase()).not.toContain("et al.");
+  });
+});
+
+describe("livro organizado no formulário", () => {
+  it("a caixa marcada vira autoresOrganizadores, e volta marcada ao editar", () => {
+    const f = completo("livro");
+    f.autoresOrganizadores = true;
+    const r = aceitar(f);
+    expect(r.autoresOrganizadores).toBe(true);
+    expect(referenciaParaFormulario(r).autoresOrganizadores).toBe(true);
+  });
+
+  it("em outro tipo, a caixa que sobrou não entra", () => {
+    const f = completo("capitulo");
+    f.autoresOrganizadores = true;
+    expect(aceitar(f).autoresOrganizadores).toBeUndefined();
   });
 });

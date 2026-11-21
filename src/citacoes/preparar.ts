@@ -188,6 +188,9 @@ function prepararUma(original: Referencia, perfil: PerfilResolvido): Referencia 
 
   const abnt = perfil.identificacao.norma === "ABNT";
 
+  // Notas (campo runtime): na ABNT o estilo põe o ponto entre os elementos, então sai o ponto final escrito.
+  if (abnt && typeof ref.runtime === "string") ref.runtime = ref.runtime.replace(/\.+\s*$/, "");
+
   // Tese, dissertação, TCC: tipo do trabalho e grau.
   // ABNT: "Tese (Doutorado em Psicologia)", no campo archive (genre já guarda o
   // subtítulo). APA: "Tese de doutorado", no campo genre.

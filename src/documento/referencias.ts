@@ -111,8 +111,10 @@ export interface Evento {
  * - rede-social: autores, titulo (o texto da postagem), perfil (@perfil),
  *   tipoDaPostagem (Vídeo), publicacao (a rede: Instagram), cidade, data
  *
- * Todos aceitam url e acesso (data em que a página foi vista), e doi.
+ * Todos aceitam url e acesso (data em que a página foi vista), doi e notas.
  * Sem autores, a obra entra pelo título, como a norma manda.
+ * Livro organizado: autoresOrganizadores diz que os nomes em autores são os
+ * organizadores, e a lista escreve (org.) ou (Org.) depois deles.
  */
 export interface Referencia {
   /** Código interno, que as citações usam. A pessoa nunca vê. */
@@ -154,6 +156,18 @@ export interface Referencia {
   url?: string;
   /** Quando a página foi acessada (Acesso em: 15 maio 2025). */
   acesso?: Data;
+  /**
+   * Livro organizado: os nomes em "autores" são os organizadores. A lista
+   * escreve SPINK, Mary Jane (org.) na ABNT e Spink, M. J. (Org.) na APA; a
+   * citação continua (Spink, 2011).
+   */
+  autoresOrganizadores?: boolean;
+  /**
+   * Elementos complementares, escritos como devem sair: "Tradução de Beatriz
+   * Alves Schumann. Originalmente publicado em 1845." A ABNT põe antes do
+   * endereço (Disponível em); a APA, no fim.
+   */
+  notas?: string;
 }
 
 /** Um código novo para uma referência, diferente dos que já existem. */

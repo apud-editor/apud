@@ -80,6 +80,17 @@ export default function FormularioDeReferencia({ base, existentes, aoSalvar, aoC
         id={id}
         comDica
       />
+      {descricao.rotuloDosAutoresOrganizadores && (
+        <label className="marcar-form" htmlFor={id("autoresOrganizadores")}>
+          <input
+            type="checkbox"
+            id={id("autoresOrganizadores")}
+            checked={f.autoresOrganizadores}
+            onChange={(ev) => setF({ ...f, autoresOrganizadores: ev.target.checked })}
+          />
+          {descricao.rotuloDosAutoresOrganizadores}
+        </label>
+      )}
 
       <div className="grade-form">
         {camposDoTipo(f.tipo).map((c) => (

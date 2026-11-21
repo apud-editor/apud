@@ -256,3 +256,50 @@ describe("APA: o que a conferência com o artigo da revista revelou (revisão 6)
     expect(r.referencias[0]).toContain("(pp. 100–126)");
   });
 });
+
+describe("livro organizado e notas (decisões do Francisco, 20/11/2026)", () => {
+  const organizado: Referencia = {
+    id: "org",
+    tipo: "livro",
+    autores: [pessoa("Spink", "Mary Jane"), pessoa("Figueiredo", "Pedro")],
+    autoresOrganizadores: true,
+    titulo: "Psicologia social e pessoalidade",
+    cidade: "Rio de Janeiro",
+    editora: "Centro Edelstein",
+    data: { ano: 2011 },
+  };
+  const traduzido: Referencia = {
+    id: "eng",
+    tipo: "livro",
+    autores: [pessoa("Engels", "Friedrich")],
+    titulo: "A situação da classe trabalhadora na Inglaterra",
+    cidade: "São Paulo",
+    editora: "Boitempo",
+    data: { ano: 2008 },
+    notas: "Tradução de Beatriz Alves Schumann. Originalmente publicado em 1845.",
+    url: "https://exemplo.org/engels",
+    acesso: { ano: 2026, mes: 5, dia: 20 },
+  };
+
+  it("ABNT: (org.) depois dos organizadores, e a chamada continua pelos nomes", () => {
+    const r = montar("[@org]", [organizado]);
+    expect(r.referencias[0]).toContain("SPINK, Mary Jane; FIGUEIREDO, Pedro (org.). **Psicologia social e pessoalidade**");
+    expect(chamadas(r)).toEqual(["(Spink; Figueiredo, 2011)"]);
+  });
+
+  it("APA: (Org.) depois dos organizadores", () => {
+    const r = montar("[@org]", [{ ...organizado, autores: [pessoa("Spink", "Mary Jane")] }], "apa.txt");
+    expect(r.referencias[0]).toMatch(/^Spink, M\. J\. \(Org\.\)\. \(2011\)\./);
+    expect(chamadas(r)).toEqual(["(Spink, 2011)"]);
+  });
+
+  it("ABNT: as notas saem como escritas, antes do endereço", () => {
+    const r = montar("[@eng]", [traduzido]);
+    expect(r.referencias[0]).toContain("São Paulo: Boitempo, 2008. Tradução de Beatriz Alves Schumann. Originalmente publicado em 1845. Disponível em:");
+  });
+
+  it("APA: as notas vão no fim", () => {
+    const r = montar("[@eng]", [{ ...traduzido, url: undefined, acesso: undefined }], "apa.txt");
+    expect(r.referencias[0]).toMatch(/Boitempo\. Tradução de Beatriz Alves Schumann\. Originalmente publicado em 1845\.$/);
+  });
+});

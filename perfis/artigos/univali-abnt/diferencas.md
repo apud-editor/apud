@@ -81,13 +81,13 @@ fora:
 
 **O que o Apud ainda não faz.** São pequenas mudanças de formato, para decidir
 depois:
-1. **Livro organizado (org.).** O livro de SPINK, FIGUEIREDO e BRASILINO (2011) é organizado, mas sai sem "(org.)". No capítulo os organizadores já saem certos; no livro inteiro, ainda não. Seria um campo "organizadores" no livro (muda o formato do .apud, com conversão).
-2. **Elementos complementares.** O Apud ainda não tem onde guardar:
-   - a tradução e a edição (ENGELS: "Tradução de…", "Edição de…", "Originalmente publicado em 1845");
-   - a nota "[Entrevista concedida à Redação BC Notícias]" (TOMALIH);
-   - a série "Observatório Brasileiro…" (DIAS; MIGLIARI).
+1. **Livro organizado (org.): resolvido (decisão do Francisco, 20/11/2026).** O livro tem agora a caixa "São os organizadores do livro". Marcada, a lista escreve SPINK, Mary Jane; FIGUEIREDO, Pedro; BRASILINO, Jullyane (org.). A chamada continua pelos nomes: (Spink; Figueiredo; Brasilino, 2011). O original deixou o "(org.)" de fora: aqui o Apud está mais perto da norma que o original.
+2. **Elementos complementares: resolvido com o campo "Notas" (decisão do Francisco, 20/11/2026).** Todo tipo tem agora um campo livre "Notas", que sai como foi escrito, logo antes do "Disponível em". Foi usado para:
+   - a tradução e a edição de ENGELS;
+   - a série "Observatório Brasileiro…" de DIAS; MIGLIARI;
+   - a nota "[Entrevista concedida à Redação BC Notícias]" de TOMALIH (que não é citada, então não aparece).
 
-   Seria um campo de texto livre "notas", que sai antes do endereço.
+   **Diferença que fica:** as notas saem todas juntas, depois da editora e do ano. O original põe "Tradução de…" logo depois do título e "Observatório…" antes da cidade. A NBR 6023 aceita os elementos complementares nesse lugar quando não há campo próprio; se um dia o Apud ganhar campos de tradutor e de série, eles irão para o lugar certo.
 3. **Título terminado em "?" ou "!".** O motor de PDF põe um ponto depois: "…São Paulo?**." e "…a vida pode mais!.". A ABNT não pede esse ponto. É uma limitação do motor de PDF (Typst), sem correção fácil. Fica anotado.
 4. **Negrito no título da lei e da Constituição.** O original põe negrito em "Lei nº 10.216…" e em "Constituição da República…", mas não em "Decreto nº 7.053…" (lá, o negrito está na ementa). O Apud não põe negrito em nenhuma lei. Os guias consultados mostram as leis sem negrito, mas nenhum deixa claro o destaque da Constituição. Não mudei o perfil: só com a NBR 6023 em mãos dá para fechar essa regra. **A Constituição:** o Apud já sai como a norma pede no resto (BRASIL. [Constituição (1988)]. Constituição da República Federativa do Brasil…), escrevendo "[Constituição (1988)]." no começo do título.
 5. **Sigla na chamada.** O original cita (MPSC, 2025) e (MPF, 2025). A lista tem o nome por extenso, e a chamada deve repetir a entrada da lista. O Apud escreve o nome por extenso nos dois lugares. Se você preferir a sigla, cadastre a instituição como "MPSC". Uma opção "sigla na chamada, nome por extenso na lista" seria uma regra nova.

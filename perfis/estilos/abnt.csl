@@ -31,6 +31,8 @@
       autor e ano) ou [201-?] (data incerta);
     - title-short: o título curto da obra sem autor, como "Guia [...]";
     - number: o número eletrônico de artigos sem página (e2025001);
+    - dimensions: as notas da referência (elementos complementares), antes
+      do endereço;
     - note: a chave de ordem alfabética sem acentos, porque o
       Typst ordena "Ávila" depois de "Zé".
   -->
@@ -442,6 +444,8 @@
             <text macro="publicacao"/>
             <text macro="paginas"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </if>
@@ -461,6 +465,8 @@
             <text macro="publicacao"/>
             <text macro="paginas"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -477,6 +483,8 @@
               <text macro="data"/>
             </group>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -493,6 +501,8 @@
               <text macro="mes-e-ano"/>
             </group>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -509,6 +519,8 @@
               <text variable="container-title"/>
               <text variable="archive_location"/>
             </group>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -519,6 +531,8 @@
             <text macro="titulo-destacado"/>
             <text macro="publicacao-com-data"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -529,6 +543,8 @@
             <text variable="title"/>
             <text variable="abstract"/>
             <text macro="publicacao"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -540,6 +556,8 @@
             <text macro="ano"/>
             <text macro="nota-de-tese"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -552,6 +570,8 @@
             <text macro="publicacao"/>
             <text macro="serie"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else-if>
@@ -563,6 +583,8 @@
             <text macro="edicao"/>
             <text macro="publicacao"/>
             <text macro="doi"/>
+            <!-- Notas (tradução, publicação original…), como a pessoa escreveu. -->
+            <text variable="dimensions"/>
             <text macro="acesso"/>
           </group>
         </else>

@@ -1148,3 +1148,12 @@ button.linha:hover {
 .janela-acoes {
   align-items: center;
 }
+
+/* Caixa de marcar do formulário (livro organizado). */
+.marcar-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.9rem;
+}

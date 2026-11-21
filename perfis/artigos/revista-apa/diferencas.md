@@ -38,7 +38,7 @@ O resultado conferido está em `gabarito-apa.txt`, e os testes usam esse arquivo
    - O Apud escreve sempre o nome inteiro.
    - É o mesmo pedido da ABNT ("sigla na chamada"): uma regra nova, para as duas normas.
 4. **Prenomes no texto.** O original escreve "Mary Jane Spink (2013)", "Peter Spink (2013, p. 112)" e "Leonel Pavan (2025b)". O Apud escreve "M. J. P. Spink (2013)", "P. Spink (2013, p. 112)" e "L. Pavan (2025b)", porque há dois Spink e dois Pavan. Essa é a forma que a APA pede (iniciais, para diferenciar). Se quiser o nome inteiro, escreva o prenome no texto, antes da citação.
-5. **Livro organizado (Org.).** "Spink, Mary Jane Paris (Org.). (2013)" sai sem "(Org.)". É a mesma lacuna da ABNT.
+5. **Livro organizado (Org.): resolvido (decisão do Francisco, 20/11/2026).** Com a caixa "São os organizadores do livro" marcada, sai "Spink, Mary Jane Paris (Org.). (2013)", como no original. Na APA, as notas (campo "Notas") saem no fim da referência.
 6. **Detalhes que o Apud ainda não guarda:**
    - "em Psicologia" na tese: a APA mostra só "[Tese de doutorado, Universidade]";
    - o nome do repositório (Repositório Institucional da UFRN);

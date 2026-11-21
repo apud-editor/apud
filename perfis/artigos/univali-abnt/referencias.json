@@ -265,7 +265,8 @@
     "editora": "Marginália Editora",
     "data": {
       "ano": 2022
-    }
+    },
+    "notas": "Observatório Brasileiro de Políticas Públicas com a População em Situação de Rua"
   },
   {
     "id": "engels2008",
@@ -281,7 +282,8 @@
     "editora": "Boitempo",
     "data": {
       "ano": 2008
-    }
+    },
+    "notas": "Tradução de Beatriz Alves Schumann. Edição de José Paulo Netto. Originalmente publicado em 1845."
   },
   {
     "id": "fonseca2003",
@@ -850,7 +852,8 @@
     "editora": "Centro Edelstein de Pesquisas Sociais: ABRAPSO",
     "data": {
       "ano": 2011
-    }
+    },
+    "autoresOrganizadores": true
   },
   {
     "id": "spinkmedrado2013",
@@ -975,7 +978,8 @@
       "ano": 2026,
       "mes": 5,
       "dia": 20
-    }
+    },
+    "notas": "[Entrevista concedida à Redação BC Notícias]"
   },
   {
     "id": "uga2004",
