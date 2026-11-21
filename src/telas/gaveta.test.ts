@@ -57,6 +57,86 @@ describe("gaveta de referências", () => {
   });
 });
 
+describe("busca pelo DOI na gaveta", () => {
+  it("o campo do DOI fica no topo, antes das fontes e de 'Adicionar à mão', com o botão Buscar", () => {
+    const html = gaveta([]);
+    expect(html).toContain("Buscar pelo DOI");
+    expect(html).toContain("Cole o DOI aqui");
+    expect(html).toContain(">Buscar<");
+    expect(html).toContain("https://doi.org/");
+    expect(html.indexOf("Buscar pelo DOI")).toBeLessThan(html.indexOf("Fontes cadastradas"));
+    expect(html.indexOf("Buscar pelo DOI")).toBeLessThan(html.indexOf("Adicionar à mão"));
+    // Parada, a busca não mostra erro, "buscando" nem fonte repetida.
+    expect(html).not.toContain("Buscando no Crossref");
+    expect(html).not.toContain("role=\"alert\"");
+    expect(html).not.toContain("Cancelar");
+  });
+
+  it("o campo tem rótulo ligado e não corrige a digitação", () => {
+    const html = gaveta([]);
+    expect(html).toMatch(/<label[^>]*for="doi-da-fonte"[^>]*>Buscar pelo DOI<\/label>/);
+    expect(html).toMatch(/<input[^>]*id="doi-da-fonte"/);
+    // (O gerador de HTML do React escreve esses dois atributos com maiúscula no meio.)
+    expect(html).toContain('autoComplete="off"');
+    expect(html).toContain('spellCheck="false"');
+  });
+
+  it("aparece nas duas normas, e os resumos continuam: o DOI não atrapalha a lista", () => {
+    for (const norma of ["abnt.txt", "apa.txt"]) {
+      const html = gaveta([livro("a", "Silva", "Psicologia clínica")], norma);
+      expect(html).toContain("Buscar pelo DOI");
+      expect(html).toContain("Psicologia clínica");
+    }
+  });
+});
+
+describe("formulário que veio do DOI", () => {
+  const base: Referencia = {
+    id: "novo",
+    tipo: "artigo",
+    autores: [{ sobrenome: "Lima", prenomes: "Ana" }],
+    titulo: "Supervisão no estágio",
+    doi: "10.1234/rpa.2018.0012",
+    publicacao: { titulo: "Revista de Psicologia Aplicada" },
+  };
+  const abrir = (origemDoi?: { avisos: string[] }) =>
+    renderToStaticMarkup(createElement(FormularioDeReferencia, { base, origemDoi, existentes: [], aoSalvar: nada, aoCancelar: nada }));
+
+  it("diz que os dados vieram do Crossref, que a pessoa deve conferir e que nada foi salvo ainda", () => {
+    const html = abrir({ avisos: [] });
+    expect(html).toContain("Conferir a fonte do DOI");
+    expect(html).toContain("vieram do Crossref");
+    expect(html).toContain("só entra no trabalho quando você clicar em “Salvar fonte”");
+    expect(html).toContain("ficou em branco");
+    expect(html).toContain("Salvar fonte");
+    expect(html).toContain("Cancelar");
+  });
+
+  it("mostra cada aviso, e o formulário vem preenchido", () => {
+    const html = abrir({ avisos: ["O título veio todo em maiúsculas.", "Um autor veio só com um nome."] });
+    expect(html).toContain("O título veio todo em maiúsculas.");
+    expect(html).toContain("Um autor veio só com um nome.");
+    expect(html).toContain('value="Supervisão no estágio"');
+    expect(html).toContain('value="Lima"');
+    expect(html).toContain('value="Revista de Psicologia Aplicada"');
+  });
+
+  it("sem avisos, não desenha uma lista vazia", () => {
+    expect(abrir({ avisos: [] })).not.toContain("<ul");
+  });
+
+  it("mostra o DOI que fica guardado com a fonte", () => {
+    expect(abrir({ avisos: [] })).toContain("10.1234/rpa.2018.0012");
+  });
+
+  it("fonte editada à mão (sem DOI trazido) não mostra o aviso do Crossref", () => {
+    const html = abrir(undefined);
+    expect(html).toContain("Editar fonte");
+    expect(html).not.toContain("Crossref");
+    expect(html).not.toContain("Conferir a fonte do DOI");
+  });
+});
+
 describe("formulário na tela", () => {
   const html = (tipo: (typeof TIPOS_NO_FORMULARIO)[number]) => {
     const base: Referencia = { id: "x", tipo, autores: [], titulo: "T" };

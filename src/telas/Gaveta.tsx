@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Bloco, Referencia } from "../documento/modelo";
 import { avisoDeApagar, buscarReferencias, contarCitacoes, ordenarParaGaveta, resumoDaReferencia } from "../referencias/lista";
 import { comInicialMaiuscula, type EscolhaDoAutor } from "../referencias/escolhas";
+import { buscarPorDoi, type Consultador } from "../referencias/buscaDoi";
 import FormularioDeReferencia from "./FormularioDeReferencia";
 
 interface Props {
@@ -18,12 +19,25 @@ interface Props {
   aoApagar: (id: string) => void;
   aoEscolher: (e: EscolhaDoAutor, valor: string) => void;
   aoFechar: () => void;
+  /** Quem consulta o Crossref. Só os testes trocam; no programa vale o padrão (a internet). */
+  consultar?: Consultador;
 }
 
+/** O que a busca pelo DOI mostra abaixo do campo. */
+type EstadoDoDoi =
+  | { tipo: "parado" }
+  | { tipo: "buscando" }
+  | { tipo: "erro"; mensagem: string }
+  | { tipo: "repetida"; existente: Referencia };
+
 /** A gaveta lateral "Referências": as fontes do trabalho e as escolhas do autor. */
-export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, mudancas, aoSalvar, aoApagar, aoEscolher, aoFechar }: Props) {
+export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, mudancas, aoSalvar, aoApagar, aoEscolher, aoFechar, consultar }: Props) {
   const [busca, setBusca] = useState("");
-  const [formulario, setFormulario] = useState<{ base?: Referencia } | null>(null);
+  const [formulario, setFormulario] = useState<{ base?: Referencia; origemDoi?: { avisos: string[] } } | null>(null);
+  const [textoDoi, setTextoDoi] = useState("");
+  const [estadoDoi, setEstadoDoi] = useState<EstadoDoDoi>({ tipo: "parado" });
+  // A busca em andamento. Fechar a gaveta (ou cancelar) a interrompe.
+  const buscaEmCurso = useRef<AbortController | null>(null);
   const [apagando, setApagando] = useState<string | null>(null);
   const [citacoes, setCitacoes] = useState(() => contarCitacoes(lerBlocos()));
 
@@ -41,6 +55,44 @@ export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, 
     };
   }, [lerBlocos, mudancas]);
 
+  useEffect(() => () => buscaEmCurso.current?.abort(), []);
+
+  const buscarDoi = async () => {
+    buscaEmCurso.current?.abort();
+    const controle = new AbortController();
+    buscaEmCurso.current = controle;
+    setEstadoDoi({ tipo: "buscando" });
+    const desfecho = await buscarPorDoi(textoDoi, referencias, controle.signal, consultar);
+    // Cancelada, ou já começou outra busca: esta resposta não vale mais.
+    if (buscaEmCurso.current !== controle) return;
+    buscaEmCurso.current = null;
+    switch (desfecho.tipo) {
+      case "achou":
+        // Abre o formulário já preenchido. Nada é salvo: a pessoa confere e salva.
+        setEstadoDoi({ tipo: "parado" });
+        setTextoDoi("");
+        setFormulario({ base: desfecho.referencia, origemDoi: { avisos: desfecho.avisos } });
+        break;
+      case "repetida":
+        setEstadoDoi({ tipo: "repetida", existente: desfecho.existente });
+        break;
+      case "erro":
+        setEstadoDoi({ tipo: "erro", mensagem: desfecho.mensagem });
+        break;
+      case "cancelada":
+        setEstadoDoi({ tipo: "parado" });
+        break;
+    }
+  };
+
+  const cancelarBusca = () => {
+    buscaEmCurso.current?.abort();
+    buscaEmCurso.current = null;
+    setEstadoDoi({ tipo: "parado" });
+  };
+
+  const buscando = estadoDoi.tipo === "buscando";
+
   const vistas = useMemo(() => ordenarParaGaveta(buscarReferencias(referencias, busca)), [referencias, busca]);
 
   return (
@@ -57,6 +109,7 @@ export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, 
       {formulario ? (
         <FormularioDeReferencia
           base={formulario.base}
+          origemDoi={formulario.origemDoi}
           existentes={referencias.map((r) => r.id)}
           aoSalvar={(r) => {
             aoSalvar(r);
@@ -66,6 +119,78 @@ export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, 
         />
       ) : (
         <>
+          <form
+            className="doi-busca"
+            noValidate
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              if (!buscando) void buscarDoi();
+            }}
+          >
+            <label className="gaveta-rotulo" htmlFor="doi-da-fonte">
+              Buscar pelo DOI
+            </label>
+            <div className="doi-linha">
+              <input
+                id="doi-da-fonte"
+                value={textoDoi}
+                placeholder="Cole o DOI aqui"
+                autoComplete="off"
+                spellCheck={false}
+                readOnly={buscando}
+                aria-invalid={estadoDoi.tipo === "erro" ? true : undefined}
+                aria-describedby={estadoDoi.tipo === "erro" ? "doi-erro" : undefined}
+                onChange={(ev) => {
+                  setTextoDoi(ev.target.value);
+                  if (estadoDoi.tipo === "erro" || estadoDoi.tipo === "repetida") setEstadoDoi({ tipo: "parado" });
+                }}
+              />
+              {buscando ? (
+                <button type="button" className="btn" onClick={cancelarBusca}>
+                  Cancelar
+                </button>
+              ) : (
+                <button type="submit" className="btn primario">
+                  Buscar
+                </button>
+              )}
+            </div>
+            {estadoDoi.tipo === "parado" && (
+              <p className="dica-form">Cole o DOI, ou o endereço https://doi.org/…. O Apud busca os dados no Crossref e abre a fonte para você conferir antes de salvar.</p>
+            )}
+            {buscando && (
+              <p className="dica-form" role="status">
+                Buscando no Crossref…
+              </p>
+            )}
+            {estadoDoi.tipo === "erro" && (
+              <p className="erro-doi" id="doi-erro" role="alert">
+                {estadoDoi.mensagem}
+              </p>
+            )}
+            {estadoDoi.tipo === "repetida" && (
+              <div className="doi-repetida" role="status">
+                <p>Este DOI já está nas suas fontes. Não criei outra igual:</p>
+                <p className="fonte-texto">
+                  <b>{resumoDaReferencia(estadoDoi.existente).autores}</b> ({resumoDaReferencia(estadoDoi.existente).ano})
+                  <br />
+                  {resumoDaReferencia(estadoDoi.existente).titulo}
+                </p>
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => {
+                    setFormulario({ base: estadoDoi.existente });
+                    setEstadoDoi({ tipo: "parado" });
+                    setTextoDoi("");
+                  }}
+                >
+                  Editar essa fonte
+                </button>
+              </div>
+            )}
+          </form>
+
           <div className="gaveta-secao-topo">
             <span className="gaveta-rotulo">Fontes cadastradas</span>
             <span style={{ flex: 1 }} />

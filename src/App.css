@@ -822,6 +822,74 @@ button.linha:hover {
   background: #8c1d18;
 }
 
+/* Busca pelo DOI, no topo da gaveta */
+.doi-busca {
+  margin-bottom: 18px;
+}
+.doi-linha {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.doi-linha input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 400;
+}
+.doi-linha input[aria-invalid="true"] {
+  border-color: #b3261e;
+}
+.doi-linha input[readonly] {
+  background: var(--fundo-claro);
+  color: var(--tinta-suave);
+}
+.erro-doi {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fbeceb;
+  color: #7d1d14;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.doi-repetida {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--destaque-claro);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.doi-repetida p {
+  margin: 0 0 6px;
+}
+.doi-repetida .btn {
+  min-height: 32px;
+}
+.aviso-doi {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--destaque-claro);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.aviso-doi p {
+  margin: 0;
+}
+.aviso-doi ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+.aviso-doi li + li {
+  margin-top: 4px;
+}
+
 /* Lista de fontes */
 .fontes {
   list-style: none;
