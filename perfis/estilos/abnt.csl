@@ -224,11 +224,20 @@
     </choose>
   </macro>
 
-  <!-- Data completa: 2 maio 2024; mar. 2025; 2019. -->
+  <!-- Data completa: 2 maio 2024; mar. 2025; 2019. Com a letra do ano
+       (call-number), o dia e o mês continuam: 2 jan. 2025a. -->
   <macro name="data">
     <choose>
       <if variable="call-number">
-        <text variable="call-number"/>
+        <group delimiter=" ">
+          <date variable="issued">
+            <date-part name="day"/>
+          </date>
+          <date variable="issued">
+            <date-part name="month" form="short"/>
+          </date>
+          <text variable="call-number"/>
+        </group>
       </if>
       <else>
         <date variable="issued">
@@ -240,11 +249,16 @@
     </choose>
   </macro>
 
-  <!-- Mês e ano, para artigos: mar. 2025. -->
+  <!-- Mês e ano, para artigos: mar. 2025 (com a letra do ano: mar. 2025a). -->
   <macro name="mes-e-ano">
     <choose>
       <if variable="call-number">
-        <text variable="call-number"/>
+        <group delimiter=" ">
+          <date variable="issued">
+            <date-part name="month" form="short"/>
+          </date>
+          <text variable="call-number"/>
+        </group>
       </if>
       <else>
         <date variable="issued">

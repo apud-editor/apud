@@ -329,6 +329,8 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
       ["referências, alinhamento", opcao("à esquerda"), "Lista"],
       ["referências, entre uma e outra", quantidade("linha em branco", "linhas em branco", 0, 2), "Lista"],
       ["referências, ordem", opcao("alfabética pelo sobrenome do primeiro autor"), "Ordem"],
+      // Aplicada pelo Apud (src/citacoes/preparar.ts, chaveDeOrdem), não pelo estilo.
+      ["referências, mesmo autor", opcao("pelo título, com os números em ordem crescente"), "Ordem"],
       [
         "referências, sobrenome",
         opcao("maiúsculas", "maiúsculas e minúsculas"),

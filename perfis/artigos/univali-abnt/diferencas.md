@@ -26,7 +26,15 @@ Cada diferença cai num de quatro casos:
 | Revista sem cidade ficava sem nada | **Psico**, v. 38… | **Psico**, *[S. l.]*, v. 38… A cidade é elemento essencial do artigo (NBR 6023:2025). Pela sua decisão "monta e avisa", o Apud usa a forma da norma. |
 | As iniciais entravam mesmo quando as chamadas já eram diferentes | Spink, P. (2013) e Spink, M. J. P. e Medrado (2013) | Spink (2013) e Spink e Medrado (2013). As iniciais só entram quando as duas chamadas ficariam iguais (NBR 10520:2023). |
 
-## 2. Regra de perfil nova: instituição com subordinação (ABNT, revisão 5)
+## 2. Regras de perfil novas
+
+**Revisão 6 (21/11/2026), conferida no texto da NBR 6023:2025:** lei e
+Constituição com a epígrafe em negrito (item 4 da seção 4) e obras do mesmo
+autor pelo título (veja "Ordem da lista", na seção 3). Também foi corrigido um
+erro do Apud: com a letra do ano, a data perdia o dia e o mês (saía "2025a" em
+vez de "30 jul. 2025a").
+
+**Revisão 5: instituição com subordinação.**
 
 O original escreve "BRASIL. Ministério do Desenvolvimento Social e Combate à
 Fome" na lista e "(Brasil, 2014)" na chamada. Essa é a forma da norma. O Apud
@@ -51,7 +59,7 @@ punha o nome inteiro nos dois lugares, e tudo em maiúsculas. Agora:
 - **Erro de digitação:** (CDNH, 2024) vira (Conselho Nacional de Direitos Humanos, 2024).
 - **Ordem da lista:**
   - ASSOCIAÇÃO vinha antes de ARANTES, e SOUZA depois dos SPINK.
-  - As duas obras do MPSC estavam fora da ordem dos anos (2025 antes de 2024).
+  - **Mesmo autor (perfil revisão 6):** a NBR 6023:2025 (9.1) ordena pelo título, com os números em ordem crescente, e não pelo ano. O exemplo da norma põe "BRASIL. Lei nº 9.979 (2000)" antes de "BRASIL. Lei nº 12.384 (1998)". Por isso as duas obras do MPSC ficam como no original ("Levantamento…", de 2025, antes de "MPSC relata…", de 2024). Já o Decreto nº 7.053 passa para antes da Lei nº 10.216 ("Decreto" vem antes de "Lei").
   - O Apud ordena tudo sozinho.
 - **Termos que faltavam:**
   - ARANTES e CNDH não têm editora, então o Apud põe *[s. n.]*.

@@ -322,3 +322,35 @@ describe("lei na lista da ABNT (NBR 6023:2025, 7.11.1 e 7.11.2; perfil revisão 
     expect(r.referencias[0]).not.toContain("**");
   });
 });
+
+describe("mesmo autor na ABNT: ordem e letras (NBR 6023:2025, 9.1; NBR 10520)", () => {
+  const brasil = [{ instituicao: "Brasil" }];
+  const lei = (id: string, titulo: string, ano: number): Referencia => ({ id, tipo: "lei", autores: brasil, titulo, data: { ano } });
+
+  it("pelo título, com os números em ordem crescente, e não pelo ano (o exemplo da norma)", () => {
+    const r = montar("[@b; @a]", [lei("a", "Lei nº 12.384, de 3 de março de 1998", 1998), lei("b", "Lei nº 9.979, de 5 de julho de 2000", 2000)]);
+    expect(r.referencias.map((l) => l.slice(0, 30))).toEqual(["BRASIL. **Lei nº 9.979, de 5 d", "BRASIL. **Lei nº 12.384, de 3 "]);
+  });
+
+  it("na APA, o mesmo autor continua pelo ano", () => {
+    const r = montar("[@b; @a]", [lei("a", "Lei nº 12.384", 1998), lei("b", "Lei nº 9.979", 2000)], "apa.txt");
+    expect(r.referencias[0]).toContain("12.384");
+  });
+
+  it("com a letra do ano, a postagem não perde o dia e o mês: 30 jul. 2025a", () => {
+    const post = (id: string, titulo: string, mes: number, dia: number): Referencia => ({
+      id,
+      tipo: "rede-social",
+      autores: [pessoa("Coelho", "Robison")],
+      titulo,
+      perfil: "@robisoncoelho",
+      publicacao: { titulo: "Instagram" },
+      data: { ano: 2025, mes, dia },
+      url: "https://exemplo.org",
+    });
+    const r = montar("[@x] [@y]", [post("x", "Não dê esmola", 5, 7), post("y", "Lei da Internação", 7, 30)]);
+    expect(chamadas(r)).toEqual(["(Coelho, 2025b)", "(Coelho, 2025a)"]);
+    expect(r.referencias[0]).toContain("30 jul. 2025a");
+    expect(r.referencias[1]).toContain("7 maio 2025b");
+  });
+});

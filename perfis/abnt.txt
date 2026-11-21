@@ -20,7 +20,7 @@ perfil: ABNT
 versão: 2025
 revisão: 6
 data da revisão: 21/11/2026
-nota da revisão: Lei e Constituição com a epígrafe em negrito, como nos exemplos da NBR 6023:2025 (7.11.1 e 7.11.2), conferidos no texto da norma.
+nota da revisão: Conferido no texto da NBR 6023:2025: lei e Constituição com a epígrafe em negrito (7.11.1 e 7.11.2); obras do mesmo autor pelo título, com os números em ordem crescente, e não pelo ano (9.1).
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -252,6 +252,11 @@ rótulo das referências: REFERÊNCIAS                       | NBR 14724:2024 (U
 referências, alinhamento: à esquerda                     | NBR 6023:2025 (UFRB)
 referências, entre uma e outra: 1 linha em branco        | NBR 6023:2025 (UFRB)
 referências, ordem: alfabética pelo sobrenome do primeiro autor  | NBR 6023:2025 (UFV 2026)
+# Mesmo autor (21/11/2026): no exemplo da NBR 6023:2025 (9.1), "BRASIL. Lei nº
+# 9.979 (2000)" vem antes de "BRASIL. Lei nº 12.384 (1998)". A ordem segue os
+# elementos da referência (o título, depois do autor), com os números em ordem
+# crescente; o ano não decide. As letras (2020a, 2020b) seguem essa ordem.
+referências, mesmo autor: pelo título, com os números em ordem crescente  | NBR 6023:2025, 9.1
 # Exemplo: SILVA, João
 referências, sobrenome: maiúsculas                       | NBR 6023:2025 (UFRB)
 # Exemplo: BRASIL. Ministério do Desenvolvimento Social (revisão 5).

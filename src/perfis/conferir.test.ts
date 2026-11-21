@@ -255,7 +255,7 @@ describe("perfis personalizados (herança)", () => {
     expect(r.perfil).toBeDefined();
     expect(r.mensagens.map(formatarMensagem)).toEqual([
       "aviso, linha 2: este perfil foi feito sobre a revisão 5 de ABNT 2025, e o original está na revisão 6 " +
-        "(“Lei e Constituição com a epígrafe em negrito, como nos exemplos da NBR 6023:2025 (7.11.1 e 7.11.2), conferidos no texto da norma.”). " +
+        "(“Conferido no texto da NBR 6023:2025: lei e Constituição com a epígrafe em negrito (7.11.1 e 7.11.2); obras do mesmo autor pelo título, com os números em ordem crescente, e não pelo ano (9.1).”). " +
         "Confira se as suas mudanças continuam valendo e depois atualize o número em “herda de”.",
     ]);
   });

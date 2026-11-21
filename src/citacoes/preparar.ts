@@ -302,6 +302,17 @@ function tituloParaOrdenar(ref: Referencia): string {
 }
 
 /**
+ * O título com os números em ordem crescente, para ordenar como a NBR 6023:2025
+ * (9.1) manda: "Lei nº 9.979" antes de "Lei nº 12.384". O ponto de milhar sai,
+ * e cada número ganha zeros à esquerda, porque a lista é ordenada como texto.
+ */
+function tituloComNumerosParaOrdenar(ref: Referencia): string {
+  return tituloParaOrdenar(ref)
+    .replace(/(\d)\.(?=\d{3}\b)/g, "$1")
+    .replace(/\d+/g, (n) => n.padStart(12, "0"));
+}
+
+/**
  * Mesmo autor e mesmo ano: letras depois do ano (2020a, 2020b), na ordem dos
  * títulos. O Apud calcula as letras e passa o ano já escrito para o estilo
  * CSL, no campo call-number, para a chamada e a lista usarem as mesmas letras.
@@ -312,7 +323,7 @@ function dataParaOrdenar(ref: Referencia): string {
   return /^\d{4}-/.test(d) ? `1${d}` : `0${d}`;
 }
 
-function marcarLetras(referencias: Record<string, Referencia>, soAPrincipal: boolean, pelaData: boolean) {
+function marcarLetras(referencias: Record<string, Referencia>, soAPrincipal: boolean, pelaData: boolean, numerosEmOrdem: boolean) {
   const grupos = new Map<string, Referencia[]>();
   for (const ref of Object.values(referencias)) {
     const ano = anoDaReferencia(ref);
@@ -322,11 +333,13 @@ function marcarLetras(referencias: Record<string, Referencia>, soAPrincipal: boo
   }
   for (const grupo of grupos.values()) {
     if (grupo.length < 2) continue;
-    // APA: pela data completa (só o ano primeiro), depois pelo título. ABNT: pelo título.
+    // APA: pela data completa (só o ano primeiro), depois pelo título. ABNT:
+    // pelo título, com os números em ordem crescente, como na lista.
+    const titulo = numerosEmOrdem ? tituloComNumerosParaOrdenar : tituloParaOrdenar;
     grupo.sort(
       (a, b) =>
         (pelaData ? dataParaOrdenar(a).localeCompare(dataParaOrdenar(b)) : 0) ||
-        tituloParaOrdenar(a).localeCompare(tituloParaOrdenar(b), "pt-BR"),
+        titulo(a).localeCompare(titulo(b), "pt-BR"),
     );
     grupo.forEach((ref, i) => {
       ref["call-number"] = `${anoDaReferencia(ref)}${String.fromCharCode(97 + i)}`;
@@ -350,7 +363,10 @@ function chaveDeOrdem(ref: Referencia, perfil: PerfilResolvido): string {
   // Na APA, leis entram na lista pelo título, e não pelo autor (Brasil).
   const lei = ref.type === "legislation" && temRegra(perfil, "referências, título da obra");
   const partes = autores.length && !lei ? autores : [tituloParaOrdenar(ref)];
-  partes.push(anoDaReferencia(ref) || "0000", tituloParaOrdenar(ref));
+  // ABNT (NBR 6023:2025, 9.1): depois do autor, o título, com os números em
+  // ordem crescente; o ano só desempata. APA: depois do autor, o ano.
+  if (temRegra(perfil, "referências, mesmo autor")) partes.push(tituloComNumerosParaOrdenar(ref), anoDaReferencia(ref) || "0000");
+  else partes.push(anoDaReferencia(ref) || "0000", tituloParaOrdenar(ref));
   // O separador \u0001 vem antes de qualquer letra: "Silva, J." fica antes de "Silva, J. P.".
   return semAcentos(partes.join("\u0001").toLowerCase());
 }
@@ -364,7 +380,12 @@ export function prepararReferencias(
     Object.entries(referencias).map(([chave, ref]) => [chave, prepararUma(ref, perfil)]),
   );
   if (temRegra(perfil, "citação, mesmo autor e ano")) {
-    marcarLetras(preparadas, temRegra(perfil, "citação, entidade subordinada"), temRegra(perfil, "citação, mesmo autor e ano, ordem das letras"));
+    marcarLetras(
+      preparadas,
+      temRegra(perfil, "citação, entidade subordinada"),
+      temRegra(perfil, "citação, mesmo autor e ano, ordem das letras"),
+      temRegra(perfil, "referências, mesmo autor"),
+    );
   }
   for (const ref of Object.values(preparadas)) ref.note = chaveDeOrdem(ref, perfil);
   return preparadas;
