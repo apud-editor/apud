@@ -10,9 +10,10 @@
   As referências estão em referencias.json. O comando "npm run artigos" monta o
   .apud e o PDF e compara com o original (original-abnt.txt).
 
-  Ficam de fora, até a fase 3: o bloco de abertura da UNIVALI (escola, curso,
-  título, área, orientador e acadêmico). A citação longa entra como parágrafo
-  comum, porque o bloco de citação longa também é da fase 3.
+  Fica de fora o bloco de abertura da UNIVALI (escola, curso, título, área,
+  orientador e acadêmico), que ficou para depois da fase 3. As citações longas
+  são o bloco de citação longa (fase 3): o ponto final vai depois da chamada,
+  como a ABNT pede, mesmo que o original o ponha antes.
 -->
 
 # Introdução

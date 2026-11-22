@@ -8,8 +8,9 @@
   O trabalho usa as escolhas de revista da APA (trabalho.json): todos os
   autores na primeira citação, prenomes por extenso e cidade da editora.
 
-  Ficam de fora, até a fase 3: a página de título, os títulos e resumos em
-  português, espanhol e inglês. A citação longa entra como parágrafo comum.
+  Ficam de fora, até a parte 4 da fase 3: a página de título, os títulos e
+  resumos em português, espanhol e inglês. As citações longas são o bloco de
+  citação em bloco (fase 3): o ponto final vai antes da chamada, como a APA pede.
 -->
 
 A população em situação de rua (PSR) é uma das manifestações mais cruéis da produção de subjetividades, resultante de uma combinação complexa de fatores econômicos, políticos e sociais, sendo um dos grupos que expressa mais fortemente a materialização da violência imposta pelo sistema capitalista sobre as vidas humanas [@medeiros2020; @silva2009]. No Brasil, diante do crescimento substancial do número de pessoas que passam a utilizar ruas e espaços públicos como formas precárias e improvisadas de moradia, a presença da população em situação de rua, cada vez mais indissociável da paisagem urbana contemporânea, tem sido progressivamente incorporada ao imaginário social. Conforme levantamento realizado pelo Instituto de Pesquisa Econômica Aplicada (IPEA), observou-se um aumento significativo no número de PSR no Brasil ao longo da última década. Em 2012, esse número estimado era de 90.480 indivíduos, já em 2022 a estimativa era de 281.472 pessoas em situação de rua. Entre os anos de 2012 e 2022, o crescimento percentual dessa população foi de 211% [@natalino2023].

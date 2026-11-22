@@ -107,6 +107,6 @@ depois:
 6. **Nomes completos na narrativa: segue a norma.** A NBR 10520 pede o sobrenome na citação: "Segundo Spink e Medrado (2013)". O original diz "Segundo Mary Jane Spink e Benedito Medrado (2013)". Se quiser os prenomes mesmo assim, escreva-os no texto antes da citação.
 7. **Endereço quebrado no fim da linha.** O motor de PDF repete o hífen do endereço na linha de baixo ("contra-" / "-pessoas"), como manda a regra do português para palavras. Num endereço isso confunde. Fica anotado para a fase 3.
 
-**Fase 3 (como previsto):**
-- **Citação longa.** As citações longas saem como parágrafos comuns.
+**Fase 3:**
+- **Citação longa: resolvido na parte 2 da fase 3 (22/11/2026).** As citações longas saem com recuo de 4 cm, fonte 10 e espaço simples, com uma linha em branco antes e depois. **Diferença que fica, porque vale a norma:** o original põe o ponto final antes da chamada ("…desta Missão. (Conselho…, 2024, p. 37)"); a ABNT pede o ponto depois dela, e o Apud põe assim: "…desta Missão (Conselho…, 2024, p. 37)."
 - **Bloco de abertura da UNIVALI.** Não entra no .apud o bloco com escola, curso, título, área, orientador e acadêmico.

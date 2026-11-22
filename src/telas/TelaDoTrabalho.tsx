@@ -16,6 +16,7 @@ import { SalvamentoAutomatico, type SituacaoDoSalvamento } from "../arquivos/sal
 import { registrarAntesDeSair } from "./sair";
 import Previa from "./Previa";
 import { documentoParaTypst } from "../conversor/typst";
+import { arquivosDasImagens } from "../conversor/elementos";
 import { motor } from "../conversor/motor";
 import { normaEmbutida, normasEmbutidas, perfilEmbutido } from "../perfis/embutidos";
 import { AparenciaDaNorma } from "../editor/extensoes";
@@ -182,7 +183,8 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
     setExportado(null);
     try {
       const { perfil, csl } = lerNorma.current();
-      const pdf = await motor.pdf(documentoParaTypst(lerDocumento.current(), perfil, { titulo: nomeSalvo.current, csl }));
+      const doc = lerDocumento.current();
+      const pdf = await motor.pdf(documentoParaTypst(doc, perfil, { titulo: nomeSalvo.current, csl }), arquivosDasImagens(doc));
       const onde = await armazenamento.exportarPdf(`${nomeSalvo.current}.pdf`, pdf);
       if (onde) setExportado(onde);
     } catch (e) {

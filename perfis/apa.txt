@@ -21,9 +21,9 @@
 
 perfil: APA
 versão: 7
-revisão: 6
-data da revisão: 20/11/2026
-nota da revisão: Conferência com o artigo da revista: letras de mesmo autor e ano pela data completa, lei citada sem a data no nome, "pp." nas páginas da lista.
+revisão: 7
+data da revisão: 22/11/2026
+nota da revisão: Fase 3: citação em bloco, notas de rodapé, figuras e tabelas no PDF. Novas regras para o ponto final da citação em bloco, a forma das notas de rodapé, a nota das tabelas e figuras, o espaço em volta delas e o desenho das tabelas.
 
 == APA 7: página, estrutura e títulos ==
 # A APA tem dois modos. O trabalho começa no modo estudante e passa para o
@@ -105,6 +105,19 @@ tabelas e figuras, posição: no texto, depois da primeira menção  | APA 7 (ch
 # O corpo da tabela pode ser simples, 1,5 ou duplo; o padrão segue o resto do trabalho.
 tabelas, espaçamento do corpo: duplo                            | APA 7 (site da APA) | escolha: simples, 1,5 ou duplo
 tabelas, espaçamento de número, título e nota: duplo            | APA 7 (site da APA)
+# Acrescentadas na revisão 7 (fase 3).
+# A nota começa por "Nota." em itálico; a fonte (direitos autorais) vai dentro dela.
+tabelas e figuras, rótulo da nota: Nota.                        | APA 7 (site da APA: tabelas e figuras)
+tabelas e figuras, fonte: dentro da nota                        | APA 7 (site da APA: atribuição de direitos autorais)
+tabelas e figuras, linhas em branco antes e depois: 1 linha     | APA 7 (site da APA: tabela ou figura na mesma página do texto)
+figuras, posição da imagem: centralizada                        | APA 7, que não fixa a posição | faculdade
+# Fios só no topo, embaixo do cabeçalho e no fim; nenhum fio vertical.
+tabelas, fios: acima e abaixo do cabeçalho e no fim, sem fios nas laterais  | APA 7 (site da APA: bordas das tabelas)
+tabelas, alinhamento: cabeçalho ao centro, primeira coluna à esquerda, demais ao centro  | APA 7 (site da APA: corpo da tabela)
+# A APA recomenda a forma padrão do processador de texto: fonte 10 e espaço simples.
+notas de rodapé, tamanho da fonte: 10 pt                        | APA 7 (2.13), com o padrão do processador de texto
+notas de rodapé, espaçamento: simples                           | APA 7 (2.13), com o padrão do processador de texto
+notas de rodapé, filete: 5 cm                                   | padrão do Word, que a APA 7 (2.13) recomenda usar
 
 == APA 7: citações e referências ==
 # Onde a APA escreve "and", o perfil em português escreve "e".
@@ -143,6 +156,9 @@ citação curta, passou do limite: avisar                  | decisão de 20/11/2
 citação direta sem página: avisar                        | decisão de 20/11/2026 sobre a APA 7
 citação em bloco, recuo: 1,27 cm                         | APA 7 (site da APA)
 citação em bloco, aspas: não                             | APA 7 (site da APA)
+# Revisão 7: na citação em bloco, o ponto vai no fim do texto, antes da
+# chamada, e nada vem depois dela. Exemplo: ... semana seguinte. (Silva, 2019, p. 15)
+citação em bloco, ponto final: antes da chamada          | APA 7 (site da APA: citações em bloco)
 comunicação pessoal: só no texto, sem referência         | APA 7 (site da APA)
 # Decisão de 20/11/2026: o tipo de citação "sem referência" entra na versão 1.
 falas de participantes: no texto, sem referência         | APA 7 (site da APA)

@@ -2,6 +2,7 @@
 // pede a prévia ou o PDF.
 
 import type { Pedido, Resposta } from "./motor.worker";
+import type { ArquivoDoTypst } from "./elementos";
 import { armazenamento } from "../arquivos/armazenamento";
 
 /** Fontes de reserva que vêm com o Apud (pasta public/fontes), com as mesmas medidas da Times e da Arial. */
@@ -23,6 +24,11 @@ class Motor {
   private iniciado: Promise<void> | null = null;
   private proximoId = 1;
   private esperando = new Map<number, Espera>();
+  /**
+   * As imagens que o motor já tem. O caminho leva o código da imagem, que é
+   * feito do próprio conteúdo: o mesmo caminho é sempre a mesma imagem.
+   */
+  private enviadas = new Set<string>();
   /** Fontes que vieram do computador (Times New Roman, Arial), para avisar quando faltar alguma. */
   fontesDoComputador: string[] = [];
 
@@ -61,26 +67,28 @@ class Motor {
     return this.iniciado;
   }
 
-  private async pedir(tipo: "previa" | "pdf", typst: string): Promise<Resposta> {
+  private async pedir(tipo: "previa" | "pdf", typst: string, arquivos: ArquivoDoTypst[]): Promise<Resposta> {
     await this.iniciar();
     const id = this.proximoId++;
+    const novos = arquivos.filter((a) => !this.enviadas.has(a.caminho));
+    novos.forEach((a) => this.enviadas.add(a.caminho));
     return new Promise((resolver) => {
       this.esperando.set(id, { resolver });
-      const pedido: Pedido = { tipo, id, typst };
+      const pedido: Pedido = { tipo, id, typst, arquivos: novos };
       this.worker!.postMessage(pedido);
     });
   }
 
-  /** As páginas, como imagem SVG, para a prévia. */
-  async previa(typst: string): Promise<string> {
-    const r = await this.pedir("previa", typst);
+  /** As páginas, como imagem SVG, para a prévia. As imagens das figuras vão em arquivos. */
+  async previa(typst: string, arquivos: ArquivoDoTypst[] = []): Promise<string> {
+    const r = await this.pedir("previa", typst, arquivos);
     if (r.tipo === "erro") throw new Error(r.mensagem);
     if (r.tipo !== "previa") throw new Error("resposta inesperada do motor");
     return r.svg;
   }
 
-  async pdf(typst: string): Promise<Uint8Array> {
-    const r = await this.pedir("pdf", typst);
+  async pdf(typst: string, arquivos: ArquivoDoTypst[] = []): Promise<Uint8Array> {
+    const r = await this.pedir("pdf", typst, arquivos);
     if (r.tipo === "erro") throw new Error(r.mensagem);
     if (r.tipo !== "pdf") throw new Error("resposta inesperada do motor");
     return r.pdf;
