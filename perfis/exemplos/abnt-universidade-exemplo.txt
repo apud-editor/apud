@@ -14,7 +14,7 @@
 # ==============================================================================
 
 perfil: ABNT – Universidade Exemplo
-herda de: ABNT 2025, revisão 7
+herda de: ABNT 2025, revisão 8
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: Fonte Arial, recuo de 1,5 cm e prenomes abreviados, como pede o manual da Universidade Exemplo.

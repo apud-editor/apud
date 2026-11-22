@@ -43,7 +43,7 @@ function personalizado(texto: string) {
 }
 
 const FICHA = `perfil: ABNT – Universidade X
-herda de: ABNT 2025, revisão 7
+herda de: ABNT 2025, revisão 8
 revisão: 1
 data da revisão: 20/11/2026
 nota da revisão: teste
@@ -59,8 +59,8 @@ describe("perfis originais", () => {
       ESTILOS,
     );
     for (const r of resultados) expect(r.mensagens.map(formatarMensagem)).toEqual([]);
-    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 7 });
-    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 7 });
+    expect(resultados[0].perfil?.identificacao).toMatchObject({ perfil: "ABNT", versao: "2025", revisao: 8 });
+    expect(resultados[1].perfil?.identificacao).toMatchObject({ perfil: "APA", versao: "7", revisao: 8 });
   });
 
   it("guarda os valores já entendidos", () => {
@@ -239,7 +239,7 @@ describe("perfis personalizados (herança)", () => {
       perfil: "ABNT – Universidade X",
       norma: "ABNT",
       versao: "2025",
-      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 7 },
+      herdaDe: { perfil: "ABNT", versao: "2025", revisao: 8 },
     });
   });
 
@@ -251,11 +251,11 @@ describe("perfis personalizados (herança)", () => {
   });
 
   it("avisa quando o original mudou de revisão", () => {
-    const r = personalizado(FICHA.replace("revisão 7", "revisão 6"));
+    const r = personalizado(FICHA.replace("revisão 8", "revisão 7"));
     expect(r.perfil).toBeDefined();
     expect(r.mensagens.map(formatarMensagem)).toEqual([
-      "aviso, linha 2: este perfil foi feito sobre a revisão 6 de ABNT 2025, e o original está na revisão 7 " +
-        "(“Fase 3: citação longa, notas de rodapé, figuras e tabelas no PDF. Novas regras para o espaço antes e depois da citação longa, das ilustrações e das tabelas, a posição da ilustração na página e o desenho e o espaçamento das tabelas.”). " +
+      "aviso, linha 2: este perfil foi feito sobre a revisão 7 de ABNT 2025, e o original está na revisão 8 " +
+        "(“Fase 3, parte 4: capa, folha de rosto, dedicatória, agradecimentos, epígrafe, resumos e sumário no PDF. Novas regras para o destaque do título na capa e na folha de rosto, os rótulos do orientador e do professor, os títulos dos agradecimentos e do resumo, o recuo do resumo e das palavras-chave, o destaque do rótulo das palavras-chave, a linha em branco antes delas e a ligação até a página no sumário.”). " +
         "Confira se as suas mudanças continuam valendo e depois atualize o número em “herda de”.",
     ]);
   });

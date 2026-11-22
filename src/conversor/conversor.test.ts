@@ -438,3 +438,149 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     }
   });
 });
+
+describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, resumos, sumário)", () => {
+  const normaAbnt = carregarNorma("abnt.txt");
+  const normaApa = carregarNorma("apa.txt");
+  const abnt = normaAbnt.perfil;
+  const apa = normaApa.perfil;
+  const dados = {
+    ...documentoVazio().dados,
+    titulo: "O acolhimento",
+    subtitulo: "um relato",
+    autores: ["Ana Souza", "Bruno Lima"],
+    orientador: "Profa. Marta",
+    instituicao: "Universidade do Vale do Itajaí",
+    curso: "Psicologia",
+    cidade: "Itajaí",
+    ano: 2026,
+    disciplina: "Psicopatologia",
+    dataDeEntrega: { ano: 2026, mes: 11, dia: 30 },
+  };
+  const blocos: Documento["blocos"] = [
+    { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] },
+    { tipo: "paragrafo", trechos: [{ texto: "Texto." }] },
+    { tipo: "titulo", nivel: 2, trechos: [{ texto: "1.1 Contexto" }] },
+    { tipo: "paragrafo", trechos: [{ texto: "Mais texto." }] },
+  ];
+  const tudo: Documento["abertura"] = {
+    ...documentoVazio().abertura,
+    capa: true,
+    folhaDeRosto: true,
+    paginaDeTitulo: true,
+    dedicatoria: { incluir: true, paragrafos: [[{ texto: "À minha família." }]] },
+    agradecimentos: { incluir: true, paragrafos: [[{ texto: "Obrigado a todos." }]] },
+    epigrafe: { incluir: true, paragrafos: [[{ texto: "Uma frase." }]], autoria: "Rubem Alves" },
+    resumos: [
+      { idioma: "pt-BR", trechos: [{ texto: "Este trabalho relata." }], palavrasChave: ["acolhimento", "saúde mental"] },
+      { idioma: "en", trechos: [{ texto: "This paper reports." }], palavrasChave: ["welcoming", "mental health"] },
+      { idioma: "es", trechos: [{ texto: "Este trabajo relata." }], palavrasChave: ["acogida"] },
+    ],
+    sumario: true,
+  };
+  const doc = (abertura = tudo, extra: Partial<Documento> = {}): Documento => ({ ...documentoVazio(), dados, abertura, blocos, ...extra });
+  /** O número da página (a contagem) e a folha (física) onde o texto começa. */
+  const inicioDoTexto = (typst: string) => {
+    const marcado = typst.replace(`#metadata("texto") <apud-texto>`, `#metadata("texto") <apud-texto>\n#context [#metadata((contagem: counter(page).get().first(), folha: here().page())) <inicio>]`);
+    return compilador.query({ mainFileContent: marcado }, { selector: "<inicio>" })[0].value as { contagem: number; folha: number };
+  };
+
+  it("arquivo sem abertura: o código e o PDF saem como antes (nada de capa, contagem ou título repetido)", () => {
+    const semAbertura = documentoParaTypst({ ...documentoVazio(), blocos }, abnt);
+    expect(semAbertura).not.toContain("apud-texto");
+    expect(semAbertura).toContain("foreground: context place(");
+    // Com título nos dados mas nada ligado, a ABNT também não muda.
+    expect(documentoParaTypst({ ...documentoVazio(), dados, blocos }, abnt)).toBe(semAbertura);
+  });
+
+  it("ABNT: cada elemento na sua folha, na ordem da norma; a capa não conta e o número só aparece no texto", () => {
+    const typst = documentoParaTypst(doc(), abnt);
+    // capa, folha de rosto, dedicatória, agradecimentos, epígrafe, 3 resumos, sumário: 9 folhas antes do texto.
+    expect(paginas(compilar(typst))).toBe(10);
+    // A folha de rosto é a 1; o texto começa na folha 10, que é a página 9.
+    expect(inicioDoTexto(typst)).toEqual({ contagem: 9, folha: 10 });
+    expect(typst).toContain("query(<apud-texto>)");
+    const ordem = ["Universidade do Vale do Itajaí", "Trabalho apresentado à disciplina", "À minha família", "AGRADECIMENTOS", "Rubem Alves", "RESUMO", "ABSTRACT", "RESUMEN", "SUMÁRIO"].map((t) => typst.indexOf(escaparTexto(t)));
+    expect(ordem.every((p, i) => p >= 0 && (i === 0 || p > ordem[i - 1]))).toBe(true);
+    // A página de título é da APA: não sai na ABNT.
+    expect(typst).not.toContain("30 de novembro de 2026");
+  });
+
+  it("ABNT: capa e folha de rosto com os dados certos", () => {
+    const typst = documentoParaTypst(doc(), abnt);
+    expect(typst).toContain(`#strong[O acolhimento]: um relato`);
+    expect(typst).toContain(escaparTexto("Professor(a): Profa. Marta"));
+    expect(typst).toContain("pad(left: 50%");
+    // Trabalho que não é de disciplina: o rótulo é de orientador.
+    expect(documentoParaTypst(doc(tudo, { dados: { ...dados, tipo: "tcc" } }), abnt)).toContain(escaparTexto("Orientador(a): Profa. Marta"));
+  });
+
+  it("ABNT: capa sem instituição começa pelo autor; só a capa ligada, o texto começa na página 1", () => {
+    const so = { ...documentoVazio().abertura, capa: true };
+    const typst = documentoParaTypst(doc(so, { dados: { ...dados, instituicao: undefined, curso: undefined } }), abnt);
+    expect(typst).toContain("grid(rows: (auto, 1fr, auto, 2fr, auto), [Ana Souza");
+    expect(inicioDoTexto(typst)).toEqual({ contagem: 1, folha: 2 });
+  });
+
+  it("ABNT: resumo em espaço simples, sem recuo, e as palavras-chave em negrito, com ponto e vírgula e ponto final", () => {
+    const typst = documentoParaTypst(doc(), abnt);
+    expect(typst).toContain(`#strong[${escaparTexto("Palavras-chave:")}] ${escaparTexto("acolhimento; saúde mental.")}`);
+    expect(typst).toContain(`#strong[${escaparTexto("Keywords:")}] ${escaparTexto("welcoming; mental health.")}`);
+    expect(typst).toContain(`#strong[${escaparTexto("Palabras clave:")}] ${escaparTexto("acogida.")}`);
+    expect(typst).toContain(`set text(lang: "en")`);
+    expect(typst).toContain(`first-line-indent: (amount: 0pt, all: true))\n  [${escaparTexto("Este trabalho relata.")}]`);
+  });
+
+  it("ABNT: o sumário traz os títulos do texto com a página, e os rótulos antes do texto ficam de fora", () => {
+    const typst = documentoParaTypst(doc(), abnt);
+    expect(typst).toContain("outline(title: none, depth: 5)");
+    expect(typst).toContain(`heading(level: 1, numbering: none, outlined: false)[RESUMO]`);
+    const titulos = compilador.query({ mainFileContent: typst }, { selector: "heading.where(outlined: true)" }) as { body: { text?: string } }[];
+    // Só os dois títulos do texto: RESUMO, AGRADECIMENTOS e SUMÁRIO ficam de fora.
+    expect(titulos).toHaveLength(2);
+  });
+
+  it("versão sem identificação: os nomes do autor e do orientador não saem; o resto, sim", () => {
+    const typst = documentoParaTypst(doc({ ...tudo, semIdentificacao: true }), abnt);
+    expect(typst).not.toContain("Ana Souza");
+    expect(typst).not.toContain("Profa. Marta");
+    expect(typst).toContain("Universidade do Vale do Itajaí");
+    expect(documentoParaTypst(doc({ ...tudo, semIdentificacao: true }), apa)).not.toContain("Ana Souza");
+  });
+
+  it("APA: página de título com tudo centralizado e a data por extenso; sem capa, dedicatória nem sumário", () => {
+    const typst = documentoParaTypst(doc(), apa);
+    expect(typst).toContain("#strong[O acolhimento: um relato]");
+    expect(typst).toContain("Ana Souza e Bruno Lima");
+    expect(typst).toContain("Psicologia, Universidade do Vale do Itajaí");
+    expect(typst).toContain("30 de novembro de 2026");
+    for (const fora of ["À minha família", "Rubem Alves", "SUMÁRIO", "outline("]) expect(typst).not.toContain(fora);
+    // página de título + 3 resumos: o texto começa na folha 5, que é a página 5 (a APA conta e mostra desde a página de título).
+    expect(inicioDoTexto(typst)).toEqual({ contagem: 5, folha: 5 });
+    expect(typst).not.toContain("query(<apud-texto>)");
+  });
+
+  it("APA: resumo sem recuo; palavras-chave com recuo, rótulo em itálico, vírgulas e sem ponto", () => {
+    const typst = documentoParaTypst(doc(), apa);
+    expect(typst).toContain(`#emph[${escaparTexto("Palavras-chave:")}] ${escaparTexto("acolhimento, saúde mental")}]`);
+    expect(typst).toContain(`#emph[${escaparTexto("Keywords:")}] ${escaparTexto("welcoming, mental health")}]`);
+    expect(typst).toContain(`heading(level: 1, numbering: none, outlined: false)[Abstract]`);
+  });
+
+  it("APA: o título se repete no começo do texto (menos quando o texto já começa por ele)", () => {
+    expect(documentoParaTypst(doc(), apa)).toContain(`#heading(level: 1, numbering: none, outlined: false)[O acolhimento: um relato]`);
+    const comTitulo = doc(tudo, { blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "O acolhimento: um relato" }] }, ...blocos] });
+    expect(documentoParaTypst(comTitulo, apa)).not.toContain(`outlined: false)[O acolhimento: um relato]`);
+    // A ABNT não repete o título.
+    expect(documentoParaTypst(doc(), abnt)).not.toContain(`outlined: false)[O acolhimento`);
+  });
+
+  it("o documento de prova sai com a abertura nas duas normas", () => {
+    const { documento } = documentoDeProva();
+    for (const [norma, n] of [[normaAbnt, 8], [normaApa, 4]] as const) {
+      const typst = documentoParaTypst(documento, norma.perfil, { csl: norma.csl });
+      compilar(typst, documento);
+      expect(inicioDoTexto(typst).contagem).toBe(n);
+    }
+  });
+});
