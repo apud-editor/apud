@@ -18,6 +18,13 @@
 // põe a obra na lista. A lista é montada pelo estilo CSL dentro do Typst, só
 // com as obras citadas.
 //
+// Citação longa, notas de rodapé, figuras e tabelas (fase 3): a forma de
+// cada um vem do perfil (recuo, fonte menor, espaço simples, fios da tabela).
+// As figuras e tabelas são numeradas sozinhas, na ordem do texto; na ABNT,
+// cada espécie de ilustração (Figura, Gráfico, Quadro) tem a sua contagem.
+// As imagens não vão dentro do código: o motor as recebe como arquivos
+// (arquivosDasImagens, em elementos.ts).
+//
 // Entrelinhas como no Word: no Word, a linha "simples" mede 1,15 vez o tamanho
 // da fonte (Times 12 pt = 13,8 pt), e 1,5 linha mede 1,5 vez isso (20,7 pt).
 // Aqui, cada linha é uma caixa de 1,15 em, e o espaço entre as caixas completa
@@ -28,12 +35,18 @@ import {
   ehNota,
   ehTexto,
   type Bloco,
+  type CitacaoLonga,
   type Documento,
+  type Figura,
+  type Identificacao,
+  type Imagem,
   type ItemDeLista,
   type NivelDeTitulo,
+  type Tabela,
   type Trecho,
   type TrechoDeTexto,
 } from "../documento/modelo";
+import { caminhosDasImagens, larguraPadrao, pontoDaCitacaoLonga } from "./elementos";
 import { separarNumero } from "../documento/estrutura";
 import type { PerfilResolvido, Valor } from "../perfis";
 import { criarMotor, temGrifo, type Motor, type Pedaco } from "../citacoes/motor";
@@ -132,6 +145,24 @@ class Regras {
   fonteMenor(): string {
     return this.tem("fonte menor") ? this.medida("fonte menor") : this.fonte().tamanho;
   }
+
+  lista(chave: string): string[] {
+    const r = this.perfil.regras.get(chave);
+    return r && r.situacao.tipo !== "desligada" && r.valor.tipo === "lista" ? r.valor.itens : [];
+  }
+
+  /** ABNT: se a parte do trabalho está em "fonte menor, onde" ou em "espaço simples, onde". */
+  menor(parte: string): boolean {
+    return this.lista("fonte menor, onde").includes(parte);
+  }
+  simples(parte: string): boolean {
+    return this.lista("espaço simples, onde").includes(parte);
+  }
+
+  /** Um número de linhas em branco (0 quando o perfil não tem a regra). */
+  linhas(chave: string): number {
+    return this.tem(chave) ? this.numero(chave) : 0;
+  }
 }
 
 function numero(n: number): string {
@@ -185,6 +216,42 @@ interface Medidas {
     /** Como numerar: "a)" (ABNT, alíneas), "1." (APA, em sequência), "•" (APA, sem sequência). */
     marcador: (sequencia: boolean, nivel: number, i: number) => string;
   };
+  citacaoLonga: {
+    recuo: string;
+    tamanho: string;
+    /** Espaço entre as linhas dentro da citação. */
+    entre: string;
+    /** Espaço antes e depois do bloco. */
+    fora: string;
+    ponto: "antes" | "depois" | undefined;
+  };
+  ilustracoes: Ilustracoes;
+}
+
+/** A forma das figuras e tabelas, lida do perfil. */
+interface Ilustracoes {
+  /** "abnt": "Figura 1 – Título" numa linha, fonte embaixo; "apa": número em negrito, título em itálico na linha de baixo e "Nota." */
+  estilo: "abnt" | "apa";
+  /** O nome que vai antes do número, pela espécie ("Figura", "Gráfico", "Quadro", "Tabela"). */
+  rotulo: (especie: string) => string;
+  /** Contagem de cada espécie, na ordem do texto. */
+  contagem: Map<string, number>;
+  separador: string;
+  rotuloDaFonte: string;
+  fonteSua: string;
+  rotuloDaNota: string;
+  fora: string;
+  centralizada: boolean;
+  /** Tamanho e espaço da fonte e da nota (ABNT: fonte menor, espaço simples). */
+  tamanhoDoRodape: string;
+  entreDoRodape: string;
+  entreDoCorpo: string;
+  /** Espaço de cima e de baixo de cada célula: o espaçamento do corpo dividido entre as duas bordas. */
+  respiroDaCelula: string;
+  fios: boolean;
+  alinhar: boolean;
+  /** Largura do texto na página, em cm, para a largura padrão das figuras. */
+  larguraDoTexto: number;
 }
 
 /** Escreve o código Typst do trabalho. */
@@ -226,8 +293,11 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
     naMesmaLinha: new Set(([1, 2, 3, 4, 5] as NivelDeTitulo[]).filter((n) => r.talvez(`título nível ${n}, texto depois`) === "na mesma linha")),
     finalNaMesmaLinha: r.talvez("títulos na mesma linha, final") === "ponto" ? "." : "",
     listas: listas(r),
+    citacaoLonga: citacaoLonga(r, k, entre, passo),
+    ilustracoes: ilustracoes(r, k, entre, passo, margens),
   };
   escreverTitulos(l, r, medidas);
+  escreverNotas(l, r, justificado);
 
   // Itens de lista: o marcador numa coluna, o texto alinhado ao lado.
   l(`#let alinea(recuo, marcador, corpo) = block(above: ${entre}, below: ${entre}, pad(left: recuo, grid(columns: (auto, 1fr), column-gutter: 0.25em, marcador, {`);
@@ -238,8 +308,13 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
 
   // As citações são montadas na ordem do texto (algumas regras dependem da primeira citação).
   const motor = criarMotor(doc, perfil);
+  const caminhos = caminhosDasImagens(doc);
   const escrita: Escrita = {
     motor,
+    imagem: (id) => {
+      const imagem = doc.imagens.find((im) => im.id === id);
+      return imagem ? { imagem, caminho: caminhos.get(id)! } : undefined;
+    },
     enfase: enfaseDepoisDoDestaque(r),
     lista: () => {
       if (!motor.citadas.length) return "";
@@ -298,6 +373,84 @@ function listas(r: Regras): Medidas["listas"] {
     recuoSub: r.medida("sub-listas, recuo a mais"),
     marcador: (sequencia, _n, i) => (sequencia ? numerado.replace("1", String(i + 1)) : marca),
   };
+}
+
+/** Espaço entre as linhas para um espaçamento (1 = simples, 1,5, 2 = duplo), como no Word. */
+const entreLinhas = (k: number) => `${numero((k - 1) * LINHA_SIMPLES)}em`;
+
+/** Espaço antes e depois de um bloco com n linhas em branco: o espaço normal mais as linhas. */
+const comLinhas = (entre: string, passo: string, n: number) => (n ? `${entre} + ${numero(n)} * ${passo}` : entre);
+
+/** Citação longa (ABNT) ou em bloco (APA). */
+function citacaoLonga(r: Regras, k: number, entre: string, passo: string): Medidas["citacaoLonga"] {
+  const abnt = r.tem("citação longa, recuo");
+  const ponto = r.talvez("citação em bloco, ponto final") ?? r.talvez("citação, ponto final");
+  return {
+    recuo: r.medida(abnt ? "citação longa, recuo" : "citação em bloco, recuo"),
+    tamanho: r.menor("citações longas") ? r.fonteMenor() : r.fonte().tamanho,
+    entre: r.simples("citações longas") ? entreLinhas(1) : entreLinhas(k),
+    fora: comLinhas(entre, passo, r.linhas("citação longa, linhas em branco antes e depois")),
+    ponto: ponto === "antes da chamada" ? "antes" : ponto === "depois da chamada" ? "depois" : undefined,
+  };
+}
+
+/** Os nomes das espécies, sem acento e em minúsculas, para achar "Gráfico" pela espécie "grafico". */
+const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+function ilustracoes(r: Regras, k: number, entre: string, passo: string, margens: ReturnType<Regras["margens"]>): Ilustracoes {
+  const apa = r.tem("tabelas e figuras, número");
+  const separadores: Record<string, string> = { travessão: " – ", hífen: " - ", ponto: ". ", "dois-pontos": ": " };
+  const tipos = r.lista("ilustração, tipos");
+  const rotuloDaFigura = r.talvez("figura, rótulo");
+  const rotuloDaTabela = r.talvez("tabelas, rótulo") ?? r.talvez("tabela, rótulo") ?? "Tabela";
+  const cm = (m: string) => parseFloat(m) * (m.endsWith("mm") ? 0.1 : 1);
+  const corpo = r.tem("tabelas, espaçamento do corpo") ? r.numero("tabelas, espaçamento do corpo") : k;
+  const rodapeSimples = !apa && r.simples("fontes de ilustrações e tabelas");
+  return {
+    estilo: apa ? "apa" : "abnt",
+    rotulo: (especie) => {
+      if (especie === "tabela") return rotuloDaTabela;
+      if (rotuloDaFigura) return rotuloDaFigura;
+      return tipos.find((t) => semAcento(t) === especie) ?? tipos[0] ?? "Figura";
+    },
+    contagem: new Map(),
+    separador: separadores[r.talvez("ilustração, separador do título") ?? "travessão"] ?? " – ",
+    rotuloDaFonte: r.talvez("ilustração, rótulo da fonte") ?? "Fonte:",
+    fonteSua: r.talvez("ilustração, fonte quando é sua") ?? "",
+    rotuloDaNota: r.talvez("tabelas e figuras, rótulo da nota") ?? "Nota.",
+    fora: comLinhas(entre, passo, r.linhas(apa ? "tabelas e figuras, linhas em branco antes e depois" : "ilustrações e tabelas, linhas em branco antes e depois")),
+    centralizada: (r.talvez("ilustração, posição na página") ?? r.talvez("figuras, posição da imagem")) !== "à esquerda",
+    tamanhoDoRodape: !apa && r.menor("fontes de ilustrações e tabelas") ? r.fonteMenor() : r.fonte().tamanho,
+    entreDoRodape: rodapeSimples ? entreLinhas(1) : apa && r.tem("tabelas, espaçamento de número, título e nota") ? entreLinhas(r.numero("tabelas, espaçamento de número, título e nota")) : entre,
+    entreDoCorpo: entreLinhas(corpo),
+    respiroDaCelula: `${numero(((corpo - 1) * LINHA_SIMPLES) / 2 + 0.15)}em`,
+    fios: r.talvez("tabelas, fios") === "acima e abaixo do cabeçalho e no fim, sem fios nas laterais",
+    alinhar: r.talvez("tabelas, alinhamento") === "cabeçalho ao centro, primeira coluna à esquerda, demais ao centro",
+    larguraDoTexto: 21 - cm(margens.esquerda) - cm(margens.direita),
+  };
+}
+
+/**
+ * Notas de rodapé: o filete, a fonte e o espaço vêm do perfil. Na ABNT, as
+ * linhas seguintes ficam sob a primeira letra da nota (o número numa coluna
+ * própria); na APA, a nota corre como no Word.
+ */
+function escreverNotas(l: (s?: string) => void, r: Regras, justificado: boolean) {
+  const abnt = r.tem("notas de rodapé, linhas seguintes");
+  const tamanho = abnt ? (r.menor("notas de rodapé") ? r.fonteMenor() : r.fonte().tamanho) : r.tem("notas de rodapé, tamanho da fonte") ? r.medida("notas de rodapé, tamanho da fonte") : r.fonte().tamanho;
+  const entre = abnt
+    ? r.simples("notas de rodapé") ? entreLinhas(1) : entreLinhas(r.numero("entrelinhas"))
+    : entreLinhas(r.tem("notas de rodapé, espaçamento") ? r.numero("notas de rodapé, espaçamento") : 1);
+  const filete = r.tem("notas de rodapé, filete") ? r.medida("notas de rodapé, filete") : "5cm";
+  const sob = r.talvez("notas de rodapé, linhas seguintes") === "alinhadas sob a primeira letra";
+  // O filete fica numa caixa da altura de meia linha, para não encostar no texto da nota.
+  l(`#set footnote.entry(separator: box(height: 0.5em, line(length: ${filete}, stroke: 0.5pt)), clearance: ${numero(LINHA_SIMPLES)}em, gap: ${entre}, indent: 0pt)`);
+  l(`#show footnote.entry: it => {`);
+  l(`  let n = numbering(it.note.numbering, ..counter(footnote).at(it.note.location()))`);
+  l(`  set text(size: ${tamanho})`);
+  l(`  set par(justify: ${justificado}, leading: ${entre}, spacing: ${entre}, first-line-indent: 0pt)`);
+  l(sob ? `  grid(columns: (auto, 1fr), column-gutter: 0.2em, super(n), it.note.body)` : `  [#super(n) #it.note.body]`);
+  l(`}`);
 }
 
 /** A regra de destaque de cada nível de título, como função do Typst, e a forma de cada nível. */
@@ -379,10 +532,18 @@ function listaDeReferencias(motor: Motor, r: Regras, csl: string, m: Medidas): s
 
 interface Escrita {
   motor: Motor;
+  /** A imagem de uma figura e o caminho dela para o motor; undefined se sumiu do arquivo. */
+  imagem: (id: string) => { imagem: Imagem; caminho: string } | undefined;
   /** APA: a expressão "[ênfase adicionada]", que vai logo depois do trecho destacado. */
   enfase?: string;
   /** O Typst da lista de referências, para o bloco da lista. */
   lista: () => string;
+  /**
+   * Quando existe, as marcas que põem as obras na lista ficam guardadas aqui
+   * em vez de irem no meio do texto. A tabela mede o próprio conteúdo, e o
+   * Typst não sabe medir um texto com essas marcas.
+   */
+  registros?: string[];
 }
 
 /** Na APA, o destaque seu vai dentro da citação, depois do trecho em itálico: "[ênfase adicionada]". */
@@ -453,15 +614,156 @@ function blocoParaTypst(b: Bloco, m: Medidas, e: Escrita): string {
       return "#pagebreak(weak: true)\n";
     case "referencias":
       return e.lista();
-    // Fase 3, parte 1: os blocos novos já são lidos, mas a forma deles no PDF
-    // (recuo, fonte menor, numeração das figuras e tabelas) chega na parte 2.
-    // Até lá, a citação longa sai como um parágrafo, como antes.
     case "citacaoLonga":
-      return temConteudo(b.trechos) ? `${trechosParaTypst(b.trechos, e)}\n` : "";
+      return temConteudo(b.trechos) ? citacaoLongaParaTypst(b, m, e) : "";
     case "figura":
+      return figuraParaTypst(b, m, e);
     case "tabela":
-      return `// ${b.tipo}: a forma no PDF chega na parte 2 da fase 3\n`;
+      return tabelaParaTypst(b, m, e);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Citação longa, figuras e tabelas
+
+function citacaoLongaParaTypst(b: CitacaoLonga, m: Medidas, e: Escrita): string {
+  const c = m.citacaoLonga;
+  const corpo = trechosParaTypst(pontoDaCitacaoLonga(b.trechos, c.ponto), e);
+  return [
+    `#block(above: ${c.fora}, below: ${c.fora}, pad(left: ${c.recuo})[`,
+    `#set text(size: ${c.tamanho})`,
+    `#set par(first-line-indent: 0pt, leading: ${c.entre}, spacing: ${c.entre})`,
+    `${corpo}`,
+    `])`,
+    "",
+  ].join("\n");
+}
+
+/** O número da figura ou tabela, contado na ordem do texto. Na APA, toda ilustração é Figura. */
+function proximoNumero(especie: string, m: Medidas): { rotulo: string; numero: number } {
+  const il = m.ilustracoes;
+  const chave = il.estilo === "apa" && especie !== "tabela" ? "figura" : especie;
+  const n = (il.contagem.get(chave) ?? 0) + 1;
+  il.contagem.set(chave, n);
+  return { rotulo: il.rotulo(chave), numero: n };
+}
+
+/**
+ * As linhas de cima (identificação) e de baixo (fonte e nota) de uma figura ou tabela.
+ *   ABNT: "Figura 1 – Título"; embaixo, "Fonte: ..." e a nota, em fonte menor e espaço simples.
+ *   APA:  "Figura 1" em negrito; o título em itálico na linha de baixo; embaixo, "Nota." em itálico,
+ *         com a nota e a fonte (a atribuição) dentro dela.
+ */
+function identificacao(b: Identificacao, especie: string, m: Medidas, e: Escrita): { acima: string[]; abaixo: string[]; titulo: string } {
+  const il = m.ilustracoes;
+  const { rotulo, numero: n } = proximoNumero(especie, m);
+  const titulo = trechosParaTypst(b.titulo, e);
+  const fonte = b.fontePropria ? (il.estilo === "abnt" ? escaparTexto(il.fonteSua) : "") : trechosParaTypst(b.fonte, e);
+  const nota = b.nota ? trechosParaTypst(b.nota, e) : "";
+  const linha = (conteudo: string, abaixo: string) => `#block(above: 0pt, below: ${abaixo}, sticky: true)[${conteudo}]`;
+  // Um pouco de ar entre a imagem ou o último fio da tabela e a fonte, mesmo em espaço simples.
+  const rodape = (conteudo: string) =>
+    `#block(above: ${il.entreDoRodape} + 0.3em, below: 0pt)[#set text(size: ${il.tamanhoDoRodape}); #set par(leading: ${il.entreDoRodape}, spacing: ${il.entreDoRodape}); ${conteudo}]`;
+  if (il.estilo === "apa") {
+    const corpoDaNota = [nota, fonte].filter(Boolean).join(" ");
+    return {
+      acima: [linha(`#strong[${escaparTexto(`${rotulo} ${n}`)}]`, il.entreDoRodape), linha(`#emph[${titulo}]`, il.entreDoRodape)],
+      abaixo: corpoDaNota ? [rodape(`#emph[${escaparTexto(il.rotuloDaNota)}] ${corpoDaNota}`)] : [],
+      titulo: `#emph[${titulo}]`,
+    };
+  }
+  const sep = titulo ? escaparTexto(il.separador) : "";
+  const completo = `${escaparTexto(`${rotulo} ${n}`)}${sep}${titulo}`;
+  return {
+    acima: [linha(completo, m.entre)],
+    abaixo: [...(fonte ? [rodape(`${escaparTexto(il.rotuloDaFonte)} ${fonte}`)] : []), ...(nota ? [rodape(nota)] : [])],
+    titulo: completo,
+  };
+}
+
+function figuraParaTypst(b: Figura, m: Medidas, e: Escrita): string {
+  const il = m.ilustracoes;
+  const { acima, abaixo } = identificacao(b, b.especie ?? "figura", m, e);
+  const achada = e.imagem(b.imagem);
+  const largura = b.largura ?? larguraPadrao(achada?.imagem, il.larguraDoTexto);
+  const imagem = achada
+    ? `#image(${texto(achada.caminho)}, width: 100%)`
+    : `#rect(width: 100%, height: 4cm, stroke: 0.5pt + gray, align(center + horizon, text(size: ${il.tamanhoDoRodape})[Imagem não encontrada no arquivo]))`;
+  const lugar = il.centralizada ? "center" : "left";
+  // ABNT: título, fonte e nota na largura da ilustração. APA: na largura do texto, e a imagem no meio.
+  if (il.estilo === "abnt") {
+    return [
+      `#block(above: ${il.fora}, below: ${il.fora}, breakable: false, width: 100%, align(${lugar}, block(width: ${numero(largura)}%)[`,
+      `#set align(left)`,
+      `#set par(first-line-indent: 0pt, justify: false)`,
+      ...acima,
+      `#block(above: 0pt, below: 0pt)[${imagem}]`,
+      ...abaixo,
+      `]))`,
+      "",
+    ].join("\n");
+  }
+  return [
+    `#block(above: ${il.fora}, below: ${il.fora}, breakable: false, width: 100%)[`,
+    `#set par(first-line-indent: 0pt, justify: false)`,
+    ...acima,
+    `#block(above: 0pt, below: 0pt, width: 100%, align(${lugar}, block(width: ${numero(largura)}%)[${imagem}]))`,
+    ...abaixo,
+    `]`,
+    "",
+  ].join("\n");
+}
+
+/**
+ * Tabela. ABNT (IBGE): a largura do conteúdo, no meio da página, com o título
+ * e a fonte na largura da tabela. APA: a largura do texto. Nas duas: fios só
+ * no topo, embaixo do cabeçalho e no fim; o cabeçalho se repete quando a
+ * tabela passa para a página seguinte.
+ */
+function tabelaParaTypst(b: Tabela, m: Medidas, escrita: Escrita): string {
+  const il = m.ilustracoes;
+  const e: Escrita = { ...escrita, registros: [] };
+  const { acima, abaixo, titulo } = identificacao(b, "tabela", m, e);
+  const colunas = b.linhas[0]?.length ?? 1;
+  const fio = il.fios ? "table.hline(stroke: 0.5pt)," : "";
+  const celula = (c: Trecho[]) => `[${trechosParaTypst(c, e)}],`;
+  const cabecalho = b.linhas.slice(0, b.cabecalho);
+  const corpo = b.linhas.slice(b.cabecalho);
+  const alinhamento = il.alinhar ? `align: (x, y) => if y < ${b.cabecalho} { center } else if x == 0 { left } else { center },` : "";
+  // A grade, como função do Typst que recebe as larguras das colunas.
+  const grade = [
+    `let grade(colunas) = {`,
+    `  set par(leading: ${il.entreDoCorpo}, spacing: ${il.entreDoCorpo})`,
+    `  table(columns: colunas, stroke: ${il.fios ? "none" : "0.5pt"}, inset: (x: 0.4em, y: ${il.respiroDaCelula}), ${alinhamento}`,
+    `    ${cabecalho.length ? `table.header(repeat: true, ${fio} ${cabecalho.flat().map(celula).join(" ")} ${fio}),` : fio}`,
+    `    ${corpo.flat().map(celula).join(" ")}`,
+    `    ${fio}`,
+    `  )`,
+    `}`,
+  ].join("\n");
+  const partes = (gradeFinal: string) =>
+    [`#set align(left)`, `#set par(first-line-indent: 0pt, justify: false)`, ...acima, `#block(above: 0pt, below: 0pt, ${gradeFinal})`, ...abaixo].join("\n");
+  if (il.estilo === "abnt") {
+    // A largura do conteúdo, no meio da página. Se o título for mais largo, a
+    // tabela se estica até ele, e os fios ficam na largura da identificação.
+    const lugar = il.centralizada ? "center" : "left";
+    return [
+      `#block(above: ${il.fora}, below: ${il.fora}, width: 100%)[${e.registros!.join("")}#layout(espaco => {`,
+      grade,
+      `  let natural = measure(grade((auto,) * ${colunas}), width: espaco.width).width`,
+      `  let doTitulo = measure([${titulo}], width: espaco.width).width`,
+      `  let largura = calc.min(calc.max(natural, doTitulo), espaco.width)`,
+      `  let final = if doTitulo > natural { grade((1fr,) * ${colunas}) } else { grade((auto,) * ${colunas}) }`,
+      `  align(${lugar}, block(width: largura)[`,
+      partes("final"),
+      `])`,
+      `})]`,
+      "",
+    ].join("\n");
+  }
+  // APA: a largura do texto; a primeira coluna no tamanho do conteúdo, as outras divididas.
+  const larguras = colunas > 1 ? `(auto, ..((1fr,) * ${colunas - 1}))` : `(1fr,)`;
+  return [`#block(above: ${il.fora}, below: ${il.fora}, width: 100%, {`, grade, `[${e.registros!.join("")}`, partes(`grade(${larguras})`), `]`, `})`, ""].join("\n");
 }
 
 /** O ponto que fecha um título na mesma linha (APA), se a pessoa não pôs pontuação. */
@@ -521,9 +823,14 @@ function trechosParaTypst(trechos: Trecho[], e: Escrita): string {
     .map((t) => {
       if (ehCitacao(t)) {
         const c = e.motor.montar(t.citacao);
-        return c.obras.map(registrar).join("") + pedacosParaTypst(c.pedacos);
+        const marcas = c.obras.map(registrar).join("");
+        if (e.registros) {
+          e.registros.push(marcas);
+          return pedacosParaTypst(c.pedacos);
+        }
+        return marcas + pedacosParaTypst(c.pedacos);
       }
-      // A forma da nota (fonte menor, filete) vem do perfil na parte 2; por ora, a nota padrão do Typst.
+      // A forma da nota (fonte, filete, linhas seguintes) está no #show footnote.entry.
       if (ehNota(t)) return `#footnote[${trechosParaTypst(t.nota.trechos, e)}]`;
       let s = escaparTexto(t.texto);
       const m = t.marcas ?? [];

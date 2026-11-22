@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Documento } from "../documento/modelo";
 import { documentoParaTypst } from "../conversor/typst";
+import { arquivosDasImagens } from "../conversor/elementos";
 import { motor } from "../conversor/motor";
 import type { NormaDoTrabalho } from "../perfis/norma";
 import { rodandoNoPrograma } from "../arquivos/armazenamento";
@@ -24,6 +25,8 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
   const [avisoDeFonte, setAvisoDeFonte] = useState(false);
   const ocupado = useRef(false);
   const deNovo = useRef(false);
+  /** A montagem do efeito que está valendo agora (a que pode ser chamada "de novo"). */
+  const montarAtual = useRef<(() => Promise<void>) | null>(null);
   const nomeRef = useRef(nome);
   nomeRef.current = nome;
   const caixa = useRef<HTMLDivElement>(null);
@@ -63,6 +66,9 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
 
     const montar = async () => {
       // Uma montagem por vez; se o texto mudar no meio, monta de novo no fim.
+      // "De novo" é sempre com a montagem mais recente: se a prévia foi
+      // reaberta no meio (ou a norma mudou), a antiga não pode deixar o pedido
+      // novo esquecido.
       if (ocupado.current) {
         deNovo.current = true;
         return;
@@ -74,7 +80,8 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
       try {
         const { perfil, csl } = lerNorma.current();
         setSelo(perfil.identificacao.perfil);
-        const pronto = await motor.previa(documentoParaTypst(ler(), perfil, { titulo: nomeRef.current, csl }));
+        const doc = ler();
+        const pronto = await motor.previa(documentoParaTypst(doc, perfil, { titulo: nomeRef.current, csl }), arquivosDasImagens(doc));
         if (!ativo) return;
         setSvg(pronto);
         setSituacao("pronta");
@@ -86,12 +93,13 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
         setSituacao("erro");
       } finally {
         ocupado.current = false;
-        if (deNovo.current && ativo) {
+        if (deNovo.current) {
           deNovo.current = false;
-          void montar();
+          void montarAtual.current?.();
         }
       }
     };
+    montarAtual.current = montar;
 
     const aoMudar = () => {
       clearTimeout(relogio);
@@ -101,6 +109,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
     void montar();
     return () => {
       ativo = false;
+      if (montarAtual.current === montar) montarAtual.current = null;
       clearTimeout(relogio);
       mudancas.removeEventListener("mudou", aoMudar);
     };

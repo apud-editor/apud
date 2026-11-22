@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
-import { carregarNorma, carregarPerfil, documentoDeProva } from "../../scripts/prova-lib";
+import { carregarNorma, carregarPerfil, documentoDeProva, mapearImagens } from "../../scripts/prova-lib";
 import { documentoParaTypst, escaparTexto, letraDaAlinea } from "./typst";
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
 import { documentoVazio, type Documento, type Marca } from "../documento/modelo";
@@ -9,8 +9,9 @@ import { documentoVazio, type Documento, type Marca } from "../documento/modelo"
 const { perfil } = carregarPerfil("abnt.txt");
 const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "..", "public", "fontes")] }] });
 
-/** Compila e devolve o PDF; falha o teste com as mensagens do Typst se não compilar. */
-function compilar(typst: string): Uint8Array {
+/** Compila e devolve o PDF; falha o teste com as mensagens do Typst se não compilar. Com o documento, as imagens das figuras vão junto. */
+function compilar(typst: string, doc?: Documento): Uint8Array {
+  if (doc) mapearImagens(compilador, doc);
   const r = compilador.compile({ mainFileContent: typst });
   if (!r.result) {
     r.printDiagnostics();
@@ -200,7 +201,7 @@ describe("citações e lista de referências no PDF", () => {
 
   it("o documento de prova inteiro compila em ABNT", () => {
     const { documento } = documentoDeProva();
-    expect(paginas(compilar(documentoParaTypst(documento, perfil, { csl })))).toBeGreaterThan(2);
+    expect(paginas(compilar(documentoParaTypst(documento, perfil, { csl }), documento))).toBeGreaterThan(2);
   });
 });
 
@@ -260,25 +261,173 @@ describe("APA na página", () => {
     const typst = documentoParaTypst(documento, apa.perfil, { csl: apa.csl });
     expect(typst).toContain("#align(center, heading(level: 1, numbering: none, outlined: true)[Referências])");
     expect(typst).toContain("hanging-indent: 1.27cm, leading: 1.15em, spacing: 1.15em + 0 * 1.15em");
-    expect(paginas(compilar(typst))).toBeGreaterThan(2);
+    expect(paginas(compilar(typst, documento))).toBeGreaterThan(2);
   });
 });
 
-describe("fase 3, parte 1: os blocos novos não quebram o PDF", () => {
-  // A forma de cada bloco no PDF chega na parte 2. Aqui só se confere que o
-  // conversor aceita todos eles, nas duas normas, e que o Typst compila.
-  const blocos: Documento["blocos"] = [
-    { tipo: "paragrafo", trechos: [{ texto: "Texto com nota" }, { nota: { trechos: [{ texto: "A nota, com " }, { texto: "itálico", marcas: ["italico"] }] } }, { texto: "." }] },
-    { tipo: "citacaoLonga", trechos: [{ texto: "Uma citação longa, por enquanto como parágrafo." }] },
-    { tipo: "figura", imagem: "x", titulo: [{ texto: "Figura" }], fonte: [], fontePropria: true },
-    { tipo: "tabela", titulo: [{ texto: "Tabela" }], cabecalho: 1, linhas: [[[{ texto: "a" }]], [[{ texto: "1" }]]], fonte: [] },
-    { tipo: "titulo", nivel: 2, trechos: [{ nota: { trechos: [{ texto: "nota no começo do título" }] } }, { texto: " Título" }] },
-  ];
-  for (const norma of ["abnt.txt", "apa.txt"]) {
-    it(`compila em ${norma.replace(".txt", "").toUpperCase()}`, () => {
-      const typst = documentoParaTypst({ ...documentoVazio(), blocos }, carregarNorma(norma).perfil);
-      expect(typst).toContain("#footnote[A nota\\, com #emph[itálico]]");
-      expect(paginas(compilar(typst))).toBe(1);
-    });
-  }
+describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
+  const PNG = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAD0lEQVR4nGP4z8DAwPAfAAcAAf9+CLHQAAAAAElFTkSuQmCC";
+  const normaAbnt = carregarNorma("abnt.txt");
+  const normaApa = carregarNorma("apa.txt");
+  const abnt = normaAbnt.perfil;
+  const apa = normaApa.perfil;
+  const csl = (p: typeof abnt) => ({ csl: p === abnt ? normaAbnt.csl : normaApa.csl });
+  // Com citações, o Typst pede a lista de referências no documento.
+  const comLista = (d: Documento): Documento => ({ ...d, blocos: [...d.blocos, { tipo: "referencias" }] });
+  const cit = { citacao: { tipo: "parenteses" as const, direta: true, obras: [{ referencia: "r", localizador: { tipo: "pagina" as const, valor: "15" } }] } };
+  const referencias = [{ id: "r", tipo: "livro" as const, autores: [{ sobrenome: "Silva", prenomes: "Ana" }], titulo: "Livro", data: { ano: 2019 } }];
+  const doc = (blocos: Documento["blocos"]): Documento => ({
+    ...documentoVazio(),
+    referencias,
+    imagens: [{ id: "img", formato: "png", dados: PNG, largura: 302, altura: 151 }],
+    blocos,
+  });
+  const longa: Documento["blocos"][number] = { tipo: "citacaoLonga", trechos: [{ texto: "Um trecho longo que termina aqui. " }, cit] };
+  const figura = (extra = {}) => ({ tipo: "figura" as const, imagem: "img", titulo: [{ texto: "Fluxo" }], fonte: [{ texto: "Dados do serviço" }], ...extra });
+  const tabela = (extra = {}) => ({
+    tipo: "tabela" as const,
+    titulo: [{ texto: "Usuários" }],
+    cabecalho: 1,
+    linhas: [
+      [[{ texto: "Grupo" }], [{ texto: "Total" }]],
+      [[{ texto: "Adultos" }], [{ texto: "12" }]],
+    ],
+    fonte: [{ texto: "Registro (2026)" }],
+    ...extra,
+  });
+
+  it("ABNT: citação longa com recuo de 4 cm, fonte 10, espaço simples, uma linha em branco antes e depois e o ponto depois da chamada", () => {
+    const typst = documentoParaTypst(comLista(doc([longa])), abnt, csl(abnt));
+    expect(typst).toContain("#block(above: 0.575em + 1 * 1.725em, below: 0.575em + 1 * 1.725em, pad(left: 4cm)[");
+    expect(typst).toContain("#set text(size: 10pt)");
+    expect(typst).toContain("#set par(first-line-indent: 0pt, leading: 0em, spacing: 0em)");
+    expect(typst).toContain(String.raw`termina aqui #cite(label("r"), form: none)\(Silva\, 2019\, p\. 15\)\.` + "\n");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("APA: citação em bloco com recuo de 1,27 cm, espaço duplo, sem espaço a mais e o ponto antes da chamada", () => {
+    const typst = documentoParaTypst(comLista(doc([{ tipo: "citacaoLonga", trechos: [{ texto: "Termina aqui " }, cit, { texto: "." }] }])), apa, csl(apa));
+    expect(typst).toContain("#block(above: 1.15em, below: 1.15em, pad(left: 1.27cm)[");
+    expect(typst).toContain("#set text(size: 12pt)");
+    expect(typst).toContain("#set par(first-line-indent: 0pt, leading: 1.15em, spacing: 1.15em)");
+    expect(typst).toContain(String.raw`Termina aqui\. #cite(label("r"), form: none)\(Silva\, 2019\, p\. 15\)` + "\n");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("notas de rodapé: ABNT com filete de 5 cm, fonte 10, simples e linhas seguintes sob a primeira letra; APA como no Word", () => {
+    const comNota = doc([{ tipo: "paragrafo", trechos: [{ texto: "Texto" }, { nota: { trechos: [{ texto: "A nota." }] } }] }]);
+    const a = documentoParaTypst(comNota, abnt);
+    expect(a).toContain("separator: box(height: 0.5em, line(length: 5cm, stroke: 0.5pt)), clearance: 1.15em, gap: 0em");
+    expect(a).toContain("set text(size: 10pt)");
+    expect(a).toContain("grid(columns: (auto, 1fr), column-gutter: 0.2em, super(n), it.note.body)");
+    expect(a).toContain("Texto#footnote[A nota\\.]");
+    const p = documentoParaTypst(comNota, apa);
+    expect(p).toContain("separator: box(height: 0.5em, line(length: 5cm, stroke: 0.5pt))");
+    expect(p).toContain("set text(size: 10pt)");
+    expect(p).toContain("set par(justify: false, leading: 0em");
+    expect(p).toContain("[#super(n) #it.note.body]");
+    expect(() => compilar(a)).not.toThrow();
+    expect(() => compilar(p)).not.toThrow();
+  });
+
+  it("ABNT: cada espécie de ilustração tem a sua contagem; a tabela, a dela", () => {
+    const typst = documentoParaTypst(
+      doc([figura(), figura({ especie: "grafico" }), figura({ especie: "quadro" }), figura(), tabela(), figura({ especie: "grafico" }), tabela()]),
+      abnt,
+    );
+    const numeros = [...typst.matchAll(/sticky: true\)\[(\S+ \d+) –/g)].map((m) => m[1]);
+    expect(numeros).toEqual(["Figura 1", "Gráfico 1", "Quadro 1", "Figura 2", "Tabela 1", "Gráfico 2", "Tabela 2"]);
+  });
+
+  it("APA: toda ilustração é Figura, numa contagem só; a tabela tem a dela", () => {
+    const typst = documentoParaTypst(doc([figura(), figura({ especie: "grafico" }), tabela(), figura({ especie: "quadro" })]), apa);
+    const numeros = [...typst.matchAll(/#strong\[(\S+ \d+)\]/g)].map((m) => m[1]);
+    expect(numeros).toEqual(["Figura 1", "Figura 2", "Tabela 1", "Figura 3"]);
+  });
+
+  it("ABNT: Figura 1 – Título acima, Fonte: embaixo em fonte 10 e simples, na largura da figura", () => {
+    const typst = documentoParaTypst(doc([figura({ nota: [{ texto: "Legenda da figura." }] })]), abnt);
+    expect(typst).toContain("align(center, block(width: 49.9%)[");
+    expect(typst).toContain("#block(above: 0pt, below: 0.575em, sticky: true)[Figura 1 – Fluxo]");
+    expect(typst).toContain('#image("/imagens/0-img.png", width: 100%)');
+    expect(typst).toContain(String.raw`#block(above: 0em + 0.3em, below: 0pt)[#set text(size: 10pt); #set par(leading: 0em, spacing: 0em); Fonte\: Dados do serviço]`);
+    expect(typst).toContain("Legenda da figura\\.]");
+    expect(() => compilar(typst, doc([figura()]))).not.toThrow();
+  });
+
+  it("a figura com largura escolhida usa a largura dela", () => {
+    expect(documentoParaTypst(doc([figura({ largura: 70 })]), abnt)).toContain("block(width: 70%)");
+  });
+
+  it("fonte própria: na ABNT, o texto do perfil; na APA, nada (a APA não pede fonte de figura própria)", () => {
+    const propria = doc([figura({ fontePropria: true, fonte: [{ texto: "guardada, mas não sai" }] })]);
+    const a = documentoParaTypst(propria, abnt);
+    expect(a).toContain(String.raw`Fonte\: Elaborado pelo próprio autor]`);
+    expect(a).not.toContain("guardada");
+    const p = documentoParaTypst(propria, apa);
+    expect(p).not.toContain("Nota");
+    expect(p).not.toContain("guardada");
+  });
+
+  it("APA: número em negrito, título em itálico na linha de baixo e, embaixo, Nota. com a nota e a fonte", () => {
+    const typst = documentoParaTypst(doc([figura({ nota: [{ texto: "Dados de 2025." }] })]), apa);
+    expect(typst).toContain("#strong[Figura 1]");
+    expect(typst).toContain("#emph[Fluxo]");
+    expect(typst).toContain("#emph[Nota\\.] Dados de 2025\\. Dados do serviço]");
+    expect(() => compilar(typst, doc([figura()]))).not.toThrow();
+  });
+
+  it("figura cuja imagem sumiu do arquivo sai com um aviso no lugar, e o PDF não quebra", () => {
+    const typst = documentoParaTypst(doc([figura({ imagem: "sumiu" })]), abnt);
+    expect(typst).toContain("Imagem não encontrada no arquivo");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("tabela: fios no topo, embaixo do cabeçalho e no fim, sem laterais; cabeçalho que se repete na outra página", () => {
+    const typst = documentoParaTypst(doc([tabela()]), abnt);
+    expect(typst).toContain("stroke: none, inset: (x: 0.4em, y: 0.15em), align: (x, y) => if y < 1 { center } else if x == 0 { left } else { center },");
+    expect(typst).toContain("table.header(repeat: true, table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
+    expect(typst.match(/table\.hline/g)).toHaveLength(3);
+    expect(typst).toContain("[Tabela 1 – Usuários]");
+    expect(typst).toContain(String.raw`Fonte\: Registro \(2026\)`);
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("tabela sem cabeçalho: só os fios do topo e do fim", () => {
+    const typst = documentoParaTypst(doc([tabela({ cabecalho: 0 })]), abnt);
+    expect(typst).not.toContain("table.header");
+    expect(typst.match(/table\.hline/g)).toHaveLength(2);
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("APA: a tabela na largura do texto, com o corpo em espaço duplo", () => {
+    const typst = documentoParaTypst(doc([tabela()]), apa);
+    expect(typst).toContain("grade((auto, ..((1fr,) * 1)))");
+    expect(typst).toContain("inset: (x: 0.4em, y: 0.725em)");
+    expect(typst).toContain("#strong[Tabela 1]");
+    expect(typst).toContain("#emph[Nota\\.] Registro \\(2026\\)");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("uma tabela longa passa para a página seguinte sem quebrar o PDF", () => {
+    const linhas = [[[{ texto: "Mês" }], [{ texto: "Total" }]], ...Array.from({ length: 80 }, (_, i) => [[{ texto: `Linha ${i + 1}` }], [{ texto: String(i) }]])];
+    for (const perfil of [abnt, apa]) {
+      const typst = documentoParaTypst(doc([tabela({ linhas })]), perfil);
+      expect(paginas(compilar(typst))).toBeGreaterThan(1);
+    }
+  });
+
+  it("todos os blocos novos juntos compilam nas duas normas, também com nota no título e na lista", () => {
+    const blocos: Documento["blocos"] = [
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "1.1 Título" }, { nota: { trechos: [{ texto: "nota no título" }] } }] },
+      { tipo: "lista", sequencia: false, itens: [{ trechos: [{ texto: "item" }, { nota: { trechos: [{ texto: "nota no item" }] } }] }] },
+      longa,
+      figura({ especie: "grafico", nota: [{ texto: "x" }] }),
+      tabela({ titulo: [{ texto: "Com " }, { texto: "itálico", marcas: ["italico"] }, cit] }),
+    ];
+    for (const perfil of [abnt, apa]) {
+      const d = comLista(doc(blocos));
+      expect(paginas(compilar(documentoParaTypst(d, perfil, csl(perfil)), d))).toBeGreaterThan(0);
+    }
+  });
 });

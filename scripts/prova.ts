@@ -22,6 +22,7 @@ import {
   escreverGabarito,
   gerarPdf,
   lerGabarito,
+  mapearImagens,
   PASTA_PROVA,
   rodarProva,
 } from "./prova-lib";
@@ -56,6 +57,7 @@ writeFileSync(
   const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "public", "fontes")] }] });
   for (const [arquivo, sigla] of [["abnt.txt", "abnt"], ["apa.txt", "apa"]]) {
     const { perfil, csl } = carregarNorma(arquivo);
+    mapearImagens(compilador, documento);
     const r = compilador.compile({ mainFileContent: documentoParaTypst(documento, perfil, { titulo: "Documento de prova", csl }) });
     if (!r.result) {
       r.printDiagnostics();

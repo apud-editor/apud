@@ -22,7 +22,7 @@ import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { documentoParaTypst } from "../src/conversor/typst";
 import { escreverArquivo } from "../src/arquivos/formato";
 import type { Referencia } from "../src/documento/modelo";
-import { carregarNorma, compararComGabarito, documentoDoTexto, lerGabarito, PASTA_PERFIS, rodarTrabalho } from "./prova-lib";
+import { carregarNorma, compararComGabarito, documentoDoTexto, lerGabarito, mapearImagens, PASTA_PERFIS, rodarTrabalho } from "./prova-lib";
 
 const PASTA = join(PASTA_PERFIS, "artigos");
 const SAIDA = join(PASTA, "saida");
@@ -79,6 +79,7 @@ for (const pasta of readdirSync(PASTA, { withFileTypes: true }).filter((d) => d.
 
   // O PDF inteiro, pelo conversor do Apud.
   const pdf = join(SAIDA, `${pasta.name}.pdf`);
+  mapearImagens(compilador, lido.documento);
   const r = compilador.compile({ mainFileContent: documentoParaTypst(lido.documento, norma.perfil, { titulo: trabalho.nome, csl: norma.csl }) });
   if (!r.result) {
     r.printDiagnostics();

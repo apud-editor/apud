@@ -8,15 +8,28 @@
 // Apud (o mesmo modelo que o editor grava), que passa pelo motor de citações e
 // pelo conversor de verdade.
 
+import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { criarMotor, citacoesDoTexto } from "../src/citacoes/motor";
 import { escaparTexto, pedacosParaTypst, registrar } from "../src/conversor/typst";
+import { arquivosDasImagens } from "../src/conversor/elementos";
 import { conferirPerfis, formatarMensagem, normaDoTrabalho, type Arquivo, type NormaDoTrabalho } from "../src/perfis";
 import type { PerfilResolvido } from "../src/perfis";
 import type { EsquemaNorma } from "../src/perfis/esquema";
-import { documentoVazio, type Bloco, type Citacao, type Documento, type ItemDeLista, type Localizador, type ObraCitada, type Referencia, type Trecho } from "../src/documento/modelo";
+import {
+  documentoVazio,
+  type Bloco,
+  type Citacao,
+  type Documento,
+  type Imagem,
+  type ItemDeLista,
+  type Localizador,
+  type ObraCitada,
+  type Referencia,
+  type Trecho,
+} from "../src/documento/modelo";
 
 export const PASTA_PERFIS = join(import.meta.dirname, "..", "perfis");
 export const PASTA_PROVA = join(PASTA_PERFIS, "prova");
@@ -134,26 +147,82 @@ export function lerTextoComCitacoes(texto: string): { trechos: Trecho[]; escrita
 }
 
 /**
- * O documento de prova como trabalho do Apud. Ficam de fora, até a fase 3, o
- * que o editor ainda não tem: notas de rodapé, figuras e tabelas. A citação
- * longa entra como parágrafo comum.
+ * O documento de prova como trabalho do Apud, com a citação longa, a nota de
+ * rodapé, a figura e a tabela (fase 3). Os dados do trabalho (capa, resumo)
+ * entram na parte 4 da fase 3.
  */
 export function documentoDeProva(): { documento: Documento; escritas: string[] } {
   return documentoDoTexto(
     readFileSync(join(PASTA_PROVA, "documento-de-prova.md"), "utf8"),
     JSON.parse(readFileSync(join(PASTA_PROVA, "referencias.json"), "utf8")) as Referencia[],
+    PASTA_PROVA,
   );
 }
 
-/** Um texto na forma curta (como o documento de prova) e as referências viram um trabalho do Apud. */
-export function documentoDoTexto(textoCompleto: string, referencias: Referencia[]): { documento: Documento; escritas: string[] } {
+/** Uma imagem do disco no formato do .apud: o código vem do conteúdo, e a largura e a altura do cabeçalho do PNG. */
+export function imagemDoDisco(caminho: string, nome: string): Imagem {
+  const dados = readFileSync(caminho);
+  const formato = nome.endsWith(".png") ? "png" : nome.match(/\.jpe?g$/) ? "jpeg" : nome.endsWith(".svg") ? "svg" : nome.endsWith(".gif") ? "gif" : "webp";
+  const png = formato === "png" && dados.length > 24 ? { largura: dados.readUInt32BE(16), altura: dados.readUInt32BE(20) } : {};
+  return { id: createHash("sha256").update(dados).digest("hex").slice(0, 16), formato, dados: dados.toString("base64"), ...png, nome };
+}
+
+/**
+ * Entrega as imagens das figuras ao compilador do Typst (em node). O motor
+ * procura cada imagem na pasta de trabalho do compilador (raiz).
+ */
+export function mapearImagens(compilador: NodeCompiler, doc: Documento, raiz = process.cwd()) {
+  for (const a of arquivosDasImagens(doc)) compilador.mapShadow(join(raiz, a.caminho), Buffer.from(a.dados));
+}
+
+/**
+ * Um texto na forma curta (como o documento de prova) e as referências viram
+ * um trabalho do Apud. Figuras pedem a pasta onde estão as imagens.
+ *   ^[texto]                          nota de rodapé
+ *   ::: citação-longa ... :::         citação longa
+ *   ::: figura                        com "título:", "imagem:", "fonte:" e, se quiser,
+ *                                     "nota:", "largura:" (60%) e "espécie:" (gráfico, quadro)
+ *   ::: tabela                        com "título:", "dados:" (| a | b | ; | c | d |, a
+ *                                     primeira linha é o cabeçalho), "fonte:" e "nota:"
+ * A fonte "Elaborado pelo próprio autor" vira a caixa "fonte própria".
+ */
+export function documentoDoTexto(
+  textoCompleto: string,
+  referencias: Referencia[],
+  pastaDasImagens?: string,
+): { documento: Documento; escritas: string[] } {
   const md = textoCompleto.replace(/<!--[\s\S]*?-->/g, "").replace(/^\s*---\n[\s\S]*?\n---\n/, "");
   const blocos: Bloco[] = [];
+  const imagens: Imagem[] = [];
   const escritas: string[] = [];
-  const texto = (s: string) => {
-    const r = lerTextoComCitacoes(s.replace(/\^\[[^\]]*\]/g, "").trim());
+  const citacoes = (s: string): Trecho[] => {
+    const r = lerTextoComCitacoes(s);
     escritas.push(...r.escritas);
     return r.trechos;
+  };
+  // As notas ^[...] viram trechos de nota; o resto passa pelas citações.
+  const texto = (s: string): Trecho[] => {
+    const trechos: Trecho[] = [];
+    let cursor = 0;
+    const limpo = s.trim();
+    for (const m of limpo.matchAll(/\^\[([^\]]*)\]/g)) {
+      trechos.push(...citacoes(limpo.slice(cursor, m.index)));
+      trechos.push({ nota: { trechos: [{ texto: m[1].trim() }] } });
+      cursor = m.index! + m[0].length;
+    }
+    trechos.push(...citacoes(limpo.slice(cursor)));
+    return trechos.filter((t) => !("texto" in t) || t.texto);
+  };
+  const campos = (linhas: string[]) =>
+    Object.fromEntries(linhas.map((l) => l.match(/^([^:]+):\s*(.*)$/)).filter((m): m is RegExpMatchArray => !!m).map((m) => [m[1].trim(), m[2].trim()]));
+  const identificacao = (c: Record<string, string>) => {
+    const propria = /^elaborad[ao] pel[ao] próprio autor/i.test(c["fonte"] ?? "");
+    return {
+      titulo: texto(c["título"] ?? ""),
+      fonte: propria ? [] : texto(c["fonte"] ?? ""),
+      ...(propria ? { fontePropria: true as const } : {}),
+      ...(c["nota"] ? { nota: texto(c["nota"]) } : {}),
+    };
   };
   let paragrafo: string[] = [];
   let lista: ItemDeLista[] | null = null;
@@ -164,11 +233,31 @@ export function documentoDoTexto(textoCompleto: string, referencias: Referencia[
     paragrafo = [];
     lista = null;
   };
+  const fecharBloco = (b: { tipo: string; linhas: string[] }) => {
+    if (b.tipo === "citação-longa") blocos.push({ tipo: "citacaoLonga", trechos: texto(b.linhas.join(" ")) });
+    if (b.tipo === "referências") blocos.push({ tipo: "referencias" });
+    if (b.tipo === "figura") {
+      const c = campos(b.linhas);
+      if (!pastaDasImagens) throw new Error("a figura precisa da pasta das imagens");
+      const imagem = imagemDoDisco(join(pastaDasImagens, c["imagem"]), c["imagem"]);
+      if (!imagens.some((i) => i.id === imagem.id)) imagens.push(imagem);
+      const especie = c["espécie"] === "gráfico" ? "grafico" : c["espécie"] === "quadro" ? "quadro" : undefined;
+      const largura = c["largura"] ? parseFloat(c["largura"]) : undefined;
+      blocos.push({ tipo: "figura", imagem: imagem.id, ...(especie ? { especie } : {}), ...(largura ? { largura } : {}), ...identificacao(c) });
+    }
+    if (b.tipo === "tabela") {
+      const c = campos(b.linhas);
+      const linhas = (c["dados"] ?? "")
+        .split(";")
+        .map((l) => l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((x) => texto(x.trim())))
+        .filter((l) => l.length);
+      blocos.push({ tipo: "tabela", linhas, cabecalho: 1, ...identificacao(c) });
+    }
+  };
   for (const linha of md.split("\n")) {
     if (bloco) {
       if (linha.trim() === ":::") {
-        if (bloco.tipo === "citação-longa") blocos.push({ tipo: "paragrafo", trechos: texto(bloco.linhas.join(" ")) });
-        if (bloco.tipo === "referências") blocos.push({ tipo: "referencias" });
+        fecharBloco(bloco);
         bloco = null;
       } else bloco.linhas.push(linha.trim());
       continue;
@@ -198,7 +287,7 @@ export function documentoDoTexto(textoCompleto: string, referencias: Referencia[
     }
   }
   fechar();
-  return { documento: { ...documentoVazio(), blocos, referencias }, escritas };
+  return { documento: { ...documentoVazio(), blocos, referencias, imagens }, escritas };
 }
 
 // ---------------------------------------------------------------------------

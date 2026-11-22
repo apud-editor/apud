@@ -48,7 +48,7 @@ marcado como tal.
 ## 4. Fora da comparação
 
 - **Página de título e resumos.** Os títulos e os resumos em português, espanhol e inglês ficam para a fase 3 (títulos e resumos em vários idiomas). O texto começa direto na introdução.
-- **Citações longas.** Saem como parágrafos comuns (fase 3).
+- **Citações em bloco: resolvido na parte 2 da fase 3 (22/11/2026).** Saem com recuo de 1,27 cm e espaço duplo, sem espaço a mais antes e depois, e com o ponto final antes da chamada, como a APA pede: "…desta Missão. (Conselho…, 2024, p. 37)".
 - **Espaçamento: segue a APA.** O original usa 1,5 no texto e espaço simples na lista. O Apud usa espaço duplo, como a APA pede.
 - **Títulos de seção.** Saem como você escreveu ("A Construção Do Sujeito Nos Decretos Narrativos"): o Apud não muda as maiúsculas dos títulos.
 - **"BC Notícias".** Cadastrei como "Site", porque o original a formata como página de site de notícias (título em itálico). Batista e Catie estão como "Notícia" (jornal em itálico), também como no original.

@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 6
-data da revisão: 21/11/2026
-nota da revisão: Conferido no texto da NBR 6023:2025: lei e Constituição com a epígrafe em negrito (7.11.1 e 7.11.2); obras do mesmo autor pelo título, com os números em ordem crescente, e não pelo ano (9.1).
+revisão: 7
+data da revisão: 22/11/2026
+nota da revisão: Fase 3: citação longa, notas de rodapé, figuras e tabelas no PDF. Novas regras para o espaço antes e depois da citação longa, das ilustrações e das tabelas, a posição da ilustração na página e o desenho e o espaçamento das tabelas.
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -70,9 +70,18 @@ ilustração, rótulo da fonte: Fonte:                           | NBR 14724:202
 ilustração, fonte quando é sua: Elaborado pelo próprio autor  | NBR 14724:2024 (Unesp)
 ilustração, depois da fonte: legenda, notas                   | NBR 14724:2024 (Unesp)
 ilustração, largura da fonte e da legenda: largura da ilustração  | NBR 14724:2024 (Unesp)
+# Acrescentadas na revisão 7 (fase 3). A norma não fixa o espaço em volta da
+# ilustração e da tabela nem a posição na página; o padrão é o costume dos manuais.
+ilustração, posição na página: centralizada                  | NBR 14724:2024, que não fixa a posição | faculdade
+ilustrações e tabelas, linhas em branco antes e depois: 1 linha  | NBR 14724:2024, que não fixa o espaço | faculdade
 tabelas, identificação e fonte: iguais às das ilustrações     | NBR 14724:2024 (Unesp)
 tabelas, rótulo: Tabela                                       | NBR 14724:2024 (Unesp)
 tabelas, desenho: normas tabulares do IBGE                    | NBR 14724:2024 (Unesp)
+# Revisão 7: o desenho do IBGE. Três fios horizontais (topo, embaixo do
+# cabeçalho e fim) e nenhum fio nas laterais.
+tabelas, fios: acima e abaixo do cabeçalho e no fim, sem fios nas laterais  | IBGE, Normas de apresentação tabular (1993)
+tabelas, alinhamento: cabeçalho ao centro, primeira coluna à esquerda, demais ao centro  | IBGE, Normas de apresentação tabular (1993), que não fixam o alinhamento | faculdade
+tabelas, espaçamento do corpo: simples                        | IBGE, Normas de apresentação tabular (1993), que não fixam o espaço | faculdade
 # O Apud não muda o seu texto; o verificador da versão 2 vai avisar.
 siglas, primeira vez: nome completo e sigla entre parênteses  | NBR 14724:2024 (UFV 2026) | desligada
 equações, numeração: entre parênteses, à direita              | NBR 14724:2024 (Unesp) | desligada
@@ -205,6 +214,8 @@ citação curta, passou do limite: avisar                        | decisão de 2
 # Mais de 3 linhas: parágrafo próprio, fonte menor e espaço simples (ver página e texto).
 citação longa, recuo: 4 cm                                     | NBR 10520:2023, que recomenda 4 cm (UFC; FZEA-USP)
 citação longa, aspas: não                                      | NBR 10520:2023 (UFC; FZEA-USP)
+# Revisão 7: a norma não fixa o espaço entre a citação longa e o texto.
+citação longa, linhas em branco antes e depois: 1 linha        | NBR 10520:2023, que não fixa o espaço | faculdade
 # Decisão de 20/11/2026: o Apud avisa quando falta a página, sem impedir.
 citação direta sem página: avisar                              | decisão de 20/11/2026 sobre a NBR 10520:2023
 # Exemplo: “[...]” (Clarac; Bonnin, 1985, p. 72).

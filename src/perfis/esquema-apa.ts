@@ -134,6 +134,16 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ],
       ["tabelas, espaçamento do corpo", espacamento(), "Espaço dentro da tabela"],
       ["tabelas, espaçamento de número, título e nota", espacamento(), "Espaço dentro da tabela"],
+      // Revisão 7 (fase 3).
+      ["tabelas e figuras, rótulo da nota", texto(), "Tabelas e figuras"],
+      ["tabelas e figuras, fonte", opcao("dentro da nota"), "Tabelas e figuras"],
+      ["tabelas e figuras, linhas em branco antes e depois", quantidade("linha", "linhas", 0, 2), "Tabelas e figuras"],
+      ["figuras, posição da imagem", opcao("centralizada", "à esquerda"), "Tabelas e figuras"],
+      ["tabelas, fios", opcao("acima e abaixo do cabeçalho e no fim, sem fios nas laterais"), "Tabelas e figuras"],
+      ["tabelas, alinhamento", opcao("cabeçalho ao centro, primeira coluna à esquerda, demais ao centro"), "Tabelas e figuras"],
+      ["notas de rodapé, tamanho da fonte", medida("pt", 6, 14), []],
+      ["notas de rodapé, espaçamento", espacamento(), []],
+      ["notas de rodapé, filete", medida("cm", 1, 15), []],
     ]),
 
     ...secao("APA 7: citações e referências", [
@@ -171,6 +181,7 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ["citação direta sem página", opcao("avisar"), "Citação curta"],
       ["citação em bloco, recuo", medida("cm", 0, 5), "Citação em bloco"],
       ["citação em bloco, aspas", opcao("não"), "Citação em bloco"],
+      ["citação em bloco, ponto final", opcao("antes da chamada", "depois da chamada"), "Citação em bloco"],
       ["comunicação pessoal", opcao("só no texto, sem referência"), "Comunicação pessoal"],
       ["falas de participantes", opcao("no texto, sem referência"), "Falas de participantes"],
       // Fora do checklist: permitem trocar de ABNT para APA sem reescrever o trabalho.

@@ -5,7 +5,7 @@
   "perfil": {
     "perfil": "ABNT",
     "versao": "2025",
-    "revisao": 6
+    "revisao": 7
   },
   "ajustes": {},
   "criadoEm": "2026-11-20T00:00:00.000Z",
@@ -306,7 +306,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "As ações de resgate social, que em Balneário Camboriú podem ser descritas como sequestro de vidas, que são levadas coercitivamente para instituições que apenas as poderiam receber voluntariamente, são o retrato mais forte de higienismo social encontrado ao longo desta Missão. "
@@ -405,7 +405,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "[...] foi ficando mais e mais evidente que a violência praticada em Santa Catarina refletia, em grande medida, o discurso de ódio contra essa população veiculado por Prefeitos e outras autoridades municipais, inclusive com finalidade eleitoral, valendo-se da imprensa local e das mídias sociais para ampliar o alcance das manifestações de ódio. "
@@ -580,7 +580,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "Os documentos de domínio público são produtos sociais tornados públicos. Eticamente estão abertos para análise por pertencerem ao espaço público, por terem sido tornados públicos de uma forma que permite a responsabilização. Podem refletir as transformações lentas em posições e posturas institucionais assumidas pelos aparelhos simbólicos que permeiam o dia a dia ou, no âmbito das redes sociais, pelos agrupamentos e coletivos que dão forma ao informal, refletindo o ir e vir de versões circulantes assumidas ou advogadas."
@@ -1008,7 +1008,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "Se tu queres ficar na rua, aqui [...] não. Tem saúde aí. Pensa um pouco. Se tu quiseres ir pra Casa de Passagem, [pra te] dar acolhimento, ou senão tu pegas o rumo e volta pra tua casa, mas aqui na rua, não "
@@ -1054,7 +1054,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "Tem oportunidade de trabalho, tem oportunidade de tratamento e tem oportunidade de retornar pra sua cidade, pra sua família. Aquela outra que cês [sic] estavam utilizando, que é a opção das ruas, essa tá [sic] fora "
@@ -1120,7 +1120,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "A existência [...] como único equipamento no município para atendimento à população em situação [de rua] revela o desejo de que essa população não permaneça no território do município, além da intenção inequívoca das autoridades municipais de a afastar do espaço central da cidade, frequentado por munícipes e turistas, em uma clara estratégia de higienização social "
@@ -1173,7 +1173,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "Lá em janeiro [...] a gente pegava a pessoa na rua e ela queria algum tipo de encaminhamento, levávamos para o Centro POP [...] Quando era possível, ela era encaminhada, mas o Centro POP é um serviço que funciona durante o dia [...] Não é um local de acolhimento mais permanente [...] Hoje nós temos essa Casa de Passagem que vai facilitar esse trabalho [...] "
@@ -1402,7 +1402,7 @@
         ]
       },
       {
-        "tipo": "paragrafo",
+        "tipo": "citacaoLonga",
         "trechos": [
           {
             "texto": "§ 3º Esta Lei se aplica a todos os cidadãos de Itajaí, especialmente aqueles que estejam em situação de rua e que se enquadrem como: I - pessoas com dependência química crônica, com prejuízos à capacidades mental, ainda que parcial, limitando as tomadas de decisões; II - pessoas em vulnerabilidade, que venha a causar riscos à sua integridade física ou a de terceiros, devido a transtornos mentais pré-existentes ou causados pelo uso de álcool e/ou drogas;"
