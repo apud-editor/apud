@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { conferirReferencia } from "../arquivos/formato";
 import { montarTodas, textoDaCitacao } from "../citacoes/todas";
-import { VERSAO_DO_FORMATO, type Documento, type Referencia, type TipoDeReferencia } from "../documento/modelo";
+import { documentoVazio, type Documento, type Referencia, type TipoDeReferencia } from "../documento/modelo";
 import { carregarPerfil } from "../../scripts/prova-lib";
 import { converterCrossref, estaTodoEmMaiusculas, limparTextoDoCrossref, tipoDoApud } from "./crossref";
 import { formularioParaReferencia, referenciaParaFormulario } from "./formulario";
@@ -139,7 +139,7 @@ describe("os quatro exemplos do Crossref", () => {
 
 describe("a fonte vinda do DOI funciona no motor, nas duas normas", () => {
   const documento = (referencia: Referencia): Documento => ({
-    versao: VERSAO_DO_FORMATO,
+    ...documentoVazio(),
     referencias: [referencia],
     blocos: [
       { tipo: "paragrafo", trechos: [{ citacao: { tipo: "narrativa", obra: { referencia: referencia.id } } }] },

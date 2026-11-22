@@ -6,13 +6,14 @@
 //
 //   {
 //     "formato": "apud",
-//     "versao": 3,
+//     "versao": 4,
 //     "nome": "Relato de experiência de estágio",
 //     "perfil": { "perfil": "ABNT", "versao": "2025", "revisao": 3 },
 //     "ajustes": { "ABNT": { "referências, prenomes": "abreviados" } },
 //     "criadoEm": "2026-11-20T18:40:00.000Z",
 //     "modificadoEm": "2026-11-20T19:02:11.000Z",
-//     "documento": { "versao": 3, "blocos": [ ... ], "referencias": [ ... ] }
+//     "documento": { "versao": 4, "dados": { ... }, "abertura": { ... },
+//                    "blocos": [ ... ], "referencias": [ ... ], "imagens": [ ... ] }
 //   }
 //
 // "perfil" guarda com que versão da norma o trabalho foi feito: um trabalho já
@@ -30,6 +31,10 @@
 //      versões de teste com a versão 2, a lista entrava sozinha no fim do
 //      trabalho; ao abrir um desses arquivos, o bloco é acrescentado no fim,
 //      para o PDF continuar igual.
+//   4. Fase 3: citação longa, figura, tabela e nota de rodapé; os dados do
+//      trabalho, a abertura (capa, resumos...) e as imagens, dentro do próprio
+//      arquivo (decisão de 21/11/2026). Ao abrir um arquivo antigo, os dados
+//      começam vazios e a abertura toda desligada: o PDF continua igual.
 // Um arquivo antigo é lido normalmente e passa a ser gravado na versão atual
 // quando o trabalho mudar. Nada se perde: a conversão só acrescenta o que não
 // existia.
@@ -38,21 +43,33 @@
 // arquivo no disco fica como está.
 
 import {
+  aberturaVazia,
+  dadosVazios,
+  FORMATOS_DE_IMAGEM,
+  textosDosBlocos,
   TIPOS_DE_REFERENCIA,
+  TIPOS_DE_TRABALHO,
   VERSAO_DO_FORMATO,
+  type Abertura,
   type Autor,
   type Bloco,
   type Citacao,
+  type DadosDoTrabalho,
   type Data,
   type Documento,
+  type ElementoDeTexto,
+  type Identificacao,
+  type Imagem,
   type ItemDeLista,
   type Localizador,
   type ObraCitada,
   type Referencia,
+  type Resumo,
   type Trecho,
+  type TrechoDeTexto,
 } from "../documento/modelo";
 
-export const VERSAO_DO_ARQUIVO = 3;
+export const VERSAO_DO_ARQUIVO = 4;
 
 export interface PerfilDoTrabalho {
   perfil: string;
@@ -153,13 +170,14 @@ function conferirAjustes(v: unknown): AjustesDoTrabalho | null {
 /** Devolve o documento conferido (já na versão atual), ou o motivo do erro. */
 function conferirDocumento(v: unknown): Documento | string {
   if (!objeto(v) || !Array.isArray(v.blocos)) return "falta o texto do trabalho";
-  if (v.versao !== 1 && v.versao !== 2 && v.versao !== VERSAO_DO_FORMATO) {
+  if (![1, 2, 3, VERSAO_DO_FORMATO].includes(v.versao as number)) {
     return "o texto do trabalho está numa versão que este Apud não conhece";
   }
+  const versao = v.versao as number;
 
   // Versão 1 → 2: não havia referências; a lista começa vazia.
   let referencias: Referencia[] = [];
-  if (v.versao !== 1 || v.referencias !== undefined) {
+  if (versao !== 1 || v.referencias !== undefined) {
     if (!Array.isArray(v.referencias)) return "falta a lista de referências do trabalho";
     const ids = new Set<string>();
     for (const [i, r] of v.referencias.entries()) {
@@ -173,12 +191,31 @@ function conferirDocumento(v: unknown): Documento | string {
 
   const blocos: Bloco[] = [];
   for (const [i, b] of v.blocos.entries()) {
-    const bloco = conferirBloco(b, v.versao as number);
+    const bloco = conferirBloco(b, versao);
     if (!bloco) return `o bloco ${i + 1} do texto está estragado`;
     blocos.push(bloco);
   }
-  if (v.versao === 2) acrescentarListaNoFim(blocos);
-  return { versao: VERSAO_DO_FORMATO, blocos, referencias };
+  if (versao === 2) acrescentarListaNoFim(blocos);
+
+  // Versão 3 → 4: sem dados, abertura desligada e sem imagens. O PDF continua igual.
+  if (versao < 4) return { versao: VERSAO_DO_FORMATO, dados: dadosVazios(), abertura: aberturaVazia(), blocos, referencias, imagens: [] };
+
+  const dados = conferirDados(v.dados);
+  if (!dados) return "os dados do trabalho (título, autores, curso...) estão estragados";
+  const abertura = conferirAbertura(v.abertura);
+  if (typeof abertura === "string") return abertura;
+  if (!Array.isArray(v.imagens)) return "falta a lista de imagens do trabalho";
+  const imagens: Imagem[] = [];
+  const idsDasImagens = new Set<string>();
+  for (const [i, im] of v.imagens.entries()) {
+    const imagem = conferirImagem(im);
+    if (!imagem) return `a imagem ${i + 1} está estragada`;
+    if (idsDasImagens.has(imagem.id)) return `a imagem ${i + 1} usa o mesmo código de outra (${imagem.id})`;
+    idsDasImagens.add(imagem.id);
+    imagens.push(imagem);
+  }
+  // Figura com imagem que não está no arquivo não estraga o trabalho: o Apud avisa na figura.
+  return { versao: VERSAO_DO_FORMATO, dados, abertura, blocos, referencias, imagens };
 }
 
 /**
@@ -186,11 +223,7 @@ function conferirDocumento(v: unknown): Documento | string {
  * citações. Agora é um bloco: ele entra no fim, antes dos parágrafos vazios.
  */
 function acrescentarListaNoFim(blocos: Bloco[]) {
-  const temCitacao = (trechos: Trecho[]) => trechos.some((t) => "citacao" in t);
-  const nosItens = (itens: ItemDeLista[]): boolean => itens.some((i) => temCitacao(i.trechos) || (i.subitens ? nosItens(i.subitens) : false));
-  const citado = blocos.some((b) =>
-    b.tipo === "paragrafo" || b.tipo === "titulo" ? temCitacao(b.trechos) : b.tipo === "lista" ? nosItens(b.itens) : false,
-  );
+  const citado = textosDosBlocos(blocos).some((trechos) => trechos.some((t) => "citacao" in t));
   if (!citado) return;
   let fim = blocos.length;
   while (fim > 0 && blocos[fim - 1].tipo === "paragrafo" && (blocos[fim - 1] as { trechos: Trecho[] }).trechos.length === 0) fim--;
@@ -199,20 +232,21 @@ function acrescentarListaNoFim(blocos: Bloco[]) {
 
 function conferirBloco(b: unknown, versao: number): Bloco | null {
   if (!objeto(b)) return null;
+  const trechos = (x: unknown) => conferirTrechos(x, versao >= 4);
   switch (b.tipo) {
     case "paragrafo": {
-      const trechos = conferirTrechos(b.trechos);
-      return trechos && { tipo: "paragrafo", trechos };
+      const t = trechos(b.trechos);
+      return t && { tipo: "paragrafo", trechos: t };
     }
     case "titulo": {
-      const trechos = conferirTrechos(b.trechos);
+      const t = trechos(b.trechos);
       const nivel = b.nivel;
-      if (!trechos || ![1, 2, 3, 4, 5].includes(nivel as number)) return null;
+      if (!t || ![1, 2, 3, 4, 5].includes(nivel as number)) return null;
       // (Uma versão de teste guardava "numerado"; hoje o número é escrito no texto, e o campo é ignorado.)
-      return { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos };
+      return { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos: t };
     }
     case "lista": {
-      const itens = conferirItens(b.itens);
+      const itens = conferirItens(b.itens, versao);
       if (!itens || typeof b.sequencia !== "boolean") return null;
       return { tipo: "lista", sequencia: b.sequencia, itens };
     }
@@ -220,21 +254,73 @@ function conferirBloco(b: unknown, versao: number): Bloco | null {
       return { tipo: "quebra" };
     case "referencias":
       return versao >= 3 ? { tipo: "referencias" } : null;
+    // Fase 3 (versão 4)
+    case "citacaoLonga": {
+      const t = versao >= 4 ? trechos(b.trechos) : null;
+      return t && { tipo: "citacaoLonga", trechos: t };
+    }
+    case "figura": {
+      if (versao < 4 || !texto(b.imagem) || !b.imagem) return null;
+      if (b.especie !== undefined && b.especie !== "grafico" && b.especie !== "quadro") return null;
+      if (b.largura !== undefined && !(typeof b.largura === "number" && b.largura >= 10 && b.largura <= 100)) return null;
+      const id = conferirIdentificacao(b);
+      if (!id) return null;
+      return {
+        tipo: "figura",
+        imagem: b.imagem,
+        ...(b.especie ? { especie: b.especie } : {}),
+        ...(b.largura !== undefined && b.largura < 100 ? { largura: b.largura } : {}),
+        ...id,
+      };
+    }
+    case "tabela": {
+      if (versao < 4 || !Array.isArray(b.linhas) || b.linhas.length === 0) return null;
+      const linhas: Trecho[][][] = [];
+      for (const linha of b.linhas) {
+        if (!Array.isArray(linha) || linha.length === 0) return null;
+        const celulas: Trecho[][] = [];
+        for (const c of linha) {
+          const t = trechos(c);
+          if (!t) return null;
+          celulas.push(t);
+        }
+        linhas.push(celulas);
+      }
+      // A grade é retangular: toda linha com o mesmo número de células.
+      if (linhas.some((l) => l.length !== linhas[0].length)) return null;
+      const cab = b.cabecalho;
+      if (typeof cab !== "number" || !Number.isInteger(cab) || cab < 0 || cab > linhas.length) return null;
+      const id = conferirIdentificacao(b);
+      return id && { tipo: "tabela", linhas, cabecalho: cab, ...id };
+    }
     default:
       return null;
   }
 }
 
-function conferirItens(v: unknown): ItemDeLista[] | null {
+/** Título, fonte e nota de uma figura ou tabela. */
+function conferirIdentificacao(b: Record<string, unknown>): Identificacao | null {
+  const titulo = conferirTrechos(b.titulo, true);
+  const fonte = conferirTrechos(b.fonte, true);
+  if (!titulo || !fonte || !opcional(b.fontePropria, simOuNao)) return null;
+  let nota: Trecho[] | null | undefined;
+  if (b.nota !== undefined) {
+    nota = conferirTrechos(b.nota, true);
+    if (!nota) return null;
+  }
+  return { titulo, fonte, ...(b.fontePropria ? { fontePropria: true as const } : {}), ...(nota?.length ? { nota } : {}) };
+}
+
+function conferirItens(v: unknown, versao: number): ItemDeLista[] | null {
   if (!Array.isArray(v) || v.length === 0) return null;
   const itens: ItemDeLista[] = [];
   for (const it of v) {
     if (!objeto(it)) return null;
-    const trechos = conferirTrechos(it.trechos);
+    const trechos = conferirTrechos(it.trechos, versao >= 4);
     if (!trechos) return null;
     const item: ItemDeLista = { trechos };
     if (it.subitens !== undefined) {
-      const sub = conferirItens(it.subitens);
+      const sub = conferirItens(it.subitens, versao);
       if (!sub) return null;
       item.subitens = sub;
     }
@@ -245,7 +331,17 @@ function conferirItens(v: unknown): ItemDeLista[] | null {
 
 const MARCAS = ["negrito", "italico", "sobrescrito"];
 
-function conferirTrechos(v: unknown): Trecho[] | null {
+/** Um pedaço de texto com marcas. */
+function conferirTrechoDeTexto(t: Record<string, unknown>): TrechoDeTexto | null {
+  if (typeof t.texto !== "string") return null;
+  if (t.marcas === undefined) return { texto: t.texto };
+  if (!Array.isArray(t.marcas) || !t.marcas.every((m) => MARCAS.includes(m))) return null;
+  const marcas = MARCAS.filter((m) => (t.marcas as string[]).includes(m)) as ("negrito" | "italico" | "sobrescrito")[];
+  return marcas.length ? { texto: t.texto, marcas } : { texto: t.texto };
+}
+
+/** Texto, citações e (desde a versão 4) notas de rodapé. */
+function conferirTrechos(v: unknown, comNotas: boolean): Trecho[] | null {
   if (!Array.isArray(v)) return null;
   const trechos: Trecho[] = [];
   for (const t of v) {
@@ -256,16 +352,107 @@ function conferirTrechos(v: unknown): Trecho[] | null {
       trechos.push({ citacao });
       continue;
     }
-    if (typeof t.texto !== "string") return null;
-    if (t.marcas === undefined) {
-      trechos.push({ texto: t.texto });
+    if (t.nota !== undefined) {
+      if (!comNotas || !objeto(t.nota)) return null;
+      const dentro = conferirSoTexto(t.nota.trechos);
+      if (!dentro) return null;
+      trechos.push({ nota: { trechos: dentro } });
       continue;
     }
-    if (!Array.isArray(t.marcas) || !t.marcas.every((m) => MARCAS.includes(m))) return null;
-    const marcas = MARCAS.filter((m) => (t.marcas as string[]).includes(m)) as ("negrito" | "italico" | "sobrescrito")[];
-    trechos.push(marcas.length ? { texto: t.texto, marcas } : { texto: t.texto });
+    const tt = conferirTrechoDeTexto(t);
+    if (!tt) return null;
+    trechos.push(tt);
   }
   return trechos;
+}
+
+/** Só texto com marcas: notas de rodapé e os textos da abertura (resumo, dedicatória...). */
+function conferirSoTexto(v: unknown): TrechoDeTexto[] | null {
+  if (!Array.isArray(v)) return null;
+  const trechos: TrechoDeTexto[] = [];
+  for (const t of v) {
+    const tt = objeto(t) ? conferirTrechoDeTexto(t) : null;
+    if (!tt) return null;
+    trechos.push(tt);
+  }
+  return trechos;
+}
+
+// ---------------------------------------------------------------------------
+// Dados do trabalho, abertura e imagens (versão 4)
+
+const CAMPOS_DOS_DADOS = ["subtitulo", "curso", "instituicao", "orientador", "cidade", "disciplina", "natureza"] as const;
+
+/** Os dados do trabalho. Campos que este Apud não conhece são mantidos. */
+function conferirDados(v: unknown): DadosDoTrabalho | null {
+  if (!objeto(v)) return null;
+  if (!(TIPOS_DE_TRABALHO as readonly unknown[]).includes(v.tipo)) return null;
+  if (!texto(v.idioma) || !v.idioma || !texto(v.titulo)) return null;
+  if (!Array.isArray(v.autores) || !v.autores.every(texto)) return null;
+  if (!CAMPOS_DOS_DADOS.every((c) => opcional(v[c], texto))) return null;
+  if (v.ano !== undefined && !(typeof v.ano === "number" && Number.isInteger(v.ano))) return null;
+  if (!opcional(v.dataDeEntrega, conferirData)) return null;
+  return structuredClone(v) as unknown as DadosDoTrabalho;
+}
+
+function conferirElemento(v: unknown): ElementoDeTexto | null {
+  if (!objeto(v) || typeof v.incluir !== "boolean" || !Array.isArray(v.paragrafos)) return null;
+  const paragrafos: TrechoDeTexto[][] = [];
+  for (const p of v.paragrafos) {
+    const t = conferirSoTexto(p);
+    if (!t) return null;
+    paragrafos.push(t);
+  }
+  return { incluir: v.incluir, paragrafos };
+}
+
+function conferirResumo(v: unknown): Resumo | null {
+  if (!objeto(v) || !texto(v.idioma) || !v.idioma || !opcional(v.titulo, texto)) return null;
+  const trechos = conferirSoTexto(v.trechos);
+  if (!trechos || !Array.isArray(v.palavrasChave) || !v.palavrasChave.every(texto)) return null;
+  return { idioma: v.idioma, ...(v.titulo !== undefined ? { titulo: v.titulo } : {}), trechos, palavrasChave: [...v.palavrasChave] };
+}
+
+/** A abertura do trabalho, ou o motivo do erro. */
+function conferirAbertura(v: unknown): Abertura | string {
+  const erro = "os elementos antes do texto (capa, resumos...) estão estragados";
+  if (!objeto(v)) return erro;
+  const chaves = ["capa", "folhaDeRosto", "paginaDeTitulo", "sumario", "semIdentificacao"] as const;
+  if (!chaves.every((c) => typeof v[c] === "boolean")) return erro;
+  const dedicatoria = conferirElemento(v.dedicatoria);
+  const agradecimentos = conferirElemento(v.agradecimentos);
+  const epigrafe = conferirElemento(v.epigrafe);
+  if (!dedicatoria || !agradecimentos || !epigrafe || !objeto(v.epigrafe) || !texto(v.epigrafe.autoria)) return erro;
+  if (!Array.isArray(v.resumos)) return erro;
+  const resumos: Resumo[] = [];
+  for (const [i, r] of v.resumos.entries()) {
+    const resumo = conferirResumo(r);
+    if (!resumo) return `o resumo ${i + 1} está estragado`;
+    resumos.push(resumo);
+  }
+  return {
+    capa: v.capa as boolean,
+    folhaDeRosto: v.folhaDeRosto as boolean,
+    paginaDeTitulo: v.paginaDeTitulo as boolean,
+    dedicatoria,
+    agradecimentos,
+    epigrafe: { ...epigrafe, autoria: v.epigrafe.autoria },
+    resumos,
+    sumario: v.sumario as boolean,
+    semIdentificacao: v.semIdentificacao as boolean,
+  };
+}
+
+const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;
+const inteiroPositivo = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v) && v > 0;
+
+/** Uma imagem: o código, o formato e o arquivo em base64. Campos desconhecidos são mantidos. */
+function conferirImagem(v: unknown): Imagem | null {
+  if (!objeto(v) || !texto(v.id) || !v.id) return null;
+  if (!(FORMATOS_DE_IMAGEM as readonly unknown[]).includes(v.formato)) return null;
+  if (!texto(v.dados) || v.dados.length % 4 !== 0 || !BASE64.test(v.dados)) return null;
+  if (!opcional(v.largura, inteiroPositivo) || !opcional(v.altura, inteiroPositivo) || !opcional(v.nome, texto)) return null;
+  return structuredClone(v) as unknown as Imagem;
 }
 
 // ---------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 // (várias páginas), quebras de página, lista com subitens, itálico, negrito,
 // sobrescrito e sinais que o Typst trata como comando.
 
-import type { Bloco, Documento, Trecho } from "../documento/modelo";
+import { documentoVazio, type Bloco, type Documento, type Trecho } from "../documento/modelo";
 
 const p = (...trechos: Array<string | Trecho>): Bloco => ({
   tipo: "paragrafo",
@@ -19,7 +19,7 @@ const longo =
   "espaço para nomear o que foi visto, duvidar do que foi feito e reorganizar o que foi aprendido antes de voltar ao serviço.";
 
 export const TEXTO_DE_EXEMPLO: Documento = {
-  versao: 3,
+  ...documentoVazio(),
   blocos: [
     t(1, "1 INTRODUÇÃO"),
     p(longo),

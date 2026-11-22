@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "../editor/Editor";
-import { VERSAO_DO_FORMATO, type Bloco, type Citacao, type Documento, type Referencia } from "../documento/modelo";
+import {
+  VERSAO_DO_FORMATO,
+  type Abertura,
+  type Bloco,
+  type Citacao,
+  type DadosDoTrabalho,
+  type Documento,
+  type Imagem,
+  type Referencia,
+} from "../documento/modelo";
 import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
 import { escreverArquivo, type Trabalho } from "../arquivos/formato";
 import { SalvamentoAutomatico, type SituacaoDoSalvamento } from "../arquivos/salvamento";
@@ -31,6 +40,12 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   // As referências não passam pelo editor: ficam aqui, e o documento é montado
   // na hora de gravar. Assim, nada que aconteça no editor apaga uma referência.
   const referencias = useRef<Referencia[]>(trabalho.documento.referencias);
+  // Os dados do trabalho, a abertura (capa, resumos...) e as imagens também
+  // ficam aqui, fora do editor, e voltam inteiros ao gravar. As telas que os
+  // mudam chegam nas partes 3 e 5 da fase 3.
+  const dados = useRef<DadosDoTrabalho>(trabalho.documento.dados);
+  const abertura = useRef<Abertura>(trabalho.documento.abertura);
+  const imagens = useRef<Imagem[]>(trabalho.documento.imagens);
   // A norma do trabalho, com os ajustes que ele guarda para ela (escolhas do
   // autor). Trocar a norma muda o perfil do trabalho; os ajustes de cada norma
   // ficam guardados, e voltar para a anterior encontra as escolhas como estavam.
@@ -53,7 +68,10 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   const citacoes = useMemo(
     () =>
       new CitacoesNoTexto((blocos) =>
-        montarTodas({ versao: VERSAO_DO_FORMATO, blocos, referencias: referencias.current }, lerNorma.current().perfil),
+        montarTodas(
+          { versao: VERSAO_DO_FORMATO, dados: dados.current, abertura: abertura.current, blocos, referencias: referencias.current, imagens: imagens.current },
+          lerNorma.current().perfil,
+        ),
       ),
     [],
   );
@@ -61,7 +79,14 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   const lerDocumento = useRef<() => Documento>(() => {
     // Se o editor não estiver disponível, usa o último texto lido: nunca grava um texto vazio por engano.
     if (lerTexto.current) ultimoTexto.current = lerTexto.current();
-    return { versao: VERSAO_DO_FORMATO, blocos: ultimoTexto.current, referencias: referencias.current };
+    return {
+      versao: VERSAO_DO_FORMATO,
+      dados: dados.current,
+      abertura: abertura.current,
+      blocos: ultimoTexto.current,
+      referencias: referencias.current,
+      imagens: imagens.current,
+    };
   });
   const nomeSalvo = useRef(trabalho.nome);
   const [nome, setNome] = useState(trabalho.nome);

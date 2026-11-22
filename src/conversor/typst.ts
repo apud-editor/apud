@@ -25,6 +25,8 @@
 
 import {
   ehCitacao,
+  ehNota,
+  ehTexto,
   type Bloco,
   type Documento,
   type ItemDeLista,
@@ -403,7 +405,7 @@ export function posicionarEnfase(trechos: Trecho[], enfase: string | undefined):
       if (temGrifo(t.citacao)) {
         for (let j = saida.length - 1; j >= inicio; j--) {
           const antes = saida[j];
-          if (!ehCitacao(antes) && antes.marcas?.includes("italico")) {
+          if (ehTexto(antes) && antes.marcas?.includes("italico")) {
             saida.splice(j + 1, 0, { texto: ` ${enfase}` } as TrechoDeTexto);
             break;
           }
@@ -427,7 +429,7 @@ export function pedacosParaTypst(pedacos: Pedaco[]): string {
 export const registrar = (id: string) => `#cite(label(${texto(id)}), form: none)`;
 
 /** Se há algo escrito (texto ou citação), sem montar as citações. */
-const temConteudo = (trechos: Trecho[]) => trechos.some((t) => ehCitacao(t) || t.texto.trim());
+const temConteudo = (trechos: Trecho[]) => trechos.some((t) => !ehTexto(t) || t.texto.trim());
 
 function blocoParaTypst(b: Bloco, m: Medidas, e: Escrita): string {
   switch (b.tipo) {
@@ -451,13 +453,21 @@ function blocoParaTypst(b: Bloco, m: Medidas, e: Escrita): string {
       return "#pagebreak(weak: true)\n";
     case "referencias":
       return e.lista();
+    // Fase 3, parte 1: os blocos novos já são lidos, mas a forma deles no PDF
+    // (recuo, fonte menor, numeração das figuras e tabelas) chega na parte 2.
+    // Até lá, a citação longa sai como um parágrafo, como antes.
+    case "citacaoLonga":
+      return temConteudo(b.trechos) ? `${trechosParaTypst(b.trechos, e)}\n` : "";
+    case "figura":
+    case "tabela":
+      return `// ${b.tipo}: a forma no PDF chega na parte 2 da fase 3\n`;
   }
 }
 
 /** O ponto que fecha um título na mesma linha (APA), se a pessoa não pôs pontuação. */
 function finalDoTitulo(trechos: Trecho[], m: Medidas): string {
-  const ultimo = [...trechos].reverse().find((t) => !ehCitacao(t) && t.texto.trim());
-  const termina = ultimo && !ehCitacao(ultimo) ? /[.?!:]$/.test(ultimo.texto.trim()) : false;
+  const ultimo = [...trechos].reverse().find((t) => ehTexto(t) && t.texto.trim());
+  const termina = ultimo && ehTexto(ultimo) ? /[.?!:]$/.test(ultimo.texto.trim()) : false;
   return m.finalNaMesmaLinha && !termina ? escaparTexto(m.finalNaMesmaLinha) : "";
 }
 
@@ -473,10 +483,11 @@ function tituloNaMesmaLinha(nivel: NivelDeTitulo, titulo: Trecho[], paragrafo: T
 
 /** Tira do começo do título o número que a pessoa escreveu ("1.1 "). */
 function numeroDoTitulo(trechos: Trecho[]): { numero: string; trechos: Trecho[] } {
-  if (!trechos.length || ehCitacao(trechos[0])) return { numero: "", trechos };
-  const { numero, resto } = separarNumero(trechos[0].texto);
+  const primeiro = trechos[0];
+  if (!primeiro || !ehTexto(primeiro)) return { numero: "", trechos };
+  const { numero, resto } = separarNumero(primeiro.texto);
   if (!numero) return { numero: "", trechos };
-  return { numero, trechos: [{ ...trechos[0], texto: resto }, ...trechos.slice(1)] };
+  return { numero, trechos: [{ ...primeiro, texto: resto }, ...trechos.slice(1)] };
 }
 
 function listaParaTypst(itens: ItemDeLista[], sequencia: boolean, nivel: number, m: Medidas, e: Escrita): string {
@@ -512,6 +523,8 @@ function trechosParaTypst(trechos: Trecho[], e: Escrita): string {
         const c = e.motor.montar(t.citacao);
         return c.obras.map(registrar).join("") + pedacosParaTypst(c.pedacos);
       }
+      // A forma da nota (fonte menor, filete) vem do perfil na parte 2; por ora, a nota padrão do Typst.
+      if (ehNota(t)) return `#footnote[${trechosParaTypst(t.nota.trechos, e)}]`;
       let s = escaparTexto(t.texto);
       const m = t.marcas ?? [];
       if (m.includes("sobrescrito")) s = `#super[${s}]`;

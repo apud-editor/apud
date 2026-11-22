@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 import { carregarNorma } from "../../scripts/prova-lib";
 import { montarTodas } from "../citacoes/todas";
 import { formularioNovo, formularioParaCitacao, obraVazia } from "../citacoes/janela";
-import type { Bloco, Citacao, Referencia } from "../documento/modelo";
+import { documentoVazio, type Bloco, type Citacao, type Referencia } from "../documento/modelo";
 import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
 import { CitacoesNoTexto, ControleDaJanela, distribuirCitacoes } from "./citacoes";
 import { citacaoSelecionada, citacoesDoEditor, colagemDoApud, escreverArroba, inserirCitacao, podeAbrirAqui, trocarCitacao } from "./citar";
@@ -130,7 +130,7 @@ describe("o texto de cada citação na norma, no editor", () => {
     { tipo: "paragrafo", trechos: [{ citacao: par("a", "5") }, ...textos(" e "), { citacao: par("b") }] },
     { tipo: "paragrafo", trechos: [{ citacao: par("sumiu") }] },
   ];
-  const calcular = (norma: string) => (blocos: Bloco[]) => montarTodas({ versao: 3, blocos, referencias: refs }, carregarNorma(norma).perfil);
+  const calcular = (norma: string) => (blocos: Bloco[]) => montarTodas({ ...documentoVazio(), blocos, referencias: refs }, carregarNorma(norma).perfil);
 
   it("cada peça do editor recebe o texto da sua citação, na ordem do texto", () => {
     const e = estado(texto);

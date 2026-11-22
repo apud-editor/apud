@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { carregarNorma, documentoDeProva } from "../../scripts/prova-lib";
-import type { Bloco, Citacao, Documento, Referencia } from "../documento/modelo";
+import { documentoVazio, type Bloco, type Citacao, type Documento, type Referencia } from "../documento/modelo";
 import { citacoesDoTexto } from "./motor";
 import { avisosDoTexto, montarTodas, previaDaCitacao, textoDaCitacao } from "./todas";
 
@@ -25,7 +25,7 @@ const par = (id: string, pagina?: string): Citacao => ({
 });
 const narr = (id: string): Citacao => ({ tipo: "narrativa", obra: { referencia: id } });
 const paragrafo = (...citacoes: Citacao[]): Bloco => ({ tipo: "paragrafo", trechos: citacoes.flatMap((citacao) => [{ texto: " e " }, { citacao }]) });
-const doc = (blocos: Bloco[], referencias: Referencia[]): Documento => ({ versao: 3, referencias, blocos });
+const doc = (blocos: Bloco[], referencias: Referencia[]): Documento => ({ ...documentoVazio(), referencias, blocos });
 const textos = (norma: string, d: Documento, ajustes: Record<string, string> = {}) =>
   montarTodas(d, carregarNorma(norma, ajustes).perfil).map(textoDaCitacao);
 

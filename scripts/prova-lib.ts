@@ -16,7 +16,7 @@ import { escaparTexto, pedacosParaTypst, registrar } from "../src/conversor/typs
 import { conferirPerfis, formatarMensagem, normaDoTrabalho, type Arquivo, type NormaDoTrabalho } from "../src/perfis";
 import type { PerfilResolvido } from "../src/perfis";
 import type { EsquemaNorma } from "../src/perfis/esquema";
-import type { Bloco, Citacao, Documento, ItemDeLista, Localizador, ObraCitada, Referencia, Trecho } from "../src/documento/modelo";
+import { documentoVazio, type Bloco, type Citacao, type Documento, type ItemDeLista, type Localizador, type ObraCitada, type Referencia, type Trecho } from "../src/documento/modelo";
 
 export const PASTA_PERFIS = join(import.meta.dirname, "..", "perfis");
 export const PASTA_PROVA = join(PASTA_PERFIS, "prova");
@@ -198,7 +198,7 @@ export function documentoDoTexto(textoCompleto: string, referencias: Referencia[
     }
   }
   fechar();
-  return { documento: { versao: 3, blocos, referencias }, escritas };
+  return { documento: { ...documentoVazio(), blocos, referencias }, escritas };
 }
 
 // ---------------------------------------------------------------------------

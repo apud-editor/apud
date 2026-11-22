@@ -4,7 +4,7 @@ import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { carregarNorma, carregarPerfil, documentoDeProva } from "../../scripts/prova-lib";
 import { documentoParaTypst, escaparTexto, letraDaAlinea } from "./typst";
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
-import type { Documento, Marca } from "../documento/modelo";
+import { documentoVazio, type Documento, type Marca } from "../documento/modelo";
 
 const { perfil } = carregarPerfil("abnt.txt");
 const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "..", "public", "fontes")] }] });
@@ -41,7 +41,7 @@ describe("conversor para o Typst", () => {
     const sinais = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ação — “aspas” 50% e/ou #1 *a* _b_ $x$ <c> @d \\ // /* ";
     const combinacoes: Marca[][] = [[], ["negrito"], ["italico"], ["sobrescrito"], ["negrito", "italico", "sobrescrito"]];
     const doc: Documento = {
-      versao: 3,
+      ...documentoVazio(),
       referencias: [],
       blocos: combinacoes.flatMap((marcas) => [
         { tipo: "titulo" as const, nivel: 2 as const, trechos: [{ texto: sinais, marcas }] },
@@ -54,7 +54,7 @@ describe("conversor para o Typst", () => {
 
   it("parágrafos e títulos vazios não viram nada", () => {
     const doc: Documento = {
-      versao: 3,
+      ...documentoVazio(),
       referencias: [],
       blocos: [
         { tipo: "paragrafo", trechos: [] },
@@ -79,7 +79,7 @@ describe("conversor para o Typst", () => {
   it("entrelinha 1,5 como no Word: 20,7 pt entre as linhas, em Times 12", () => {
     const paragrafo = "palavra ".repeat(200);
     const marca = (n: string) => `#context [#metadata(here().position()) <${n}>]`;
-    const marcado = documentoParaTypst({ versao: 3, referencias: [], blocos: [] }, perfil) + `${marca("a")}${paragrafo}\n\n${marca("b")}${paragrafo}\n`;
+    const marcado = documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: [] }, perfil) + `${marca("a")}${paragrafo}\n\n${marca("b")}${paragrafo}\n`;
     // Do começo de um parágrafo ao começo do seguinte: um número inteiro de linhas de 20,7 pt.
     const [a, b] = [posicoes(marcado, "a")[0], posicoes(marcado, "b")[0]];
     const linhas = (b.y - a.y) / 20.7;
@@ -94,18 +94,18 @@ describe("conversor para o Typst", () => {
       { tipo: "paragrafo", trechos: [{ texto: "texto" }] },
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "2 Dois" }] },
     ];
-    expect(paginas(compilar(documentoParaTypst({ versao: 3, referencias: [], blocos }, perfil)))).toBe(1);
+    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos }, perfil)))).toBe(1);
     const comQuebra: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ versao: 3, referencias: [], blocos: comQuebra }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: comQuebra }, perfil)))).toBe(2);
     // Duas quebras seguidas não deixam uma página em branco.
     const duas: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ versao: 3, referencias: [], blocos: duas }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: duas }, perfil)))).toBe(2);
   });
 });
 
 describe("títulos", () => {
   const typstDe = (blocos: Documento["blocos"]) =>
-    documentoParaTypst({ versao: 3, referencias: [], blocos }, perfil) +
+    documentoParaTypst({ ...documentoVazio(), referencias: [], blocos }, perfil) +
     `#context [#metadata(query(heading).map(h => (if h.numbering == none { "" } else { numbering(h.numbering, 1) }, h.body.fields().at("text", default: repr(h.body))))) <t>]\n`;
 
   it("o número é o que a pessoa escreveu; sem número escrito, sai sem número", () => {
@@ -121,7 +121,7 @@ describe("títulos", () => {
   });
 
   it("as letras saem como a pessoa escreveu (o Apud não põe em maiúsculas)", () => {
-    const typst = documentoParaTypst({ versao: 3, referencias: [], blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
+    const typst = documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
     expect(typst).not.toContain("upper(");
     expect(typst).toContain("strong(x)");
   });
@@ -129,7 +129,7 @@ describe("títulos", () => {
   it("título longo: a segunda linha fica sob a primeira letra do texto, não sob o número", () => {
     const longo = "palavra ".repeat(30).trim();
     const marca = `#show heading: it => { it; context [#metadata(here().position()) <fim>] }`;
-    const typst = documentoParaTypst({ versao: 3, referencias: [], blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
+    const typst = documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
     expect(() => compilar(typst + marca)).not.toThrow();
     expect(typst).toContain('numbering: (..n) => "1.1.1"');
   });
@@ -149,7 +149,7 @@ describe("pedaços do conversor", () => {
 describe("citações e lista de referências no PDF", () => {
   const { csl } = carregarNorma("abnt.txt");
   const comCitacao: Documento = {
-    versao: 3,
+    ...documentoVazio(),
     referencias: [
       { id: "s", tipo: "livro", autores: [{ sobrenome: "Silva", prenomes: "João" }], titulo: "Psicologia clínica", data: { ano: 2019 } },
       { id: "nao", tipo: "livro", autores: [{ sobrenome: "Nunca", prenomes: "Citado" }], titulo: "Fora da lista", data: { ano: 2000 } },
@@ -206,7 +206,7 @@ describe("citações e lista de referências no PDF", () => {
 
 describe("APA na página", () => {
   const apa = carregarNorma("apa.txt");
-  const doc = (blocos: Documento["blocos"]): Documento => ({ versao: 3, referencias: [], blocos });
+  const doc = (blocos: Documento["blocos"]): Documento => ({ ...documentoVazio(), referencias: [], blocos });
 
   it("margens de 2,54 cm, espaço duplo, texto à esquerda e número no cabeçalho, alinhado à margem", () => {
     const typst = documentoParaTypst(doc([{ tipo: "paragrafo", trechos: [{ texto: "texto" }] }]), apa.perfil);
@@ -262,4 +262,23 @@ describe("APA na página", () => {
     expect(typst).toContain("hanging-indent: 1.27cm, leading: 1.15em, spacing: 1.15em + 0 * 1.15em");
     expect(paginas(compilar(typst))).toBeGreaterThan(2);
   });
+});
+
+describe("fase 3, parte 1: os blocos novos não quebram o PDF", () => {
+  // A forma de cada bloco no PDF chega na parte 2. Aqui só se confere que o
+  // conversor aceita todos eles, nas duas normas, e que o Typst compila.
+  const blocos: Documento["blocos"] = [
+    { tipo: "paragrafo", trechos: [{ texto: "Texto com nota" }, { nota: { trechos: [{ texto: "A nota, com " }, { texto: "itálico", marcas: ["italico"] }] } }, { texto: "." }] },
+    { tipo: "citacaoLonga", trechos: [{ texto: "Uma citação longa, por enquanto como parágrafo." }] },
+    { tipo: "figura", imagem: "x", titulo: [{ texto: "Figura" }], fonte: [], fontePropria: true },
+    { tipo: "tabela", titulo: [{ texto: "Tabela" }], cabecalho: 1, linhas: [[[{ texto: "a" }]], [[{ texto: "1" }]]], fonte: [] },
+    { tipo: "titulo", nivel: 2, trechos: [{ nota: { trechos: [{ texto: "nota no começo do título" }] } }, { texto: " Título" }] },
+  ];
+  for (const norma of ["abnt.txt", "apa.txt"]) {
+    it(`compila em ${norma.replace(".txt", "").toUpperCase()}`, () => {
+      const typst = documentoParaTypst({ ...documentoVazio(), blocos }, carregarNorma(norma).perfil);
+      expect(typst).toContain("#footnote[A nota\\, com #emph[itálico]]");
+      expect(paginas(compilar(typst))).toBe(1);
+    });
+  }
 });
