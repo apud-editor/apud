@@ -28,6 +28,9 @@ import type { NormaDoTrabalho } from "../perfis/norma";
 import Gaveta from "./Gaveta";
 import { ATALHOS_DOS_PAINEIS, painelDoAtalho } from "./atalhos";
 import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
+import AberturaDoTrabalho from "./AberturaDoTrabalho";
+import Configuracoes, { type AbaDasConfiguracoes } from "./Configuracoes";
+import { limparDados } from "./trabalho";
 
 interface Props {
   arquivo: string;
@@ -44,8 +47,9 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   // na hora de gravar. Assim, nada que aconteça no editor apaga uma referência.
   const referencias = useRef<Referencia[]>(trabalho.documento.referencias);
   // Os dados do trabalho, a abertura (capa, resumos...) e as imagens também
-  // ficam aqui, fora do editor, e voltam inteiros ao gravar. As telas que os
-  // mudam chegam nas partes 3 e 5 da fase 3.
+  // ficam aqui, fora do editor, e voltam inteiros ao gravar. Os dados e a
+  // abertura são mudados pelas Configurações e pela "Abertura do trabalho";
+  // a tela se redesenha pela versaoDaAbertura (os valores ficam nos refs).
   const dados = useRef<DadosDoTrabalho>(trabalho.documento.dados);
   const abertura = useRef<Abertura>(trabalho.documento.abertura);
   const imagens = useRef<Imagem[]>(trabalho.documento.imagens);
@@ -91,7 +95,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
     const usadas = imagensUsadas(ultimoTexto.current);
     return {
       versao: VERSAO_DO_FORMATO,
-      dados: dados.current,
+      dados: limparDados(dados.current),
       abertura: abertura.current,
       blocos: ultimoTexto.current,
       referencias: referencias.current,
@@ -121,6 +125,9 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   }, []);
   // Sobe quando as referências ou os ajustes mudam, para a gaveta se redesenhar (os dados ficam nos refs).
   const [versaoDosDados, setVersaoDosDados] = useState(0);
+  // Sobe quando os dados ou a abertura mudam por uma tela que precisa se redesenhar.
+  const [, setVersaoDaAbertura] = useState(0);
+  const [configuracoes, setConfiguracoes] = useState<{ aba: AbaDasConfiguracoes } | null>(null);
   const [exportando, setExportando] = useState(false);
   const [exportado, setExportado] = useState<string | null>(null);
 
@@ -239,6 +246,23 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
     mudancas.dispatchEvent(new Event("mudou"));
   };
 
+  const depoisDeMudarDadosOuAbertura = (redesenhar: boolean) => {
+    if (redesenhar) setVersaoDaAbertura((v) => v + 1);
+    salvamento.houveMudanca();
+    mudancas.dispatchEvent(new Event("mudou"));
+  };
+
+  /** Os dados do trabalho (título, autores...) mudaram: o PDF e a prévia se refazem. */
+  const mudarDados = (d: DadosDoTrabalho) => {
+    dados.current = d;
+    depoisDeMudarDadosOuAbertura(true);
+  };
+
+  const mudarAbertura = (fazer: (a: Abertura) => Abertura, redesenhar: boolean) => {
+    abertura.current = fazer(abertura.current);
+    depoisDeMudarDadosOuAbertura(redesenhar);
+  };
+
   /** Uma escolha do autor: grava em ajustes[norma] só o que difere do padrão do perfil. */
   const escolher = (e: EscolhaDoAutor, valor: string) => {
     const nome = perfilAtual.current.perfil;
@@ -314,6 +338,9 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         />
         <Situacao s={situacao} />
         <span style={{ flex: 1 }} />
+        <button type="button" className="btn" onClick={() => setConfiguracoes({ aba: "dados" })}>
+          Configurações
+        </button>
         <div className="seletor-norma" role="group" aria-label="Norma do trabalho">
           {normasEmbutidas().map((n) => (
             <button
@@ -384,6 +411,16 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
           mudancas.dispatchEvent(new Event("mudou"));
         }}
         lerTexto={lerTexto}
+        antes={
+          <AberturaDoTrabalho
+            abertura={abertura.current}
+            dados={dados.current}
+            nomeDaNorma={nomeDaNorma}
+            perfil={perfilEmbutido(nomeDaNorma)}
+            aoMudar={mudarAbertura}
+            aoConfigurar={(aba) => setConfiguracoes({ aba })}
+          />
+        }
         extrasDaBarra={
           <>
             <button
@@ -420,12 +457,29 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
               mudancas={mudancas}
               aoSalvar={salvarReferencia}
               aoApagar={apagarReferencia}
-              aoEscolher={escolher}
+              aoAbrirEscolhas={() => setConfiguracoes({ aba: "escolhas" })}
               aoFechar={() => setPainel(null)}
             />
           ) : null
         }
       />
+      {configuracoes && (
+        <Configuracoes
+          aba={configuracoes.aba}
+          aoTrocarAba={(aba) => setConfiguracoes({ aba })}
+          dados={dados.current}
+          abertura={abertura.current}
+          nomeDaNorma={nomeDaNorma}
+          perfil={perfilEmbutido(nomeDaNorma)}
+          normas={normasEmbutidas()}
+          escolhas={escolhas}
+          aoMudarDados={mudarDados}
+          aoMudarAbertura={(f) => mudarAbertura(f, true)}
+          aoTrocarNorma={trocarNorma}
+          aoEscolher={escolher}
+          aoFechar={() => setConfiguracoes(null)}
+        />
+      )}
     </div>
   );
 }

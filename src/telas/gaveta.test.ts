@@ -26,7 +26,7 @@ function gaveta(referencias: Referencia[], norma = "abnt.txt") {
       mudancas: new EventTarget(),
       aoSalvar: nada,
       aoApagar: nada,
-      aoEscolher: nada,
+      aoAbrirEscolhas: nada,
       aoFechar: nada,
     }),
   );
@@ -45,15 +45,11 @@ describe("gaveta de referências", () => {
     expect(html).toContain("Buscar por autor ou título");
   });
 
-  it("mostra as escolhas do autor da norma, com o padrão marcado", () => {
+  it("as escolhas do autor não ficam mais na gaveta: ela tem só um atalho para as Configurações", () => {
     const abnt = gaveta([]);
-    expect(abnt).toContain("Escolhas do autor");
-    expect(abnt).toContain("Prenomes na lista de referências");
-    expect(abnt).toContain("Por extenso");
-    expect(abnt).toContain("(padrão da norma)");
-    const apa = gaveta([], "apa.txt");
-    expect(apa).toContain("Cidade da editora na lista");
-    expect(apa).not.toContain("Destaque do título na lista");
+    expect(abnt).toContain("Escolhas do autor…");
+    expect(abnt).not.toContain("Prenomes na lista de referências");
+    expect(abnt).not.toContain("(padrão da norma)");
   });
 });
 
