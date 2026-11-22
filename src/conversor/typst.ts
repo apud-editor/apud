@@ -271,6 +271,12 @@ interface Ilustracoes {
   respiroDaCelula: string;
   fios: boolean;
   alinhar: boolean;
+  /**
+   * Tabela em mais de uma página (IBGE, 8.3): número e título repetidos em cada
+   * página, com as indicações da primeira, das do meio e da última. Null: só o
+   * cabeçalho se repete (APA).
+   */
+  continuidade: { continua: string; continuacao: string; conclusao: string; direita: boolean } | null;
   /** Largura do texto na página, em cm, para a largura padrão das figuras. */
   larguraDoTexto: number;
 }
@@ -436,6 +442,14 @@ function citacaoLonga(r: Regras, k: number, entre: string, passo: string): Medid
 /** Os nomes das espécies, sem acento e em minúsculas, para achar "Gráfico" pela espécie "grafico". */
 const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
+function continuidadeDaTabela(r: Regras): Ilustracoes["continuidade"] {
+  if (r.talvez("tabelas em mais de uma página") !== "número, título e cabeçalho repetidos em cada página") return null;
+  const [continua, continuacao, conclusao] = r.tem("tabelas em mais de uma página, indicações")
+    ? r.lista("tabelas em mais de uma página, indicações")
+    : ["(continua)", "(continuação)", "(conclusão)"];
+  return { continua, continuacao, conclusao, direita: r.talvez("tabelas em mais de uma página, posição das indicações") !== "à esquerda" };
+}
+
 function ilustracoes(r: Regras, k: number, entre: string, passo: string, margens: ReturnType<Regras["margens"]>): Ilustracoes {
   const apa = r.tem("tabelas e figuras, número");
   const separadores: Record<string, string> = { travessão: " – ", hífen: " - ", ponto: ". ", "dois-pontos": ": " };
@@ -465,6 +479,7 @@ function ilustracoes(r: Regras, k: number, entre: string, passo: string, margens
     respiroDaCelula: `${numero(((corpo - 1) * LINHA_SIMPLES) / 2 + 0.15)}em`,
     fios: r.talvez("tabelas, fios") === "acima e abaixo do cabeçalho e no fim, sem fios nas laterais",
     alinhar: r.talvez("tabelas, alinhamento") === "cabeçalho ao centro, primeira coluna à esquerda, demais ao centro",
+    continuidade: continuidadeDaTabela(r),
     larguraDoTexto: 21 - cm(margens.esquerda) - cm(margens.direita),
   };
 }
@@ -899,7 +914,7 @@ function proximoNumero(especie: string, m: Medidas): { rotulo: string; numero: n
  *   APA:  "Figura 1" em negrito; o título em itálico na linha de baixo; embaixo, "Nota." em itálico,
  *         com a nota e a fonte (a atribuição) dentro dela.
  */
-function identificacao(b: Identificacao, especie: string, m: Medidas, e: Escrita): { acima: string[]; abaixo: string[]; titulo: string } {
+function identificacao(b: Identificacao, especie: string, m: Medidas, e: Escrita): { acima: string[]; abaixo: string[]; titulo: string; numero: number } {
   const il = m.ilustracoes;
   const { rotulo, numero: n } = proximoNumero(especie, m);
   const titulo = trechosParaTypst(b.titulo, e);
@@ -915,6 +930,7 @@ function identificacao(b: Identificacao, especie: string, m: Medidas, e: Escrita
       acima: [linha(`#strong[${escaparTexto(`${rotulo} ${n}`)}]`, il.entreDoRodape), linha(`#emph[${titulo}]`, il.entreDoRodape)],
       abaixo: corpoDaNota ? [rodape(`#emph[${escaparTexto(il.rotuloDaNota)}] ${corpoDaNota}`)] : [],
       titulo: `#emph[${titulo}]`,
+      numero: n,
     };
   }
   const sep = titulo ? escaparTexto(il.separador) : "";
@@ -923,6 +939,7 @@ function identificacao(b: Identificacao, especie: string, m: Medidas, e: Escrita
     acima: [linha(completo, m.entre)],
     abaixo: [...(fonte ? [rodape(`${escaparTexto(il.rotuloDaFonte)} ${fonte}`)] : []), ...(nota ? [rodape(nota)] : [])],
     titulo: completo,
+    numero: n,
   };
 }
 
@@ -964,43 +981,89 @@ function figuraParaTypst(b: Figura, m: Medidas, e: Escrita): string {
  * e a fonte na largura da tabela. APA: a largura do texto. Nas duas: fios só
  * no topo, embaixo do cabeçalho e no fim; o cabeçalho se repete quando a
  * tabela passa para a página seguinte.
+ *
+ * Com a continuidade do IBGE (8.3), o número e o título também se repetem em
+ * cada página: vão numa linha do cabeçalho que se repete, e logo abaixo deles
+ * a indicação da página, "(continua)", "(continuação)" ou "(conclusão)". Para
+ * saber em que página da tabela se está, duas marcas: uma antes da tabela e
+ * uma na última linha. Tabela numa página só não leva indicação.
  */
 function tabelaParaTypst(b: Tabela, m: Medidas, escrita: Escrita): string {
   const il = m.ilustracoes;
   const e: Escrita = { ...escrita, registros: [] };
-  const { acima, abaixo, titulo } = identificacao(b, "tabela", m, e);
+  const { acima, abaixo, titulo, numero: n } = identificacao(b, "tabela", m, e);
   const colunas = b.linhas[0]?.length ?? 1;
   const fio = il.fios ? "table.hline(stroke: 0.5pt)," : "";
   const celula = (c: Trecho[]) => `[${trechosParaTypst(c, e)}],`;
   const cabecalho = b.linhas.slice(0, b.cabecalho);
   const corpo = b.linhas.slice(b.cabecalho);
-  const alinhamento = il.alinhar ? `align: (x, y) => if y < ${b.cabecalho} { center } else if x == 0 { left } else { center },` : "";
-  // A grade, como função do Typst que recebe as larguras das colunas.
+  // Sem linhas no corpo não há o que continuar (e as marcas não teriam onde ficar).
+  const continuidade = il.estilo === "abnt" && corpo.length > 0 ? il.continuidade : null;
+  const inicio = `apud-tabela-${n}-inicio`;
+  const fim = `apud-tabela-${n}-fim`;
+  // As marcas vão na primeira célula da primeira e da última linha do corpo:
+  // ficam na página em que a tabela começa e na página em que termina.
+  const celulas = (linhas: Trecho[][][], marcar: boolean) =>
+    linhas
+      .flat()
+      .map((c, k, todas) => {
+        const marcas = !marcar ? "" : `${k === 0 ? `#metadata(none)<${inicio}>` : ""}${k === todas.length - linhas[linhas.length - 1].length ? `#metadata(none)<${fim}>` : ""}`;
+        return marcas ? `[${marcas}${trechosParaTypst(c, e)}],` : celula(c);
+      })
+      .join(" ");
+  // Com o título dentro da tabela, as linhas do cabeçalho da pessoa começam na terceira.
+  const primeira = continuidade ? 1 : 0;
+  const alinhamento = il.alinhar ? `align: (x, y) => if y < ${b.cabecalho + primeira} { center } else if x == 0 { left } else { center },` : "";
+  let topo = "";
+  if (continuidade) {
+    const c = continuidade;
+    const indicacao = [
+      `context {`,
+      `  let ini = locate(<${inicio}>).page()`,
+      `  let fim = locate(<${fim}>).page()`,
+      `  let aqui = here().page()`,
+      `  if ini != fim {`,
+      `    block(above: ${m.entre}, below: 0pt, width: 100%, align(${c.direita ? "right" : "left"}, if aqui == ini [${escaparTexto(c.continua)}] else if aqui == fim [${escaparTexto(c.conclusao)}] else [${escaparTexto(c.continuacao)}]))`,
+      `  }`,
+      `}`,
+    ].join("\n");
+    topo = `..if topo { (table.cell(colspan: ${colunas}, align: left, inset: (x: 0pt, top: 0pt, bottom: ${m.entre}))[#set par(leading: ${m.entre}, spacing: ${m.entre}); ${titulo} #${indicacao}],) } else { () },`;
+  }
+  // A grade, como função do Typst que recebe as larguras das colunas (e, com a
+  // continuidade, se leva o título: sem ele, para medir a largura natural).
   const grade = [
-    `let grade(colunas) = {`,
+    `let grade(colunas, topo: true) = {`,
     `  set par(leading: ${il.entreDoCorpo}, spacing: ${il.entreDoCorpo})`,
-    `  table(columns: colunas, stroke: ${il.fios ? "none" : "0.5pt"}, inset: (x: 0.4em, y: ${il.respiroDaCelula}), ${alinhamento}`,
-    `    ${cabecalho.length ? `table.header(repeat: true, ${fio} ${cabecalho.flat().map(celula).join(" ")} ${fio}),` : fio}`,
-    `    ${corpo.flat().map(celula).join(" ")}`,
-    `    ${fio}`,
+    // O fio do fim é a borda de baixo da última linha: um fio no fim da tabela o
+    // Typst repete no pé de cada página, e o IBGE (8.3) quer o fio só na última.
+    il.fios ? `  let ultima = ${b.linhas.length - 1}${continuidade ? " + if topo { 1 } else { 0 }" : ""}` : "",
+    `  table(columns: colunas, stroke: ${il.fios ? "(x, y) => if y == ultima { (bottom: 0.5pt) } else { none }" : "0.5pt"}, inset: (x: 0.4em, y: ${il.respiroDaCelula}), ${alinhamento}`,
+    continuidade
+      ? `    table.header(repeat: true, ${topo} ${fio} ${celulas(cabecalho, false)} ${cabecalho.length ? fio : ""}),`
+      : `    ${cabecalho.length ? `table.header(repeat: true, ${fio} ${cabecalho.flat().map(celula).join(" ")} ${fio}),` : fio}`,
+    `    ${continuidade ? celulas(corpo, true) : corpo.flat().map(celula).join(" ")}`,
+    // Uma linha vazia de altura zero fecha a tabela: assim o fio do fim fica entre
+    // linhas, e não na borda da tabela (que o Typst repete no pé de cada página).
+    il.fios ? `    table.cell(colspan: ${colunas}, inset: 0pt, breakable: false)[],` : "",
     `  )`,
     `}`,
   ].join("\n");
-  const partes = (gradeFinal: string) =>
-    [`#set align(left)`, `#set par(first-line-indent: 0pt, justify: false)`, ...acima, `#block(above: 0pt, below: 0pt, ${gradeFinal})`, ...abaixo].join("\n");
+  const partes = (gradeFinal: string, comTitulo = true) =>
+    [`#set align(left)`, `#set par(first-line-indent: 0pt, justify: false)`, ...(comTitulo ? acima : []), `#block(above: 0pt, below: 0pt, ${gradeFinal})`, ...abaixo].join("\n");
   if (il.estilo === "abnt") {
     // A largura do conteúdo, no meio da página. Se o título for mais largo, a
     // tabela se estica até ele, e os fios ficam na largura da identificação.
     const lugar = il.centralizada ? "center" : "left";
+    const medir = continuidade ? `grade((auto,) * ${colunas}, topo: false)` : `grade((auto,) * ${colunas})`;
     return [
       `#block(above: ${il.fora}, below: ${il.fora}, width: 100%)[${e.registros!.join("")}#layout(espaco => {`,
       grade,
-      `  let natural = measure(grade((auto,) * ${colunas}), width: espaco.width).width`,
+      `  let natural = measure(${medir}, width: espaco.width).width`,
       `  let doTitulo = measure([${titulo}], width: espaco.width).width`,
       `  let largura = calc.min(calc.max(natural, doTitulo), espaco.width)`,
       `  let final = if doTitulo > natural { grade((1fr,) * ${colunas}) } else { grade((auto,) * ${colunas}) }`,
       `  align(${lugar}, block(width: largura)[`,
-      partes("final"),
+      partes("final", !continuidade),
       `])`,
       `})]`,
       "",

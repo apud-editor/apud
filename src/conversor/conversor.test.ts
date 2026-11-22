@@ -335,7 +335,8 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
       doc([figura(), figura({ especie: "grafico" }), figura({ especie: "quadro" }), figura(), tabela(), figura({ especie: "grafico" }), tabela()]),
       abnt,
     );
-    const numeros = [...typst.matchAll(/sticky: true\)\[(\S+ \d+) –/g)].map((m) => m[1]);
+    // A figura leva o número numa linha própria; a tabela, no cabeçalho que se repete (IBGE, 8.3).
+    const numeros = [...typst.matchAll(/(?:sticky: true\)\[|bottom: 0\.575em\)\)\[#set par\(leading: 0\.575em, spacing: 0\.575em\); )(\S+ \d+) –/g)].map((m) => m[1]);
     expect(numeros).toEqual(["Figura 1", "Gráfico 1", "Quadro 1", "Figura 2", "Tabela 1", "Gráfico 2", "Tabela 2"]);
   });
 
@@ -390,20 +391,26 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     expect(() => compilar(typst)).not.toThrow();
   });
 
-  it("tabela: fios no topo, embaixo do cabeçalho e no fim, sem laterais; cabeçalho que se repete na outra página", () => {
+  it("tabela: fios no topo, embaixo do cabeçalho e no fim, sem laterais; número, título e cabeçalho que se repetem na outra página", () => {
     const typst = documentoParaTypst(doc([tabela()]), abnt);
-    expect(typst).toContain("stroke: none, inset: (x: 0.4em, y: 0.15em), align: (x, y) => if y < 1 { center } else if x == 0 { left } else { center },");
-    expect(typst).toContain("table.header(repeat: true, table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
-    expect(typst.match(/table\.hline/g)).toHaveLength(3);
+    // A linha 0 é a do número e título; o cabeçalho da pessoa vem depois.
+    expect(typst).toContain("align: (x, y) => if y < 2 { center } else if x == 0 { left } else { center },");
+    expect(typst).toMatch(/table\.header\(repeat: true, \.\.if topo \{ \(table\.cell\(colspan: 2,[^\n]*Tabela 1 – Usuários/);
+    expect(typst).toContain("table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
+    // O fio do fim é a borda de baixo da última linha (um fio na borda da tabela se repetiria no pé de cada página).
+    expect(typst.match(/table\.hline/g)).toHaveLength(2);
+    expect(typst).toContain("stroke: (x, y) => if y == ultima { (bottom: 0.5pt) } else { none }");
+    expect(typst).toContain("let ultima = 1 + if topo { 1 } else { 0 }");
     expect(typst).toContain("[Tabela 1 – Usuários]");
     expect(typst).toContain(String.raw`Fonte\: Registro \(2026\)`);
     expect(() => compilar(typst)).not.toThrow();
   });
 
-  it("tabela sem cabeçalho: só os fios do topo e do fim", () => {
+  it("tabela sem cabeçalho: só o fio do topo e o do fim (o título ainda se repete)", () => {
     const typst = documentoParaTypst(doc([tabela({ cabecalho: 0 })]), abnt);
-    expect(typst).not.toContain("table.header");
-    expect(typst.match(/table\.hline/g)).toHaveLength(2);
+    expect(typst).toContain("table.header(repeat: true, ..if topo");
+    expect(typst.match(/table\.hline/g)).toHaveLength(1);
+    expect(typst).toContain("let ultima = 1 + if topo { 1 } else { 0 }");
     expect(() => compilar(typst)).not.toThrow();
   });
 
@@ -414,6 +421,42 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     expect(typst).toContain("#strong[Tabela 1]");
     expect(typst).toContain("#emph[Nota\\.] Registro \\(2026\\)");
     expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("ABNT, tabela em mais de uma página (IBGE, 8.3): indicações (continua), (continuação) e (conclusão) pela página", () => {
+    const linhas = [[[{ texto: "Mês" }], [{ texto: "Total" }]], ...Array.from({ length: 120 }, (_, i) => [[{ texto: `Linha ${i + 1}` }], [{ texto: String(i) }]])];
+    const typst = documentoParaTypst(doc([tabela({ linhas }), tabela()]), abnt);
+    expect(typst).toContain(String.raw`if aqui == ini [\(continua\)] else if aqui == fim [\(conclusão\)] else [\(continuação\)]`);
+    expect(typst).toContain("align(right,");
+    // As marcas: na primeira e na última linha do corpo.
+    expect(typst).toContain("[#metadata(none)<apud-tabela-1-inicio>Linha 1]");
+    expect(typst).toContain("[#metadata(none)<apud-tabela-1-fim>Linha 120]");
+    expect(typst).toContain("[#metadata(none)<apud-tabela-2-inicio>#metadata(none)<apud-tabela-2-fim>Adultos]");
+    // Onde ficam as marcas no PDF: a tabela longa começa numa página e acaba noutra; a curta, numa só.
+    const sonda = `\n#context [#metadata((locate(<apud-tabela-1-inicio>).page(), locate(<apud-tabela-1-fim>).page(), locate(<apud-tabela-2-inicio>).page(), locate(<apud-tabela-2-fim>).page()))<sonda>]`;
+    const [r] = compilador.query({ mainFileContent: typst + sonda }, { selector: "<sonda>", field: "value" }) as number[][];
+    expect(r[0]).toBe(1);
+    expect(r[1]).toBeGreaterThanOrEqual(3);
+    expect(r[2]).toBe(r[3]);
+  });
+
+  it("indicações vêm do perfil (texto e posição)", () => {
+    const outro = { ...abnt, regras: new Map(abnt.regras) };
+    const regra = abnt.regras.get("tabelas em mais de uma página, posição das indicações")!;
+    outro.regras.set("tabelas em mais de uma página, posição das indicações", { ...regra, texto: "à esquerda" });
+    expect(documentoParaTypst(doc([tabela()]), outro)).toContain("align(left, if aqui");
+    const sem = { ...abnt, regras: new Map(abnt.regras) };
+    sem.regras.delete("tabelas em mais de uma página");
+    const t = documentoParaTypst(doc([tabela()]), sem);
+    expect(t).not.toContain("aqui == ini");
+    expect(t).toContain("table.header(repeat: true, table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
+    expect(() => compilar(t)).not.toThrow();
+  });
+
+  it("APA: só o cabeçalho se repete, sem indicações", () => {
+    const typst = documentoParaTypst(doc([tabela()]), apa);
+    expect(typst).not.toContain("aqui == ini");
+    expect(typst).not.toContain("apud-tabela-");
   });
 
   it("uma tabela longa passa para a página seguinte sem quebrar o PDF", () => {
