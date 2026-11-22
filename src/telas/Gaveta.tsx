@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Bloco, Referencia } from "../documento/modelo";
 import { avisoDeApagar, buscarReferencias, contarCitacoes, ordenarParaGaveta, resumoDaReferencia } from "../referencias/lista";
 import type { EscolhaDoAutor } from "../referencias/escolhas";
+import { gravarEmailDeContato, lerEmailDeContato } from "../referencias/contato";
 import { buscarPorDoi, type Consultador } from "../referencias/buscaDoi";
 import FormularioDeReferencia from "./FormularioDeReferencia";
 
@@ -192,6 +193,8 @@ export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, 
             )}
           </form>
 
+          <EmailDoCrossref />
+
           <div className="gaveta-secao-topo">
             <span className="gaveta-rotulo">Fontes cadastradas</span>
             <span style={{ flex: 1 }} />
@@ -283,5 +286,69 @@ export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, 
         </>
       )}
     </aside>
+  );
+}
+
+/**
+ * O e-mail da pessoa para o Crossref (opcional). Fica só neste computador e só
+ * vai junto com a busca pelo DOI: o Crossref responde melhor a quem se identifica.
+ */
+function EmailDoCrossref() {
+  const [guardado, setGuardado] = useState(() => lerEmailDeContato());
+  const [texto, setTexto] = useState(guardado);
+  const [aviso, setAviso] = useState<{ tipo: "ok" | "erro"; texto: string } | null>(null);
+  const mudou = texto.trim() !== guardado;
+
+  const guardar = () => {
+    const r = gravarEmailDeContato(texto);
+    if (!r.ok) {
+      setAviso({ tipo: "erro", texto: r.erro });
+      return;
+    }
+    setGuardado(r.email);
+    setTexto(r.email);
+    setAviso({ tipo: "ok", texto: r.email ? "E-mail guardado. As próximas buscas vão com ele." : "E-mail apagado. As buscas continuam funcionando, sem ele." });
+  };
+
+  return (
+    <details className="email-crossref">
+      <summary className="dica-form">{guardado ? `E-mail para o Crossref: ${guardado}` : "E-mail para o Crossref (opcional)"}</summary>
+      <form
+        noValidate
+        onSubmit={(ev) => {
+          ev.preventDefault();
+          guardar();
+        }}
+      >
+        <p className="dica-form">
+          O Crossref responde mais rápido e com mais estabilidade a quem se identifica. O e-mail fica só neste computador e só vai junto com a
+          busca pelo DOI, para o Crossref. Sem ele, a busca funciona do mesmo jeito.
+        </p>
+        <div className="doi-linha">
+          <input
+            id="email-do-crossref"
+            type="email"
+            aria-label="Seu e-mail para o Crossref"
+            placeholder="nome@exemplo.com"
+            autoComplete="email"
+            spellCheck={false}
+            value={texto}
+            aria-invalid={aviso?.tipo === "erro" ? true : undefined}
+            onChange={(ev) => {
+              setTexto(ev.target.value);
+              setAviso(null);
+            }}
+          />
+          <button type="submit" className="btn" disabled={!mudou}>
+            {texto.trim() || !guardado ? "Guardar" : "Apagar"}
+          </button>
+        </div>
+        {aviso && (
+          <p className={aviso.tipo === "erro" ? "erro-doi" : "dica-form"} role={aviso.tipo === "erro" ? "alert" : "status"}>
+            {aviso.texto}
+          </p>
+        )}
+      </form>
+    </details>
   );
 }

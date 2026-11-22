@@ -12,14 +12,7 @@
 import type { Referencia } from "../documento/modelo";
 import { converterCrossref } from "./crossref";
 import { acharPorDoi, normalizarDoi } from "./doi";
-
-/**
- * O e-mail de contato do projeto. O Crossref pede um e-mail nas consultas: quem
- * se identifica cai no grupo de acesso "educado", mais estável. É um e-mail do
- * projeto, nunca o da pessoa. Vazio, a consulta vai sem e-mail e funciona do
- * mesmo jeito, só no grupo comum.
- */
-export const EMAIL_DE_CONTATO = "";
+import { lerEmailDeContato } from "./contato";
 
 /** Quanto esperar o Crossref responder, antes de desistir. */
 export const LIMITE_DA_CONSULTA_MS = 15_000;
@@ -31,8 +24,11 @@ export type RespostaDaConsulta = { ok: true; json: unknown } | { ok: false; erro
 /** Quem faz a consulta de verdade. A tela usa consultarCrossref; os testes usam respostas de exemplo. */
 export type Consultador = (doi: string, sinal: AbortSignal) => Promise<RespostaDaConsulta>;
 
-/** O endereço da ficha do DOI. A barra do DOI fica como está; o resto é codificado. */
-export function enderecoDaConsulta(doi: string, email: string = EMAIL_DE_CONTATO): string {
+/**
+ * O endereço da ficha do DOI. A barra do DOI fica como está; o resto é codificado.
+ * Com o e-mail da pessoa (contato.ts), a consulta vai para o grupo "educado" do Crossref.
+ */
+export function enderecoDaConsulta(doi: string, email = ""): string {
   const caminho = doi.split("/").map(encodeURIComponent).join("/");
   const contato = email.trim() ? `?mailto=${encodeURIComponent(email.trim())}` : "";
   return `https://api.crossref.org/works/${caminho}${contato}`;
@@ -41,6 +37,7 @@ export function enderecoDaConsulta(doi: string, email: string = EMAIL_DE_CONTATO
 export interface OpcoesDaConsulta {
   /** Troca o "fetch" do navegador (testes). */
   buscar?: typeof fetch;
+  /** O e-mail de contato; sem ele, vale o que a pessoa guardou (contato.ts). */
   email?: string;
   limiteMs?: number;
 }
@@ -62,7 +59,7 @@ export async function consultarCrossref(doi: string, sinal: AbortSignal, opcoes:
   const cancelar = () => controle.abort();
   sinal.addEventListener("abort", cancelar, { once: true });
   try {
-    const resposta = await (opcoes.buscar ?? fetch)(enderecoDaConsulta(doi, opcoes.email), {
+    const resposta = await (opcoes.buscar ?? fetch)(enderecoDaConsulta(doi, opcoes.email ?? lerEmailDeContato()), {
       signal: controle.signal,
       headers: { Accept: "application/json" },
     });
