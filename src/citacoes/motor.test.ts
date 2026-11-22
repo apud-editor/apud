@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { carregarNorma } from "../../scripts/prova-lib";
 import { criarMotor, pedacosComoTexto, type Aviso } from "./motor";
 import { posicionarEnfase } from "../conversor/typst";
-import type { Autor, Citacao, Documento, ObraCitada, Referencia } from "../documento/modelo";
+import { documentoVazio, type Autor, type Citacao, type Documento, type ObraCitada, type Referencia } from "../documento/modelo";
 
 const pessoa = (nome: string): Autor => {
   const [sobrenome, prenomes] = nome.split(",").map((s) => s.trim());
@@ -30,7 +30,7 @@ const narr = (o: ObraCitada): Citacao => ({ tipo: "narrativa", obra: o });
 function montar(norma: "abnt.txt" | "apa.txt", referencias: Referencia[], citacoes: Citacao[], ajustes: Record<string, string> = {}) {
   const { perfil } = carregarNorma(norma, ajustes);
   const doc: Documento = {
-    versao: 3,
+    ...documentoVazio(),
     referencias,
     blocos: [{ tipo: "paragrafo", trechos: citacoes.map((citacao) => ({ citacao })) }],
   };

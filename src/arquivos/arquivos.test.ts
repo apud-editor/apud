@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { escreverArquivo, lerArquivo, type Trabalho } from "./formato";
-import type { Referencia } from "../documento/modelo";
+import { aberturaVazia, dadosVazios, documentoVazio, type Referencia } from "../documento/modelo";
 import { SalvamentoAutomatico } from "./salvamento";
 import type { Armazenamento } from "./armazenamento";
 
@@ -17,7 +17,7 @@ const trabalho: Trabalho = {
   criadoEm: "2026-11-20T18:00:00.000Z",
   modificadoEm: "2026-11-20T18:30:00.000Z",
   documento: {
-    versao: 3,
+    ...documentoVazio(),
     blocos: [
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
       { tipo: "quebra" },
@@ -79,7 +79,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa arquivo de uma versão mais nova do Apud", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.versao = 4;
+    novo.versao = 5;
     const r = lerArquivo(JSON.stringify(novo));
     expect(r.ok).toBe(false);
     expect(!r.ok && r.erro).toContain("versão mais nova");
@@ -87,7 +87,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa texto numa versão do modelo que este Apud não conhece", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.documento.versao = 4;
+    novo.documento.versao = 5;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
   });
 
@@ -110,7 +110,7 @@ describe("formato do arquivo .apud", () => {
 });
 
 describe("arquivos da fase 1 (versão 1)", () => {
-  it("abrem sem perder nada: o texto fica igual, e entram a lista de referências e os ajustes vazios", () => {
+  it("abrem sem perder nada: o texto fica igual, e entram a lista de referências, os ajustes, os dados e a abertura vazios", () => {
     const r = lerArquivo(ARQUIVO_DA_FASE_1);
     expect(r).toEqual({
       ok: true,
@@ -121,20 +121,23 @@ describe("arquivos da fase 1 (versão 1)", () => {
         criadoEm: "2026-11-20T18:40:00.000Z",
         modificadoEm: "2026-11-20T19:02:11.000Z",
         documento: {
-          versao: 3,
+          versao: 4,
+          dados: dadosVazios(),
+          abertura: aberturaVazia(),
           blocos: JSON.parse(ARQUIVO_DA_FASE_1).documento.blocos,
           referencias: [],
+          imagens: [],
         },
       },
     });
   });
 
-  it("quando o trabalho é salvo, vira a versão atual (3), e ela abre igual", () => {
+  it("quando o trabalho é salvo, vira a versão atual (4), e ela abre igual", () => {
     const r = lerArquivo(ARQUIVO_DA_FASE_1);
     if (!r.ok) throw new Error(r.erro);
     const gravado = escreverArquivo(r.trabalho);
-    expect(JSON.parse(gravado).versao).toBe(3);
-    expect(JSON.parse(gravado).documento.versao).toBe(3);
+    expect(JSON.parse(gravado).versao).toBe(4);
+    expect(JSON.parse(gravado).documento.versao).toBe(4);
     expect(lerArquivo(gravado)).toEqual(r);
   });
 
@@ -348,5 +351,215 @@ describe("salvamento automático", () => {
     await vi.advanceTimersByTimeAsync(20);
     await q;
     expect(arm.salvar).toHaveBeenLastCalledWith("Novo.apud", "t");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Versão 4 (fase 3): blocos novos, dados do trabalho, abertura e imagens
+
+/** Uma imagem PNG de 2 × 1 pixels (vermelho e azul), em base64. */
+const PNG = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAD0lEQVR4nGP4z8DAwPAfAAcAAf9+CLHQAAAAAElFTkSuQmCC";
+
+const completo: Trabalho = {
+  ...trabalho,
+  nome: "Relato completo",
+  documento: {
+    ...trabalho.documento,
+    dados: {
+      tipo: "estagio",
+      idioma: "pt-BR",
+      titulo: "Relato de experiência",
+      subtitulo: "o estágio em saúde mental",
+      autores: ["Francisco Diniz", "Ana Lima"],
+      ano: 2026,
+      curso: "Psicologia",
+      instituicao: "Universidade do Vale do Itajaí",
+      orientador: "Profa. Dra. Maria Souza",
+      cidade: "Itajaí",
+      disciplina: "Estágio Básico II",
+      dataDeEntrega: { ano: 2026, mes: 12, dia: 5 },
+      natureza: "Relatório apresentado à disciplina de Estágio Básico II.",
+    },
+    abertura: {
+      capa: true,
+      folhaDeRosto: true,
+      paginaDeTitulo: false,
+      dedicatoria: { incluir: true, paragrafos: [[{ texto: "À minha família." }]] },
+      agradecimentos: { incluir: false, paragrafos: [[{ texto: "À supervisora " }, { texto: "Maria", marcas: ["negrito"] }], [{ texto: "Aos colegas." }]] },
+      epigrafe: { incluir: true, paragrafos: [[{ texto: "Viver é muito perigoso." }]], autoria: "Guimarães Rosa" },
+      resumos: [
+        { idioma: "pt-BR", trechos: [{ texto: "Este relato descreve " }, { texto: "o estágio", marcas: ["italico"] }], palavrasChave: ["estágio", "saúde mental"] },
+        { idioma: "en", titulo: "Experience report", trechos: [{ texto: "This report describes the internship." }], palavrasChave: ["internship"] },
+      ],
+      sumario: true,
+      semIdentificacao: false,
+    },
+    blocos: [
+      ...trabalho.documento.blocos.slice(0, -1),
+      {
+        tipo: "paragrafo",
+        trechos: [{ texto: "Texto com nota" }, { nota: { trechos: [{ texto: "A nota." }] } }, { texto: "." }],
+      },
+      {
+        tipo: "citacaoLonga",
+        trechos: [{ texto: "Uma citação longa " }, { citacao: { tipo: "parenteses", direta: true, obras: [{ referencia: "silva2019", localizador: { tipo: "pagina", valor: "15" } }] } }],
+      },
+      {
+        tipo: "figura",
+        imagem: "png-1",
+        especie: "grafico",
+        largura: 70,
+        titulo: [{ texto: "Atendimentos" }],
+        fonte: [{ citacao: { tipo: "narrativa", obra: { referencia: "lima2018" } } }],
+        nota: [{ texto: "Legenda." }],
+      },
+      { tipo: "figura", imagem: "png-1", titulo: [{ texto: "De novo" }], fonte: [], fontePropria: true },
+      {
+        tipo: "tabela",
+        titulo: [{ texto: "Usuários" }],
+        cabecalho: 1,
+        linhas: [
+          [[{ texto: "Grupo" }], [{ texto: "Total" }]],
+          [[{ texto: "Adultos" }], [{ texto: "12" }]],
+        ],
+        fonte: [{ texto: "Dados do serviço" }],
+      },
+      { tipo: "referencias" },
+    ],
+    imagens: [{ id: "png-1", formato: "png", dados: PNG, largura: 2, altura: 1, nome: "grafico.png" }],
+  },
+};
+
+describe("arquivos da versão 4 (fase 3)", () => {
+  const comMudanca = (mudar: (a: any) => void) => {
+    const a = JSON.parse(escreverArquivo(completo));
+    mudar(a);
+    return lerArquivo(JSON.stringify(a));
+  };
+
+  it("um trabalho com tudo da fase 3 escreve e lê de volta sem mudar nada", () => {
+    const texto = escreverArquivo(completo);
+    expect(JSON.parse(texto).versao).toBe(4);
+    expect(lerArquivo(texto)).toEqual({ ok: true, trabalho: completo });
+  });
+
+  it("desligar um elemento da abertura não apaga o que foi escrito nele", () => {
+    const r = lerArquivo(escreverArquivo(completo));
+    expect(r.ok && r.trabalho.documento.abertura.agradecimentos).toEqual(completo.documento.abertura.agradecimentos);
+  });
+
+  it("arquivos da versão 3 abrem com os dados vazios, a abertura desligada e sem imagens: o PDF continua igual", () => {
+    const a = JSON.parse(escreverArquivo(trabalho));
+    a.versao = 3;
+    a.documento = { versao: 3, blocos: a.documento.blocos, referencias: a.documento.referencias };
+    const r = lerArquivo(JSON.stringify(a));
+    expect(r).toEqual({ ok: true, trabalho: { ...trabalho, documento: { ...trabalho.documento, dados: dadosVazios(), abertura: aberturaVazia(), imagens: [] } } });
+  });
+
+  it("os blocos novos e a nota de rodapé só existem a partir da versão 4", () => {
+    const daVersao3 = (bloco: unknown) => {
+      const a = JSON.parse(escreverArquivo(trabalho));
+      a.versao = 3;
+      a.documento = { versao: 3, blocos: [bloco], referencias: a.documento.referencias };
+      return lerArquivo(JSON.stringify(a));
+    };
+    expect(daVersao3({ tipo: "citacaoLonga", trechos: [] })).toEqual({ ok: false, erro: "o bloco 1 do texto está estragado" });
+    expect(daVersao3({ tipo: "figura", imagem: "x", titulo: [], fonte: [] }).ok).toBe(false);
+    expect(daVersao3({ tipo: "tabela", linhas: [[[]]], cabecalho: 0, titulo: [], fonte: [] }).ok).toBe(false);
+    expect(daVersao3({ tipo: "paragrafo", trechos: [{ nota: { trechos: [] } }] }).ok).toBe(false);
+  });
+
+  it("um trabalho real gravado na versão 3 (o artigo da UNIVALI, antes da fase 3) abre inteiro", () => {
+    const texto = readFileSync(join(import.meta.dirname, "exemplos", "artigo-versao-3.apud"), "utf8");
+    const antigo = JSON.parse(texto);
+    expect(antigo.versao).toBe(3);
+    const r = lerArquivo(texto);
+    if (!r.ok) throw new Error(r.erro);
+    expect(r.trabalho.documento).toEqual({
+      versao: 4,
+      dados: dadosVazios(),
+      abertura: aberturaVazia(),
+      blocos: antigo.documento.blocos,
+      referencias: antigo.documento.referencias,
+      imagens: [],
+    });
+    expect(r.trabalho.ajustes).toEqual(antigo.ajustes);
+    expect(lerArquivo(escreverArquivo(r.trabalho))).toEqual(r);
+  });
+
+  it("os arquivos .apud dos artigos de teste abrem inteiros", () => {
+    for (const pasta of ["univali-abnt", "revista-apa"]) {
+      const dir = join(import.meta.dirname, "..", "..", "perfis", "artigos", pasta);
+      const arquivo = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8")).arquivo as string;
+      const texto = readFileSync(join(dir, arquivo), "utf8");
+      const r = lerArquivo(texto);
+      if (!r.ok) throw new Error(`${pasta}: ${r.erro}`);
+      expect(r.trabalho.documento.blocos).toEqual(JSON.parse(texto).documento.blocos);
+      expect(r.trabalho.documento.referencias).toEqual(JSON.parse(texto).documento.referencias);
+      expect(lerArquivo(escreverArquivo(r.trabalho))).toEqual(r);
+    }
+  });
+
+  it("recusa tabela que não é uma grade retangular, ou com cabeçalho maior que a tabela", () => {
+    const tabela = (a: any) => a.documento.blocos.find((b: any) => b.tipo === "tabela");
+    expect(comMudanca((a) => tabela(a).linhas[1].push([]))).toEqual({ ok: false, erro: "o bloco 11 do texto está estragado" });
+    expect(comMudanca((a) => (tabela(a).linhas = [])).ok).toBe(false);
+    expect(comMudanca((a) => (tabela(a).linhas[0] = [])).ok).toBe(false);
+    expect(comMudanca((a) => (tabela(a).cabecalho = 3)).ok).toBe(false);
+    expect(comMudanca((a) => (tabela(a).cabecalho = -1)).ok).toBe(false);
+    expect(comMudanca((a) => (tabela(a).cabecalho = 2)).ok).toBe(true);
+  });
+
+  it("recusa figura estragada, mas aceita figura cuja imagem sumiu (o Apud avisa na figura)", () => {
+    const figura = (a: any) => a.documento.blocos.find((b: any) => b.tipo === "figura");
+    expect(comMudanca((a) => (figura(a).imagem = "")).ok).toBe(false);
+    expect(comMudanca((a) => (figura(a).especie = "mapa")).ok).toBe(false);
+    expect(comMudanca((a) => (figura(a).largura = 5)).ok).toBe(false);
+    expect(comMudanca((a) => (figura(a).titulo = "solto")).ok).toBe(false);
+    expect(comMudanca((a) => delete figura(a).fonte).ok).toBe(false);
+    expect(comMudanca((a) => (figura(a).imagem = "outra")).ok).toBe(true);
+  });
+
+  it("recusa imagem estragada ou repetida, dizendo qual", () => {
+    expect(comMudanca((a) => (a.documento.imagens[0].dados = "não é base64!"))).toEqual({ ok: false, erro: "a imagem 1 está estragada" });
+    expect(comMudanca((a) => (a.documento.imagens[0].dados = PNG.slice(0, -1))).ok).toBe(false);
+    expect(comMudanca((a) => (a.documento.imagens[0].formato = "bmp")).ok).toBe(false);
+    expect(comMudanca((a) => (a.documento.imagens[0].largura = 0)).ok).toBe(false);
+    expect(comMudanca((a) => a.documento.imagens.push({ ...a.documento.imagens[0] }))).toEqual({
+      ok: false,
+      erro: "a imagem 2 usa o mesmo código de outra (png-1)",
+    });
+    expect(comMudanca((a) => delete a.documento.imagens)).toEqual({ ok: false, erro: "falta a lista de imagens do trabalho" });
+  });
+
+  it("recusa dados e abertura estragados, com o motivo", () => {
+    const dadosRuins = { ok: false, erro: "os dados do trabalho (título, autores, curso...) estão estragados" };
+    expect(comMudanca((a) => (a.documento.dados.tipo = "romance"))).toEqual(dadosRuins);
+    expect(comMudanca((a) => (a.documento.dados.autores = "Francisco"))).toEqual(dadosRuins);
+    expect(comMudanca((a) => (a.documento.dados.ano = "2026"))).toEqual(dadosRuins);
+    expect(comMudanca((a) => (a.documento.dados.dataDeEntrega = { ano: 2026, mes: 13 }))).toEqual(dadosRuins);
+    expect(comMudanca((a) => delete a.documento.dados)).toEqual(dadosRuins);
+    const aberturaRuim = { ok: false, erro: "os elementos antes do texto (capa, resumos...) estão estragados" };
+    expect(comMudanca((a) => (a.documento.abertura.capa = "sim"))).toEqual(aberturaRuim);
+    expect(comMudanca((a) => delete a.documento.abertura.epigrafe.autoria)).toEqual(aberturaRuim);
+    expect(comMudanca((a) => (a.documento.abertura.dedicatoria.paragrafos = [[{ citacao: { tipo: "sem-referencia", texto: "x" } }]]))).toEqual(aberturaRuim);
+    expect(comMudanca((a) => (a.documento.abertura.resumos[1].palavrasChave = "a; b"))).toEqual({ ok: false, erro: "o resumo 2 está estragado" });
+    expect(comMudanca((a) => (a.documento.abertura.resumos[0].idioma = ""))).toEqual({ ok: false, erro: "o resumo 1 está estragado" });
+  });
+
+  it("nota de rodapé só com texto: citação ou nota dentro da nota estraga o bloco", () => {
+    const comNota = (a: any) => a.documento.blocos.find((b: any) => b.trechos?.some((t: any) => t.nota)).trechos[1];
+    expect(comMudanca((a) => comNota(a).nota.trechos.push({ citacao: { tipo: "sem-referencia", texto: "x" } })).ok).toBe(false);
+    expect(comMudanca((a) => comNota(a).nota.trechos.push({ nota: { trechos: [] } })).ok).toBe(false);
+    expect(comMudanca((a) => (comNota(a).nota = "texto")).ok).toBe(false);
+  });
+
+  it("mantém campos dos dados e das imagens que este Apud ainda não conhece", () => {
+    const r = comMudanca((a) => {
+      a.documento.dados.coorientador = "Prof. João";
+      a.documento.imagens[0].descricao = "gráfico de barras";
+    });
+    expect(r.ok && (r.trabalho.documento.dados as unknown as Record<string, unknown>).coorientador).toBe("Prof. João");
+    expect(r.ok && (r.trabalho.documento.imagens[0] as unknown as Record<string, unknown>).descricao).toBe("gráfico de barras");
   });
 });

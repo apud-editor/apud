@@ -30,14 +30,13 @@ import {
   ehInstituicao,
   niveisDaInstituicao,
   obrasDaCitacao,
+  textosDosBlocos,
   type Bloco,
   type Citacao,
   type Documento,
-  type ItemDeLista,
   type Localizador,
   type ObraCitada,
   type Referencia,
-  type Trecho,
 } from "../documento/modelo";
 import { paraHayagriva } from "./hayagriva";
 import { anoDaReferencia, PARTICULAS, prepararReferencias, type Referencia as ReferenciaDoTypst } from "./preparar";
@@ -89,18 +88,8 @@ export interface Motor {
 
 /** Todas as citações do texto, na ordem em que aparecem. */
 export function citacoesDoTexto(blocos: Bloco[]): Citacao[] {
-  const saida: Citacao[] = [];
-  const dosTrechos = (trechos: Trecho[]) => trechos.forEach((t) => ehCitacao(t) && saida.push(t.citacao));
-  const dosItens = (itens: ItemDeLista[]) =>
-    itens.forEach((i) => {
-      dosTrechos(i.trechos);
-      if (i.subitens) dosItens(i.subitens);
-    });
-  for (const b of blocos) {
-    if (b.tipo === "paragrafo" || b.tipo === "titulo") dosTrechos(b.trechos);
-    else if (b.tipo === "lista") dosItens(b.itens);
-  }
-  return saida;
+  // textosDosBlocos segue a ordem de leitura, também dentro de figuras e tabelas.
+  return textosDosBlocos(blocos).flatMap((trechos) => trechos.flatMap((t) => (ehCitacao(t) ? [t.citacao] : [])));
 }
 
 // ---------------------------------------------------------------------------

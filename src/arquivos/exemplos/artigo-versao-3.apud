@@ -1,0 +1,2801 @@
+{
+  "formato": "apud",
+  "versao": 3,
+  "nome": "Aqui na rua, não (UNIVALI, ABNT)",
+  "perfil": {
+    "perfil": "ABNT",
+    "versao": "2025",
+    "revisao": 6
+  },
+  "ajustes": {},
+  "criadoEm": "2026-11-20T00:00:00.000Z",
+  "modificadoEm": "2026-11-20T00:00:00.000Z",
+  "documento": {
+    "versao": 3,
+    "blocos": [
+      {
+        "tipo": "titulo",
+        "nivel": 1,
+        "trechos": [
+          {
+            "texto": "Introdução"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A população em situação de rua (PSR), é uma das manifestações mais cruéis da questão social, resultante de uma combinação complexa de fatores econômicos, políticos e sociais, sendo um dos grupos que expressa mais fortemente a materialização da violência imposta pelo sistema capitalista sobre as vidas humanas "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "silva2009"
+                },
+                {
+                  "referencia": "medeiros2020"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". No Brasil, diante do crescimento substancial do número de pessoas que passam a utilizar ruas e espaços públicos como formas precárias e improvisadas de moradia, a presença da população em situação de rua, cada vez mais indissociável da paisagem urbana contemporânea, tem sido progressivamente incorporada ao imaginário social. Conforme levantamento realizado pelo Instituto de Pesquisa Econômica Aplicada (IPEA), observou-se um aumento significativo no número de PSR no Brasil ao longo da última década. Em 2013, esse número era de 21.934 indivíduos, já em 2023 a estimativa era de 227.087 pessoas em situação de rua. Entre os anos de 2012 e 2022, o crescimento percentual dessa população foi de 211% "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "natalino2023"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Para além da naturalização desse fato no imaginário popular, percebe-se que o problema ainda ocupa um espaço muito limitado no âmbito das políticas públicas brasileiras "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "monzelli2023"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Conforme aponta "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "oliveira2017"
+              }
+            }
+          },
+          {
+            "texto": ", a existência de pessoas vivendo nas ruas das principais metrópoles do mundo passou a integrar as agendas das políticas públicas apenas na década de 1970. Cinco décadas depois, apesar dos avanços na garantia de direitos fundamentais, a partir da Constituição da República Federativa "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil1988"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ", ainda se percebe a falta de políticas públicas eficientes para essa população, mostrando a negligência do poder público na garantia de direitos do cidadão em situação de rua, que deve ter condições mínimas de sobrevivência asseguradas "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "ceolin2020"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A insuficiência ou total ausência de direitos sociais para esse grupo populacional decorre, segundo "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "palhares2021"
+              }
+            }
+          },
+          {
+            "texto": ", do uso fragmentado e injustificado dos princípios e normas pela administração pública nas tomadas de decisões relativas à implementação de políticas públicas. Dialogando com essa perspectiva, "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "monzelli2023"
+              }
+            }
+          },
+          {
+            "texto": " compreendem que a população em situação de rua configura um dos problemas sociais mais urgentes do capitalismo contemporâneo, na medida em que evidencia e favorece uma série de processos de desumanização. Nessa mesma linha, os autores sustentam que tal condição não é acidental, mas historicamente indispensável à autorreprodução do capital, o que contribui para a manutenção do caráter predominantemente reformista das políticas públicas brasileiras."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Adensando essa compreensão acerca da gênese econômica do fenômeno, "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "silva2009"
+              }
+            }
+          },
+          {
+            "texto": " aponta que a causa principal dessa realidade está na criação de uma superpopulação relativa, ou exército industrial de reserva, gerada pelo próprio avanço da acumulação capitalista. Essa população supérflua constitui a parcela de trabalhadores desempregados que, embora plenamente apta ao trabalho, permanece à margem do mercado e não é absorvida pela estrutura produtiva. Afastados dos postos formais, esses sujeitos passam a depender da mendicância ou de ocupações informais para sobreviver "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "engels2008"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Na região catarinense da Foz do Rio Itajaí-açu, foco deste trabalho, há escassez de dados precisos sobre a PSR, uma vez que essa população não é incluída nos censos demográficos brasileiros realizados pelo Instituto Brasileiro de Geografia e Estatística (IBGE). Assim, pesquisas de contagem nacionais, estaduais e/ou municipais realizadas paralelamente tentam preencher essa lacuna "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "arantes2017"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". De acordo com levantamento realizado pela Secretaria de Desenvolvimento Social de Santa Catarina, em 2019 havia 3.640 pessoas em situação de rua cadastradas no Cadastro Único (CadÚnico) no estado. Entre os municípios da região da Foz do Rio Itajaí-açú, Itajaí e Balneário Camboriú apresentaram os maiores números, com 301 e 92 pessoas em situação de rua, respectivamente "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "santacatarina2019"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Em levantamento mais recente, o Ministério Público de Santa Catarina (MPSC) identificou, em 2025, 11.588 pessoas em situação de rua cadastradas no CadÚnico em todo o estado. Na região da Foz do Rio Itajaí-açú, foram registradas 1.675 pessoas, sendo que, somente em Balneário Camboriú, o número de cadastrados chegou a 481, representando um aumento expressivo em relação aos 92 cadastros no levantamento de 2019 "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "mpsc2025"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Entretanto, pode-se supor que a quantidade real seja consideravelmente maior, já que a ocorrência de subnotificações pelas prefeituras e o uso limitado do CadÚnico por esses municípios, dificultam a realização de análises precisas acerca da possível saturação do sistema CadÚnico "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "dias2022"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A subnotificação e a falta de dados consistentes sobre essa população refletem nas políticas públicas municipais, que frequentemente se manifestam por meio da criminalização e da repressão das pessoas em situação de rua por agentes públicos "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cavalcante2024"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Em Balneário Camboriú, por exemplo, há denúncias de indícios de tortura e violência durante abordagens, que são objeto de investigação pelo Ministério Público de Santa Catarina "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "mpsc2024"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Segundo o Relatório da Missão do CNDH a Santa Catarina para Apurar Violações aos Direitos Humanos da População em Situação de Rua no Estado (2024):"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "As ações de resgate social, que em Balneário Camboriú podem ser descritas como sequestro de vidas, que são levadas coercitivamente para instituições que apenas as poderiam receber voluntariamente, são o retrato mais forte de higienismo social encontrado ao longo desta Missão. "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cndh2024",
+                  "localizador": {
+                    "tipo": "pagina",
+                    "valor": "37"
+                  }
+                }
+              ],
+              "direta": true
+            }
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Esses episódios ilustram um padrão que não se restringe a um único município. As práticas de repressão e controle observadas em Balneário Camboriú repetem-se em outras cidades da região, revelando uma forma de gestão pautada pela exclusão territorial e social. A remoção sistemática da população em situação de rua das áreas centrais, com o seu deslocamento forçado para regiões periféricas ou até mesmo para outros municípios, é uma prática recorrente "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cavalcante2024"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Uma amostra desse procedimento ocorreu em Itajaí, onde, em operação clandestina da Polícia Militar, cerca de trinta pessoas em situação de rua foram agredidas e escoltadas a pé pela BR-101 até Balneário Camboriú "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "morador2024"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Para além das forças de segurança, essas ações repressivas envolvem também o campo da assistência social. De modo geral, são também muito frequentes as cobranças aos serviços do Sistema Único de Assistência Social (SUAS) para a retirada da população em situação de rua dos espaços públicos ou de estabelecimentos comerciais "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "medeiros2020"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Essas medidas são frequentemente legitimadas pelo discurso de gestores municipais, expressos em decretos, entrevistas e vídeos nas redes sociais, nos quais reforçam representações excludentes da população em situação de rua. Nesse contexto, o Estado atua como higienizador, utilizando o ordenamento jurídico para aplicar medidas como a eliminação dos doentes, o controle dos contagiosos e a exclusão dos delinquentes e dos considerados \"degenerados\" "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "foucault1979"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Desse modo, as políticas direcionadas à população em situação de rua não podem ser dissociadas dos discursos públicos produzidos pelos gestores. Relação também apontada pelo Relatório da Missão do CNDH a Santa Catarina, ao destacar que:"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "[...] foi ficando mais e mais evidente que a violência praticada em Santa Catarina refletia, em grande medida, o discurso de ódio contra essa população veiculado por Prefeitos e outras autoridades municipais, inclusive com finalidade eleitoral, valendo-se da imprensa local e das mídias sociais para ampliar o alcance das manifestações de ódio. "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cndh2024",
+                  "localizador": {
+                    "tipo": "pagina",
+                    "valor": "81"
+                  }
+                }
+              ],
+              "direta": true
+            }
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A Constituição da República Federativa do Brasil (CF), de 1988, em seu artigo 1º, inciso III, dispõe sobre a dignidade da pessoa humana, assegurando os direitos fundamentais e as garantias individuais do ser humano "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil1988"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Nesse sentido, mostra-se indispensável realizar uma análise crítica e problematizar as narrativas que sustentam e legitimam tais práticas, uma vez que o discurso dos gestores públicos, expresso em decretos, pronunciamentos e mídias institucionais, produz sentidos e orienta modos de governo sobre essa população "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "bernardes2007"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Essa reflexão é essencial para superar a fragmentação das políticas públicas voltadas a esse grupo populacional e promover uma atenção integral à pessoa em situação de rua "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cavalcante2024"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ", conforme determinam a Constituição Federal e a Política Nacional para a População em Situação de Rua "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil2009"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Neste sentido, o artigo busca responder como os decretos narrativos do poder executivo municipal produzem políticas públicas para a população em situação de rua na região da Foz do Rio Itajaí-açú. Compreende-se como decretos narrativos as entrevistas, publicações em redes sociais em que os prefeitos e prefeitas decretam algo sobre a população de rua que pode, ou não, estar alinhada aos decretos administrativos e leis municipais. Assim, o objetivo central é analisar as narrativas sobre políticas públicas voltadas para pessoas em situação de rua na região da Foz do Rio Itajaí, identificando os desafios e impactos das medidas implementadas."
+          }
+        ]
+      },
+      {
+        "tipo": "titulo",
+        "nivel": 1,
+        "trechos": [
+          {
+            "texto": "Metodologia"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Adotamos como referencial teórico-metodológico a Análise de Práticas Discursivas, conforme proposta por "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "spink2013"
+              }
+            }
+          },
+          {
+            "texto": ", referencial construcionista que entende o discurso como prática social produtora de sentidos, posições de sujeito e formas de governo. Nessa perspectiva, a linguagem não apenas descreve os atos de governo, mas os institui como realidade, sendo condição de sua existência "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "bernardes2007"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Segundo "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "spinkmedrado2013"
+              },
+              "direta": true
+            }
+          },
+          {
+            "texto": ", pode-se definir práticas discursivas como “linguagem em ação, ou seja, as maneiras a partir das quais as pessoas produzem sentidos e se posicionam em relações sociais cotidianas”. Assim, compreende-se que as narrativas do poder público municipal constituem práticas discursivas que materializam políticas e configuram sentidos sobre determinados grupos sociais, neste caso, a população em situação de rua."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "O estudo tem como objeto de análise o panorama atual das políticas públicas destinadas às pessoas em situação de rua na região da Foz do Rio Itajaí-açú, com foco nos municípios de Itajaí, Navegantes, Balneário Camboriú, Camboriú e Itapema. Busca-se compreender de que maneira as narrativas públicas dos prefeitos, expressas em pronunciamentos oficiais, entrevistas, reportagens e mídias institucionais, produzem sentidos sobre essa população e orientam as ações da gestão municipal. A análise pretende identificar como essas falas se articulam à práticas de exclusão e institucionalização, bem como confrontar essas abordagens com as diretrizes nacionais e internacionais de proteção aos direitos humanos e com as políticas voltadas à população em situação de rua."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Como ressalta "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "spink2013",
+                "localizador": {
+                  "tipo": "pagina",
+                  "valor": "112"
+                }
+              }
+            }
+          },
+          {
+            "texto": ":"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Os documentos de domínio público são produtos sociais tornados públicos. Eticamente estão abertos para análise por pertencerem ao espaço público, por terem sido tornados públicos de uma forma que permite a responsabilização. Podem refletir as transformações lentas em posições e posturas institucionais assumidas pelos aparelhos simbólicos que permeiam o dia a dia ou, no âmbito das redes sociais, pelos agrupamentos e coletivos que dão forma ao informal, refletindo o ir e vir de versões circulantes assumidas ou advogadas."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "O conjunto de materiais analisados é composto por decretos municipais, pronunciamentos públicos, entrevistas, reportagens e registros audiovisuais de domínio público, disponibilizados em canais oficiais das prefeituras e na mídia local. Neste estudo, serão consideradas as declarações de prefeitos e gestores referentes ao ano de 2025, correspondente ao primeiro ano dos atuais mandatos nos municípios da Foz do Rio Itajaí-açu, incluindo também aquelas vinculadas ao período de campanha eleitoral. No entanto, considerando o caráter dinâmico da realidade social e das políticas municipais analisadas, acontecimentos posteriores ao recorte temporal inicialmente estabelecido também foram incorporados quando apresentaram relevância direta para o objeto da pesquisa, como o fechamento do Centro POP e a abertura de uma nova casa de passagem em um dos municípios analisados."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Esses documentos são compreendidos como “decretos narrativos”, isto é, documentos verbais de domínio público nos quais a narrativa dos prefeitos produz efeitos simbólicos e políticos que ultrapassam o âmbito administrativo, influenciando os modos de pensar, agir e gerir a questão da população em situação de rua."
+          }
+        ]
+      },
+      {
+        "tipo": "titulo",
+        "nivel": 1,
+        "trechos": [
+          {
+            "texto": "Resultados e Discussão"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Para fins da presente análise, o material foi organizado em três categorias centrais: Sujeito, Ofertas de Atendimento e Benefícios. Essas categorias foram construídas a partir da recorrência temática observada nos documentos e da relevância discursiva dos enunciados para compreender como a população em situação de rua é nomeada, caracterizada e inserida nas políticas públicas municipais. Essa organização buscou identificar os sentidos produzidos pelos gestores municipais sobre quem é esse sujeito, quais problemas são associados à sua presença nos espaços urbanos e quais formas de intervenção são apresentadas como legítimas."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "O corpus da pesquisa é composto por 41 decretos verbais, reunindo pronunciamentos oficiais, entrevistas, reportagens e conteúdos veiculados em mídias institucionais e redes sociais. Vale ressaltar que, embora o município de Navegantes integre o recorte territorial definido para a análise, não foram encontrados decretos verbais relevantes dos gestores municipais sobre a população em situação de rua. Por essa razão, o foco da investigação recaiu principalmente sobre os municípios de Balneário Camboriú, Camboriú, Itajaí e Itapema. Esses decretos narrativos foram analisados considerando tanto o conteúdo das falas quanto seus contextos de circulação. Embora tenham sido organizadas analiticamente em três categorias, essas dimensões aparecem de forma articulada no corpus. Desse modo, a análise busca evidenciar como os decretos verbais produzem uma cadeia discursiva que vai da definição do sujeito à legitimação das formas de intervenção, revelando os sentidos atribuídos à situação de rua e às responsabilidades do poder público municipal."
+          }
+        ]
+      },
+      {
+        "tipo": "titulo",
+        "nivel": 2,
+        "trechos": [
+          {
+            "texto": "A construção do sujeito nos decretos verbais"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Para compreender as construções do sujeito presentes nos decretos verbais analisados, é necessário, inicialmente, definir a própria categoria “sujeito”. Conforme "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "spink2011"
+              },
+              "direta": true
+            }
+          },
+          {
+            "texto": ", é “nomenclatura ao léu semântico”, podendo referir-se tanto ao “assujeitamento”, entendido como a passividade frente a processos sociais impositivos, quanto à possibilidade de subjetivação, relacionada à capacidade de ter consciência de si. A partir de uma leitura foucaultiana, "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "fonseca2003"
+              }
+            }
+          },
+          {
+            "texto": " esclarece que o termo “sujeito” serviria para designar um indivíduo preso a uma identidade que reconhece como própria, constituída pelos processos de subjetivação. Esses processos, justapostos aos de objetivação (a constituição do indivíduo moderno como objeto, como corpo dócil e útil a partir dos mecanismos disciplinares), permitem compreender de forma mais abrangente a identidade do indivíduo moderno, marcada pela condição simultânea de sujeito e de objeto dócil e útil."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "No Brasil, expressões como mendigo, andarilho, errante, morador de rua, homem de rua, habitante da rua, sem-teto, pedinte, compõem um vasto repertório utilizado para designar o sujeito que faz dos espaços públicos sua moradia. Essa pluralidade reflete a heterogeneidade desse grupo social e as distintas formas de vivenciar tal condição "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "mattos2006"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". No âmbito das políticas públicas, consolida-se o uso da expressão “pessoa em situação de rua”, adotada também nesta pesquisa."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Diferentemente de outras expressões amplamente utilizadas, como “morador de rua” e “população de rua”, a denominação “pessoas em situação de rua” enfatiza, de forma intencional, o termo pessoa antes de qualquer outra qualificação, considerando a necessidade de reconhecê-las, primordialmente, como seres humanos "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "mattos2006"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Como apontam "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "spinkmedrado1999"
+              },
+              "direta": true
+            }
+          },
+          {
+            "texto": ", a noção de pessoa é “intrinsecamente relacional” e se constitui no interior das relações sociais por meio de um processo de negociação, no qual se engaja em trocas simbólicas em um espaço de intersubjetividade, ou, mais precisamente, de interpessoalidade. Acrescenta-se que, para além dessas dinâmicas relacionais, a noção de pessoa aponta para a importância de considerar o papel das tecnologias de governo, sobretudo dos documentos que cristalizam identidades (RG, passaportes, certificados de nascimento, de batismo, entre outros), na conformação de uma complexa matriz de práticas sociais que, historicamente, tornaram necessário teorizar sobre esse ser que somos."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Ao utilizar a expressão situação, busca-se evidenciar o caráter transitório e não permanente da condição de estar na rua. O termo destaca a dimensão dinâmica dessa realidade social, não só pela possibilidade de saída das ruas, mas, sobretudo, por remeter a um modo de vida volátil, móvel, indefinido "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "mattos2006"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Ainda assim, essa designação pode ser problematizada, uma vez que tende a invisibilizar aqueles sujeitos que têm uma relação constante e prolongada com o habitar as ruas "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "santos2014"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ", pois, ao enfatizar a ideia de que essa condição é temporária, o termo acaba refletindo uma forma de organização da cidade pensada verticalmente, que reduz os espaços públicos e amplia os espaços privados, fazendo com que a rua seja vista apenas como um lugar de passagem. Nesse contexto, a rua passa a ser tratada como um “não-lugar” para essas pessoas, já que sua permanência ali é socialmente percebida como inadequada ou indesejada "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cunda2020"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "No que tange aos decretos verbais dos prefeitos da Foz do Rio Itajaí-açú no material analisado, o sujeito é majoritariamente denominado “pessoa em situação de rua”, bem como por variações do termo, como “homens em situação de rua”, “cidadão em situação de rua” e “pessoa que está na rua”. Contudo, essa escolha não é homogênea. Em pronunciamentos mais incisivos, observa-se o uso da expressão “morador de rua”. Situado entre os dois, aparece ainda o uso de expressões híbridas, como “morador em situação de rua”."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Apesar da predominância do uso da expressão “pessoa em situação de rua” pelos gestores municipais, tal emprego parece operar, em grande medida, mais como um alinhamento à terminologia técnico-institucional do que como a incorporação efetiva de uma perspectiva que reconheça esses sujeitos enquanto pessoas, portadoras de direitos e inseridas em um contexto social mais amplo. Isso se evidencia pela forma como, nos materiais analisados, aparece frequentemente associada a discursos centrados na higiene, na segurança pública e na dependência química, deslocando o foco da condição do sujeito para uma abordagem que aponta para o risco, o controle e a gestão de comportamentos considerados desviantes."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa racionalidade política encontra expressão nos pronunciamentos que articulam a premissa de “oferecer suporte a quem precisa” à necessidade de “garantir que nossos espaços públicos continuem organizados e seguros” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 04, 2025"
+            }
+          },
+          {
+            "texto": ". Nessa formulação, o discurso oficial converte o suposto “tratamento adequado” em lastro moral para assegurar a “tranquilidade para quem vive e trabalha” nos centros urbanos "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Secretário 02, 2025"
+            }
+          },
+          {
+            "texto": ". Isso é também corroborado, pela constante presença dos órgãos de segurança como elementos centrais das manifestações públicas analisadas, enquadrando o sujeito enquanto um elemento possivelmente perigoso. Logo, a linguagem aparentemente mais humanizada convive com a reprodução de lógicas discursivas que tendem à patologização e à criminalização da população em situação de rua, esvaziando, em certa medida, o potencial político da terminologia ao reduzi-la a um marcador administrativo. O que se evidencia é um descompasso entre a atualização lexical e a permanência de determinadas estruturas discursivas, nas quais esses sujeitos seguem sendo compreendidos como simples objetos de intervenção estatal."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A caracterização desse sujeito como um agente oportunista, que subverte o espaço público em benefício próprio, aparece com maior clareza nos materiais onde o discurso abandona o verniz técnico-administrativo e adota expressões como “morador de rua” e suas variantes. Aqui, o discurso articula a presença dessas pessoas nos espaços públicos não como uma condição de vulnerabilidade, mas como uma escolha racional orientada pelo comodismo. Em vídeo do Prefeito 03 (2025) sobre a retirada de pessoas em situação de rua de um ponto de ônibus, publicado nas redes sociais, a recorrência às ações de acolhimento institucional — “tira, leva pro abrigo, volta” — é apresentada como evidência de que o retorno às ruas é deliberado: “claro, tão [sic] aqui na moleza, ponto de ônibus coberto. E as pessoas dando recurso [sic] ainda para comerem”. Essa deslegitimação é radicalizada no mesmo registro com a fala “agora não tem mais malaco aqui dentro”, realizando um deslocamento definitivo da vulnerabilidade social para o campo da criminalidade e do desvio de caráter."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nos pronunciamentos analisados, podemos perceber também uma divisão interna à própria categoria: a distinção entre o \"morador de rua\" que merece acolhimento, e aquele que representa uma ameaça. Divisão essa que é explicitada em vídeo do Prefeito 01 (2025): \"[...] diariamente fazemos abordagens com moradores em situação de rua. Ali identificamos quem precisa de ajuda, aqueles que não querem nada com nada e os bandidos disfarçados de morador de rua\". O pronunciamento é relevante por ao menos duas razões. Primeiro, porque estabelece uma separação entre o vulnerável que merece assistência, o acomodado que recusa ajuda e o criminoso disfarçado, organizando a intervenção estatal não a partir de critérios objetivos voltados à garantia de direitos, mas de uma avaliação moral e comportamental dos sujeitos. Segundo, porque introduz a figura do “bandido disfarçado de morador de rua” e, com ele, uma lógica de suspeição generalizada: se o criminoso pode estar entre os demais, toda a população em situação de rua passa a ser vista sob a presunção de perigo, o que legitima abordagens sistemáticas como forma de triagem e controle."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa operação discursiva pode ser compreendida a partir da distinção proposta por "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "harrits2011"
+              }
+            }
+          },
+          {
+            "texto": " entre categorias políticas e categorias sociais. As categorias políticas consistem na descrição do público-alvo que consta nas normativas das políticas públicas. Já as categorias sociais são aquelas construídas a partir de outros sistemas, como em práticas na família, comunidade, mídia. Elas são as rotulagens que os burocratas de nível de rua (agentes do serviço público que interagem diretamente com os cidadãos no decurso dos seus trabalhos) atribuem aos usuários no exercício cotidiano de seus trabalhos, consistindo na forma como de fato enxergam o público que atendem. Possuem, portanto, uma forte dimensão simbólica e moral. Nesse processo, a noção de merecimento pode ser formulada a partir da percepção sobre a adesão dos usuários aos serviços disponíveis "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "pires2019"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ", bem como das interpretações sobre as causas de sua vulnerabilidade, especialmente quando se avalia se o indivíduo teria ou não responsabilidade pela condição em que se encontra "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "pereira2017"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A reflexão de "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "lima2024"
+              }
+            }
+          },
+          {
+            "texto": ", embora também analisem esse processo a partir da atuação dos burocratas de nível de rua, contribui para compreender os pronunciamentos dos gestores municipais. Segundo os autores, essas categorias sociais são frequentemente baseadas em estigmas e no senso comum, podendo levar à exclusão de grupos vulneráveis das políticas públicas. Além disso, os rótulos atribuídos pelos agentes públicos podem ser internalizados pelos próprios usuários, interferindo negativamente em sua autoestima e em sua forma de se reconhecerem como sujeitos de direitos. No caso dos decretos verbais analisados, essas classificações contribuem para legitimar respostas diferenciadas à população em situação de rua, “separando, muito bem, moradores em situação de rua que precisam de ajuda e os criminosos que estão disfarçados destes” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "No plano formal, esses sentidos são reforçados pelo próprio formato dos vídeos. Observa-se que, tanto nos discursos que recorrem às formas consideradas “tecnicamente corretas” quanto naqueles que utilizam denominações menos institucionalizadas, a população em situação de rua aparece frequentemente associada à figura do “usuário de drogas” e ao tema da segurança pública. Essa vinculação é intensificada por recursos estéticos e performativos, como trilhas sonoras dramáticas, entonações mais firmes e a presença constante de agentes vinculados aos órgãos de segurança pública. Esses elementos conferem aos materiais um tom de urgência e enfrentamento, aproximando-os de uma lógica de combate. Nesses casos, expressões como “morador de rua”, “usuário de drogas” e “bandido” passam a operar em uma mesma cadeia de sentidos, aproximando situação de rua, dependência química e criminalidade."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa associação não aparece apenas de modo indireto, mas é formulada explicitamente pelo Secretário 01 (2025), ao afirmar, em entrevista, que “nosso problema da pessoa em situação de rua [...] é a drogadição, a dependência química” A fala, a rigor, deixa clara a centralidade atribuída ao uso de drogas na explicação do fenômeno da população em situação de rua no âmbito das políticas públicas dos municípios analisados."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Conforme aponta "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "adorno2016"
+              }
+            }
+          },
+          {
+            "texto": ", especialmente a partir da última década e da visibilidade das chamadas “cracolândias”, as pessoas com vivências de rua passam a ser progressivamente reconhecidas sob a identidade de usuárias de drogas. Essa associação indica que a figura do usuário de drogas opera como elo entre a vulnerabilidade social e a suspeição moral. Esse processo associa-se à consolidação do paradigma proibicionista, sintetizado na ideia de “guerra às drogas\", e sustenta-se em práticas de medicalização e criminalização, dimensões ancoradas em valores morais historicamente construídos "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "rybka2018"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Com base nessa construção de sujeito, as políticas públicas passam a ser formuladas e implementadas de modo a reforçar estigmas negativos sobre grupos historicamente presentes nos centros urbanos, sendo orientadas por perspectivas e práticas de caráter repressivo. Nesse contexto, o combate às drogas opera como um dispositivo que favorece a retomada e a ampliação do poder psiquiátrico, em certa medida freado após a Reforma Psiquiátrica "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "souza2019"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Em última análise, a narrativa materializada nos decretos verbais dos gestores municipais desnuda uma faceta da violência perpetrada contra a população em situação de rua, que ultrapassa a iminência do extermínio físico para concretizar uma morte simbólica e existencial, experimentada em vida por esse grupo. Essa dinâmica é sistematicamente alimentada por uma racionalidade prática e discursiva que comunica, de forma reiterada, a indesejabilidade desses sujeitos no espaço urbano "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "medeiros2020"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". É justamente nesse entrelaçamento entre práticas repressivas, estratégias de medicalização e ações assistenciais que se configuram as formas concretas de atendimento destinadas à essa população. Torna-se então necessário examinar de que maneira essas lógicas se materializam nas ofertas de serviços e benefícios, evidenciando tanto seus alcances quanto suas limitações no atendimento a esse público."
+          }
+        ]
+      },
+      {
+        "tipo": "titulo",
+        "nivel": 2,
+        "trechos": [
+          {
+            "texto": "Benefícios, ofertas de atendimento e controle nos decretos verbais"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nos materiais analisados, as ofertas de atendimento e benefícios aparecem marcadas pela provisoriedade, pela lógica do encaminhamento e pela retirada imediata das pessoas dos espaços públicos. Casas de passagem, internações em clínicas particulares ou comunidades terapêuticas, concessão de passagens para retorno à cidade de origem, encaminhamentos pontuais para emprego e ações integradas com órgãos de segurança pública são apresentadas como soluções recorrentes, ainda que pouco se mencione sobre acompanhamento posterior, acesso à moradia ou estratégias continuadas de garantia de direitos."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Se tu queres ficar na rua, aqui [...] não. Tem saúde aí. Pensa um pouco. Se tu quiseres ir pra Casa de Passagem, [pra te] dar acolhimento, ou senão tu pegas o rumo e volta pra tua casa, mas aqui na rua, não "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 02, 2025"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa lógica se evidencia, em primeiro lugar, pela centralidade dada às casas de passagem na resposta à presença da população em situação de rua nos espaços públicos. As casas de passagem são equipamentos de acolhimento provisório, voltados a pessoas e famílias em situação de vulnerabilidade, risco social ou rompimento temporário de vínculos "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil2014"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Contudo, justamente por seu caráter emergencial e transitório, não se configuram como política permanente de moradia. Trata-se de uma medida orientada ao acolhimento imediato, capaz de oferecer abrigo temporário, mas insuficiente, quando não articulada a políticas perenes de moradia, saúde, assistência social, trabalho e acompanhamento."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A recorrência desse equipamento também sugere uma concepção de atendimento centrada na circulação dos sujeitos entre diferentes dispositivos institucionais. A pessoa é abordada na rua, encaminhada à casa de passagem e, muitas vezes, posteriormente direcionada a outros serviços, como internações em clínicas ou comunidades terapêuticas e retorno à “cidade de origem”."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Tem oportunidade de trabalho, tem oportunidade de tratamento e tem oportunidade de retornar pra sua cidade, pra sua família. Aquela outra que cês [sic] estavam utilizando, que é a opção das ruas, essa tá [sic] fora "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2026"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nesse percurso, o atendimento não parece orientado à construção de um projeto continuado de vida, mas à administração imediata da presença dessas pessoas no espaço urbano. A ênfase recai sobre o ato de “tirar da rua”, enquanto permanecem pouco visíveis as estratégias posteriores de acompanhamento. "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "gardella2016"
+              }
+            }
+          },
+          {
+            "texto": ", ao discutir os abrigos destinados à população em situação de rua, analisa como a lógica da urgência e da rotatividade organiza as políticas de acolhimento. Para o autor, trata-se de uma cronopolítica. Isto é, de uma forma de gestão que impõe aos sujeitos em maior situação de precariedade um ritmo próprio, marcado não apenas por variações sazonais, mas também por exigências cotidianas. A moradia descontínua, nesse contexto, produz efeitos de desgaste sobre indivíduos já intensamente precarizados, mantendo-os presos a uma temporalidade imediata e de curto prazo. Com isso, a instabilidade das condições de acolhimento solapa a autonomia dos sujeitos, fragilizando suas possibilidades de projetar um outro futuro."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "No caso do Município 02, esse movimento se manifesta de forma contundente, embora não exclusiva, na localização da casa de passagem, gerida pelo próprio município e situada às margens da BR-101. Essa localização obriga as pessoas em situação de rua interessadas em acessar o serviço a se deslocarem para fora das áreas centrais e turísticas da cidade, o que contraria a orientação da Tipificação Nacional dos Serviços Socioassistenciais, segundo a qual os serviços de acolhimento institucional devem estar distribuídos “no espaço urbano de forma democrática, respeitando o direito de permanência e usufruto da cidade com segurança, igualdade de condições e acesso aos serviços públicos” "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil2014"
+                }
+              ],
+              "direta": true
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa leitura é reforçada pelo relatório da missão do Conselho Nacional de Direitos Humanos a Santa Catarina, realizada para apurar violações aos direitos humanos da população em situação de rua no estado. Em visita à casa de passagem, a missão concluiu que:"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A existência [...] como único equipamento no município para atendimento à população em situação [de rua] revela o desejo de que essa população não permaneça no território do município, além da intenção inequívoca das autoridades municipais de a afastar do espaço central da cidade, frequentado por munícipes e turistas, em uma clara estratégia de higienização social "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cndh2024",
+                  "localizador": {
+                    "tipo": "pagina",
+                    "valor": "41"
+                  }
+                }
+              ],
+              "direta": true
+            }
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Situação semelhante pode ser observada no Município 01, onde o fechamento do Centro POP, sua realocação para um bairro às margens da BR-101, e sua conversão em espaço administrativo coincidiram com a transferência do atendimento para uma casa de passagem situada em área “distante das regiões mais centrais, praticamente isolada, com poucas moradias ao redor” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2026"
+            }
+          },
+          {
+            "texto": ". O que essa mudança revela é uma alteração estratégica na organização da assistência, já que envolve equipamentos com funções distintas dentro da política de assistência social. O Centro POP é um serviço de média complexidade voltado ao atendimento especializado da população em situação de rua, com capacidade de acolher demandas variadas de um público circulante e numericamente instável. Já a casa de passagem integra o serviço de acolhimento institucional, de alta complexidade, e atende apenas aqueles que conseguem ser acolhidos no equipamento "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil2014"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Dessa forma, a assistência deixa de se organizar como um serviço de acesso amplo à população em situação de rua e passa a assumir a forma de um acolhimento restrito, seletivo e orientado ao encaminhamento."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Lá em janeiro [...] a gente pegava a pessoa na rua e ela queria algum tipo de encaminhamento, levávamos para o Centro POP [...] Quando era possível, ela era encaminhada, mas o Centro POP é um serviço que funciona durante o dia [...] Não é um local de acolhimento mais permanente [...] Hoje nós temos essa Casa de Passagem que vai facilitar esse trabalho [...] "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Secretário 01, 2025"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Assim como as casas de passagem oferecem uma resposta provisória, voltada ao acolhimento temporário e à retirada momentânea dos sujeitos dos espaços públicos, o auxílio-passagem, também chamado de auxílio-locomoção, opera pelo deslocamento dessas pessoas para fora do município. Enquadrada como oportunidade para “retornar de onde vieram” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 03, 2025"
+            }
+          },
+          {
+            "texto": ", essa oferta de benefício caracteriza o sujeito como alguém alheio à cidade, vindo de fora, cuja permanência no território é explicada pelo fato de que “vem, se aventurando na cidade, na busca de algum espaço, daí acaba dormindo na rua” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 03, 2025"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nessa formulação, a solução para a situação de rua aparece associada ao retorno a uma origem presumida, como se o problema se encerrasse com a saída do sujeito do município. Essa leitura é reforçada quando o encaminhamento para outras cidades passa a ser apresentado como resultado positivo da gestão: “37 pessoas já foram encaminhadas pra sua cidade de origem em 10 dias! É apenas o começo da nossa gestão” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": ". No entanto, esse tipo de encaminhamento não intervém nas condições que levaram a pessoa à rua, apenas altera seu local de permanência. Assim, a medida produz uma aparência de resolução imediata, ao mesmo tempo em que transfere para outro território a responsabilidade sobre a continuidade do atendimento e da proteção social."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A reinserção no mercado de trabalho também aparece nos decretos verbais como uma alternativa mais permanente de saída da situação de rua, associada à ideia de oportunidade e recomeço. No entanto, essa oferta é apresentada de modo genérico, geralmente reduzida ao “encaminhamento para o mercado de trabalho” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": ", sem maior discussão sobre as condições concretas necessárias para a inserção e a permanência no emprego, como moradia, documentação, saúde, qualificação profissional e acompanhamento continuado. No máximo, menciona-se a existência de “parceria com o SIME [Sistema Municipal de Emprego], pra ajudar essas pessoas a buscar um emprego e mudar de vida” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 02, 2025"
+            }
+          },
+          {
+            "texto": ". Assim, a empregabilidade é mobilizada mais como promessa abstrata de reinserção do que como parte de uma política estruturada de inclusão social."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nos decretos verbais analisados, o emprego tende a ser convertido não apenas em meio de sobrevivência, mas também em critério moral de reconhecimento social. A inserção no mercado de trabalho aparece como sinal de dignidade e disposição para a mudança, separando aqueles que “querem ajuda” da “grande maioria” que “não quer trabalhar, não quer fazer nada da vida” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 04, 2025"
+            }
+          },
+          {
+            "texto": ". Essa leitura se aproxima da análise de "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "uga2004"
+              }
+            }
+          },
+          {
+            "texto": ", ao identificar, no receituário neoliberal, uma concepção de sociedade dividida entre o indivíduo “competitivo”, capaz de se manter no mercado de trabalho e acessar bens por meio do consumo, e o indivíduo “incapaz”, situado fora dos mercados de trabalho e consumidor."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nessa perspectiva, conforme observa "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "uga2004"
+              }
+            }
+          },
+          {
+            "texto": ", a pobreza é deslocada das condições estruturais que a produzem e passa a ser atribuída à suposta incapacidade do indivíduo de garantir emprego e subsistência. Com isso, a condição de pobreza é interpretada como expressão de um fracasso pessoal daquele que não consegue ser competitivo. Essa racionalidade articula-se à centralidade assumida pelo trabalho na sociedade capitalista. Como aponta "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "silva2006"
+              }
+            }
+          },
+          {
+            "texto": ", em uma formação social na qual a mercadoria constitui a fonte elementar de riqueza, a força de trabalho torna-se uma mercadoria especial, voltada à produção de novas mercadorias e à valorização do capital. Nesse processo, o trabalho deixa de aparecer como atividade existencial humana e é transformado em trabalho assalariado, alienado e fetichizado. O problema, portanto, não aparece como resultado da insuficiência de políticas estruturais, mas como algo a ser superado pela empregabilidade e pelo esforço individual do sujeito."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Se as casas de passagem e o auxílio-passagem indicam uma resposta marcada pela provisoriedade e pelo deslocamento territorial, as internações, voluntárias e involuntárias, em clínicas particulares e comunidades terapêuticas aprofundam a articulação entre assistência, medicalização e controle. Nos decretos verbais analisados, elas constituem o principal eixo de atendimento ofertado, aparecendo em 25 dos 41 registros, o que reforça o peso atribuído ao uso de drogas e aos transtornos mentais na explicação da situação de rua e na definição das respostas institucionais dirigidas a essa população. Nesse conjunto, a internação involuntária e a internação compulsória são mobilizadas como solução necessária diante de um problema apresentado como urgente, complexo e de difícil manejo pela rede pública territorializada. Essa medida passa, assim, a ser construída discursivamente como resposta inevitável, capaz de proteger simultaneamente o indivíduo, a população em situação de rua e a ordem urbana.A construção narrativa de urgência das internações involuntárias acontece frequentemente a partir da mobilização do caso extremo como justificativa geral, que associa a situação de vulnerabilidade com o risco imediato a si e a terceiros. Exemplo dessa costura aparece no seguinte pronunciamento: “Essa mulher que tá aqui atrás, ela está grávida. Usuária de crack. O que vai ser dessa criança? Nesses casos nós precisamos repensar a questão da internação involuntária” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": ". Tal enunciação, nesse caso, produz uma situação moralmente incontornável. O apelo emocional à gestação e ao consumo de substâncias opera como um dispositivo de comoção moral para legitimar a privação de liberdade, enquanto interdita qualquer debate sobre a validade da solução proposta e outras possibilidades de cuidado."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa mesma racionalidade aparece quando o cuidado clínico é vinculado à segurança pública. Ao apresentar a internação compulsória como medida “fundamental para trazer dignidade às pessoas que enfrentam a dependência química” e associá-la à promessa de uma cidade “mais segura, humana e acolhedora para todos” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 02, 2025"
+            }
+          },
+          {
+            "texto": ", o discurso transforma o tratamento forçado em resposta não apenas ao sofrimento do sujeito, mas também à presença dessa população no espaço urbano."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "O vocabulário utilizado para nomear essas ações é, portanto, fundamental para compreender seus efeitos discursivos. Termos como “resgate”, “recomeço”, “salvar vidas”, “tirar das drogas”, “dignidade” e “humanidade” constroem uma narrativa em que a intervenção estatal aparece como gesto humanitário, enquanto o sujeito é representado como alguém que não está mais “em condições de resolver as coisas por conta própria” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": ". Essa formulação produz uma assimetria entre o poder público, colocado na posição de agente salvador, e a pessoa em situação de rua, situada como corpo vulnerável, desorientado ou perigoso, que precisa ser conduzido por outros."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Assim, ainda que mobilize a linguagem do cuidado, a política não se orienta prioritariamente pelo sofrimento da população alvo da internação, mas “para a saúde e principalmente para a segurança e para a diminuição de moradores em situação de rua” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": ". A violência, por sua vez, não é discutida a partir das condições concretas da abordagem, da retirada ou da privação de liberdade, mas é apagada pela intenção atribuída à política. Se a finalidade declarada é proteger, recuperar ou salvar, a coerção passa a ser discursivamente recoberta pela retórica humanitária. Logo, “não é uma violência, é um ato de humanidade” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa orientação aparece de forma explícita na Lei Municipal nº 7.839, de 5 de novembro de 2025, de Itajaí, que dispõe sobre a chamada “internação humanizada”:"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "§ 3º Esta Lei se aplica a todos os cidadãos de Itajaí, especialmente aqueles que estejam em situação de rua e que se enquadrem como: I - pessoas com dependência química crônica, com prejuízos à capacidades mental, ainda que parcial, limitando as tomadas de decisões; II - pessoas em vulnerabilidade, que venha a causar riscos à sua integridade física ou a de terceiros, devido a transtornos mentais pré-existentes ou causados pelo uso de álcool e/ou drogas;"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Ou seja, ao explicitar sua incidência privilegiada sobre quem está em situação de rua e associá-los à “dependência química crônica” e ao “risco”, a lei cristaliza o enquadramento desses sujeitos como destinatários preferenciais de uma intervenção médico-institucional."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Vale aqui acrescentar que as internações voluntárias e involuntárias/compulsórias mencionadas nos materiais analisados ocorrem, majoritariamente, por meio de encaminhamentos a clínicas especializadas particulares e comunidades terapêuticas. Essa escolha é significativa porque desloca o cuidado para instituições externas à rede pública territorializada, frequentemente afastadas do convívio comunitário. O encaminhamento das pessoas em situação de rua para instituições localizadas em outros municípios, revela ainda, para além da lógica higienista, uma despreocupação com o acompanhamento do tratamento ofertado, uma vez que órgãos fiscalizadores municipais, como a Vigilância Sanitária, perdem sua jurisdição e poder de atuação fora de seus limites territoriais "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "cndh2024"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "No caso das comunidades terapêuticas, essa questão assume contornos ainda mais complexos, uma vez que a estigmatização da pessoa em situação de rua, frequentemente associada de forma direta ao consumo de substâncias psicoativas, articula-se a políticas proibicionistas que reforçam tais estigmas e contribuem para situar essas instituições como uma das principais formas de atendimento "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "medeiros2020"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Em boa parte dos decretos verbais, elas são apresentadas às pessoas em situação de rua — e à população em geral — como se constituíssem a principal alternativa de política pública disponível, especialmente quando a situação de rua é associada ao uso de álcool e outras drogas. Em apenas um dos municípios da região, “foram 722 encaminhamentos para comunidades terapêuticas ao longo de 2025, um crescimento de 55% quando comparados a 2024” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa dinâmica insere-se diretamente na lógica de refilantropização das políticas sociais. Trata-se de uma configuração que reatualiza continuidades históricas profundas, visto que, conforme analisa "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "medeiros2020"
+              }
+            }
+          },
+          {
+            "texto": ", o atendimento à população em situação de rua por meio de políticas sociais no Brasil e na América Latina ocorreu historicamente pela via de instituições de caridade e filantropia ligadas à Igreja Católica. Assim, a expansão das comunidades terapêuticas ganha fôlego em meio ao avanço de vertentes conservadoras, as quais mobilizam o apelo à moral cristã e a práticas assistencialistas como matrizes de intervenção, encontrando terreno fértil nos vazios deixados pelo Estado neoliberal, que abdica da formulação de políticas estruturais de promoção de direitos para atuar como mero financiador de instituições privadas, permitindo que estas conduzam o cuidado sob critérios próprios."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Diferentemente das clínicas especializadas em dependência química, que são unidades de saúde de natureza médica voltadas à internação de pessoas que fazem uso nocivo de álcool e outras drogas, as comunidades terapêuticas integram a rede suplementar de atenção, recuperação e reinserção social de dependentes de substâncias psicoativas. Não sendo legalmente reconhecidas como equipamentos de saúde "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil2025"
+                }
+              ]
+            }
+          },
+          {
+            "texto": ". Além disso, a Lei nº 13.840, de 5 de junho de 2019, que dispõe sobre o Sistema Nacional de Políticas Públicas sobre Drogas, estabelece que não são elegíveis para acolhimento em comunidades terapêuticas pessoas com comprometimentos biológicos e psicológicos de natureza grave, que demandem atenção médico-hospitalar contínua ou de emergência. Vedando, também, a realização ou indicação médica de internação compulsória ou involuntária nessas instituições "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil2019"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Apesar disso, o Relatório da Inspeção Nacional em Comunidades Terapêuticas constatou, nas instituições vistoriadas, a adoção de práticas que retomam a lógica da internação, inclusive compulsória, como recurso primeiro e exclusivo de suposto tratamento, em evidente contrariedade à legislação vigente. Segundo o relatório, essas práticas se fundamentam no confinamento, deslocando o cuidado em liberdade para uma lógica de isolamento institucional. Foram identificadas, ainda, violações de direitos humanos, como contenção física ou medicamentosa, restrição da comunicação externa e alojamentos precários e distantes, condições que dificultavam a convivência familiar e social dos acolhidos "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "mpf2025"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Esse diagnóstico é corroborado pela "
+          },
+          {
+            "citacao": {
+              "tipo": "narrativa",
+              "obra": {
+                "referencia": "abrasme2026"
+              }
+            }
+          },
+          {
+            "texto": ", ao afirmar que as comunidades terapêuticas não apenas são incompatíveis com a RAPS do ponto de vista legal, mas também contrariam frontalmente os princípios de direitos humanos e de cuidado em liberdade que estruturam o SUS. Isso porque a Política Nacional de Saúde Mental, consolidada pela Lei nº 10.216/2001, estabelece como diretrizes fundamentais a desinstitucionalização, o cuidado territorial e comunitário, a promoção da autonomia e a inclusão social "
+          },
+          {
+            "citacao": {
+              "tipo": "parenteses",
+              "obras": [
+                {
+                  "referencia": "brasil2001"
+                }
+              ]
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A retórica dos gestores municipais também ganha materialidade nas operações de abordagem à população em situação de rua. Embora apresentadas sob a linguagem do cuidado, do acolhimento e da proteção, sua forma de organização e seus efeitos práticos indicam uma articulação entre assistência, triagem e controle dos espaços urbanos. Nesse sentido, tais operações funcionam como a dimensão prática da política anunciada nos discursos: é nelas que a associação entre situação de rua, uso de drogas, transtorno mental e desordem urbana se converte em intervenção concreta. A promessa de “resgate” ou “recomeço” organiza a abordagem como oportunidade de cuidado, mas também estabelece critérios de classificação dos sujeitos, delimitando quem será reconhecido como recuperável e quem será tratado como resistente, perigoso ou indesejável."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "O objetivo dessas operações, porém, aparece de forma ambígua nos materiais analisados. Uma delas é definida pelos gestores como tendo a finalidade de “resgatar pessoas que se encontram em vulnerabilidade social pelas ruas da nossa cidade, dando a oportunidade para que elas possam retornar para o seu local de origem, procurar tratamento e um acolhimento” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 02, 2025"
+            }
+          },
+          {
+            "texto": ". A escolha do termo “resgate” é significativa, pois mobiliza a imagem de uma intervenção humanitária voltada à salvação de sujeitos em situação de vulnerabilidade. No entanto, ao mesmo tempo, a própria definição da operação explicita sua função de triagem, uma vez que as alternativas oferecidas se restringem ao retorno à cidade de origem, ao encaminhamento para tratamento ou ao acolhimento institucional."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Esse caráter de triagem torna-se ainda mais explícito na fala sobre a outra das operações, descrita de forma menos polida como uma “ação integrada da Polícia Militar, Guarda Municipal e Prefeitura de Itajaí”, cuja intenção seria “reprimir o tráfico de drogas e a permanência de moradores de rua” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": ". Diferentemente da formulação adotada na primeira, em que o léxico do cuidado suaviza a dimensão coercitiva da intervenção, a descrição da segunda aproxima diretamente a presença de pessoas em situação de rua do tema da segurança pública."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa aproximação entre assistência e segurança também se apresenta na forma como as operações são organizadas e executadas. Ambas ocorrem prioritariamente à noite ou nas primeiras horas da manhã, períodos em que a permanência da população em situação de rua nos espaços públicos está em maior evidência, e são sistematicamente associadas a órgãos de segurança, como a Polícia Militar e a Guarda Municipal. Embora equipes de assistência social e saúde integrem as ações, sua presença aparece de forma secundária nos registros analisados, raramente ocupando posição central na condução das atividades ou nos pronunciamentos que explicam e justificam a intervenção. Essa composição revela uma certa hierarquia na forma como o poder público organiza a abordagem, visualmente e institucionalmente conduzida sob a marca da segurança"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Aliadas às operações de abordagem, também aparecem campanhas municipais contra a esmola, com slogans como “Esmola não muda vidas: Ligue 156” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 02, 2025"
+            }
+          },
+          {
+            "texto": ". Essas campanhas, além de orientar a população a acionar os canais oficiais de atendimento, cumpre também uma função discursiva importante de sustentação da construção da pessoa em situação de rua como alguém que permanece nessa condição por comodidade, favorecida pela ajuda direta recebida nos espaços públicos."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa leitura aparece na afirmação que “temos que parar de dar dinheiro no sinal e alimentar essa situação que pra eles é cômoda” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 02, 2025"
+            }
+          },
+          {
+            "texto": ". Dessa forma, a permanência nas ruas deixa de ser compreendida a partir da ausência de moradia, renda, vínculos, trabalho, saúde e proteção social, passando a ser explicada por uma suposta facilidade de obter dinheiro por meio da esmola. Essa associação é fortalecida quando o dinheiro doado é imediatamente vinculado ao consumo de álcool e à manutenção da presença incômoda nas ruas, nesse caso, ele serviria apenas “pra [sic] comprar pinga” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 03, 2025"
+            }
+          },
+          {
+            "texto": " e o indivíduo “vai comprar Corote [...] e vai continuar incomodando na rua” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": ". A representação da pessoa em situação de rua, então, é de alguém que faria mau uso da solidariedade recebida, reforçando sua imagem como sujeito irresponsável, acomodado ou moralmente desviante."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A doação de “esmola” passa a ser apresentada como algo que “pode até parecer um gesto de solidariedade”, mas que “não resolve, e muitas vezes até atrapalha o acesso dessa pessoa a um atendimento de verdade” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 02, 2025"
+            }
+          },
+          {
+            "texto": ". Com isso, a ajuda legítima passa a ser aquela mediada pelo poder público, enquanto a solidariedade direta é desqualificada por supostamente estar “mantendo o morador naquela situação de rua” "
+          },
+          {
+            "citacao": {
+              "tipo": "sem-referencia",
+              "texto": "Prefeito 01, 2025"
+            }
+          },
+          {
+            "texto": "."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Sendo assim, as campanhas contra esmola parecem operar como complemento simbólico das operações de abordagem. Enquanto estas atuam diretamente sobre os corpos e sobre a presença da população em situação de rua nos espaços urbanos, aquelas buscam regular também a conduta da população em geral, orientando-a a não oferecer dinheiro e a acionar os canais institucionais de atendimento. Nesse movimento, a responsabilidade pela permanência nas ruas é novamente deslocada das condições estruturais para o comportamento individual dos sujeitos, agora incorporando também as práticas de solidariedade imediata da população como parte do problema a ser corrigido."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A partir do cenário delineado, constata-se que o discurso construído em torno das ofertas de atendimento e benefícios opera como um dispositivo central de legitimação de uma política marcada pela transitoriedade, pelo encaminhamento e pela remoção dos sujeitos do espaço urbano. Ao organizar as respostas institucionais a partir de medidas emergenciais e provisórias, como o acolhimento temporário nas casas de passagem, o deslocamento territorial por meio do auxílio-passagem, as internações e os encaminhamentos para comunidades terapêuticas, a retórica oficial dilui a complexidade da situação de rua e transforma a urgência da retirada imediata em narrativa de “recomeço”."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nesse processo, o vocabulário da proteção, da recuperação, da dignidade e da humanidade produz uma assimetria central na forma como a política é narrada. O poder público aparece como instância benevolente, responsável por salvar, resgatar e conduzir, enquanto a pessoa em situação de rua é representada de modo ambivalente: ora como vulnerável e incapaz de decidir por si, ora como acomodada, resistente ou irresponsável diante das ofertas disponibilizadas. Assim, a gramática humanitária suaviza a dimensão coercitiva das práticas analisadas e recobre a lógica que orienta medidas de triagem, afastamento territorial e institucionalização. Ao classificar quem aceita ajuda, quem recusa, quem merece cuidado e quem deve ser removido ou contido, os decretos verbais revelam que, nesse contexto, a linguagem “humanizada” não se contrapõe ao controle; pelo contrário, torna-se uma das principais formas de legitimá-lo."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "É esse tensionamento entre a linguagem “humanizada” das políticas e seus efeitos de exclusão, disciplinamento e invisibilização que sintetiza o percurso desta seção e permite avançar, nas considerações finais, para a compreensão mais ampla dos modos como os decretos verbais analisados produzem a população em situação de rua como objeto simultâneo de cuidado e controle."
+          }
+        ]
+      },
+      {
+        "tipo": "titulo",
+        "nivel": 1,
+        "trechos": [
+          {
+            "texto": "Considerações Finais"
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Este trabalho buscou analisar os modos como a população em situação de rua é constituída nos decretos verbais de gestores municipais, observando especialmente as formas de nomeação do sujeito, as justificativas mobilizadas para a intervenção estatal e os sentidos atribuídos às ofertas de atendimento e benefícios. A partir do material analisado, foi possível identificar que tais pronunciamentos participam ativamente da produção de sentidos sobre quem são essas pessoas, quais problemas elas representam para a cidade e quais respostas públicas seriam consideradas legítimas."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "A própria distribuição temporal dos pronunciamentos reforça essa leitura, ao revelar que as manifestações não ocorrem de maneira uniforme ao longo do ano. Observou-se maior concentração em fevereiro, com 8 manifestações, seguido por junho, com 6, e janeiro, com 5. Em um nível intermediário, aparecem os meses de maio, outubro e novembro, cada um com 4 manifestações, enquanto março registra 3 e abril e dezembro, 2 pronunciamentos cada. Por fim, os meses de julho, agosto e setembro apresentam apenas 1 manifestação cada. A concentração das falas em determinados meses, sugere que o tema ganha maior visibilidade em períodos específicos do calendário municipal, possivelmente associados às dinâmicas sazonais do turismo e à maior visibilidade pública da população em situação de rua nos espaços urbanos."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "No primeiro eixo da análise, verificou-se que a população em situação de rua é frequentemente representada por meio de categorias atravessadas por juízos morais, estigmas e associações com uso de drogas, transtorno mental, desordem urbana, insegurança e incômodo aos demais cidadãos. Sintomático desse enquadramento é o fato de que, nos registros audiovisuais analisados, raramente se confere voz a esse sujeito para narrar sua própria condição, de modo que sua existência é invariavelmente pautada, descrita e traduzida pelo olhar de terceiros. Ainda que apareça, em alguns momentos, sob a linguagem da vulnerabilidade e da necessidade de cuidado, esse sujeito é também classificado como alguém que recusa ajuda, permanece na rua por comodidade ou representa risco à ordem pública. Assim, os decretos verbais produzem uma diferenciação interna entre aqueles considerados merecedores de acolhimento e aqueles enquadrados como resistentes, perigosos ou indesejáveis."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Essa construção discursiva é fundamental para compreender o segundo eixo da análise. Casas de passagem, auxílio-passagem, internações, encaminhamentos para comunidades terapêuticas, operações de abordagem e campanhas contra a esmola são apresentados pelos gestores como oportunidades de cuidado e dignidade. No entanto, a análise demonstrou que essas respostas aparecem marcadas pela provisoriedade, pela triagem e pelo afastamento dos centros urbanos. Com isso, o atendimento tende a se organizar em torno da administração da presença da população em situação de rua na cidade."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Também verificou-se que a permanência nas ruas é deslocada das condições estruturais que produzem a situação de rua para a conduta individual dos sujeitos. Ao afirmar que determinadas pessoas não querem ajuda, fazem mau uso da esmola ou permanecem nas ruas por comodidade, os gestores municipais reforçam uma leitura moralizante do fenômeno. Essa operação discursiva contribui para apagar dimensões centrais da questão social, como a ausência de moradia, renda, trabalho, vínculos, acesso contínuo à saúde, proteção social e políticas públicas perenes. A consequência é a produção de uma narrativa na qual a insuficiência das respostas institucionais é recoberta pela ideia de recusa individual."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Desse modo, a análise evidencia que os decretos verbais examinados constroem a população em situação de rua como objeto simultâneo de assistência e ordenamento urbano. O sujeito é reconhecido como vulnerável quando aceita os encaminhamentos ofertados, mas passa a ser tratado como problema quando permanece na rua, recusa a institucionalização ou ocupa espaços considerados incompatíveis com o projeto de cidade defendido pelos gestores. Ao final, o que se demonstra é que a linguagem da assistência constitui uma das condições de legitimação das práticas de intervenção. Por meio dela, medidas provisórias, seletivas e, por vezes, coercitivas são apresentadas como respostas suficientes à situação de rua, enquanto permanecem secundarizadas as políticas capazes de assegurar permanência digna no território, cuidado em liberdade, moradia, proteção social e reconhecimento pleno dessas pessoas como sujeitos de direitos."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Nesse cenário, a vivência nas ruas manifesta uma complexa interseção de opressões e assimetrias históricas de poder. Na cidade contemporânea, concomitante à aceleração do capital e à emergência de novas dinâmicas tecnológicas, intensificam-se práticas de higienização social, moralização disciplinar e segregação espacial. Por meio dessas estratégias, o poder público opera entre a exclusão e a institucionalização dos sujeitos que tensionam a ordem urbana idealizada."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Diante disso, é evidente que este trabalho não esgota todas as possibilidades de análise sobre a produção de sentidos em torno da população em situação de rua. Outros aspectos ainda demandam aprofundamento, como a forma como esses discursos são recebidos pelos moradores das cidades e pela própria população atingida, bem como o modo como trabalhadores da assistência social, da saúde e da segurança pública interpretam e executam essas diretrizes no cotidiano institucional. Também permanece como campo relevante de investigação a relação entre os pronunciamentos dos gestores e a formulação concreta das políticas municipais, especialmente no que se refere ao financiamento, à fiscalização dos serviços conveniados e à fragilidade das políticas permanentes de moradia."
+          }
+        ]
+      },
+      {
+        "tipo": "paragrafo",
+        "trechos": [
+          {
+            "texto": "Ainda assim, espera-se que este estudo possa contribuir para os processos de emancipação não apenas da população em situação de rua, mas também de todos os sujeitos despossuídos da cidade. Que a busca por libertação e as disputas de sentidos em torno das populações historicamente marginalizadas sigam no centro da atividade crítica, incitando uma vigilância contínua diante das contradições sociais que, longe de estarem resolvidas, persistem em nos cercar."
+          }
+        ]
+      },
+      {
+        "tipo": "referencias"
+      }
+    ],
+    "referencias": [
+      {
+        "id": "adorno2016",
+        "tipo": "capitulo",
+        "autores": [
+          {
+            "sobrenome": "Adorno",
+            "prenomes": "Rubens"
+          }
+        ],
+        "titulo": "De vestígios e de poder",
+        "subtitulo": "\"Não adianta maquiar o Minhocão, a Cracolândia anda\"",
+        "publicacao": {
+          "titulo": "Novas faces da vida nas ruas",
+          "organizadores": [
+            {
+              "sobrenome": "Rui",
+              "prenomes": "Taniele"
+            },
+            {
+              "sobrenome": "Martinez",
+              "prenomes": "Mariana"
+            },
+            {
+              "sobrenome": "Feltran",
+              "prenomes": "Gabriel"
+            }
+          ]
+        },
+        "cidade": "São Carlos",
+        "editora": "EdUFSCAR",
+        "data": {
+          "ano": 2016
+        },
+        "paginas": "197-221"
+      },
+      {
+        "id": "abrasme2026",
+        "tipo": "relatorio",
+        "autores": [
+          {
+            "instituicao": "Associação Brasileira de Saúde Mental"
+          }
+        ],
+        "titulo": "Nota Técnica ABRASME 01/2026",
+        "subtitulo": "inadequação técnica da inclusão das Comunidades Terapêuticas na Rede de Atenção Psicossocial (RAPS)",
+        "cidade": "São Paulo, SP",
+        "editora": "ABRASME",
+        "data": {
+          "ano": 2026
+        }
+      },
+      {
+        "id": "arantes2017",
+        "tipo": "livro",
+        "autores": [
+          {
+            "sobrenome": "Arantes",
+            "prenomes": "Rodrigo"
+          }
+        ],
+        "titulo": "Diagnóstico situacional da população em situação de rua de Belo Horizonte/MG e equipes Consultório na Rua",
+        "subtitulo": "desafios e limites da atenção básica nas Redes de Atenção à Saúde",
+        "cidade": "Rio de Janeiro",
+        "data": {
+          "ano": 2017
+        }
+      },
+      {
+        "id": "bernardes2007",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Bernardes",
+            "prenomes": "Jefferson de Souza"
+          },
+          {
+            "sobrenome": "Menegon",
+            "prenomes": "Vera Sonia Mincoff"
+          }
+        ],
+        "titulo": "Documentos de domínio público como produtos e autores sociais",
+        "publicacao": {
+          "titulo": "Psico",
+          "volume": "38",
+          "numero": "1"
+        },
+        "data": {
+          "ano": 2007
+        },
+        "url": "https://revistaseletronicas.pucrs.br/revistapsico/article/view/1919",
+        "acesso": {
+          "ano": 2025,
+          "mes": 10,
+          "dia": 17
+        }
+      },
+      {
+        "id": "brasil1988",
+        "tipo": "lei",
+        "autores": [
+          {
+            "instituicao": "Brasil"
+          }
+        ],
+        "titulo": "[Constituição (1988)]. Constituição da República Federativa do Brasil",
+        "cidade": "Brasília, DF",
+        "editora": "Presidência da República",
+        "data": {
+          "ano": 1988
+        }
+      },
+      {
+        "id": "brasil2001",
+        "tipo": "lei",
+        "autores": [
+          {
+            "instituicao": "Brasil"
+          }
+        ],
+        "titulo": "Lei nº 10.216, de 6 de abril de 2001",
+        "ementa": "Dispõe sobre a proteção e os direitos das pessoas portadoras de transtornos mentais e redireciona o modelo assistencial em saúde mental",
+        "cidade": "Brasília, DF",
+        "editora": "Presidência da República",
+        "data": {
+          "ano": 2001
+        },
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/leis_2001/l10216.htm",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 20
+        }
+      },
+      {
+        "id": "brasil2014",
+        "tipo": "livro",
+        "autores": [
+          {
+            "instituicao": "Brasil. Ministério do Desenvolvimento Social e Combate à Fome"
+          }
+        ],
+        "titulo": "Tipificação Nacional de Serviços Socioassistenciais",
+        "cidade": "Brasília, DF",
+        "editora": "MDS",
+        "data": {
+          "ano": 2014
+        },
+        "url": "https://www.gov.br/mds/pt-br/centrais-de-conteudo/assistencia-social/tipificacao-nacional-de-servicos-socioassistenciais",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 20
+        }
+      },
+      {
+        "id": "brasil2009",
+        "tipo": "lei",
+        "autores": [
+          {
+            "instituicao": "Brasil"
+          }
+        ],
+        "titulo": "Decreto nº 7.053, de 23 de dezembro de 2009",
+        "ementa": "Institui a Política Nacional para a População em Situação de Rua e seu Comitê Intersetorial de Acompanhamento e Monitoramento, e dá outras providências",
+        "cidade": "Brasília, DF",
+        "editora": "Presidência da República",
+        "data": {
+          "ano": 2009
+        },
+        "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2009/decreto/d7053.htm",
+        "acesso": {
+          "ano": 2025,
+          "mes": 10,
+          "dia": 31
+        }
+      },
+      {
+        "id": "ceolin2020",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Ceolin",
+            "prenomes": "Bruna"
+          },
+          {
+            "sobrenome": "Terra",
+            "prenomes": "Isabella Chiara"
+          },
+          {
+            "sobrenome": "Carmona",
+            "prenomes": "Rafael"
+          }
+        ],
+        "titulo": "População em situação de rua",
+        "subtitulo": "estudo da realidade vivida",
+        "publicacao": {
+          "titulo": "Humanidades em Perspectivas",
+          "volume": "4",
+          "numero": "8"
+        },
+        "data": {
+          "ano": 2020
+        }
+      },
+      {
+        "id": "cndh2024",
+        "tipo": "relatorio",
+        "autores": [
+          {
+            "instituicao": "Conselho Nacional de Direitos Humanos"
+          }
+        ],
+        "titulo": "Relatório da missão do CNDH a Santa Catarina para apurar violações aos direitos humanos da população em situação de rua no estado",
+        "cidade": "Brasília",
+        "data": {
+          "ano": 2024
+        }
+      },
+      {
+        "id": "cunda2020",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Cunda",
+            "prenomes": "Mateus Freitas"
+          },
+          {
+            "sobrenome": "Silva",
+            "prenomes": "Rosane Neves"
+          }
+        ],
+        "titulo": "Me chamam rua, população, uma situação",
+        "subtitulo": "os nomes da rua e as políticas da cidade",
+        "publicacao": {
+          "titulo": "Psicologia & Sociedade",
+          "volume": "32"
+        },
+        "numeroEletronico": "e223876",
+        "data": {
+          "ano": 2020
+        },
+        "url": "https://doi.org/10.1590/1807-0310/2020v32223876",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 20
+        }
+      },
+      {
+        "id": "dias2022",
+        "tipo": "livro",
+        "autores": [
+          {
+            "sobrenome": "Dias",
+            "prenomes": "André Luiz Freitas"
+          },
+          {
+            "sobrenome": "Migliari",
+            "prenomes": "Wellington"
+          }
+        ],
+        "titulo": "O que o CadÚnico pode nos dizer sobre o fenômeno da população em situação de rua no Município de São Paulo?",
+        "cidade": "Belo Horizonte",
+        "editora": "Marginália Editora",
+        "data": {
+          "ano": 2022
+        },
+        "notas": "Observatório Brasileiro de Políticas Públicas com a População em Situação de Rua"
+      },
+      {
+        "id": "engels2008",
+        "tipo": "livro",
+        "autores": [
+          {
+            "sobrenome": "Engels",
+            "prenomes": "Friedrich"
+          }
+        ],
+        "titulo": "A situação da classe trabalhadora na Inglaterra",
+        "cidade": "São Paulo",
+        "editora": "Boitempo",
+        "data": {
+          "ano": 2008
+        },
+        "notas": "Tradução de Beatriz Alves Schumann. Edição de José Paulo Netto. Originalmente publicado em 1845."
+      },
+      {
+        "id": "fonseca2003",
+        "tipo": "livro",
+        "autores": [
+          {
+            "sobrenome": "Fonseca",
+            "prenomes": "Márcio Alves da"
+          }
+        ],
+        "titulo": "Michel Foucault e a constituição do sujeito",
+        "cidade": "São Paulo",
+        "editora": "EDUC",
+        "data": {
+          "ano": 2003
+        }
+      },
+      {
+        "id": "foucault1979",
+        "tipo": "livro",
+        "autores": [
+          {
+            "sobrenome": "Foucault",
+            "prenomes": "Michel"
+          }
+        ],
+        "titulo": "Microfísica do poder",
+        "edicao": "1",
+        "cidade": "Rio de Janeiro",
+        "editora": "Graal",
+        "data": {
+          "ano": 1979
+        }
+      },
+      {
+        "id": "gardella2016",
+        "tipo": "capitulo",
+        "autores": [
+          {
+            "sobrenome": "Gardella",
+            "prenomes": "Édouard"
+          }
+        ],
+        "titulo": "A urgência como cronopolítica",
+        "subtitulo": "o abrigo para pessoas em situação de rua",
+        "publicacao": {
+          "titulo": "Novas faces da vida nas ruas",
+          "organizadores": [
+            {
+              "sobrenome": "Rui",
+              "prenomes": "Taniele"
+            },
+            {
+              "sobrenome": "Martinez",
+              "prenomes": "Mariana"
+            },
+            {
+              "sobrenome": "Feltran",
+              "prenomes": "Gabriel"
+            }
+          ]
+        },
+        "cidade": "São Carlos",
+        "editora": "EdUFSCAR",
+        "data": {
+          "ano": 2016
+        },
+        "paginas": "141-174"
+      },
+      {
+        "id": "harrits2011",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Harrits",
+            "prenomes": "Gitte Sommer"
+          },
+          {
+            "sobrenome": "Møller",
+            "prenomes": "Marie Østergaard"
+          }
+        ],
+        "titulo": "Categories and categorization",
+        "subtitulo": "towards a comprehensive sociological framework",
+        "publicacao": {
+          "titulo": "Distinktion",
+          "subtitulo": "Journal of Social Theory",
+          "volume": "12",
+          "numero": "2"
+        },
+        "paginas": "229-247",
+        "data": {
+          "ano": 2011
+        }
+      },
+      {
+        "id": "itajai2025",
+        "tipo": "lei",
+        "autores": [
+          {
+            "instituicao": "Itajaí"
+          }
+        ],
+        "titulo": "Lei Municipal nº 7.839, de 5 de novembro de 2025",
+        "ementa": "Dispõe sobre a internação humanizada no município de Itajaí e dá outras providências",
+        "cidade": "Itajaí",
+        "editora": "Leis Municipais",
+        "data": {
+          "ano": 2025
+        },
+        "url": "https://leis.org/2v8ts",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 20
+        }
+      },
+      {
+        "id": "lima2024",
+        "tipo": "evento",
+        "autores": [
+          {
+            "sobrenome": "Lima",
+            "prenomes": "Luísa Filizzola Costa"
+          },
+          {
+            "sobrenome": "Assis",
+            "prenomes": "Marcos Arcanjo de"
+          }
+        ],
+        "titulo": "Burocratas de nível de rua e categorizações de pessoas em situação de rua",
+        "evento": {
+          "nome": "Seminário de Diamantina",
+          "numero": "20",
+          "ano": "2024",
+          "cidade": "Diamantina"
+        },
+        "publicacao": {
+          "titulo": "Anais"
+        },
+        "cidade": "Belo Horizonte",
+        "editora": "Cedeplar/UFMG",
+        "data": {
+          "ano": 2024
+        },
+        "url": "https://diamantina.cedeplar.ufmg.br/portal/download/diamantina-2024/D20_97.pdf",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 20
+        }
+      },
+      {
+        "id": "mattos2006",
+        "tipo": "tese",
+        "autores": [
+          {
+            "sobrenome": "Mattos",
+            "prenomes": "Ricardo Mendes"
+          }
+        ],
+        "titulo": "Situação de rua e modernidade",
+        "subtitulo": "a saída das ruas como processo de criação de novas formas de vida na atualidade",
+        "tipoDoTrabalho": "Dissertação",
+        "grau": "Mestrado em Psicologia",
+        "editora": "Programa de Pós-Graduação em Psicologia, Universidade São Marcos",
+        "cidade": "São Paulo",
+        "data": {
+          "ano": 2006
+        }
+      },
+      {
+        "id": "medeiros2020",
+        "tipo": "tese",
+        "autores": [
+          {
+            "sobrenome": "Medeiros",
+            "prenomes": "Fernanda Cavalcanti de"
+          }
+        ],
+        "titulo": "No fio da navalha",
+        "subtitulo": "entre a garantia de direitos e a higienização social nas políticas de atendimento à população em situação de rua",
+        "tipoDoTrabalho": "Tese",
+        "grau": "Doutorado em Psicologia",
+        "editora": "Universidade Federal do Rio Grande do Norte",
+        "cidade": "Natal",
+        "data": {
+          "ano": 2020
+        }
+      },
+      {
+        "id": "medradospink2013",
+        "tipo": "capitulo",
+        "autores": [
+          {
+            "sobrenome": "Medrado",
+            "prenomes": "Benedito"
+          },
+          {
+            "sobrenome": "Spink",
+            "prenomes": "Mary Jane"
+          }
+        ],
+        "titulo": "Produção de Sentido no Cotidiano",
+        "publicacao": {
+          "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+          "organizadores": [
+            {
+              "sobrenome": "Spink",
+              "prenomes": "Mary Jane"
+            }
+          ]
+        },
+        "cidade": "Rio de Janeiro",
+        "editora": "Centro Edelstein de Pesquisas Sociais",
+        "data": {
+          "ano": 2013
+        }
+      },
+      {
+        "id": "mpsc2025",
+        "tipo": "relatorio",
+        "autores": [
+          {
+            "instituicao": "Ministério Público de Santa Catarina"
+          }
+        ],
+        "titulo": "Levantamento sobre a rede de atenção às pessoas em situação de rua",
+        "cidade": "Florianópolis",
+        "editora": "MPSC",
+        "data": {
+          "ano": 2025
+        }
+      },
+      {
+        "id": "mpsc2024",
+        "tipo": "site",
+        "autores": [
+          {
+            "instituicao": "Ministério Público de Santa Catarina"
+          }
+        ],
+        "titulo": "MPSC relata ao STF violência contra pessoas em situação de rua em Balneário Camboriú",
+        "cidade": "Florianópolis",
+        "editora": "MPSC",
+        "data": {
+          "ano": 2024
+        },
+        "url": "https://portal.mpsc.mp.br/noticias/mpsc-relata-ao-stf-violencia-contra-pessoas-em-situacao-de-rua-em-balneario-camboriu--",
+        "acesso": {
+          "ano": 2024,
+          "mes": 7,
+          "dia": 3
+        }
+      },
+      {
+        "id": "mpf2025",
+        "tipo": "relatorio",
+        "autores": [
+          {
+            "instituicao": "Ministério Público Federal. Procuradoria Federal dos Direitos do Cidadão"
+          },
+          {
+            "instituicao": "Ministério Público do Trabalho"
+          }
+        ],
+        "titulo": "Relatório da inspeção nacional em comunidades terapêuticas",
+        "cidade": "Brasília",
+        "editora": "MPF; MPT",
+        "data": {
+          "ano": 2025
+        }
+      },
+      {
+        "id": "monzelli2023",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Monzelli",
+            "prenomes": "Arthur Guilherme"
+          },
+          {
+            "sobrenome": "Navarro",
+            "prenomes": "Érica Zavanella"
+          },
+          {
+            "sobrenome": "Cagnin",
+            "prenomes": "José Guilherme"
+          }
+        ],
+        "titulo": "População em situação de rua em meio à crise estrutural do capital",
+        "publicacao": {
+          "titulo": "Revista Katálysis",
+          "volume": "26",
+          "numero": "2"
+        },
+        "paginas": "202-211",
+        "data": {
+          "ano": 2023
+        }
+      },
+      {
+        "id": "morador2024",
+        "tipo": "noticia",
+        "autores": [],
+        "titulo": "Morador de rua detalha operação clandestina da PM em Itajaí",
+        "subtitulo": "\"Falaram que iam nos quebrar\"",
+        "publicacao": {
+          "titulo": "NSC Total",
+          "cidade": "Florianópolis"
+        },
+        "data": {
+          "ano": 2024
+        },
+        "url": "https://www.nsctotal.com.br/noticias/morador-de-rua-detalha-operacao-clandestina-da-pm-em-itajai-falaram-que-iam-nos-quebrar",
+        "acesso": {
+          "ano": 2024,
+          "mes": 7,
+          "dia": 3
+        }
+      },
+      {
+        "id": "natalino2023",
+        "tipo": "relatorio",
+        "autores": [
+          {
+            "sobrenome": "Natalino",
+            "prenomes": "Marco"
+          }
+        ],
+        "titulo": "Estimativa da população em situação de rua no Brasil (2012-2022)",
+        "cidade": "Brasília",
+        "editora": "Ipea",
+        "data": {
+          "ano": 2023
+        }
+      },
+      {
+        "id": "oliveira2017",
+        "tipo": "tese",
+        "autores": [
+          {
+            "sobrenome": "Oliveira",
+            "prenomes": "Luciano Márcio Freitas de"
+          }
+        ],
+        "titulo": "O alcance da proteção social à população em situação de rua",
+        "subtitulo": "a fuga do paradigma do direito",
+        "tipoDoTrabalho": "Tese",
+        "grau": "Doutorado em Serviço Social e Política Social",
+        "editora": "Universidade Estadual de Londrina",
+        "cidade": "Londrina",
+        "folhas": "312",
+        "data": {
+          "ano": 2017
+        }
+      },
+      {
+        "id": "palhares2021",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Palhares",
+            "prenomes": "Tatiane"
+          }
+        ],
+        "titulo": "Direitos sociais e pessoas em situação de rua",
+        "subtitulo": "análise da (in)visibilidade de pessoas em situação de rua",
+        "publicacao": {
+          "titulo": "Revista de Direito Sociais e Políticas Públicas",
+          "volume": "7",
+          "numero": "1"
+        },
+        "paginas": "102",
+        "data": {
+          "ano": 2021,
+          "mes": 8,
+          "dia": 20
+        }
+      },
+      {
+        "id": "pereira2017",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Pereira",
+            "prenomes": "Vinicius Tonollier"
+          },
+          {
+            "sobrenome": "Guareschi",
+            "prenomes": "Pedrinho Arcides"
+          }
+        ],
+        "titulo": "A psicologia no CRAS",
+        "subtitulo": "um estudo de representações sociais",
+        "publicacao": {
+          "titulo": "Psicologia & Sociedade",
+          "volume": "29"
+        },
+        "numeroEletronico": "e119584",
+        "data": {
+          "ano": 2017
+        },
+        "url": "https://doi.org/10.1590/1807-0310/2017v29119584",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 21
+        }
+      },
+      {
+        "id": "pires2019",
+        "tipo": "capitulo",
+        "autores": [
+          {
+            "sobrenome": "Pires",
+            "prenomes": "Roberto Rocha Coelho"
+          },
+          {
+            "sobrenome": "Lotta",
+            "prenomes": "Gabriela Spanghero"
+          }
+        ],
+        "titulo": "Burocracia de nível de rua e (re)produção de desigualdades sociais",
+        "subtitulo": "comparando perspectivas de análise",
+        "publicacao": {
+          "titulo": "Implementando desigualdades",
+          "subtitulo": "reprodução de desigualdades na implementação de políticas públicas",
+          "organizadores": [
+            {
+              "sobrenome": "Pires",
+              "prenomes": "Roberto Rocha Coelho"
+            }
+          ]
+        },
+        "cidade": "Rio de Janeiro",
+        "editora": "Ipea",
+        "data": {
+          "ano": 2019
+        },
+        "paginas": "127-152"
+      },
+      {
+        "id": "rybka2018",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Rybka",
+            "prenomes": "Livia Nemoto"
+          },
+          {
+            "sobrenome": "Nascimento",
+            "prenomes": "Juliana Luporini do"
+          },
+          {
+            "sobrenome": "Guzzo",
+            "prenomes": "Raquel Souza Lobo"
+          }
+        ],
+        "titulo": "Os mortos e feridos na “guerra às drogas”",
+        "subtitulo": "uma crítica ao paradigma proibicionista",
+        "publicacao": {
+          "titulo": "Estudos de Psicologia",
+          "cidade": "Campinas",
+          "volume": "35",
+          "numero": "1"
+        },
+        "paginas": "99-109",
+        "data": {
+          "ano": 2018
+        },
+        "url": "https://doi.org/10.1590/1982-02752018000100010",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 20
+        }
+      },
+      {
+        "id": "santacatarina2019",
+        "tipo": "relatorio",
+        "autores": [
+          {
+            "instituicao": "Santa Catarina. Secretaria de Estado do Desenvolvimento Social"
+          }
+        ],
+        "titulo": "Levantamento sobre pessoas em situação de rua em Santa Catarina",
+        "cidade": "Florianópolis",
+        "editora": "SDS",
+        "data": {
+          "ano": 2019
+        }
+      },
+      {
+        "id": "santos2014",
+        "tipo": "tese",
+        "autores": [
+          {
+            "sobrenome": "Santos",
+            "prenomes": "Verônica Bem dos"
+          }
+        ],
+        "titulo": "Mulheres em vivência de rua e a integralidade no cuidado em saúde",
+        "tipoDoTrabalho": "Dissertação",
+        "grau": "Mestrado em Psicologia",
+        "editora": "Programa de Pós-Graduação em Psicologia, Universidade Federal de Santa Maria",
+        "cidade": "Santa Maria",
+        "data": {
+          "ano": 2014
+        }
+      },
+      {
+        "id": "silva2006",
+        "tipo": "tese",
+        "autores": [
+          {
+            "sobrenome": "Silva",
+            "prenomes": "Maria Lucia Lopes da"
+          }
+        ],
+        "titulo": "Mudanças recentes no mundo do trabalho e o fenômeno população em situação de rua no Brasil",
+        "subtitulo": "1995-2005",
+        "tipoDoTrabalho": "Dissertação",
+        "grau": "Mestrado em Política Social",
+        "editora": "Departamento de Serviço Social, Universidade de Brasília",
+        "cidade": "Brasília",
+        "data": {
+          "ano": 2006
+        }
+      },
+      {
+        "id": "silva2009",
+        "tipo": "livro",
+        "autores": [
+          {
+            "sobrenome": "Silva",
+            "prenomes": "Maria Lucia Lopes da"
+          }
+        ],
+        "titulo": "Trabalho e população em situação de rua no Brasil",
+        "cidade": "São Paulo",
+        "editora": "Cortez",
+        "data": {
+          "ano": 2009
+        }
+      },
+      {
+        "id": "spink2011",
+        "tipo": "livro",
+        "autores": [
+          {
+            "sobrenome": "Spink",
+            "prenomes": "Mary Jane"
+          },
+          {
+            "sobrenome": "Figueiredo",
+            "prenomes": "Pedro"
+          },
+          {
+            "sobrenome": "Brasilino",
+            "prenomes": "Jullyane"
+          }
+        ],
+        "titulo": "Psicologia social e pessoalidade",
+        "cidade": "Rio de Janeiro",
+        "editora": "Centro Edelstein de Pesquisas Sociais: ABRAPSO",
+        "data": {
+          "ano": 2011
+        },
+        "autoresOrganizadores": true
+      },
+      {
+        "id": "spinkmedrado2013",
+        "tipo": "capitulo",
+        "autores": [
+          {
+            "sobrenome": "Spink",
+            "prenomes": "Mary Jane P."
+          },
+          {
+            "sobrenome": "Medrado",
+            "prenomes": "Benedito"
+          }
+        ],
+        "titulo": "Produção de sentidos no cotidiano",
+        "subtitulo": "uma abordagem teórico-metodológica para análise das práticas discursivas",
+        "publicacao": {
+          "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+          "organizadores": [
+            {
+              "sobrenome": "Spink",
+              "prenomes": "Mary Jane"
+            }
+          ]
+        },
+        "cidade": "Rio de Janeiro",
+        "editora": "Centro Edelstein de Pesquisas Sociais",
+        "data": {
+          "ano": 2013
+        }
+      },
+      {
+        "id": "spink2013",
+        "tipo": "capitulo",
+        "autores": [
+          {
+            "sobrenome": "Spink",
+            "prenomes": "Peter"
+          }
+        ],
+        "titulo": "Análise de Documentos de Domínio Público",
+        "publicacao": {
+          "titulo": "Práticas discursivas e produção de sentidos no cotidiano",
+          "organizadores": [
+            {
+              "sobrenome": "Spink",
+              "prenomes": "Mary Jane"
+            }
+          ]
+        },
+        "cidade": "Rio de Janeiro",
+        "editora": "Centro Edelstein de Pesquisas Sociais",
+        "data": {
+          "ano": 2013
+        }
+      },
+      {
+        "id": "souza2019",
+        "tipo": "capitulo",
+        "autores": [
+          {
+            "sobrenome": "Souza",
+            "prenomes": "Tadeu de Paula"
+          },
+          {
+            "sobrenome": "Gomes",
+            "prenomes": "Carla Lopes Teixeira"
+          }
+        ],
+        "titulo": "Territórios em conflito e o medo das ruas",
+        "subtitulo": "crack, uma substância midiática",
+        "publicacao": {
+          "titulo": "Vozes, imagens e resistências nas ruas",
+          "subtitulo": "a vida pode mais!",
+          "organizadores": [
+            {
+              "sobrenome": "Nobre",
+              "prenomes": "Maria Teresa"
+            },
+            {
+              "sobrenome": "Amorim",
+              "prenomes": "Ana Karenina Arraes"
+            },
+            {
+              "sobrenome": "Medeiros",
+              "prenomes": "Fernanda Cavalcanti de"
+            },
+            {
+              "sobrenome": "Matos",
+              "prenomes": "Anna Carolina Vidal"
+            }
+          ]
+        },
+        "cidade": "Natal",
+        "editora": "EDUFRN",
+        "data": {
+          "ano": 2019
+        },
+        "paginas": "237-271"
+      },
+      {
+        "id": "tomalih2025",
+        "tipo": "noticia",
+        "autores": [
+          {
+            "sobrenome": "Tomalih",
+            "prenomes": "Omar"
+          }
+        ],
+        "titulo": "Prefeitura de BC inicia internações involuntárias e interna dois homens em situação de rua",
+        "publicacao": {
+          "titulo": "BC Notícias",
+          "cidade": "Balneário Camboriú"
+        },
+        "data": {
+          "ano": 2025,
+          "mes": 11,
+          "dia": 15
+        },
+        "url": "https://www.bcnoticias.com.br/prefeitura-de-bc-inicia-internacoes-involuntarias-e-interna-dois-homens-em-situacao-de-rua/",
+        "acesso": {
+          "ano": 2026,
+          "mes": 5,
+          "dia": 20
+        },
+        "notas": "[Entrevista concedida à Redação BC Notícias]"
+      },
+      {
+        "id": "uga2004",
+        "tipo": "artigo",
+        "autores": [
+          {
+            "sobrenome": "Ugá",
+            "prenomes": "Vivian Domínguez"
+          }
+        ],
+        "titulo": "A categoria “pobreza” nas formulações de política social do Banco Mundial",
+        "publicacao": {
+          "titulo": "Revista de Sociologia e Política",
+          "cidade": "Curitiba",
+          "numero": "23"
+        },
+        "paginas": "55-62",
+        "data": {
+          "ano": 2004,
+          "mes": 11
+        }
+      }
+    ]
+  }
+}

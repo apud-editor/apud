@@ -1,6 +1,6 @@
 {
   "formato": "apud",
-  "versao": 3,
+  "versao": 4,
   "nome": "Aqui na rua, não (Revista Psicologia Política, APA)",
   "perfil": {
     "perfil": "APA",
@@ -17,7 +17,34 @@
   "criadoEm": "2026-11-20T00:00:00.000Z",
   "modificadoEm": "2026-11-20T00:00:00.000Z",
   "documento": {
-    "versao": 3,
+    "versao": 4,
+    "dados": {
+      "tipo": "disciplina",
+      "idioma": "pt-BR",
+      "titulo": "",
+      "autores": []
+    },
+    "abertura": {
+      "capa": false,
+      "folhaDeRosto": false,
+      "paginaDeTitulo": false,
+      "dedicatoria": {
+        "incluir": false,
+        "paragrafos": []
+      },
+      "agradecimentos": {
+        "incluir": false,
+        "paragrafos": []
+      },
+      "epigrafe": {
+        "incluir": false,
+        "paragrafos": [],
+        "autoria": ""
+      },
+      "resumos": [],
+      "sumario": false,
+      "semIdentificacao": false
+    },
     "blocos": [
       {
         "tipo": "paragrafo",
@@ -2985,6 +3012,7 @@
         },
         "url": "https://www.instagram.com/reel/DF5ERRnRhZh/"
       }
-    ]
+    ],
+    "imagens": []
   }
 }

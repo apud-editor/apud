@@ -8,7 +8,7 @@
 // na ordem, com o mesmo motor que faz o PDF.
 
 import type { PerfilResolvido } from "../perfis";
-import { obrasDaCitacao, type Bloco, type Citacao, type Documento, type Referencia } from "../documento/modelo";
+import { documentoVazio, obrasDaCitacao, type Bloco, type Citacao, type Documento, type Referencia } from "../documento/modelo";
 import { citacoesDoTexto, criarMotor, pedacosComoTexto, type CitacaoMontada } from "./motor";
 
 /** Todas as citações do documento, na ordem do texto, escritas na norma do perfil. */
@@ -24,7 +24,7 @@ export function montarTodas(doc: Documento, perfil: PerfilResolvido): CitacaoMon
  */
 export function previaDaCitacao(blocos: Bloco[], referencias: Referencia[], perfil: PerfilResolvido, c: Citacao): CitacaoMontada {
   const doc: Documento = {
-    versao: 3,
+    ...documentoVazio(),
     referencias,
     blocos: [...blocos, { tipo: "paragrafo", trechos: [{ citacao: c }] }],
   };

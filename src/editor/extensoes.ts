@@ -14,6 +14,7 @@ import type { Citacao } from "../documento/modelo";
 import type { CitacaoMontada } from "../citacoes/motor";
 import { CitacoesNoTexto, ControleDaJanela } from "./citacoes";
 import { citacaoSelecionada, colagemDoApud, podeAbrirAqui } from "./citar";
+import { nosDaFase3 } from "./nos";
 
 // ---------------------------------------------------------------------------
 // Colar como texto simples (decisão da versão 1). A exceção é o que foi
@@ -475,8 +476,8 @@ export function extensoesDoApud(
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4, 5] },
-      // Fora do Apud de propósito: são formatação, não significado,
-      // ou chegam depois como blocos próprios (citação longa, na fase 3).
+      // Fora do Apud de propósito: são formatação, não significado. A citação
+      // longa é um bloco próprio do Apud (nos.ts), no lugar do blockquote.
       blockquote: false,
       code: false,
       codeBlock: false,
@@ -500,5 +501,6 @@ export function extensoesDoApud(
     arrobaAbreAJanela(janela),
     citacaoNoEditor(descrever, citacoes, janela),
     listaDeReferenciasNoEditor(aparencia),
+    ...nosDaFase3(),
   ];
 }

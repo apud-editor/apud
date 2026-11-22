@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { carregarNorma, carregarPerfil, PASTA_PROVA } from "../../scripts/prova-lib";
 import { conferirReferencia } from "../arquivos/formato";
 import { criarMotor, pedacosComoTexto } from "../citacoes/motor";
-import { TIPOS_DE_REFERENCIA, type Bloco, type Citacao, type Documento, type Referencia, type TipoDeReferencia } from "../documento/modelo";
+import { documentoVazio, TIPOS_DE_REFERENCIA, type Bloco, type Citacao, type Documento, type Referencia, type TipoDeReferencia } from "../documento/modelo";
 import {
   CAMPOS_DE_TEXTO,
   camposDoTipo,
@@ -397,7 +397,7 @@ describe("apagar uma fonte citada", () => {
 
   it("depois de apagar, o motor avisa referência apagada (a citação continua no texto)", () => {
     const { perfil } = carregarPerfil("abnt.txt");
-    const doc: Documento = { versao: 3, referencias: [], blocos: [{ tipo: "paragrafo", trechos: [{ citacao: citacao("r1") }] }] };
+    const doc: Documento = { ...documentoVazio(), referencias: [], blocos: [{ tipo: "paragrafo", trechos: [{ citacao: citacao("r1") }] }] };
     const montada = criarMotor(doc, perfil).montar(citacao("r1"));
     expect(montada.avisos.map((a) => a.tipo)).toEqual(["referencia-apagada"]);
   });
@@ -497,7 +497,7 @@ describe("escolhas do autor", () => {
     const c: Citacao = { tipo: "parenteses", obras: [{ referencia: "r1" }] };
     const texto = (ajustes: Record<string, string>) => {
       const { perfil } = carregarNorma("abnt.txt", ajustes);
-      const doc: Documento = { versao: 3, referencias: [quatro], blocos: [{ tipo: "paragrafo", trechos: [{ citacao: c }] }] };
+      const doc: Documento = { ...documentoVazio(), referencias: [quatro], blocos: [{ tipo: "paragrafo", trechos: [{ citacao: c }] }] };
       return pedacosComoTexto(criarMotor(doc, perfil).montar(c).pedacos);
     };
     const padrao = texto({});
