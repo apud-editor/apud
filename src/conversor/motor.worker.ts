@@ -5,6 +5,7 @@ import { createTypstCompiler, createTypstRenderer, initOptions, loadFonts } from
 import compiladorWasm from "@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm?url";
 import renderizadorWasm from "@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm?url";
 import type { ArquivoDoTypst } from "./elementos";
+import type { PosicaoDoBloco } from "../telas/acompanhar";
 
 export type Pedido =
   | { tipo: "iniciar"; fontes: Uint8Array[] }
@@ -13,7 +14,7 @@ export type Pedido =
 
 export type Resposta =
   | { tipo: "pronto" }
-  | { tipo: "previa"; id: number; svg: string }
+  | { tipo: "previa"; id: number; svg: string; posicoes: PosicaoDoBloco[] }
   | { tipo: "pdf"; id: number; pdf: Uint8Array }
   | { tipo: "erro"; id: number | null; mensagem: string };
 
@@ -35,6 +36,33 @@ async function compilar(typst: string, arquivos: ArquivoDoTypst[], formato: 0 | 
   const r = await compilador.compile({ mainFilePath: ARQUIVO, format: formato, diagnostics: "unix" });
   if (!r.result) throw new Error(mensagemDoTypst(r.diagnostics));
   return r.result;
+}
+
+/** O que o motor devolve da montagem: um resultado ou as mensagens de erro. */
+type Montagem = { result?: Uint8Array; diagnostics?: unknown[] };
+
+/**
+ * A prévia: as páginas no formato vetorial e onde cada bloco do texto ficou
+ * (página e altura), pelas marcas que o conversor pôs. As duas coisas saem da
+ * mesma montagem. Se a consulta das marcas falhar, a prévia só não acompanha o
+ * cursor: nada de erro.
+ */
+async function montarPrevia(typst: string, arquivos: ArquivoDoTypst[]): Promise<{ vetor: Uint8Array; posicoes: PosicaoDoBloco[] }> {
+  for (const a of arquivos) compilador.mapShadow(a.caminho, a.dados);
+  compilador.addSource(ARQUIVO, typst);
+  return compilador.runWithWorld({ mainFilePath: ARQUIVO }, async (mundo) => {
+    const r = mundo.vector({ diagnostics: "unix" }) as Montagem;
+    if (!r.result) throw new Error(mensagemDoTypst(r.diagnostics));
+    let posicoes: PosicaoDoBloco[] = [];
+    try {
+      const lista: unknown = await mundo.query({ selector: "<apud-posicoes>", field: "value" });
+      const primeira = Array.isArray(lista) ? lista[0] : undefined;
+      if (Array.isArray(primeira)) posicoes = primeira as PosicaoDoBloco[];
+    } catch {
+      // Sem as marcas: a prévia não acompanha o cursor.
+    }
+    return { vetor: r.result, posicoes };
+  });
 }
 
 self.onmessage = async (e: MessageEvent<Pedido>) => {
@@ -59,14 +87,14 @@ self.onmessage = async (e: MessageEvent<Pedido>) => {
     await pronto;
     if (p.tipo === "previa") {
       // 0 = formato "vetorial", que o renderizador transforma nas páginas da prévia.
-      const vetor = await compilar(p.typst, p.arquivos, 0);
+      const { vetor, posicoes } = await montarPrevia(p.typst, p.arquivos);
       // Só o desenho das páginas: sem os scripts de interação do Typst.
       const svg = await renderizador.renderSvg({
         format: "vector",
         artifactContent: vetor,
         data_selection: { body: true, defs: true, css: true, js: false },
       });
-      responder({ tipo: "previa", id: p.id, svg });
+      responder({ tipo: "previa", id: p.id, svg, posicoes });
     } else {
       const pdf = await compilar(p.typst, p.arquivos, 1);
       responder({ tipo: "pdf", id: p.id, pdf }, [pdf.buffer]);

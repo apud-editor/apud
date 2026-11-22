@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { carregarNorma, carregarPerfil, documentoDeProva, mapearImagens } from "../../scripts/prova-lib";
-import { documentoParaTypst, escaparTexto, letraDaAlinea, PONTUACAO_DA_LISTA } from "./typst";
+import { documentoParaTypst, escaparTexto, letraDaAlinea, MARCA_DAS_POSICOES, MARCA_DO_BLOCO, PONTUACAO_DA_LISTA } from "./typst";
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
 import { documentoVazio, type Documento, type Marca } from "../documento/modelo";
 
@@ -678,5 +678,43 @@ describe("pontuação dobrada na lista de referências", () => {
     // "!." no mesmo texto: a regra age na montagem do texto, então se confere pelo HTML.
     const html = compilador.tryHtml({ mainFileContent: `#{${PONTUACAO_DA_LISTA}\n  [Lima. _Vozes_: a vida pode mais!. Natal. Fim?.]\n}` }).result!.html();
     expect(html).toContain("a vida pode mais! Natal. Fim?</p>");
+  });
+});
+
+describe("marcas da prévia (acompanhar o cursor)", () => {
+  const { perfil } = carregarNorma("abnt.txt");
+  const doc: Documento = {
+    ...documentoVazio(),
+    blocos: [
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] },
+      { tipo: "paragrafo", trechos: [] },
+      { tipo: "paragrafo", trechos: [{ texto: "Texto." }] },
+      { tipo: "quebra" },
+      { tipo: "paragrafo", trechos: [{ texto: "Outra página." }] },
+    ],
+  };
+
+  it("o PDF exportado não leva marcas", () => {
+    expect(documentoParaTypst(doc, perfil)).not.toContain(MARCA_DO_BLOCO);
+  });
+
+  it("na prévia, cada bloco com conteúdo ganha a marca, e o motor diz a página e a altura de cada uma", () => {
+    const typst = documentoParaTypst(doc, perfil, { marcarBlocos: true });
+    expect(typst).toContain(`#metadata(0) <${MARCA_DO_BLOCO}>`);
+    expect(typst).not.toContain(`#metadata(1) <${MARCA_DO_BLOCO}>`); // parágrafo vazio não sai no PDF
+    const [posicoes] = compilador.query({ mainFileContent: typst }, { selector: `<${MARCA_DAS_POSICOES}>`, field: "value" }) as number[][][];
+    expect(posicoes.map((p) => p[0])).toEqual([0, 2, 3, 4]);
+    expect(posicoes[0][1]).toBe(1);
+    expect(posicoes[3][1]).toBe(2); // depois da quebra, na página 2
+    expect(posicoes[0][2]).toBeGreaterThan(0);
+  });
+
+  it("as marcas não mudam a página: o mesmo número de páginas com e sem elas", () => {
+    const { documento } = documentoDeProva();
+    const norma = carregarNorma("abnt.txt");
+    mapearImagens(compilador, documento);
+    const sem = paginas(compilar(documentoParaTypst(documento, norma.perfil, { csl: norma.csl }), documento));
+    const com = paginas(compilar(documentoParaTypst(documento, norma.perfil, { csl: norma.csl, marcarBlocos: true }), documento));
+    expect(com).toBe(sem);
   });
 });

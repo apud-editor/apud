@@ -83,7 +83,17 @@ export interface OpcoesDoConversor {
    * Obrigatório quando o texto tem a lista de referências e citações.
    */
   csl?: string;
+  /**
+   * Só para a prévia: uma marca invisível antes de cada bloco do texto e, no fim,
+   * a lista de onde cada marca ficou (página e altura), para a prévia acompanhar
+   * o cursor. O PDF exportado não leva as marcas.
+   */
+  marcarBlocos?: boolean;
 }
+
+/** A marca de cada bloco (o valor é a posição do bloco no texto) e a lista de onde elas ficaram. */
+export const MARCA_DO_BLOCO = "apud-bloco";
+export const MARCA_DAS_POSICOES = "apud-posicoes";
 
 // ---------------------------------------------------------------------------
 // Leitura das regras do perfil
@@ -367,17 +377,29 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
     l(`#heading(level: 1, numbering: none, outlined: false)[${tituloParaTypst(doc, (x) => x)}]`);
     l();
   }
+  const marcar = (i: number) => {
+    if (opcoes.marcarBlocos) l(`#metadata(${i}) <${MARCA_DO_BLOCO}>`);
+  };
   for (let i = 0; i < doc.blocos.length; i++) {
     const b = doc.blocos[i];
     // Título na mesma linha do texto (APA, níveis 4 e 5): junta com o parágrafo seguinte.
     const seguinte = doc.blocos[i + 1];
     if (b.tipo === "titulo" && medidas.naMesmaLinha.has(b.nivel) && temConteudo(b.trechos) && seguinte?.tipo === "paragrafo" && temConteudo(seguinte.trechos)) {
+      marcar(i);
+      marcar(i + 1);
       l(tituloNaMesmaLinha(b.nivel, b.trechos, seguinte.trechos, medidas, escrita));
       i++;
       continue;
     }
     const s = blocoParaTypst(b, medidas, escrita);
-    if (s) l(s);
+    if (s) {
+      marcar(i);
+      l(s);
+    }
+  }
+  if (opcoes.marcarBlocos) {
+    // (bloco, página, altura em pt) de cada marca.
+    l(`#context [#metadata(query(<${MARCA_DO_BLOCO}>).map(m => { let p = m.location().position(); (m.value, p.page, p.y / 1pt) })) <${MARCA_DAS_POSICOES}>]`);
   }
   return linhas.join("\n") + "\n";
 }

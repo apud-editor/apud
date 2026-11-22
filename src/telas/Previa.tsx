@@ -6,6 +6,7 @@ import { motor } from "../conversor/motor";
 import type { NormaDoTrabalho } from "../perfis/norma";
 import { rodandoNoPrograma } from "../arquivos/armazenamento";
 import { avisoDeFonte } from "./fonte";
+import { alturaNaPrevia, lugarDoBloco, rolagemPara, type PosicaoDoBloco } from "./acompanhar";
 
 interface Props {
   lerTexto: React.MutableRefObject<(() => Documento) | null>;
@@ -15,10 +16,16 @@ interface Props {
   mudancas: EventTarget;
   nome: string;
   aoFechar: () => void;
+  /** Avisa quando o cursor muda de bloco; lerCursor diz em que bloco ele está. */
+  cursor?: EventTarget;
+  lerCursor?: () => number | null;
 }
 
 /** A prévia do PDF: as páginas de verdade, montadas pelo mesmo motor da exportação. */
-export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }: Props) {
+/** O espaço entre as folhas na prévia, em pt (as medidas do desenho do Typst). */
+const ESPACO = 16;
+
+export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar, cursor, lerCursor }: Props) {
   const [svg, setSvg] = useState<string | null>(null);
   const [situacao, setSituacao] = useState<"montando" | "pronta" | "erro">("montando");
   const [erro, setErro] = useState("");
@@ -31,16 +38,38 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
   const nomeRef = useRef(nome);
   nomeRef.current = nome;
   const caixa = useRef<HTMLDivElement>(null);
+  const lateral = useRef<HTMLElement>(null);
+  /** Onde cada bloco ficou na última montagem, e a altura de cada folha (pt). */
+  const posicoes = useRef<PosicaoDoBloco[]>([]);
+  const alturas = useRef<number[]>([]);
+  const lerCursorRef = useRef(lerCursor);
+  lerCursorRef.current = lerCursor;
+
+  /** Rola a prévia até o bloco do cursor, se ele não estiver à vista. */
+  const acompanhar = () => {
+    const indice = lerCursorRef.current?.();
+    const doc = caixa.current?.querySelector("svg.typst-doc");
+    const painel = lateral.current;
+    if (indice == null || !doc || !painel) return;
+    const lugar = lugarDoBloco(posicoes.current, indice);
+    if (!lugar) return;
+    const largura = Number(doc.getAttribute("width")) || 1;
+    const escala = doc.getBoundingClientRect().width / largura;
+    const topoDoDesenho = doc.getBoundingClientRect().top - painel.getBoundingClientRect().top + painel.scrollTop;
+    const alvo = topoDoDesenho + alturaNaPrevia(alturas.current, ESPACO, lugar.pagina, lugar.y) * escala;
+    const destino = rolagemPara(alvo, painel.scrollTop, painel.clientHeight);
+    if (destino !== null) painel.scrollTo({ top: destino, behavior: "smooth" });
+  };
 
   // O Typst entrega as páginas coladas umas nas outras. Aqui cada página ganha
   // fundo branco e um espaço entre ela e a próxima, como folhas de papel.
   useLayoutEffect(() => {
     const doc = caixa.current?.querySelector("svg.typst-doc");
     if (!doc) return;
-    const ESPACO = 16;
     const paginas = Array.from(doc.querySelectorAll<SVGGElement>(":scope > g.typst-page"));
     let y = 0;
     let largura = 0;
+    alturas.current = [];
     for (const g of paginas) {
       const w = Number(g.dataset.pageWidth ?? g.getAttribute("data-page-width"));
       const h = Number(g.dataset.pageHeight ?? g.getAttribute("data-page-height"));
@@ -52,6 +81,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
       fundo.setAttribute("height", String(h));
       fundo.setAttribute("class", "folha-da-previa");
       doc.insertBefore(fundo, g);
+      alturas.current.push(h);
       y += h + ESPACO;
       largura = Math.max(largura, w);
     }
@@ -59,7 +89,16 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
     doc.setAttribute("viewBox", `0 0 ${largura} ${altura}`);
     doc.setAttribute("width", String(largura));
     doc.setAttribute("height", String(altura));
+    acompanhar();
   }, [svg]);
+
+  // O cursor mudou de bloco: a prévia vai atrás.
+  useEffect(() => {
+    if (!cursor) return;
+    const aoMover = () => acompanhar();
+    cursor.addEventListener("mudou", aoMover);
+    return () => cursor.removeEventListener("mudou", aoMover);
+  }, [cursor]);
 
   useEffect(() => {
     let ativo = true;
@@ -82,9 +121,10 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
         const { perfil, csl } = lerNorma.current();
         setSelo(perfil.identificacao.perfil);
         const doc = ler();
-        const pronto = await motor.previa(documentoParaTypst(doc, perfil, { titulo: nomeRef.current, csl }), arquivosDasImagens(doc));
+        const pronto = await motor.previa(documentoParaTypst(doc, perfil, { titulo: nomeRef.current, csl, marcarBlocos: true }), arquivosDasImagens(doc));
         if (!ativo) return;
-        setSvg(pronto);
+        posicoes.current = pronto.posicoes;
+        setSvg(pronto.svg);
         setSituacao("pronta");
         const familia = perfil.regras.get("família da fonte")?.texto;
         setAvisoDaFonte(avisoDeFonte(familia, motor.fontesDoComputador, rodandoNoPrograma));
@@ -117,7 +157,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
   }, [lerTexto, lerNorma, mudancas]);
 
   return (
-    <aside className="previa" aria-label="Prévia do PDF">
+    <aside ref={lateral} className="previa" aria-label="Prévia do PDF">
       <div className="previa-topo">
         <span className="previa-titulo">Prévia do PDF</span>
         {selo && <span className="selo-norma">{selo}</span>}
