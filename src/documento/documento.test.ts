@@ -356,12 +356,18 @@ describe("fase 3: blocos novos entre o Apud e o editor", () => {
     expect(blocosDoEditor(json)).toEqual([{ tipo: "tabela", titulo: [], fonte: [], cabecalho: 0, linhas: [[[{ texto: "um dois" }]]] }]);
   });
 
-  it("largura de 100% ou inválida e espécie desconhecida não são guardadas (valem o padrão)", () => {
+  it("largura inválida e espécie desconhecida não são guardadas (valem o padrão)", () => {
     const json: JSONContent = {
       type: "doc",
-      content: [{ type: NO_DA_FIGURA, attrs: { imagem: "i", especie: "mapa", largura: 100 } }],
+      content: [{ type: NO_DA_FIGURA, attrs: { imagem: "i", especie: "mapa", largura: 5 } }],
     };
     expect(blocosDoEditor(json)).toEqual([{ tipo: "figura", imagem: "i", titulo: [], fonte: [] }]);
+  });
+
+  it("largura de 100% é guardada: é a largura toda do texto, diferente de não escolher (tamanho da imagem)", () => {
+    const figura = (largura: number | null): JSONContent => ({ type: "doc", content: [{ type: NO_DA_FIGURA, attrs: { imagem: "i", largura } }] });
+    expect(blocosDoEditor(figura(100))).toEqual([{ tipo: "figura", imagem: "i", largura: 100, titulo: [], fonte: [] }]);
+    expect(blocosDoEditor(figura(null))).toEqual([{ tipo: "figura", imagem: "i", titulo: [], fonte: [] }]);
   });
 
   it("o texto simples ignora as notas", () => {
