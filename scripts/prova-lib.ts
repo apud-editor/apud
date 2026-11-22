@@ -13,7 +13,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { criarMotor, citacoesDoTexto } from "../src/citacoes/motor";
-import { escaparTexto, pedacosParaTypst, registrar } from "../src/conversor/typst";
+import { escaparTexto, pedacosParaTypst, PONTUACAO_DA_LISTA, registrar } from "../src/conversor/typst";
 import { arquivosDasImagens } from "../src/conversor/elementos";
 import { conferirPerfis, formatarMensagem, normaDoTrabalho, type Arquivo, type NormaDoTrabalho } from "../src/perfis";
 import type { PerfilResolvido } from "../src/perfis";
@@ -342,7 +342,10 @@ export function rodarTrabalho({ documento, escritas }: { documento: Documento; e
   const typst = [
     `#set text(lang: "pt", region: "BR")`,
     ...chamadas,
-    `#bibliography(bytes(${JSON.stringify(JSON.stringify(motor.referenciasDoTypst))}), style: bytes(${JSON.stringify(csl)}), title: [${escaparTexto(titulo)}])`,
+    `#{`,
+    PONTUACAO_DA_LISTA,
+    `  bibliography(bytes(${JSON.stringify(JSON.stringify(motor.referenciasDoTypst))}), style: bytes(${JSON.stringify(csl)}), title: [${escaparTexto(titulo)}])`,
+    `}`,
   ].join("\n");
 
   const compilador = NodeCompiler.create({ workspace: PASTA_PROVA });
@@ -356,10 +359,21 @@ export function rodarTrabalho({ documento, escritas }: { documento: Documento; e
   const itens = [...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)];
   return {
     chamadas: blocos.map((b) => ({ escrita: escritas[Number(b[1]) - 1], saida: htmlParaTexto(b[2]) })),
-    referencias: itens.map((i) => htmlParaTexto(i[1])),
+    referencias: itens.map((i) => htmlParaTexto(semPontoDobradoNoHtml(i[1]))),
     typst,
     avisos,
   };
+}
+
+/**
+ * No HTML (de onde sai o gabarito), cada referência é um item de lista, e a regra
+ * do Typst que tira o ponto depois de "?" ou "!" no fim do negrito ou do itálico
+ * só alcança o PDF (lá cada referência é um bloco). Aqui se faz o mesmo no texto,
+ * para o gabarito mostrar o que sai no PDF. O caso no mesmo texto ("mais!. Natal")
+ * o Typst já corrige nos dois.
+ */
+export function semPontoDobradoNoHtml(html: string): string {
+  return html.replace(/([?!])(<\/(?:strong|em)>)\./g, "$1$2");
 }
 
 /** Gera o PDF do documento de prova (só chamadas e referências). */

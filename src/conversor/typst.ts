@@ -756,6 +756,61 @@ function sumarioParaTypst(doc: Documento, r: Regras, m: Medidas): string {
 // Referências
 
 /**
+ * Pontuação dobrada na lista de referências. O motor de referências (CSL) põe
+ * o ponto depois do título mesmo quando ele termina em "?" ou "!"
+ * ("…São Paulo?**.**"), e a NBR 6023 não pede esse ponto. Estas regras, em
+ * código do Typst, tiram o ponto: a primeira quando os dois estão no mesmo
+ * texto ("mais!. Natal"); a segunda quando o "?" está no fim do negrito ou do
+ * itálico e o ponto logo depois, fora dele (aí é preciso olhar a referência
+ * inteira: cada referência é um bloco, e a regra refaz só as que mudam).
+ * Valem só dentro da lista. O script de prova usa as mesmas regras.
+ */
+export const PONTUACAO_DA_LISTA = String.raw`
+  let apud-fim-do-texto(c) = {
+    if c.has("text") { c.text }
+    else if c.has("body") { apud-fim-do-texto(c.body) }
+    else if c.has("child") { apud-fim-do-texto(c.child) }
+    else if c.has("children") and c.children.len() > 0 { apud-fim-do-texto(c.children.last()) }
+    else { "" }
+  }
+  // Devolve (o conteúdo sem o ponto dobrado, o texto em que ele termina). Desce
+  // pelas sequências e pelos invólucros (menos negrito e itálico), levando o fim
+  // do texto anterior, porque o ponto pode estar numa camada e o "?" noutra.
+  let apud-tira-ponto(c, anterior) = {
+    if type(c) != content { return (c, anterior) }
+    if c.has("text") {
+      if c.text.starts-with(".") and (anterior.ends-with("?") or anterior.ends-with("!")) {
+        let resto = c.text.slice(1)
+        return (text(resto), if resto == "" { anterior } else { resto })
+      }
+      return (c, if c.text == "" { anterior } else { c.text })
+    }
+    if c.has("children") {
+      let saida = ()
+      let fim = anterior
+      for filho in c.children {
+        let (novo, f) = apud-tira-ponto(filho, fim)
+        saida.push(novo)
+        fim = f
+      }
+      return (saida.join(), fim)
+    }
+    if c.func() != strong and c.func() != emph and c.has("body") and type(c.body) == content {
+      let (novo, f) = apud-tira-ponto(c.body, anterior)
+      return (if novo == c.body { c } else { novo }, f)
+    }
+    let t = apud-fim-do-texto(c)
+    (c, if t == "" { anterior } else { t })
+  }
+  show block: it => {
+    if type(it.body) != content { return it }
+    let (novo, _) = apud-tira-ponto(it.body, "")
+    if novo == it.body { it } else { let f = it.fields(); let _ = f.remove("body"); block(..f, novo) }
+  }
+  show regex("[?!]\\.( |$)"): m => m.text.slice(0, 1) + m.text.slice(2)
+`;
+
+/**
  * O título e a lista de referências, onde a pessoa pôs o bloco. O título vem
  * do perfil e tem a forma de um título de nível 1 sem número, centralizado se
  * o perfil manda (ABNT: REFERÊNCIAS; APA: Referências). A lista vem do CSL:
@@ -781,6 +836,7 @@ function listaDeReferencias(motor: Motor, r: Regras, csl: string, m: Medidas): s
     `#{`,
     `  set par(justify: ${justificar}, first-line-indent: 0pt, hanging-indent: ${pendente}, leading: ${entreLinhas}, spacing: ${entreReferencias})`,
     `  set block(spacing: ${entreReferencias})`,
+    PONTUACAO_DA_LISTA,
     `  bibliography(bytes(${texto(dados)}), style: bytes(${texto(csl)}), title: none)`,
     `}`,
     "",

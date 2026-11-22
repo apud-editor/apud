@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { carregarNorma, carregarPerfil, documentoDeProva, mapearImagens } from "../../scripts/prova-lib";
-import { documentoParaTypst, escaparTexto, letraDaAlinea } from "./typst";
+import { documentoParaTypst, escaparTexto, letraDaAlinea, PONTUACAO_DA_LISTA } from "./typst";
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
 import { documentoVazio, type Documento, type Marca } from "../documento/modelo";
 
@@ -625,5 +625,51 @@ describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, r
       compilar(typst, documento);
       expect(inicioDoTexto(typst).contagem).toBe(n);
     }
+  });
+});
+
+describe("pontuação dobrada na lista de referências", () => {
+  const norma = carregarNorma("abnt.txt");
+  const normaApa = carregarNorma("apa.txt");
+  const doc = (referencias: Documento["referencias"]): Documento => ({
+    ...documentoVazio(),
+    referencias,
+    blocos: [
+      { tipo: "paragrafo", trechos: referencias.map((r) => ({ citacao: { tipo: "parenteses" as const, obras: [{ referencia: r.id }] } })) },
+      { tipo: "referencias" },
+    ],
+  });
+  const refs: Documento["referencias"] = [
+    { id: "a", tipo: "livro", autores: [{ sobrenome: "Dias", prenomes: "André" }], titulo: "O que pode São Paulo?", data: { ano: 2022 }, cidade: "Belo Horizonte", editora: "Marginália" },
+    { id: "b", tipo: "livro", autores: [{ sobrenome: "Lima", prenomes: "Ana" }], titulo: "Vozes", subtitulo: "a vida pode mais!", data: { ano: 2019 }, cidade: "Natal", editora: "EDUFRN" },
+  ];
+
+  it("as regras entram só dentro da lista", () => {
+    const typst = documentoParaTypst(doc(refs), norma.perfil, { csl: norma.csl });
+    const i = typst.indexOf("let apud-tira-ponto");
+    expect(i).toBeGreaterThan(typst.indexOf("set block(spacing:"));
+    expect(i).toBeLessThan(typst.indexOf("bibliography("));
+    expect(typst.match(/let apud-tira-ponto/g)).toHaveLength(1);
+  });
+
+  it("nas duas normas, o PDF compila com título terminado em ? e subtítulo terminado em !", () => {
+    for (const { perfil, csl } of [norma, normaApa]) {
+      const d = doc(refs);
+      expect(paginas(compilar(documentoParaTypst(d, perfil, { csl }), d))).toBeGreaterThan(0);
+    }
+  });
+
+  it("sem o ponto depois do ? ou do !, também quando o ? está no fim do negrito ou do itálico", () => {
+    // A mesma regra, aplicada a referências escritas à mão: a sonda guarda o texto de cada bloco já corrigido.
+    const sonda = (corpo: string) => String.raw`#{${PONTUACAO_DA_LISTA}
+  show block: it => { [#metadata(repr(it.body))<sonda>]; it }
+  block[${corpo}]
+}`;
+    const texto = (corpo: string) => (compilador.query({ mainFileContent: sonda(corpo) }, { selector: "<sonda>", field: "value" }) as string[]).at(-1)!;
+    expect(texto("Dias. *O que pode São Paulo?*. Belo Horizonte")).not.toMatch(/\[\. /);
+    expect(texto("Dias. *Título*. Belo Horizonte")).toMatch(/\[\. /);
+    // "!." no mesmo texto: a regra age na montagem do texto, então se confere pelo HTML.
+    const html = compilador.tryHtml({ mainFileContent: `#{${PONTUACAO_DA_LISTA}\n  [Lima. _Vozes_: a vida pode mais!. Natal. Fim?.]\n}` }).result!.html();
+    expect(html).toContain("a vida pode mais! Natal. Fim?</p>");
   });
 });
