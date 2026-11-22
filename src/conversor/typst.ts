@@ -837,6 +837,10 @@ function listaDeReferencias(motor: Motor, r: Regras, csl: string, m: Medidas): s
     `  set par(justify: ${justificar}, first-line-indent: 0pt, hanging-indent: ${pendente}, leading: ${entreLinhas}, spacing: ${entreReferencias})`,
     `  set block(spacing: ${entreReferencias})`,
     PONTUACAO_DA_LISTA,
+    // Em português, o Typst repete na linha de baixo o hífen da quebra ("contra-" /
+    // "-pessoas"), como manda a regra para palavras. Num endereço da internet isso
+    // muda o endereço: nos endereços, o hífen não se repete.
+    `  show link: set text(lang: "en")`,
     `  bibliography(bytes(${texto(dados)}), style: bytes(${texto(csl)}), title: none)`,
     `}`,
     "",

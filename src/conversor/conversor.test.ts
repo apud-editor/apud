@@ -652,6 +652,13 @@ describe("pontuação dobrada na lista de referências", () => {
     expect(typst.match(/let apud-tira-ponto/g)).toHaveLength(1);
   });
 
+  it("nos endereços da lista, o hífen da quebra de linha não se repete na linha de baixo", () => {
+    const typst = documentoParaTypst(doc(refs), norma.perfil, { csl: norma.csl });
+    const i = typst.indexOf(`show link: set text(lang: "en")`);
+    expect(i).toBeGreaterThan(typst.indexOf("set block(spacing:"));
+    expect(i).toBeLessThan(typst.indexOf("bibliography("));
+  });
+
   it("nas duas normas, o PDF compila com título terminado em ? e subtítulo terminado em !", () => {
     for (const { perfil, csl } of [norma, normaApa]) {
       const d = doc(refs);
