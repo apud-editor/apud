@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "../editor/Editor";
 import {
   VERSAO_DO_FORMATO,
+  imagensUsadas,
   type Abertura,
   type Bloco,
   type Citacao,
@@ -20,6 +21,7 @@ import { arquivosDasImagens } from "../conversor/elementos";
 import { motor } from "../conversor/motor";
 import { normaEmbutida, normasEmbutidas, perfilEmbutido } from "../perfis/embutidos";
 import { AparenciaDaNorma } from "../editor/extensoes";
+import { ImagensNoEditor } from "../editor/imagens";
 import { CitacoesNoTexto } from "../editor/citacoes";
 import { montarTodas, previaDaCitacao } from "../citacoes/todas";
 import type { NormaDoTrabalho } from "../perfis/norma";
@@ -47,6 +49,12 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   const dados = useRef<DadosDoTrabalho>(trabalho.documento.dados);
   const abertura = useRef<Abertura>(trabalho.documento.abertura);
   const imagens = useRef<Imagem[]>(trabalho.documento.imagens);
+  // As figuras buscam e guardam as imagens aqui. A imagem de uma figura apagada
+  // fica guardada até fechar o trabalho (para o "desfazer" funcionar), mas não vai para o arquivo.
+  const imagensNoEditor = useMemo(
+    () => new ImagensNoEditor(() => imagens.current, (i) => (imagens.current = [...imagens.current, i])),
+    [],
+  );
   // A norma do trabalho, com os ajustes que ele guarda para ela (escolhas do
   // autor). Trocar a norma muda o perfil do trabalho; os ajustes de cada norma
   // ficam guardados, e voltar para a anterior encontra as escolhas como estavam.
@@ -80,13 +88,14 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   const lerDocumento = useRef<() => Documento>(() => {
     // Se o editor não estiver disponível, usa o último texto lido: nunca grava um texto vazio por engano.
     if (lerTexto.current) ultimoTexto.current = lerTexto.current();
+    const usadas = imagensUsadas(ultimoTexto.current);
     return {
       versao: VERSAO_DO_FORMATO,
       dados: dados.current,
       abertura: abertura.current,
       blocos: ultimoTexto.current,
       referencias: referencias.current,
-      imagens: imagens.current,
+      imagens: imagens.current.filter((i) => usadas.has(i.id)),
     };
   });
   const nomeSalvo = useRef(trabalho.nome);
@@ -369,6 +378,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         lerReferencias={lerReferencias}
         previaDaCitacao={previa}
         aoCadastrarReferencia={() => setPainel("referencias")}
+        imagens={imagensNoEditor}
         aoMudar={() => {
           salvamento.houveMudanca();
           mudancas.dispatchEvent(new Event("mudou"));

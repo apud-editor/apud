@@ -9,6 +9,11 @@ import { AparenciaDaNorma, ControleDaBarra, extensoesDoApud, inserirQuebra } fro
 import { CitacoesNoTexto, ControleDaJanela } from "./citacoes";
 import { escreverArroba, inserirCitacao, trocarCitacao } from "./citar";
 import JanelaDeCitacao from "./JanelaDeCitacao";
+import JanelaDaNota from "./JanelaDaNota";
+import { ControleDaNota, inserirNota, trocarNota } from "./notas";
+import { ImagensNoEditor, ImagemRecusada, TIPOS_ACEITOS, lerImagemDoArquivo } from "./imagens";
+import { apagarIlustracao, ilustracaoDoCursor, inserirFigura, inserirTabela, mudarIlustracao } from "./ilustracoes";
+import type { ControlesDosNos } from "./nos";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -31,6 +36,8 @@ interface Props {
   previaDaCitacao?: (c: Citacao) => CitacaoMontada | null;
   /** A janela da citação pede para cadastrar uma referência: abre a gaveta. */
   aoCadastrarReferencia?: () => void;
+  /** As imagens do trabalho (as figuras buscam e guardam aqui). Sem isto, o editor não aceita figuras novas. */
+  imagens?: ImagensNoEditor;
 }
 
 export default function Editor({
@@ -44,19 +51,26 @@ export default function Editor({
   lerReferencias,
   previaDaCitacao,
   aoCadastrarReferencia,
+  imagens: imagensDadas,
 }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
   const janela = useMemo(() => new ControleDaJanela(), []);
   const aparencia = useMemo(() => aparenciaDada ?? new AparenciaDaNorma(), [aparenciaDada]);
   const citacoes = useMemo(() => citacoesDadas ?? new CitacoesNoTexto(() => []), [citacoesDadas]);
   const podeCitar = !!lerReferencias;
+  const notaCtl = useMemo(() => new ControleDaNota(), []);
+  const imagens = useMemo(() => imagensDadas ?? new ImagensNoEditor(() => [], () => {}), [imagensDadas]);
+  const controlesDosNos = useMemo<ControlesDosNos>(() => ({ imagens, nota: notaCtl }), [imagens, notaCtl]);
+  const [problemaDaImagem, setProblemaDaImagem] = useState<string | null>(null);
+  /** Foto grande leva alguns segundos para ser preparada: a tela avisa. */
+  const [preparandoImagem, setPreparandoImagem] = useState(false);
   const [blocos, setBlocos] = useState(inicial);
   const espera = useRef<number>(0);
   const aoMudarRef = useRef(aoMudar);
   aoMudarRef.current = aoMudar;
 
   const editor = useEditor({
-    extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela),
+    extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela, controlesDosNos),
     content: editorDosBlocos(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
     onUpdate: ({ editor }) => {
@@ -92,6 +106,55 @@ export default function Editor({
     editor?.commands.focus();
   };
   const estadoDaJanela = useSyncExternalStore(janela.ouvir, janela.ler);
+  const estadoDaNota = useSyncExternalStore(notaCtl.ouvir, notaCtl.ler);
+
+  /**
+   * Abre o seletor de arquivo e coloca a imagem: numa figura nova (sem `pos`) ou
+   * no lugar da imagem da figura que está em `pos`. O seletor só abre por um
+   * clique ou tecla da pessoa (regra do navegador), e é o caso aqui.
+   */
+  const escolherImagem = (pos?: number) => {
+    if (!editor) return;
+    const campo = document.createElement("input");
+    campo.type = "file";
+    campo.accept = TIPOS_ACEITOS;
+    campo.onchange = async () => {
+      const arquivo = campo.files?.[0];
+      if (!arquivo) return;
+      setProblemaDaImagem(null);
+      setPreparandoImagem(true);
+      try {
+        const imagem = await lerImagemDoArquivo(arquivo);
+        imagens.adicionar(imagem);
+        const tr = pos === undefined ? inserirFigura(editor.state, imagem.id) : mudarIlustracao(editor.state, pos, { imagem: imagem.id });
+        if (tr) editor.view.dispatch(tr);
+        editor.commands.focus();
+        setProblemaDaImagem(null);
+      } catch (e) {
+        setProblemaDaImagem(e instanceof ImagemRecusada ? e.message : "Não consegui colocar essa imagem. Tente outro arquivo.");
+      } finally {
+        setPreparandoImagem(false);
+      }
+    };
+    campo.click();
+  };
+
+  // Blocos da barra "/" e do botão que precisam de mais que mudar o tipo do bloco.
+  useEffect(() => {
+    if (!editor) return;
+    controle.aoPedir = (o) => {
+      if (o === "nota") notaCtl.abrirParaInserir(editor.state.selection.from, editor.state.selection.to);
+      else if (o === "tabela") {
+        editor.view.dispatch(inserirTabela(editor.state));
+        editor.commands.focus();
+      } else escolherImagem();
+    };
+    return () => {
+      controle.aoPedir = null;
+    };
+    // escolherImagem só depende do editor e das imagens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, controle, notaCtl, imagens]);
 
   /** Aplica o que a janela decidiu e refaz as citações já. */
   const aplicar = (fazer: (e: NonNullable<typeof editor>) => void) => {
@@ -104,7 +167,26 @@ export default function Editor({
 
   return (
     <div className="area">
-      <BarraDeFerramentas editor={editor} extras={extrasDaBarra} janela={podeCitar ? janela : undefined} />
+      <BarraDeFerramentas
+        editor={editor}
+        extras={extrasDaBarra}
+        janela={podeCitar ? janela : undefined}
+        aoInserir={(o) => controle.aoPedir?.(o)}
+      />
+      <BarraDaIlustracao editor={editor} aoEscolherImagem={escolherImagem} />
+      {preparandoImagem && (
+        <div className="faixa-aviso faixa-info" role="status">
+          <span>Preparando a imagem… Fotos grandes são reduzidas ao tamanho de impressão, o que leva alguns segundos.</span>
+        </div>
+      )}
+      {problemaDaImagem && (
+        <div className="faixa-aviso" role="alert">
+          <span>{problemaDaImagem}</span>
+          <button type="button" className="btn" onClick={() => setProblemaDaImagem(null)}>
+            Fechar
+          </button>
+        </div>
+      )}
       <AvisosDoTexto citacoes={citacoes} />
       <div className="colunas">
         <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} />
@@ -114,6 +196,31 @@ export default function Editor({
         {lateral}
       </div>
       <MenuDeBlocos controle={controle} />
+      {estadoDaNota.aberta && (
+        <JanelaDaNota
+          key={estadoDaNota.chave}
+          estado={estadoDaNota}
+          aoFechar={() => {
+            notaCtl.fechar();
+            editor?.commands.focus();
+          }}
+          aoConfirmar={(nota) => {
+            if (!editor) return;
+            const tr =
+              estadoDaNota.modo === "editar" ? trocarNota(editor.state, estadoDaNota.de, nota) : inserirNota(editor.state, estadoDaNota.de, estadoDaNota.ate, nota);
+            if (tr) editor.view.dispatch(tr);
+            notaCtl.fechar();
+            editor.commands.focus();
+          }}
+          aoRemover={() => {
+            if (!editor) return;
+            const tr = trocarNota(editor.state, estadoDaNota.de, null);
+            if (tr) editor.view.dispatch(tr);
+            notaCtl.fechar();
+            editor.commands.focus();
+          }}
+        />
+      )}
       {podeCitar && estadoDaJanela.aberta && (
         <JanelaDeCitacao
           key={estadoDaJanela.chave}
@@ -165,7 +272,17 @@ function AvisosDoTexto({ citacoes }: { citacoes: CitacoesNoTexto }) {
 
 // ---------------------------------------------------------------------------
 
-function BarraDeFerramentas({ editor, extras, janela }: { editor: EditorTipTap | null; extras?: React.ReactNode; janela?: ControleDaJanela }) {
+function BarraDeFerramentas({
+  editor,
+  extras,
+  janela,
+  aoInserir,
+}: {
+  editor: EditorTipTap | null;
+  extras?: React.ReactNode;
+  janela?: ControleDaJanela;
+  aoInserir: (o: "imagem" | "tabela" | "nota") => void;
+}) {
   const estado = useEditorState({
     editor,
     selector: ({ editor: e }) =>
@@ -235,6 +352,9 @@ function BarraDeFerramentas({ editor, extras, janela }: { editor: EditorTipTap |
       >
         Quebra de página
       </button>
+      <BotaoDeTexto rotulo="Figura" titulo="Inserir uma figura: escolha a imagem no computador" aoClicar={() => aoInserir("imagem")} />
+      <BotaoDeTexto rotulo="Tabela" titulo="Inserir uma tabela (dá para colar da planilha)" aoClicar={() => aoInserir("tabela")} />
+      <BotaoDeTexto rotulo="Nota de rodapé" titulo="Inserir uma nota de rodapé no ponto do cursor" aoClicar={() => aoInserir("nota")} />
       {janela && (
         <button
           type="button"
@@ -260,6 +380,29 @@ function BarraDeFerramentas({ editor, extras, janela }: { editor: EditorTipTap |
   );
 }
 
+function BotaoDeTexto(p: { rotulo: string; titulo: string; aoClicar: () => void }) {
+  return (
+    <button
+      type="button"
+      className="btn"
+      title={p.titulo}
+      // mousedown, e não click: assim o editor não perde a seleção.
+      onMouseDown={(ev) => {
+        ev.preventDefault();
+        p.aoClicar();
+      }}
+      onKeyDown={(ev) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          p.aoClicar();
+        }
+      }}
+    >
+      {p.rotulo}
+    </button>
+  );
+}
+
 function Botao(p: { rotulo: string; ligado: boolean; aoClicar: () => void; children: React.ReactNode }) {
   return (
     <button
@@ -282,6 +425,117 @@ function Botao(p: { rotulo: string; ligado: boolean; aoClicar: () => void; child
     >
       {p.children}
     </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// As opções da figura ou da tabela onde o cursor está
+
+const LARGURAS_DA_FIGURA = [100, 80, 60, 50, 40, 30];
+
+function BarraDaIlustracao({ editor, aoEscolherImagem }: { editor: EditorTipTap | null; aoEscolherImagem: (pos: number) => void }) {
+  const estado = useEditorState({
+    editor,
+    selector: ({ editor: e }) => {
+      const il = e ? ilustracaoDoCursor(e.state) : null;
+      if (!il) return null;
+      const primeiraLinha = il.no.firstChild && il.tipo === "tabela" ? il.no.child(1)?.firstChild : null;
+      return {
+        tipo: il.tipo,
+        pos: il.pos,
+        especie: (il.no.attrs.especie as string | null) ?? "figura",
+        largura: il.no.attrs.largura ? Number(il.no.attrs.largura) : 0,
+        fontePropria: !!il.no.attrs.fontePropria,
+        cabecalho: primeiraLinha?.firstChild?.type.name === "tableHeader",
+      };
+    },
+  });
+  if (!editor || !estado) return null;
+
+  const mudar = (parcial: Record<string, unknown>) => {
+    const tr = mudarIlustracao(editor.state, estado.pos, parcial);
+    if (tr) editor.view.dispatch(tr);
+  };
+  const apagar = () => {
+    const tr = apagarIlustracao(editor.state, estado.pos);
+    if (tr) editor.view.dispatch(tr);
+    editor.commands.focus();
+  };
+  const botao = (rotulo: string, titulo: string, fazer: () => void, classe = "") => (
+    <button
+      key={rotulo}
+      type="button"
+      className={`btn ${classe}`}
+      title={titulo}
+      onMouseDown={(ev) => {
+        ev.preventDefault();
+        fazer();
+      }}
+      onKeyDown={(ev) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          fazer();
+        }
+      }}
+    >
+      {rotulo}
+    </button>
+  );
+  const fontePropria = (
+    <label className="marcar-simples" title="Marque quando a figura ou tabela é sua. A norma escolhe como mostrar (na ABNT, “Fonte: Elaborado pelo próprio autor”).">
+      <input type="checkbox" checked={estado.fontePropria} onChange={(ev) => mudar({ fontePropria: ev.target.checked })} />
+      Elaborado pelo próprio autor
+    </label>
+  );
+
+  if (estado.tipo === "figura") {
+    const larguras = estado.largura && !LARGURAS_DA_FIGURA.includes(estado.largura) ? [...LARGURAS_DA_FIGURA, estado.largura].sort((a, b) => b - a) : LARGURAS_DA_FIGURA;
+    return (
+      <div className="ferramentas contexto" role="toolbar" aria-label="Opções da figura">
+        <strong className="contexto-rotulo">Figura</strong>
+        {botao("Trocar imagem", "Escolher outra imagem do computador", () => aoEscolherImagem(estado.pos))}
+        <label className="campo-simples" title="Só a ABNT separa Figura, Gráfico e Quadro; na APA, tudo é Figura.">
+          Chamar de
+          <select className="seletor" value={estado.especie} onChange={(ev) => mudar({ especie: ev.target.value === "figura" ? null : ev.target.value })}>
+            <option value="figura">Figura</option>
+            <option value="grafico">Gráfico</option>
+            <option value="quadro">Quadro</option>
+          </select>
+        </label>
+        <label className="campo-simples">
+          Largura
+          <select className="seletor" value={estado.largura || ""} onChange={(ev) => mudar({ largura: ev.target.value ? Number(ev.target.value) : null })}>
+            <option value="">Tamanho da imagem</option>
+            {larguras.map((l) => (
+              <option key={l} value={l}>
+                {l}% do texto
+              </option>
+            ))}
+          </select>
+        </label>
+        {fontePropria}
+        <span style={{ flex: 1 }} />
+        {botao("Apagar figura", "Apaga a figura inteira, com o título e a fonte", apagar, "perigo")}
+      </div>
+    );
+  }
+
+  const comando = (fazer: (c: ReturnType<EditorTipTap["chain"]>) => ReturnType<EditorTipTap["chain"]>) => () => fazer(editor.chain().focus()).run();
+  return (
+    <div className="ferramentas contexto" role="toolbar" aria-label="Opções da tabela">
+      <strong className="contexto-rotulo">Tabela</strong>
+      {botao("+ Linha", "Acrescenta uma linha abaixo da linha do cursor", comando((c) => c.addRowAfter()))}
+      {botao("− Linha", "Apaga a linha do cursor", comando((c) => c.deleteRow()))}
+      {botao("+ Coluna", "Acrescenta uma coluna à direita da coluna do cursor", comando((c) => c.addColumnAfter()))}
+      {botao("− Coluna", "Apaga a coluna do cursor", comando((c) => c.deleteColumn()))}
+      <label className="marcar-simples" title="A primeira linha vira o cabeçalho da tabela (os nomes das colunas).">
+        <input type="checkbox" checked={estado.cabecalho} onChange={() => comando((c) => c.toggleHeaderRow())()} />
+        Primeira linha é o cabeçalho
+      </label>
+      {fontePropria}
+      <span style={{ flex: 1 }} />
+      {botao("Apagar tabela", "Apaga a tabela inteira, com o título e a fonte", apagar, "perigo")}
+    </div>
   );
 }
 

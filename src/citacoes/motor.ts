@@ -52,7 +52,8 @@ export type TipoDeAviso =
   | "direta-sem-pagina"
   | "sem-data"
   | "sem-titulo"
-  | "sem-referencia-vazia";
+  | "sem-referencia-vazia"
+  | "citacao-curta-longa";
 
 /** Algo que falta numa citação ou referência. O PDF sai mesmo assim (decisão de 20/11/2026). */
 export interface Aviso {

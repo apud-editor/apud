@@ -8,13 +8,38 @@
 // na ordem, com o mesmo motor que faz o PDF.
 
 import type { PerfilResolvido } from "../perfis";
-import { documentoVazio, obrasDaCitacao, type Bloco, type Citacao, type Documento, type Referencia } from "../documento/modelo";
+import {
+  documentoVazio,
+  ehCitacao,
+  obrasDaCitacao,
+  textosDosBlocos,
+  type Bloco,
+  type Citacao,
+  type Documento,
+  type Referencia,
+} from "../documento/modelo";
+import { avisoDeLimite, limiteDoPerfil } from "./limite";
 import { citacoesDoTexto, criarMotor, pedacosComoTexto, type CitacaoMontada } from "./motor";
 
-/** Todas as citações do documento, na ordem do texto, escritas na norma do perfil. */
+/**
+ * Todas as citações do documento, na ordem do texto, escritas na norma do
+ * perfil. A citação direta com trecho entre aspas acima do limite da norma
+ * ganha um aviso (sem trocar nada).
+ */
 export function montarTodas(doc: Documento, perfil: PerfilResolvido): CitacaoMontada[] {
   const motor = criarMotor(doc, perfil);
-  return citacoesDoTexto(doc.blocos).map((c) => motor.montar(c));
+  const limite = limiteDoPerfil(perfil);
+  const montadas: CitacaoMontada[] = [];
+  // A mesma ordem de citacoesDoTexto (o motor depende dela).
+  for (const trechos of textosDosBlocos(doc.blocos)) {
+    trechos.forEach((t, i) => {
+      if (!ehCitacao(t)) return;
+      const m = motor.montar(t.citacao);
+      const aviso = limite ? avisoDeLimite(trechos, i, limite) : null;
+      montadas.push(aviso ? { ...m, avisos: [...m.avisos, aviso] } : m);
+    });
+  }
+  return montadas;
 }
 
 /**
