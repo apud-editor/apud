@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { EditorContent, useEditor, useEditorState, type Editor as EditorTipTap } from "@tiptap/react";
 import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
-import { estrutura } from "../documento/estrutura";
+import { avisosDeNumeracao, estrutura } from "../documento/estrutura";
 import type { Bloco, Citacao, Referencia } from "../documento/modelo";
 import type { CitacaoMontada } from "../citacoes/motor";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
@@ -547,6 +547,7 @@ function BarraDaIlustracao({ editor, aoEscolherImagem }: { editor: EditorTipTap 
 
 function Estrutura({ blocos, editor, aparencia }: { blocos: Bloco[]; editor: EditorTipTap | null; aparencia: AparenciaDaNorma }) {
   const titulos = estrutura(blocos);
+  const avisos = avisosDeNumeracao(titulos);
   const rotulo = useSyncExternalStore(
     (f) => {
       aparencia.addEventListener("mudou", f);
@@ -587,7 +588,14 @@ function Estrutura({ blocos, editor, aparencia }: { blocos: Bloco[]; editor: Edi
                 </span>
               </>
             ) : (
-              t.texto || <span className="dica">(título vazio)</span>
+              <>
+                {t.texto || <span className="dica">(título vazio)</span>}
+                {avisos.has(t.indice) && (
+                  <span className="dica aviso-de-numero" style={{ display: "block" }} role="note">
+                    {avisos.get(t.indice)}
+                  </span>
+                )}
+              </>
             )}
           </button>
         ))

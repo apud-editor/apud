@@ -5,6 +5,7 @@ import { arquivosDasImagens } from "../conversor/elementos";
 import { motor } from "../conversor/motor";
 import type { NormaDoTrabalho } from "../perfis/norma";
 import { rodandoNoPrograma } from "../arquivos/armazenamento";
+import { avisoDeFonte } from "./fonte";
 
 interface Props {
   lerTexto: React.MutableRefObject<(() => Documento) | null>;
@@ -22,7 +23,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
   const [situacao, setSituacao] = useState<"montando" | "pronta" | "erro">("montando");
   const [erro, setErro] = useState("");
   const [selo, setSelo] = useState("");
-  const [avisoDeFonte, setAvisoDeFonte] = useState(false);
+  const [avisoDaFonte, setAvisoDaFonte] = useState<string | null>(null);
   const ocupado = useRef(false);
   const deNovo = useRef(false);
   /** A montagem do efeito que está valendo agora (a que pode ser chamada "de novo"). */
@@ -85,8 +86,8 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
         if (!ativo) return;
         setSvg(pronto);
         setSituacao("pronta");
-        const familia = perfil.regras.get("família da fonte")?.texto.toLowerCase();
-        setAvisoDeFonte(rodandoNoPrograma && familia === "times new roman" && !motor.fontesDoComputador.includes("times.ttf"));
+        const familia = perfil.regras.get("família da fonte")?.texto;
+        setAvisoDaFonte(avisoDeFonte(familia, motor.fontesDoComputador, rodandoNoPrograma));
       } catch (e) {
         if (!ativo) return;
         setErro((e as Error).message);
@@ -126,12 +127,7 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar }:
           Fechar
         </button>
       </div>
-      {avisoDeFonte && (
-        <p className="previa-aviso">
-          A Times New Roman não foi encontrada neste computador. A prévia e o PDF usam a Liberation Serif, que tem as mesmas
-          medidas.
-        </p>
-      )}
+      {avisoDaFonte && <p className="previa-aviso">{avisoDaFonte}</p>}
       {situacao === "erro" && (
         <p className="previa-aviso erro" role="alert">
           Não consegui montar a prévia: {erro}

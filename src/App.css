@@ -1657,3 +1657,8 @@ button.linha:hover {
   gap: 8px;
   align-items: flex-start;
 }
+
+/* Aviso de número de título fora de ordem, na estrutura. */
+.aviso-de-numero {
+  color: #7a4300;
+}

@@ -31,3 +31,41 @@ export function separarNumero(texto: string): { numero: string; resto: string } 
   const m = texto.match(/^\s*(\d+(?:\.\d+)*\.?)\s+(?=\S)/);
   return m ? { numero: m[1], resto: texto.slice(m[0].length) } : { numero: "", resto: texto };
 }
+
+/** Os números que podem vir depois de `atual` (o último número escrito): o próximo irmão em cada nível ou o primeiro filho. */
+function numerosPossiveis(atual: number[]): string[] {
+  if (atual.length === 0) return ["1"];
+  const lista: string[] = [];
+  for (let i = atual.length; i >= 1; i--) lista.push([...atual.slice(0, i - 1), atual[i - 1] + 1].join("."));
+  lista.push([...atual, 1].join("."));
+  return lista;
+}
+
+/**
+ * Confere se os números que a pessoa escreveu nos títulos seguem a ordem (1, 1.1, 1.2, 2…).
+ * Devolve o aviso de cada título fora de ordem, pelo índice do bloco. Título sem número é
+ * ignorado (o Apud não numera sozinho). Depois de um número fora de ordem, a conferência
+ * segue dele, para um engano só gerar um aviso.
+ */
+export function avisosDeNumeracao(titulos: EntradaDaEstrutura[]): Map<number, string> {
+  const avisos = new Map<number, string>();
+  let atual: number[] = [];
+  for (const t of titulos) {
+    if (t.referencias) continue;
+    const { numero } = separarNumero(t.texto);
+    if (!numero) continue;
+    const partes = numero.replace(/\.$/, "").split(".").map(Number);
+    const possiveis = numerosPossiveis(atual);
+    if (!possiveis.includes(partes.join("."))) {
+      const dito = possiveis.slice(0, 3).join(", ").replace(/, ([^,]*)$/, " ou $1");
+      avisos.set(
+        t.indice,
+        atual.length === 0
+          ? `O primeiro título numerado deveria ser o 1, e não o ${partes.join(".")}.`
+          : `O número ${partes.join(".")} está fora de ordem: depois do ${atual.join(".")} viria ${dito}.`,
+      );
+    }
+    atual = partes;
+  }
+  return avisos;
+}
