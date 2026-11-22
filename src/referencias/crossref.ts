@@ -240,10 +240,13 @@ export function converterCrossref(resposta: unknown, opcoes: OpcoesDaConversao):
   const soNomes: string[] = [];
   let autores = converterAutores(m.author, soNomes);
   const editores = converterAutores(m.editor, soNomes);
-  // Livro organizado: o Crossref só lista organizadores. O Apud ainda não tem "organizador" para o livro todo.
+  // Livro organizado: o Crossref só lista organizadores. Eles entram como autores e a caixa
+  // "São os organizadores do livro" fica marcada: a norma põe o "(org.)" ou "(Org.)" sozinha.
+  let livroOrganizado = false;
   if (tipo === "livro" && autores.length === 0 && editores.length > 0) {
     autores = editores;
-    avisos.push("Esta obra tem organizadores, e não autores. Coloquei os organizadores como autores: confira, e acrescente “(org.)” se a norma pedir.");
+    livroOrganizado = true;
+    avisos.push("Esta obra tem organizadores, e não autores. Marquei “São os organizadores do livro”: o Apud põe o “(org.)” na norma. Confira os nomes.");
   }
   if (soNomes.length > 0) {
     const quem = soNomes.map((n) => `“${n}”`).join(", ");
@@ -280,6 +283,7 @@ export function converterCrossref(resposta: unknown, opcoes: OpcoesDaConversao):
   const colocar = (chave: string, valor: unknown) => {
     if (valor !== undefined && valor !== "") r[chave] = valor;
   };
+  if (livroOrganizado) r.autoresOrganizadores = true;
   colocar("subtitulo", subtitulo);
   colocar("data", dataDaObra(m));
   colocar("doi", doi);

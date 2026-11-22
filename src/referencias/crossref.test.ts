@@ -330,16 +330,18 @@ describe("autores", () => {
     expect(avisos).toEqual([]);
   });
 
-  it("livro só com organizadores: eles entram como autores, com aviso", () => {
+  it("livro só com organizadores: eles entram como autores, com a caixa dos organizadores marcada e um aviso", () => {
     const { referencia, avisos } = converter(ficha({ type: "edited-book", editor: [{ given: "Rui", family: "Melo" }] }));
     expect(referencia.autores).toEqual([{ sobrenome: "Melo", prenomes: "Rui" }]);
+    expect(referencia.autoresOrganizadores).toBe(true);
     expect(avisos).toHaveLength(1);
-    expect(avisos[0]).toContain("organizadores");
+    expect(avisos[0]).toContain("São os organizadores do livro");
   });
 
   it("livro com autores e organizadores: os organizadores não entram no lugar dos autores", () => {
     const { referencia, avisos } = converter(ficha({ type: "book", author: [{ given: "Ana", family: "Lima" }], editor: [{ given: "Rui", family: "Melo" }] }));
     expect(referencia.autores).toEqual([{ sobrenome: "Lima", prenomes: "Ana" }]);
+    expect(referencia.autoresOrganizadores).toBeUndefined();
     expect(avisos).toEqual([]);
   });
 });
