@@ -26,6 +26,8 @@ interface Props {
   extrasDaBarra?: React.ReactNode;
   /** Um painel ao lado do texto (como a prévia do PDF). */
   lateral?: React.ReactNode;
+  /** O que vem acima do texto, dentro da folha (a "Abertura do trabalho"). */
+  antes?: React.ReactNode;
   /** O que depende da norma do trabalho (o título da lista de referências). */
   aparencia?: AparenciaDaNorma;
   /** Quem sabe escrever as citações na norma (o texto mostrado em cada citação e os avisos do texto). */
@@ -46,6 +48,7 @@ export default function Editor({
   lerTexto,
   extrasDaBarra,
   lateral,
+  antes,
   aparencia: aparenciaDada,
   citacoes: citacoesDadas,
   lerReferencias,
@@ -191,6 +194,7 @@ export default function Editor({
       <div className="colunas">
         <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} />
         <main className="folha">
+          {antes}
           <EditorContent editor={editor} />
         </main>
         {lateral}

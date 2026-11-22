@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Bloco, Referencia } from "../documento/modelo";
 import { avisoDeApagar, buscarReferencias, contarCitacoes, ordenarParaGaveta, resumoDaReferencia } from "../referencias/lista";
-import { comInicialMaiuscula, type EscolhaDoAutor } from "../referencias/escolhas";
+import type { EscolhaDoAutor } from "../referencias/escolhas";
 import { buscarPorDoi, type Consultador } from "../referencias/buscaDoi";
 import FormularioDeReferencia from "./FormularioDeReferencia";
 
 interface Props {
   referencias: Referencia[];
-  /** As regras de escolha da norma atual, com o que vale hoje. */
+  /** As regras de escolha da norma atual (a gaveta só diz se há; quem mostra é a Configuração). */
   escolhas: EscolhaDoAutor[];
   nomeDaNorma: string;
   /** Lê o texto de agora, para contar quantas vezes cada fonte é citada. */
@@ -17,7 +17,8 @@ interface Props {
   /** Fonte nova, ou a editada (o código é o mesmo). */
   aoSalvar: (r: Referencia) => void;
   aoApagar: (id: string) => void;
-  aoEscolher: (e: EscolhaDoAutor, valor: string) => void;
+  /** As escolhas do autor ficam nas Configurações: o botão leva até lá. */
+  aoAbrirEscolhas: () => void;
   aoFechar: () => void;
   /** Quem consulta o Crossref. Só os testes trocam; no programa vale o padrão (a internet). */
   consultar?: Consultador;
@@ -31,7 +32,7 @@ type EstadoDoDoi =
   | { tipo: "repetida"; existente: Referencia };
 
 /** A gaveta lateral "Referências": as fontes do trabalho e as escolhas do autor. */
-export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, mudancas, aoSalvar, aoApagar, aoEscolher, aoFechar, consultar }: Props) {
+export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, mudancas, aoSalvar, aoApagar, aoAbrirEscolhas, aoFechar, consultar }: Props) {
   const [busca, setBusca] = useState("");
   const [formulario, setFormulario] = useState<{ base?: Referencia; origemDoi?: { avisos: string[] } } | null>(null);
   const [textoDoi, setTextoDoi] = useState("");
@@ -265,29 +266,18 @@ export default function Gaveta({ referencias, escolhas, nomeDaNorma, lerBlocos, 
             </ul>
           )}
 
-          {escolhas.length > 0 && (
-            <section className="escolhas" aria-label="Escolhas do autor">
-              <p className="gaveta-rotulo">Escolhas do autor</p>
-              <p className="dica-form">
-                A {nomeDaNorma} aceita mais de uma forma nestes pontos. A escolha vale só para este trabalho, e a prévia e as citações mudam na hora.
-              </p>
-              {escolhas.map((e) => (
-                <fieldset key={e.chave} className="escolha">
-                  <legend>{e.nome}</legend>
-                  {e.explicacao && <p className="dica-form">{e.explicacao}</p>}
-                  {e.opcoes.map((o) => (
-                    <label key={o} className="opcao-escolha">
-                      <input type="radio" name={`escolha-${e.chave}`} checked={e.atual === o} onChange={() => aoEscolher(e, o)} />
-                      <span>
-                        {comInicialMaiuscula(o)}
-                        {o === e.padrao && <span className="dica-form"> (padrão da norma)</span>}
-                      </span>
-                    </label>
-                  ))}
-                </fieldset>
-              ))}
-            </section>
-          )}
+          <section className="escolhas-atalho" aria-label="Escolhas do autor">
+            <p className="dica-form">
+              {escolhas.length > 0
+                ? `A ${nomeDaNorma} aceita mais de uma forma em alguns pontos das citações e da lista (prenomes, grifo, et al.).`
+                : `A ${nomeDaNorma} não tem escolhas para o autor.`}
+            </p>
+            {escolhas.length > 0 && (
+              <button type="button" className="btn" onClick={aoAbrirEscolhas}>
+                Escolhas do autor…
+              </button>
+            )}
+          </section>
 
           <p className="dica-form rodape-gaveta">A lista muda de forma sozinha quando você troca de norma. A forma exata de cada referência aparece na prévia e no PDF.</p>
         </>

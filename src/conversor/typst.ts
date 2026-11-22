@@ -58,6 +58,7 @@ import {
   anoDoTrabalho,
   dataPorExtenso,
   elementosDaAbertura,
+  existeNaNorma,
   idiomaParaTypst,
   juntarNomes,
   lingua,
@@ -286,7 +287,7 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
 
   const linhas: string[] = [];
   const l = (s = "") => linhas.push(s);
-  const elementos = elementosDaAbertura(doc.abertura, existeNaNorma(r));
+  const elementos = elementosDaAbertura(doc.abertura, existeNaNorma((k) => r.tem(k)));
   // ABNT: o número só aparece a partir da primeira folha do texto. APA: desde a página de título.
   const esconderAteOTexto = elementos.length > 0 && r.talvez("numeração de página, mostrar desde") === "primeira folha do texto";
 
@@ -532,21 +533,6 @@ function escreverTitulos(l: (s?: string) => void, r: Regras, m: Medidas) {
 
 // ---------------------------------------------------------------------------
 // Abertura: os elementos antes do texto
-
-/** Se a norma tem o elemento: o perfil precisa ter a regra dele. */
-function existeNaNorma(r: Regras) {
-  const chave: Record<ElementoDaAbertura["tipo"], string[]> = {
-    capa: ["capa"],
-    folhaDeRosto: ["folha de rosto"],
-    paginaDeTitulo: ["página de título (estudante), campos"],
-    dedicatoria: ["dedicatória"],
-    agradecimentos: ["agradecimentos"],
-    epigrafe: ["epígrafe"],
-    resumo: ["resumo", "rótulo do resumo"],
-    sumario: ["sumário"],
-  };
-  return (e: ElementoDaAbertura["tipo"]) => chave[e].some((k) => r.tem(k));
-}
 
 /** Aplica negrito, itálico e sublinhado de uma regra de destaque. As letras ficam como estão. */
 function comDestaque(r: Regras, chave: string, x: string): string {

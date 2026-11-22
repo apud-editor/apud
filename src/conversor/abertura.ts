@@ -23,6 +23,26 @@ export type ElementoDaAbertura =
 
 export type Norma = "abnt" | "apa";
 
+/** As regras que o perfil precisa ter para a norma ter o elemento (uma delas basta). */
+const REGRAS_DOS_ELEMENTOS: Record<ElementoDaAbertura["tipo"], string[]> = {
+  capa: ["capa"],
+  folhaDeRosto: ["folha de rosto"],
+  paginaDeTitulo: ["página de título (estudante), campos"],
+  dedicatoria: ["dedicatória"],
+  agradecimentos: ["agradecimentos"],
+  epigrafe: ["epígrafe"],
+  resumo: ["resumo", "rótulo do resumo"],
+  sumario: ["sumário"],
+};
+
+/**
+ * Se a norma tem o elemento: o perfil precisa ter a regra dele. `tem` diz se o
+ * perfil tem uma regra. Serve ao PDF (o que sai) e às telas (o que a norma oferece).
+ */
+export function existeNaNorma(tem: (regra: string) => boolean) {
+  return (e: ElementoDaAbertura["tipo"]) => REGRAS_DOS_ELEMENTOS[e].some(tem);
+}
+
 /**
  * Os elementos ligados, na ordem da norma:
  *   - ABNT (NBR 14724): capa, folha de rosto, dedicatória, agradecimentos,

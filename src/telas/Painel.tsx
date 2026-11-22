@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
 import { escreverArquivo, lerArquivo, type Trabalho } from "../arquivos/formato";
-import { documentoVazio } from "../documento/modelo";
-import { perfilAbnt } from "../perfis/embutidos";
+import Assistente from "./Assistente";
 
 interface Linha {
   arquivo: string;
@@ -19,6 +18,7 @@ export default function Painel({ aoAbrir }: Props) {
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [pasta, setPasta] = useState("");
   const [problema, setProblema] = useState<string | null>(null);
+  const [assistente, setAssistente] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -46,21 +46,13 @@ export default function Painel({ aoAbrir }: Props) {
     };
   }, []);
 
-  const novoTrabalho = async () => {
-    const id = perfilAbnt().identificacao;
-    const agora = new Date().toISOString();
-    const trabalho: Trabalho = {
-      nome: "Trabalho sem título",
-      perfil: { perfil: id.perfil, versao: id.versao, revisao: id.revisao },
-      ajustes: {},
-      criadoEm: agora,
-      modificadoEm: agora,
-      documento: documentoVazio(),
-    };
+  /** O assistente terminou: grava o trabalho e abre. */
+  const criarTrabalho = async (trabalho: Trabalho) => {
     try {
       const arquivo = await armazenamento.criar(trabalho.nome, escreverArquivo(trabalho));
-      aoAbrir(arquivo, trabalho, true);
+      aoAbrir(arquivo, trabalho, false);
     } catch (e) {
+      setAssistente(false);
       setProblema(`Não consegui criar o trabalho: ${(e as Error).message}.`);
     }
   };
@@ -80,6 +72,8 @@ export default function Painel({ aoAbrir }: Props) {
     }
   };
 
+  if (assistente) return <Assistente aoCriar={criarTrabalho} aoCancelar={() => setAssistente(false)} />;
+
   return (
     <div className="tela">
       <header className="topo">
@@ -97,7 +91,7 @@ export default function Painel({ aoAbrir }: Props) {
                 Abrir a pasta
               </button>
             )}
-            <button type="button" className="btn grande primario" onClick={novoTrabalho}>
+            <button type="button" className="btn grande primario" onClick={() => setAssistente(true)}>
               Novo trabalho
             </button>
           </div>
