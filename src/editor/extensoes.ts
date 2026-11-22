@@ -9,12 +9,20 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
 import { Plugin, PluginKey, Selection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
 import { buscarBlocos, type TipoDeBloco } from "./blocos";
-import { NO_DA_CITACAO, NO_DA_LISTA_DE_REFERENCIAS } from "../documento/tiptap";
+import {
+  NO_DA_CITACAO,
+  NO_DA_CITACAO_LONGA,
+  NO_DA_FONTE_DA_ILUSTRACAO,
+  NO_DA_LISTA_DE_REFERENCIAS,
+  NO_DA_NOTA_DA_ILUSTRACAO,
+  NO_DO_TITULO_DA_ILUSTRACAO,
+} from "../documento/tiptap";
 import type { Citacao } from "../documento/modelo";
 import type { CitacaoMontada } from "../citacoes/motor";
 import { CitacoesNoTexto, ControleDaJanela } from "./citacoes";
 import { citacaoSelecionada, colagemDoApud, podeAbrirAqui } from "./citar";
-import { nosDaFase3 } from "./nos";
+import { nosDaFase3, type ControlesDosNos } from "./nos";
+import { colarNaGrade, cursorNaGrade, gradeDoTextoColado, tabelaDaPlanilha } from "./ilustracoes";
 
 // ---------------------------------------------------------------------------
 // Colar como texto simples (decisão da versão 1). A exceção é o que foi
@@ -31,6 +39,9 @@ export function paragrafosColados(texto: string): string[] {
 
 const ColarSemFormatacao = Extension.create({
   name: "colarSemFormatacao",
+  // Antes do colar da tabela (prosemirror-tables), que também quer a colagem
+  // quando o cursor está numa tabela: a planilha tem de passar por aqui primeiro.
+  priority: 1000,
   addProseMirrorPlugins() {
     const editor = this.editor;
     return [
@@ -40,6 +51,20 @@ const ColarSemFormatacao = Extension.create({
           handlePaste: (_view, event) => {
             // Trecho copiado do Apud: o editor cola como está, com as citações.
             if (colagemDoApud(event.clipboardData?.getData("text/html") ?? "")) return false;
+            // Planilha (Excel, Calc): dentro de uma tabela, preenche a grade; num parágrafo vazio, cria a tabela.
+            const planilha = gradeDoTextoColado(event.clipboardData?.getData("text/plain") ?? "");
+            if (planilha) {
+              const estado = editor.state;
+              const tr = cursorNaGrade(estado)
+                ? colarNaGrade(estado, planilha)
+                : /<table[\s>]/i.test(event.clipboardData?.getData("text/html") ?? "")
+                  ? tabelaDaPlanilha(estado, planilha)
+                  : null;
+              if (tr) {
+                editor.view.dispatch(tr);
+                return true;
+              }
+            }
             const partes = paragrafosColados(event.clipboardData?.getData("text/plain") ?? "");
             if (partes.length === 0) return true; // sem texto (uma imagem, por exemplo): ignora
             const conteudo =
@@ -180,6 +205,8 @@ export class ControleDaBarra {
   estado: EstadoDaBarra = { aberta: false, itens: [], selecionado: 0, posicao: null };
   private ouvintes = new Set<() => void>();
   private escolher: ((t: TipoDeBloco) => void) | null = null;
+  /** Quem atende os blocos que precisam de uma pergunta (a tela do editor). */
+  aoPedir: ((o: NonNullable<TipoDeBloco["pedir"]>) => void) | null = null;
 
   ouvir = (f: () => void) => {
     this.ouvintes.add(f);
@@ -244,6 +271,7 @@ function barraDeBlocos(controle: ControleDaBarra) {
           items: ({ query }) => buscarBlocos(query),
           command: ({ editor, range, props }: { editor: Editor; range: Range; props: TipoDeBloco }) => {
             props.aplicar(editor.chain().focus().deleteRange(range)).run();
+            if (props.pedir) controle.aoPedir?.(props.pedir);
           },
           render: () => ({
             onStart: (p) => controle.abrir(p),
@@ -472,6 +500,7 @@ export function extensoesDoApud(
   aparencia: AparenciaDaNorma = new AparenciaDaNorma(),
   citacoes: CitacoesNoTexto = new CitacoesNoTexto(() => []),
   janela: ControleDaJanela = new ControleDaJanela(),
+  controles?: ControlesDosNos,
 ) {
   return [
     StarterKit.configure({
@@ -490,10 +519,22 @@ export function extensoesDoApud(
     Superscript,
     QuebraDePagina,
     Placeholder.configure({
-      placeholder: ({ node }) =>
-        node.type.name === "heading"
-          ? "Título. Para numerar, escreva o número antes: 1.1 Contexto"
-          : "Escreva aqui. Digite / para escolher o tipo de bloco e @ para citar.",
+      placeholder: ({ node }) => {
+        switch (node.type.name) {
+          case "heading":
+            return "Título. Para numerar, escreva o número antes: 1.1 Contexto";
+          case NO_DO_TITULO_DA_ILUSTRACAO:
+            return "Título (o número, como “Figura 1”, o Apud põe sozinho)";
+          case NO_DA_FONTE_DA_ILUSTRACAO:
+            return "Fonte: de onde vem (ou marque “Elaborado pelo próprio autor”)";
+          case NO_DA_NOTA_DA_ILUSTRACAO:
+            return "Nota (opcional)";
+          case NO_DA_CITACAO_LONGA:
+            return "Escreva ou cole a citação longa, sem aspas. A norma põe o recuo.";
+          default:
+            return "Escreva aqui. Digite / para escolher o tipo de bloco e @ para citar.";
+        }
+      },
     }),
     ColarSemFormatacao,
     ListasFaceis,
@@ -501,6 +542,6 @@ export function extensoesDoApud(
     arrobaAbreAJanela(janela),
     citacaoNoEditor(descrever, citacoes, janela),
     listaDeReferenciasNoEditor(aparencia),
-    ...nosDaFase3(),
+    ...nosDaFase3(controles),
   ];
 }

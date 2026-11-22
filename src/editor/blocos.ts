@@ -2,7 +2,7 @@
 // de ferramentas e pela barra "/". Um lugar só, para os dois mostrarem o mesmo.
 
 import type { ChainedCommands, Editor } from "@tiptap/core";
-import { NO_DA_LISTA_DE_REFERENCIAS } from "../documento/tiptap";
+import { NO_DA_CITACAO_LONGA, NO_DA_LISTA_DE_REFERENCIAS } from "../documento/tiptap";
 
 export interface TipoDeBloco {
   id: string;
@@ -14,6 +14,12 @@ export interface TipoDeBloco {
   ativo: (e: Editor) => boolean;
   /** Só aparece na barra "/", não no seletor de tipo do bloco (porque insere, em vez de mudar o bloco). */
   soNaBarra?: boolean;
+  /**
+   * O bloco não é só "mudar o tipo do bloco": precisa do estado do editor, de
+   * uma pergunta (qual imagem, qual o texto da nota) ou das duas. A barra só
+   * apaga o "/..." e pede à tela (Editor.tsx); `aplicar` não faz nada.
+   */
+  pedir?: "imagem" | "tabela" | "nota";
 }
 
 const titulo = (nivel: 1 | 2 | 3 | 4 | 5): TipoDeBloco => ({
@@ -58,6 +64,40 @@ export const TIPOS_DE_BLOCO: TipoDeBloco[] = [
     aplicar: (c) => (c.setHorizontalRule as () => ChainedCommands)(),
     ativo: () => false,
     soNaBarra: true,
+  },
+  {
+    id: "citacao-longa",
+    rotulo: "Citação longa",
+    buscas: ["citacao", "citação", "recuada", "bloco", "transcricao", "transcrição", "mais de 3 linhas", "40 palavras"],
+    aplicar: (c) => c.setNode(NO_DA_CITACAO_LONGA),
+    ativo: (e) => e.isActive(NO_DA_CITACAO_LONGA),
+  },
+  {
+    id: "figura",
+    rotulo: "Figura",
+    buscas: ["figura", "imagem", "foto", "grafico", "gráfico", "quadro", "ilustracao", "ilustração", "desenho"],
+    aplicar: (c) => c,
+    ativo: () => false,
+    soNaBarra: true,
+    pedir: "imagem",
+  },
+  {
+    id: "tabela",
+    rotulo: "Tabela",
+    buscas: ["tabela", "grade", "planilha", "excel", "dados"],
+    aplicar: (c) => c,
+    ativo: () => false,
+    soNaBarra: true,
+    pedir: "tabela",
+  },
+  {
+    id: "nota",
+    rotulo: "Nota de rodapé",
+    buscas: ["nota", "rodape", "rodapé", "explicacao", "explicação", "comentario", "comentário"],
+    aplicar: (c) => c,
+    ativo: () => false,
+    soNaBarra: true,
+    pedir: "nota",
   },
   {
     id: "referencias",

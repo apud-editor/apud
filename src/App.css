@@ -99,12 +99,13 @@ select {
 /* Barra de ferramentas */
 
 .ferramentas {
-  height: 52px;
+  min-height: 52px;
   flex: none;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 0 20px;
+  padding: 6px 20px;
   background: var(--fundo-claro);
   border-bottom: 1px solid var(--borda);
 }
@@ -1224,4 +1225,201 @@ button.linha:hover {
   gap: 0.5rem;
   margin: 0.25rem 0 0.75rem;
   font-size: 0.9rem;
+}
+
+
+/* Fase 3, parte 3: citação longa, nota de rodapé, figura e tabela no editor. */
+
+/* O número da nota é contado pelo navegador, na ordem do texto: apagar ou mover uma nota renumera as outras. */
+.texto {
+  counter-reset: nota-de-rodape;
+}
+.texto .nota-de-rodape {
+  counter-increment: nota-de-rodape;
+  display: inline-block;
+  min-width: 1.1em;
+  margin: 0 1px;
+  padding: 0 3px;
+  border-radius: 4px;
+  background: var(--destaque-claro);
+  color: var(--destaque-escuro);
+  font-size: 0.72em;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  vertical-align: super;
+  cursor: pointer;
+}
+.texto .nota-de-rodape::before {
+  content: counter(nota-de-rodape);
+}
+.texto .nota-de-rodape:hover,
+.texto .nota-de-rodape.ProseMirror-selectednode {
+  background: var(--destaque);
+  color: #fff;
+}
+
+/* Citação longa: recuada, sem aspas, como sai no PDF. */
+.texto > blockquote.citacao-longa {
+  margin: 0 0 18px 48px;
+  padding-left: 12px;
+  border-left: 3px solid var(--borda-forte);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.texto > blockquote.citacao-longa::after {
+  content: "Citação longa";
+}
+
+/* Figura: a imagem em cima; título, fonte e nota embaixo. */
+.texto > figure.figura {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  background: var(--fundo-claro);
+}
+.texto > figure.figura::after {
+  content: "Figura";
+}
+.figura-imagem {
+  text-align: center;
+  cursor: pointer;
+}
+.figura-imagem img {
+  max-width: 100%;
+  height: auto;
+}
+.figura-imagem.sem-imagem {
+  padding: 18px 12px;
+  border: 1px dashed #c98a1d;
+  border-radius: 6px;
+  background: #fdebc8;
+  color: #7a4300;
+  font-size: 13px;
+  text-align: left;
+}
+.figura-partes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* As três partes de texto (título, fonte, nota). A dica aparece quando a parte está vazia. */
+.texto .titulo-da-ilustracao,
+.texto .fonte-da-ilustracao,
+.texto .nota-da-ilustracao {
+  font-size: 13.5px;
+  line-height: 1.45;
+  min-height: 1.45em;
+}
+.texto .titulo-da-ilustracao {
+  font-weight: 600;
+}
+.texto .titulo-da-ilustracao:has(> br.ProseMirror-trailingBreak:only-child)::before,
+.texto .fonte-da-ilustracao:has(> br.ProseMirror-trailingBreak:only-child)::before,
+.texto .nota-da-ilustracao:has(> br.ProseMirror-trailingBreak:only-child)::before {
+  content: attr(data-dica);
+  float: left;
+  height: 0;
+  color: var(--tinta-suave);
+  font-weight: 400;
+  pointer-events: none;
+}
+.texto .fonte-da-ilustracao::first-line,
+.texto .nota-da-ilustracao::first-line {
+  color: var(--tinta);
+}
+
+/* Tabela: título, grade, fonte e nota. */
+.texto > div.tabela {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  background: var(--fundo-claro);
+  overflow-x: auto;
+}
+.texto > div.tabela::after {
+  content: "Tabela";
+}
+.texto .tabela table {
+  width: 100%;
+  margin: 8px 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.texto .tabela th,
+.texto .tabela td {
+  min-width: 60px;
+  padding: 4px 8px;
+  border: 1px solid var(--borda-forte);
+  background: #fff;
+  vertical-align: top;
+  font-size: 13.5px;
+}
+.texto .tabela th {
+  background: #eef0ea;
+  font-weight: 600;
+  text-align: left;
+}
+.texto .tabela td > p,
+.texto .tabela th > p {
+  margin: 0;
+}
+.texto .tabela .selectedCell {
+  background: var(--destaque-claro);
+}
+
+/* Barra de opções da figura ou da tabela (aparece quando o cursor está nela). */
+.ferramentas.contexto {
+  min-height: 44px;
+  background: #eef2fb;
+  border-bottom: 1px solid #c9d4ee;
+}
+.contexto-rotulo {
+  font-size: 13px;
+  color: var(--destaque-escuro);
+}
+.campo-simples,
+.marcar-simples {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.campo-simples .seletor {
+  min-width: 0;
+}
+
+/* Janela da nota de rodapé. */
+.ferramentas-da-nota {
+  display: flex;
+  gap: 6px;
+}
+.area-da-nota {
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-height: 72px;
+}
+.campo-da-nota {
+  outline: none;
+  min-height: 56px;
+  line-height: 1.5;
+}
+.campo-da-nota p {
+  margin: 0;
+}
+
+.faixa-aviso.faixa-info {
+  background: var(--destaque-claro);
+  color: var(--destaque-escuro);
+  border-bottom-color: #c9d4ee;
+}
+.faixa-aviso:has(> button) {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }

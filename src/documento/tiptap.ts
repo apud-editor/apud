@@ -90,7 +90,7 @@ function blocosDoNo(no: JSONContent): Bloco[] {
           tipo: "figura",
           imagem: String(no.attrs?.imagem ?? ""),
           ...(especie ? { especie } : {}),
-          ...(Number.isFinite(largura) && largura >= 10 && largura < 100 ? { largura } : {}),
+          ...(Number.isFinite(largura) && largura >= 10 && largura <= 100 ? { largura } : {}),
           ...identificacaoDe(no),
         },
       ];

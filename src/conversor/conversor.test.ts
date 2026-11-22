@@ -359,6 +359,13 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     expect(documentoParaTypst(doc([figura({ largura: 70 })]), abnt)).toContain("block(width: 70%)");
   });
 
+  it("100% é a largura toda do texto, mesmo numa imagem pequena (que sem escolha fica no tamanho dela)", () => {
+    // A imagem do teste tem 302 px (cerca de 8 cm): sem largura escolhida, ocupa menos da metade do texto.
+    expect(documentoParaTypst(doc([figura()]), abnt)).not.toContain("block(width: 100%)[");
+    expect(documentoParaTypst(doc([figura({ largura: 100 })]), abnt)).toContain("block(width: 100%)[");
+    expect(documentoParaTypst(doc([figura({ largura: 80 })]), abnt)).toContain("block(width: 80%)");
+  });
+
   it("fonte própria: na ABNT, o texto do perfil; na APA, nada (a APA não pede fonte de figura própria)", () => {
     const propria = doc([figura({ fontePropria: true, fonte: [{ texto: "guardada, mas não sai" }] })]);
     const a = documentoParaTypst(propria, abnt);

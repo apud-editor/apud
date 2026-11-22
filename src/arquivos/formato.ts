@@ -269,7 +269,7 @@ function conferirBloco(b: unknown, versao: number): Bloco | null {
         tipo: "figura",
         imagem: b.imagem,
         ...(b.especie ? { especie: b.especie } : {}),
-        ...(b.largura !== undefined && b.largura < 100 ? { largura: b.largura } : {}),
+        ...(b.largura !== undefined ? { largura: b.largura } : {}),
         ...id,
       };
     }

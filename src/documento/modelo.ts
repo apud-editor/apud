@@ -143,7 +143,7 @@ export interface Figura extends Identificacao {
   imagem: string;
   /** Ausente: figura. */
   especie?: Exclude<EspecieDeIlustracao, "figura">;
-  /** Largura na página, em porcentagem da largura do texto (10 a 100). Ausente: 100. */
+  /** Largura na página, em porcentagem da largura do texto (10 a 100). Ausente: o tamanho da imagem (até a largura do texto). 100 é a largura toda. */
   largura?: number;
 }
 
