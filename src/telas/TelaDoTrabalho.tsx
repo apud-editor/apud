@@ -108,6 +108,18 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
   const [problema, setProblema] = useState<string | null>(null);
   const campoDoNome = useRef<HTMLInputElement>(null);
   const mudancas = useMemo(() => new EventTarget(), []);
+  // O bloco em que está o cursor, para a prévia acompanhar.
+  const cursor = useMemo(() => new EventTarget(), []);
+  const indiceDoCursor = useRef<number | null>(null);
+  const lerCursor = useCallback(() => indiceDoCursor.current, []);
+  const moverCursor = useCallback(
+    (indice: number) => {
+      if (indice === indiceDoCursor.current) return;
+      indiceDoCursor.current = indice;
+      cursor.dispatchEvent(new Event("mudou"));
+    },
+    [cursor],
+  );
   // O painel da direita: a prévia do PDF ou a gaveta de referências. Um de cada vez, como no protótipo.
   const [painel, setPainel] = useState<"previa" | "referencias" | null>(null);
   const alternarPainel = (qual: "previa" | "referencias") => setPainel((atual) => (atual === qual ? null : qual));
@@ -411,6 +423,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
           mudancas.dispatchEvent(new Event("mudou"));
         }}
         lerTexto={lerTexto}
+        aoMoverCursor={moverCursor}
         antes={
           <AberturaDoTrabalho
             abertura={abertura.current}
@@ -447,7 +460,15 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         }
         lateral={
           painel === "previa" ? (
-            <Previa lerTexto={lerDocumento} lerNorma={lerNorma} mudancas={mudancas} nome={nome} aoFechar={() => setPainel(null)} />
+            <Previa
+              lerTexto={lerDocumento}
+              lerNorma={lerNorma}
+              mudancas={mudancas}
+              nome={nome}
+              aoFechar={() => setPainel(null)}
+              cursor={cursor}
+              lerCursor={lerCursor}
+            />
           ) : painel === "referencias" ? (
             <Gaveta
               referencias={referencias.current}

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { carregarNorma, carregarPerfil, documentoDeProva, mapearImagens } from "../../scripts/prova-lib";
-import { documentoParaTypst, escaparTexto, letraDaAlinea } from "./typst";
+import { documentoParaTypst, escaparTexto, letraDaAlinea, MARCA_DAS_POSICOES, MARCA_DO_BLOCO, PONTUACAO_DA_LISTA } from "./typst";
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
 import { documentoVazio, type Documento, type Marca } from "../documento/modelo";
 
@@ -335,7 +335,8 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
       doc([figura(), figura({ especie: "grafico" }), figura({ especie: "quadro" }), figura(), tabela(), figura({ especie: "grafico" }), tabela()]),
       abnt,
     );
-    const numeros = [...typst.matchAll(/sticky: true\)\[(\S+ \d+) –/g)].map((m) => m[1]);
+    // A figura leva o número numa linha própria; a tabela, no cabeçalho que se repete (IBGE, 8.3).
+    const numeros = [...typst.matchAll(/(?:sticky: true\)\[|bottom: 0\.575em\)\)\[#set par\(leading: 0\.575em, spacing: 0\.575em\); )(\S+ \d+) –/g)].map((m) => m[1]);
     expect(numeros).toEqual(["Figura 1", "Gráfico 1", "Quadro 1", "Figura 2", "Tabela 1", "Gráfico 2", "Tabela 2"]);
   });
 
@@ -390,20 +391,26 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     expect(() => compilar(typst)).not.toThrow();
   });
 
-  it("tabela: fios no topo, embaixo do cabeçalho e no fim, sem laterais; cabeçalho que se repete na outra página", () => {
+  it("tabela: fios no topo, embaixo do cabeçalho e no fim, sem laterais; número, título e cabeçalho que se repetem na outra página", () => {
     const typst = documentoParaTypst(doc([tabela()]), abnt);
-    expect(typst).toContain("stroke: none, inset: (x: 0.4em, y: 0.15em), align: (x, y) => if y < 1 { center } else if x == 0 { left } else { center },");
-    expect(typst).toContain("table.header(repeat: true, table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
-    expect(typst.match(/table\.hline/g)).toHaveLength(3);
+    // A linha 0 é a do número e título; o cabeçalho da pessoa vem depois.
+    expect(typst).toContain("align: (x, y) => if y < 2 { center } else if x == 0 { left } else { center },");
+    expect(typst).toMatch(/table\.header\(repeat: true, \.\.if topo \{ \(table\.cell\(colspan: 2,[^\n]*Tabela 1 – Usuários/);
+    expect(typst).toContain("table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
+    // O fio do fim é a borda de baixo da última linha (um fio na borda da tabela se repetiria no pé de cada página).
+    expect(typst.match(/table\.hline/g)).toHaveLength(2);
+    expect(typst).toContain("stroke: (x, y) => if y == ultima { (bottom: 0.5pt) } else { none }");
+    expect(typst).toContain("let ultima = 1 + if topo { 1 } else { 0 }");
     expect(typst).toContain("[Tabela 1 – Usuários]");
     expect(typst).toContain(String.raw`Fonte\: Registro \(2026\)`);
     expect(() => compilar(typst)).not.toThrow();
   });
 
-  it("tabela sem cabeçalho: só os fios do topo e do fim", () => {
+  it("tabela sem cabeçalho: só o fio do topo e o do fim (o título ainda se repete)", () => {
     const typst = documentoParaTypst(doc([tabela({ cabecalho: 0 })]), abnt);
-    expect(typst).not.toContain("table.header");
-    expect(typst.match(/table\.hline/g)).toHaveLength(2);
+    expect(typst).toContain("table.header(repeat: true, ..if topo");
+    expect(typst.match(/table\.hline/g)).toHaveLength(1);
+    expect(typst).toContain("let ultima = 1 + if topo { 1 } else { 0 }");
     expect(() => compilar(typst)).not.toThrow();
   });
 
@@ -414,6 +421,42 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     expect(typst).toContain("#strong[Tabela 1]");
     expect(typst).toContain("#emph[Nota\\.] Registro \\(2026\\)");
     expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("ABNT, tabela em mais de uma página (IBGE, 8.3): indicações (continua), (continuação) e (conclusão) pela página", () => {
+    const linhas = [[[{ texto: "Mês" }], [{ texto: "Total" }]], ...Array.from({ length: 120 }, (_, i) => [[{ texto: `Linha ${i + 1}` }], [{ texto: String(i) }]])];
+    const typst = documentoParaTypst(doc([tabela({ linhas }), tabela()]), abnt);
+    expect(typst).toContain(String.raw`if aqui == ini [\(continua\)] else if aqui == fim [\(conclusão\)] else [\(continuação\)]`);
+    expect(typst).toContain("align(right,");
+    // As marcas: na primeira e na última linha do corpo.
+    expect(typst).toContain("[#metadata(none)<apud-tabela-1-inicio>Linha 1]");
+    expect(typst).toContain("[#metadata(none)<apud-tabela-1-fim>Linha 120]");
+    expect(typst).toContain("[#metadata(none)<apud-tabela-2-inicio>#metadata(none)<apud-tabela-2-fim>Adultos]");
+    // Onde ficam as marcas no PDF: a tabela longa começa numa página e acaba noutra; a curta, numa só.
+    const sonda = `\n#context [#metadata((locate(<apud-tabela-1-inicio>).page(), locate(<apud-tabela-1-fim>).page(), locate(<apud-tabela-2-inicio>).page(), locate(<apud-tabela-2-fim>).page()))<sonda>]`;
+    const [r] = compilador.query({ mainFileContent: typst + sonda }, { selector: "<sonda>", field: "value" }) as number[][];
+    expect(r[0]).toBe(1);
+    expect(r[1]).toBeGreaterThanOrEqual(3);
+    expect(r[2]).toBe(r[3]);
+  });
+
+  it("indicações vêm do perfil (texto e posição)", () => {
+    const outro = { ...abnt, regras: new Map(abnt.regras) };
+    const regra = abnt.regras.get("tabelas em mais de uma página, posição das indicações")!;
+    outro.regras.set("tabelas em mais de uma página, posição das indicações", { ...regra, texto: "à esquerda" });
+    expect(documentoParaTypst(doc([tabela()]), outro)).toContain("align(left, if aqui");
+    const sem = { ...abnt, regras: new Map(abnt.regras) };
+    sem.regras.delete("tabelas em mais de uma página");
+    const t = documentoParaTypst(doc([tabela()]), sem);
+    expect(t).not.toContain("aqui == ini");
+    expect(t).toContain("table.header(repeat: true, table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
+    expect(() => compilar(t)).not.toThrow();
+  });
+
+  it("APA: só o cabeçalho se repete, sem indicações", () => {
+    const typst = documentoParaTypst(doc([tabela()]), apa);
+    expect(typst).not.toContain("aqui == ini");
+    expect(typst).not.toContain("apud-tabela-");
   });
 
   it("uma tabela longa passa para a página seguinte sem quebrar o PDF", () => {
@@ -582,5 +625,96 @@ describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, r
       compilar(typst, documento);
       expect(inicioDoTexto(typst).contagem).toBe(n);
     }
+  });
+});
+
+describe("pontuação dobrada na lista de referências", () => {
+  const norma = carregarNorma("abnt.txt");
+  const normaApa = carregarNorma("apa.txt");
+  const doc = (referencias: Documento["referencias"]): Documento => ({
+    ...documentoVazio(),
+    referencias,
+    blocos: [
+      { tipo: "paragrafo", trechos: referencias.map((r) => ({ citacao: { tipo: "parenteses" as const, obras: [{ referencia: r.id }] } })) },
+      { tipo: "referencias" },
+    ],
+  });
+  const refs: Documento["referencias"] = [
+    { id: "a", tipo: "livro", autores: [{ sobrenome: "Dias", prenomes: "André" }], titulo: "O que pode São Paulo?", data: { ano: 2022 }, cidade: "Belo Horizonte", editora: "Marginália" },
+    { id: "b", tipo: "livro", autores: [{ sobrenome: "Lima", prenomes: "Ana" }], titulo: "Vozes", subtitulo: "a vida pode mais!", data: { ano: 2019 }, cidade: "Natal", editora: "EDUFRN" },
+  ];
+
+  it("as regras entram só dentro da lista", () => {
+    const typst = documentoParaTypst(doc(refs), norma.perfil, { csl: norma.csl });
+    const i = typst.indexOf("let apud-tira-ponto");
+    expect(i).toBeGreaterThan(typst.indexOf("set block(spacing:"));
+    expect(i).toBeLessThan(typst.indexOf("bibliography("));
+    expect(typst.match(/let apud-tira-ponto/g)).toHaveLength(1);
+  });
+
+  it("nos endereços da lista, o hífen da quebra de linha não se repete na linha de baixo", () => {
+    const typst = documentoParaTypst(doc(refs), norma.perfil, { csl: norma.csl });
+    const i = typst.indexOf(`show link: set text(lang: "en")`);
+    expect(i).toBeGreaterThan(typst.indexOf("set block(spacing:"));
+    expect(i).toBeLessThan(typst.indexOf("bibliography("));
+  });
+
+  it("nas duas normas, o PDF compila com título terminado em ? e subtítulo terminado em !", () => {
+    for (const { perfil, csl } of [norma, normaApa]) {
+      const d = doc(refs);
+      expect(paginas(compilar(documentoParaTypst(d, perfil, { csl }), d))).toBeGreaterThan(0);
+    }
+  });
+
+  it("sem o ponto depois do ? ou do !, também quando o ? está no fim do negrito ou do itálico", () => {
+    // A mesma regra, aplicada a referências escritas à mão: a sonda guarda o texto de cada bloco já corrigido.
+    const sonda = (corpo: string) => String.raw`#{${PONTUACAO_DA_LISTA}
+  show block: it => { [#metadata(repr(it.body))<sonda>]; it }
+  block[${corpo}]
+}`;
+    const texto = (corpo: string) => (compilador.query({ mainFileContent: sonda(corpo) }, { selector: "<sonda>", field: "value" }) as string[]).at(-1)!;
+    expect(texto("Dias. *O que pode São Paulo?*. Belo Horizonte")).not.toMatch(/\[\. /);
+    expect(texto("Dias. *Título*. Belo Horizonte")).toMatch(/\[\. /);
+    // "!." no mesmo texto: a regra age na montagem do texto, então se confere pelo HTML.
+    const html = compilador.tryHtml({ mainFileContent: `#{${PONTUACAO_DA_LISTA}\n  [Lima. _Vozes_: a vida pode mais!. Natal. Fim?.]\n}` }).result!.html();
+    expect(html).toContain("a vida pode mais! Natal. Fim?</p>");
+  });
+});
+
+describe("marcas da prévia (acompanhar o cursor)", () => {
+  const { perfil } = carregarNorma("abnt.txt");
+  const doc: Documento = {
+    ...documentoVazio(),
+    blocos: [
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] },
+      { tipo: "paragrafo", trechos: [] },
+      { tipo: "paragrafo", trechos: [{ texto: "Texto." }] },
+      { tipo: "quebra" },
+      { tipo: "paragrafo", trechos: [{ texto: "Outra página." }] },
+    ],
+  };
+
+  it("o PDF exportado não leva marcas", () => {
+    expect(documentoParaTypst(doc, perfil)).not.toContain(MARCA_DO_BLOCO);
+  });
+
+  it("na prévia, cada bloco com conteúdo ganha a marca, e o motor diz a página e a altura de cada uma", () => {
+    const typst = documentoParaTypst(doc, perfil, { marcarBlocos: true });
+    expect(typst).toContain(`#metadata(0) <${MARCA_DO_BLOCO}>`);
+    expect(typst).not.toContain(`#metadata(1) <${MARCA_DO_BLOCO}>`); // parágrafo vazio não sai no PDF
+    const [posicoes] = compilador.query({ mainFileContent: typst }, { selector: `<${MARCA_DAS_POSICOES}>`, field: "value" }) as number[][][];
+    expect(posicoes.map((p) => p[0])).toEqual([0, 2, 3, 4]);
+    expect(posicoes[0][1]).toBe(1);
+    expect(posicoes[3][1]).toBe(2); // depois da quebra, na página 2
+    expect(posicoes[0][2]).toBeGreaterThan(0);
+  });
+
+  it("as marcas não mudam a página: o mesmo número de páginas com e sem elas", () => {
+    const { documento } = documentoDeProva();
+    const norma = carregarNorma("abnt.txt");
+    mapearImagens(compilador, documento);
+    const sem = paginas(compilar(documentoParaTypst(documento, norma.perfil, { csl: norma.csl }), documento));
+    const com = paginas(compilar(documentoParaTypst(documento, norma.perfil, { csl: norma.csl, marcarBlocos: true }), documento));
+    expect(com).toBe(sem);
   });
 });

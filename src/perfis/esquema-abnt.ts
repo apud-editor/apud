@@ -140,6 +140,10 @@ export const ESQUEMA_ABNT: EsquemaNorma = {
       ["tabelas, fios", opcao("acima e abaixo do cabeçalho e no fim, sem fios nas laterais"), "Tabelas"],
       ["tabelas, alinhamento", opcao("cabeçalho ao centro, primeira coluna à esquerda, demais ao centro"), "Tabelas"],
       ["tabelas, espaçamento do corpo", espacamento(), "Tabelas"],
+      // Revisão 9: tabela em mais de uma página (IBGE, 8.3).
+      ["tabelas em mais de uma página", opcao("número, título e cabeçalho repetidos em cada página"), "Tabelas"],
+      ["tabelas em mais de uma página, indicações", lista(undefined, { quantidadeExata: 3 }), "Tabelas"],
+      ["tabelas em mais de uma página, posição das indicações", opcao("à direita", "à esquerda"), "Tabelas"],
       ["siglas, primeira vez", opcao("nome completo e sigla entre parênteses"), "Siglas"],
       ["equações, numeração", opcao("entre parênteses, à direita"), "Equações"],
     ]),

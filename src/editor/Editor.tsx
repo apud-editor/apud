@@ -22,6 +22,8 @@ interface Props {
   aoMudar?: () => void;
   /** Recebe a função que lê o texto atual, para quem precisa dele (o salvamento e a prévia). */
   lerTexto?: React.MutableRefObject<(() => Bloco[]) | null>;
+  /** O cursor mudou de bloco (a posição do bloco no texto), para a prévia acompanhar. */
+  aoMoverCursor?: (indice: number) => void;
   /** Botões a mais, no lado direito da barra de ferramentas (como "Prévia"). */
   extrasDaBarra?: React.ReactNode;
   /** Um painel ao lado do texto (como a prévia do PDF). */
@@ -46,6 +48,7 @@ export default function Editor({
   inicial,
   aoMudar,
   lerTexto,
+  aoMoverCursor,
   extrasDaBarra,
   lateral,
   antes,
@@ -71,11 +74,15 @@ export default function Editor({
   const espera = useRef<number>(0);
   const aoMudarRef = useRef(aoMudar);
   aoMudarRef.current = aoMudar;
+  const aoMoverCursorRef = useRef(aoMoverCursor);
+  aoMoverCursorRef.current = aoMoverCursor;
 
   const editor = useEditor({
     extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela, controlesDosNos),
     content: editorDosBlocos(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
+    // O bloco do cursor é o filho do editor em que ele está (o mesmo número do bloco no texto).
+    onSelectionUpdate: ({ editor }) => aoMoverCursorRef.current?.(editor.state.selection.$head.index(0)),
     onUpdate: ({ editor }) => {
       aoMudarRef.current?.();
       // As citações na norma dependem do texto todo: refeitas depois de uma pausa.

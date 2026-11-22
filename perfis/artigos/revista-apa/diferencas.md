@@ -43,7 +43,7 @@ marcado como tal.
    - "em Psicologia" na tese: a APA mostra só "[Tese de doutorado, Universidade]". Segue a APA.
    - **Falta no Apud:** o nome do repositório (Repositório Institucional da UFRN). A APA 7 pede esse nome na tese publicada em repositório, antes do endereço, e o Apud ainda não tem onde guardá-lo.
    - **Falta no Apud:** o "Disoc" da Nota Técnica do Ipea, que faz parte do número da série.
-7. **Título terminado em "?":** "…São Paulo?*." ganha um ponto a mais, como na ABNT. É uma limitação do motor de PDF.
+7. **Título terminado em "?": resolvido (22/11/2026).** O ponto que o motor de referências punha depois do "?" ("…São Paulo?*.") saiu, como pede a APA 7: o "?" ocupa o lugar do ponto.
 
 ## 4. Fora da comparação
 

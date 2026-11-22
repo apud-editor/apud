@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 8
+revisão: 9
 data da revisão: 22/11/2026
-nota da revisão: Fase 3, parte 4: capa, folha de rosto, dedicatória, agradecimentos, epígrafe, resumos e sumário no PDF. Novas regras para o destaque do título na capa e na folha de rosto, os rótulos do orientador e do professor, os títulos dos agradecimentos e do resumo, o recuo do resumo e das palavras-chave, o destaque do rótulo das palavras-chave, a linha em branco antes delas e a ligação até a página no sumário.
+nota da revisão: Tabela em mais de uma página (IBGE, 8.3): número, título e cabeçalho repetidos em cada página, com as indicações (continua), (continuação) e (conclusão). A posição das indicações é padrão da faculdade.
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -82,6 +82,11 @@ tabelas, desenho: normas tabulares do IBGE                    | NBR 14724:2024 (
 tabelas, fios: acima e abaixo do cabeçalho e no fim, sem fios nas laterais  | IBGE, Normas de apresentação tabular (1993)
 tabelas, alinhamento: cabeçalho ao centro, primeira coluna à esquerda, demais ao centro  | IBGE, Normas de apresentação tabular (1993), que não fixam o alinhamento | faculdade
 tabelas, espaçamento do corpo: simples                        | IBGE, Normas de apresentação tabular (1993), que não fixam o espaço | faculdade
+# Revisão 9: tabela que passa de página. O fio de baixo e a fonte só aparecem
+# na última página (o Apud já fazia assim).
+tabelas em mais de uma página: número, título e cabeçalho repetidos em cada página  | IBGE, Normas de apresentação tabular (1993), 8.3
+tabelas em mais de uma página, indicações: (continua), (continuação), (conclusão)  | IBGE, Normas de apresentação tabular (1993), 8.3 e Anexo B
+tabelas em mais de uma página, posição das indicações: à direita  | IBGE, Normas de apresentação tabular (1993), que não fixam a posição | faculdade
 # O Apud não muda o seu texto; o verificador da versão 2 vai avisar.
 siglas, primeira vez: nome completo e sigla entre parênteses  | NBR 14724:2024 (UFV 2026) | desligada
 equações, numeração: entre parênteses, à direita              | NBR 14724:2024 (Unesp) | desligada

@@ -1,6 +1,7 @@
 // Conversa com o motor Typst (motor.worker.ts): carrega as fontes uma vez e
 // pede a prévia ou o PDF.
 
+import type { PosicaoDoBloco } from "../telas/acompanhar";
 import type { Pedido, Resposta } from "./motor.worker";
 import type { ArquivoDoTypst } from "./elementos";
 import { armazenamento } from "../arquivos/armazenamento";
@@ -79,12 +80,15 @@ class Motor {
     });
   }
 
-  /** As páginas, como imagem SVG, para a prévia. As imagens das figuras vão em arquivos. */
-  async previa(typst: string, arquivos: ArquivoDoTypst[] = []): Promise<string> {
+  /**
+   * As páginas, como imagem SVG, para a prévia, e onde cada bloco ficou (se o
+   * texto veio com as marcas da prévia). As imagens das figuras vão em arquivos.
+   */
+  async previa(typst: string, arquivos: ArquivoDoTypst[] = []): Promise<{ svg: string; posicoes: PosicaoDoBloco[] }> {
     const r = await this.pedir("previa", typst, arquivos);
     if (r.tipo === "erro") throw new Error(r.mensagem);
     if (r.tipo !== "previa") throw new Error("resposta inesperada do motor");
-    return r.svg;
+    return { svg: r.svg, posicoes: r.posicoes };
   }
 
   async pdf(typst: string, arquivos: ArquivoDoTypst[] = []): Promise<Uint8Array> {
