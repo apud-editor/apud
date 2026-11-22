@@ -65,6 +65,11 @@ export const ESQUEMA_APA: EsquemaNorma = {
         quantidade("linha", "linhas", 3, 4),
         "Página de título (estudante)",
       ],
+      [
+        "página de título (estudante), linhas em branco depois do título",
+        quantidade("linha", "linhas", 0, 2),
+        "Página de título (estudante)",
+      ],
       ["página de título (estudante), data", opcao("por extenso"), "Página de título (estudante)"],
       [
         "página de título (profissional), campos",
@@ -75,6 +80,12 @@ export const ESQUEMA_APA: EsquemaNorma = {
       ["resumo, no modo profissional", opcao("obrigatório"), "Resumo"],
       ["resumo, extensão máxima", quantidade("palavra", "palavras", 50, 1000), "Resumo"],
       ["palavras-chave", opcao("opcionais", "obrigatórias"), "Resumo"],
+      ["resumo, recuo da primeira linha", opcao("nenhum", "como no texto"), "Resumo"],
+      ["palavras-chave, rótulo", texto(), "Resumo"],
+      ["palavras-chave, destaque do rótulo", destaque(), "Resumo"],
+      ["palavras-chave, separador", opcao("vírgula", "ponto e vírgula"), "Resumo"],
+      ["palavras-chave, final", opcao("nenhum", "ponto"), "Resumo"],
+      ["palavras-chave, recuo da primeira linha", opcao("como no texto", "nenhum"), "Resumo"],
       [
         "ordem das partes",
         lista([

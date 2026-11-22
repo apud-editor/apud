@@ -25,6 +25,12 @@
 // As imagens não vão dentro do código: o motor as recebe como arquivos
 // (arquivosDasImagens, em elementos.ts).
 //
+// Abertura (fase 3, parte 4): capa, folha de rosto, dedicatória,
+// agradecimentos, epígrafe, resumos e sumário (ABNT), ou página de título e
+// resumos (APA). Cada elemento ocupa a própria folha, e o texto começa na
+// folha seguinte. A ordem e a frase da natureza ficam em abertura.ts; a forma,
+// aqui, pelo perfil. Sem nenhum elemento ligado, o PDF sai como antes.
+//
 // Entrelinhas como no Word: no Word, a linha "simples" mede 1,15 vez o tamanho
 // da fonte (Times 12 pt = 13,8 pt), e 1,5 linha mede 1,5 vez isso (20,7 pt).
 // Aqui, cada linha é uma caixa de 1,15 em, e o espaço entre as caixas completa
@@ -43,10 +49,24 @@ import {
   type ItemDeLista,
   type NivelDeTitulo,
   type Tabela,
+  type Resumo,
   type Trecho,
   type TrechoDeTexto,
 } from "../documento/modelo";
 import { caminhosDasImagens, larguraPadrao, pontoDaCitacaoLonga } from "./elementos";
+import {
+  anoDoTrabalho,
+  dataPorExtenso,
+  elementosDaAbertura,
+  idiomaParaTypst,
+  juntarNomes,
+  lingua,
+  naturezaDoTrabalho,
+  palavrasChave,
+  repetirTituloNoTexto,
+  rotulosDoIdioma,
+  type ElementoDaAbertura,
+} from "./abertura";
 import { separarNumero } from "../documento/estrutura";
 import type { PerfilResolvido, Valor } from "../perfis";
 import { criarMotor, temGrifo, type Motor, type Pedaco } from "../citacoes/motor";
@@ -266,6 +286,9 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
 
   const linhas: string[] = [];
   const l = (s = "") => linhas.push(s);
+  const elementos = elementosDaAbertura(doc.abertura, existeNaNorma(r));
+  // ABNT: o número só aparece a partir da primeira folha do texto. APA: desde a página de título.
+  const esconderAteOTexto = elementos.length > 0 && r.talvez("numeração de página, mostrar desde") === "primeira folha do texto";
 
   l(`// Gerado pelo Apud com o perfil ${perfil.identificacao.perfil} ${perfil.identificacao.versao}, revisão ${perfil.identificacao.revisao}.`);
   if (opcoes.titulo) l(`#set document(title: ${texto(opcoes.titulo)})`);
@@ -274,8 +297,13 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   l(`#set page(`);
   l(`  paper: "a4",`);
   l(`  margin: (left: ${margens.esquerda}, top: ${margens.superior}, right: ${margens.direita}, bottom: ${margens.inferior}),`);
-  // A capa e a folha de rosto (fase 3) vão mudar onde a contagem começa; sem elas, o texto começa na página 1.
-  l(`  foreground: context place(${lugarDoNumero(r, margens.direita)}, text(size: ${r.fonteMenor()}, top-edge: "cap-height", bottom-edge: "baseline", counter(page).display("1"))),`);
+  // Sem abertura, o texto começa na página 1. Com ela, a contagem e o lugar onde o número aparece seguem a norma.
+  const numeroDaPagina = `place(${lugarDoNumero(r, margens.direita)}, text(size: ${r.fonteMenor()}, top-edge: "cap-height", bottom-edge: "baseline", counter(page).display("1")))`;
+  if (esconderAteOTexto) {
+    l(`  foreground: context { let i = query(<apud-texto>); if i.len() == 0 or here().page() >= i.first().location().page() { ${numeroDaPagina} } },`);
+  } else {
+    l(`  foreground: context ${numeroDaPagina},`);
+  }
   l(`)`);
 
   // Texto
@@ -322,6 +350,16 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
       return listaDeReferencias(motor, r, opcoes.csl, medidas);
     },
   };
+  if (elementos.length) {
+    for (const parte of aberturaParaTypst(doc, elementos, r, medidas, escrita)) l(parte);
+    // A marca do começo do texto: daqui em diante o número da página aparece (ABNT).
+    l(`#metadata("texto") <apud-texto>`);
+  }
+  // APA: o título do trabalho se repete no começo do texto.
+  if (r.talvez("início do texto") === "repete o título do trabalho" && repetirTituloNoTexto(doc.dados, doc.blocos)) {
+    l(`#heading(level: 1, numbering: none, outlined: false)[${tituloParaTypst(doc, (x) => x)}]`);
+    l();
+  }
   for (let i = 0; i < doc.blocos.length; i++) {
     const b = doc.blocos[i];
     // Título na mesma linha do texto (APA, níveis 4 e 5): junta com o parágrafo seguinte.
@@ -490,6 +528,227 @@ function escreverTitulos(l: (s?: string) => void, r: Regras, m: Medidas) {
   l(`}`);
   // Os títulos não têm tamanho próprio: usam o da fonte do texto.
   l(`#show heading: set text(size: ${r.fonte().tamanho}, weight: "regular")`);
+}
+
+// ---------------------------------------------------------------------------
+// Abertura: os elementos antes do texto
+
+/** Se a norma tem o elemento: o perfil precisa ter a regra dele. */
+function existeNaNorma(r: Regras) {
+  const chave: Record<ElementoDaAbertura["tipo"], string[]> = {
+    capa: ["capa"],
+    folhaDeRosto: ["folha de rosto"],
+    paginaDeTitulo: ["página de título (estudante), campos"],
+    dedicatoria: ["dedicatória"],
+    agradecimentos: ["agradecimentos"],
+    epigrafe: ["epígrafe"],
+    resumo: ["resumo", "rótulo do resumo"],
+    sumario: ["sumário"],
+  };
+  return (e: ElementoDaAbertura["tipo"]) => chave[e].some((k) => r.tem(k));
+}
+
+/** Aplica negrito, itálico e sublinhado de uma regra de destaque. As letras ficam como estão. */
+function comDestaque(r: Regras, chave: string, x: string): string {
+  if (!r.tem(chave)) return x;
+  const d = r.destaque(chave);
+  let s = x;
+  if (d.negrito) s = `#strong[${s}]`;
+  if (d.italico) s = `#emph[${s}]`;
+  if (d.sublinhado) s = `#underline[${s}]`;
+  return s;
+}
+
+/** O título do trabalho, com o subtítulo depois de dois-pontos. `destacar` vale só para o título. */
+function tituloParaTypst(doc: Documento, destacar: (x: string) => string): string {
+  const titulo = escaparTexto(doc.dados.titulo.trim());
+  const sub = doc.dados.subtitulo?.trim();
+  return sub ? `${destacar(titulo)}: ${escaparTexto(sub)}` : destacar(titulo);
+}
+
+/**
+ * Um rótulo da norma (RESUMO, AGRADECIMENTOS, SUMÁRIO) como título sem número,
+ * que não entra no sumário. Na ABNT, os títulos sem número têm o destaque do
+ * nível 1: as maiúsculas valem para os rótulos (que são do Apud, não da pessoa).
+ */
+function rotuloDeSecao(rotulo: string, r: Regras): string {
+  const maiusculas = r.talvez("títulos sem número, destaque") === "igual ao nível 1" && r.destaque("título nível 1, destaque").maiusculas;
+  const centralizado = r.talvez("títulos sem número, alinhamento") === "centralizado" || r.talvez("rótulos de seção, alinhamento") === "centralizado";
+  const t = `heading(level: 1, numbering: none, outlined: false)[${escaparTexto(maiusculas ? rotulo.toLocaleUpperCase("pt-BR") : rotulo)}]`;
+  return centralizado ? `#align(center, ${t})` : `#${t}`;
+}
+
+/** Linhas como um parágrafo só, separadas por quebra de linha. Linhas vazias saem. */
+const emLinhas = (linhas: (string | undefined)[]) => linhas.filter((x): x is string => !!x && x.trim() !== "").join(" \\\n");
+
+function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: Regras, m: Medidas, e: Escrita): string[] {
+  const d = doc.dados;
+  const cego = doc.abertura.semIdentificacao;
+  const autores = cego ? [] : d.autores.map((a) => escaparTexto(a.trim())).filter(Boolean);
+  const ano = anoDoTrabalho(d);
+  const justificado = r.opcao("alinhamento") === "justificado";
+  const partes: string[] = [];
+  const contarACapa = r.talvez("numeração de página, contar desde") === "capa";
+  const paragrafos = (ps: TrechoDeTexto[][]) =>
+    ps.filter((p) => p.some((t) => t.texto.trim())).map((p) => trechosParaTypst(p, e)).join("\n\n");
+  // Uma folha inteira, sem recuo de parágrafo; o pagebreak fecha a folha.
+  const folha = (corpo: string) => `#block(width: 100%, height: 100%, {\n  set par(first-line-indent: 0pt, justify: false)\n  ${corpo}\n})\n#pagebreak()\n`;
+  const campos = (chave: string) => r.lista(chave).map((c) => c.replace(" (opcional)", ""));
+
+  for (const el of elementos) {
+    switch (el.tipo) {
+      case "capa": {
+        const c = campos("capa, campos");
+        const quer = (x: string) => c.length === 0 || c.includes(x);
+        const instituicao = quer("instituição") ? emLinhas([d.instituicao && escaparTexto(d.instituicao.trim()), d.curso && escaparTexto(d.curso.trim())]) : "";
+        const titulo = d.titulo.trim() && quer("título") ? tituloParaTypst(doc, (x) => comDestaque(r, "capa, destaque do título", x)) : "";
+        const pe = emLinhas([quer("cidade") ? d.cidade && escaparTexto(d.cidade.trim()) : undefined, quer("ano") && ano ? String(ano) : undefined]);
+        const autor = quer("autor") ? emLinhas(autores) : "";
+        // Sem instituição, a capa começa pelo autor (NBR 14724: a instituição é opcional).
+        const linhasDaCapa = instituicao ? [instituicao, "", autor, "", titulo, "", pe] : [autor, "", titulo, "", pe];
+        const alturas = instituicao ? "(auto, 1fr, auto, 1fr, auto, 2fr, auto)" : "(auto, 1fr, auto, 2fr, auto)";
+        partes.push(folha(`align(center, grid(rows: ${alturas}, ${linhasDaCapa.map((x) => `[${x}]`).join(", ")}))`));
+        // A capa não conta: a folha de rosto é a folha 1 (NBR 14724).
+        if (!contarACapa) partes.push(`#counter(page).update(1)`);
+        break;
+      }
+      case "folhaDeRosto": {
+        const c = campos("folha de rosto, campos");
+        const quer = (x: string) => c.length === 0 || c.includes(x);
+        const titulo = d.titulo.trim() && quer("título") ? tituloParaTypst(doc, (x) => comDestaque(r, "folha de rosto, destaque do título", x)) : "";
+        const natureza = quer("natureza") ? naturezaDoTrabalho(d) : "";
+        const rotulo = r.talvez(d.tipo === "disciplina" ? "folha de rosto, rótulo do professor" : "folha de rosto, rótulo do orientador") ?? "";
+        const orientador = quer("orientador") && !cego && d.orientador?.trim() ? `${escaparTexto(rotulo)} ${escaparTexto(d.orientador.trim())}`.trim() : "";
+        const simples = r.simples("natureza do trabalho");
+        const entre = simples ? entreLinhas(1) : m.entre;
+        const tamanho = r.menor("natureza do trabalho") ? `set text(size: ${r.fonteMenor()})\n` : "";
+        const ladoDireito = [natureza && escaparTexto(natureza), orientador].filter(Boolean).join("\n\n");
+        const meio = ladoDireito
+          ? `[#v(2 * ${m.passo})#pad(left: 50%, {\n  ${tamanho}set par(justify: true, leading: ${entre}, spacing: ${m.passo})\n  [${ladoDireito}]\n})]`
+          : "[]";
+        const pe = emLinhas([quer("cidade") ? d.cidade && escaparTexto(d.cidade.trim()) : undefined, quer("ano") && ano ? String(ano) : undefined]);
+        const autor = quer("autor") ? emLinhas(autores) : "";
+        partes.push(folha(`grid(rows: (auto, 1fr, auto, auto, 1fr, auto), align(center)[${autor}], [], align(center)[${titulo}], ${meio}, [], align(center)[${pe}])`));
+        break;
+      }
+      case "paginaDeTitulo": {
+        const profissional = d.tipo === "artigo" && r.talvez("modo, quando o trabalho é artigo") === "profissional";
+        const c = campos(profissional ? "página de título (profissional), campos" : "página de título (estudante), campos");
+        const quer = (x: string) => c.length === 0 || c.includes(x);
+        // Na APA, o subtítulo é parte do título: o destaque vale para os dois.
+        const titulo = d.titulo.trim() ? comDestaque(r, "página de título (estudante), destaque do título", tituloParaTypst(doc, (x) => x)) : "";
+        const filiacao = [d.curso?.trim(), d.instituicao?.trim()].filter(Boolean).map((x) => escaparTexto(x!)).join(", ");
+        const linhasAbaixo = [
+          quer("autor") || quer("autores") ? escaparTexto(juntarNomes(cego ? [] : d.autores)) : undefined,
+          quer("departamento e universidade") || quer("afiliação") ? filiacao : undefined,
+          quer("código e nome da disciplina") && d.disciplina?.trim() ? escaparTexto(d.disciplina.trim()) : undefined,
+          quer("professor") && !cego && d.orientador?.trim() ? escaparTexto(d.orientador.trim()) : undefined,
+          quer("data de entrega") && d.dataDeEntrega ? escaparTexto(dataPorExtenso(d.dataDeEntrega)) : undefined,
+        ];
+        const antes = r.linhas("página de título (estudante), linhas antes do título");
+        const depois = r.linhas("página de título (estudante), linhas em branco depois do título");
+        const k = r.tem("página de título (estudante), espaçamento") ? r.numero("página de título (estudante), espaçamento") : r.numero("entrelinhas");
+        const entre = entreLinhas(k);
+        partes.push(
+          `#{\n  set par(first-line-indent: 0pt, justify: false, leading: ${entre}, spacing: ${entre})\n  set align(center)\n  v(${numero(antes)} * ${m.passo})\n  [${titulo}]\n  v(${numero(depois)} * ${m.passo})\n  [${emLinhas(linhasAbaixo)}]\n}\n#pagebreak()\n`,
+        );
+        break;
+      }
+      case "dedicatoria":
+      case "epigrafe": {
+        // NBR 14724: no pé da página, do meio para a direita, sem título.
+        const el2 = el.tipo === "dedicatoria" ? doc.abertura.dedicatoria : doc.abertura.epigrafe;
+        const autoria = el.tipo === "epigrafe" && r.talvez("epígrafe, autor") === "sim" && doc.abertura.epigrafe.autoria.trim() ? `\n\n#align(right)[${escaparTexto(doc.abertura.epigrafe.autoria.trim())}]` : "";
+        partes.push(folha(`align(bottom, pad(left: 50%, {\n  set par(justify: ${justificado}, leading: ${m.entre}, spacing: ${m.entre})\n  [${paragrafos(el2.paragrafos)}${autoria}]\n}))`));
+        break;
+      }
+      case "agradecimentos": {
+        const rotulo = r.talvez("agradecimentos, título") ?? "Agradecimentos";
+        partes.push(`${rotuloDeSecao(rotulo, r)}\n${paragrafos(doc.abertura.agradecimentos.paragrafos)}\n#pagebreak()\n`);
+        break;
+      }
+      case "resumo":
+        partes.push(resumoParaTypst(el.resumo, r, m, e));
+        break;
+      case "sumario":
+        partes.push(sumarioParaTypst(doc, r, m));
+        break;
+    }
+  }
+  return partes;
+}
+
+/**
+ * Um resumo, na própria folha: o título do trabalho no idioma (se houver), o
+ * rótulo (RESUMO, ABSTRACT...), o texto num parágrafo só e as palavras-chave.
+ * O rótulo do português e do inglês vem do perfil; o dos outros idiomas, de abertura.ts.
+ */
+function resumoParaTypst(resumo: Resumo, r: Regras, m: Medidas, e: Escrita): string {
+  const ling = lingua(resumo.idioma);
+  const padrao = rotulosDoIdioma(resumo.idioma);
+  const rotulo =
+    ling === "pt" ? (r.talvez("resumo, título") ?? r.talvez("rótulo do resumo") ?? padrao.resumo) : ling === "en" ? (r.talvez("resumo em língua estrangeira, título") ?? padrao.resumo) : padrao.resumo;
+  const rotuloDasPalavras =
+    ling === "pt" ? (r.talvez("palavras-chave, rótulo") ?? padrao.palavrasChave) : ling === "en" ? (r.talvez("resumo em língua estrangeira, rótulo das palavras-chave") ?? padrao.palavrasChave) : padrao.palavrasChave;
+  const k = r.tem("resumo, espaçamento") ? r.numero("resumo, espaçamento") : r.numero("entrelinhas");
+  const entre = entreLinhas(k);
+  const passo = `${numero(k * LINHA_SIMPLES)}em`;
+  const recuo = (chave: string) => (r.talvez(chave) === "como no texto" ? m.recuo : "0pt");
+  const separador = (r.talvez("palavras-chave, separador") ?? "ponto e vírgula") as "ponto e vírgula" | "vírgula" | "ponto";
+  const final = (r.talvez("palavras-chave, final") ?? "ponto") as "ponto" | "nenhum";
+  const palavras = palavrasChave(resumo.palavrasChave, separador, final);
+  const { lang, region } = idiomaParaTypst(resumo.idioma);
+  const justificado = r.opcao("alinhamento") === "justificado";
+  const linhas = [
+    resumo.titulo?.trim() ? `#align(center, block(below: ${m.passo})[#strong[${escaparTexto(resumo.titulo.trim())}]])` : "",
+    rotuloDeSecao(rotulo, r),
+    `#{`,
+    `  set text(lang: ${texto(lang)}${region ? `, region: ${texto(region)}` : ""})`,
+    `  set par(justify: ${justificado}, leading: ${entre}, spacing: ${entre}, first-line-indent: (amount: ${recuo("resumo, recuo da primeira linha")}, all: true))`,
+    `  [${trechosParaTypst(resumo.trechos, e)}]`,
+  ];
+  if (palavras) {
+    const n = r.linhas("palavras-chave, linhas em branco antes");
+    linhas.push(`  parbreak()`);
+    if (n) linhas.push(`  v(${numero(n)} * ${passo})`);
+    linhas.push(`  set par(first-line-indent: (amount: ${recuo("palavras-chave, recuo da primeira linha")}, all: true))`);
+    linhas.push(`  [${comDestaque(r, "palavras-chave, destaque do rótulo", escaparTexto(rotuloDasPalavras))} ${escaparTexto(palavras)}]`);
+  }
+  linhas.push(`}`, `#pagebreak()`, "");
+  return linhas.filter((x) => x !== "").join("\n") + "\n";
+}
+
+/**
+ * Sumário (NBR 6027): os títulos do texto e as referências, com a página
+ * inicial; os elementos antes do texto não entram. Os números das seções
+ * ficam à esquerda, numa coluna da largura do número mais longo, e os títulos
+ * alinhados depois dela, com o mesmo destaque do texto.
+ */
+function sumarioParaTypst(doc: Documento, r: Regras, m: Medidas): string {
+  const rotulo = r.talvez("sumário, título") ?? "Sumário";
+  const numeros = doc.blocos.flatMap((b) => {
+    if (b.tipo !== "titulo") return [];
+    const { numero: n } = numeroDoTitulo(b.trechos);
+    return n ? [`destaque-do-titulo(${b.nivel}, [${escaparTexto(n)}])`] : [];
+  });
+  const ligacao = r.talvez("sumário, ligação até a página") === "nenhuma" ? "h(1fr)" : "box(width: 1fr, repeat(gap: 0.15em)[.])";
+  return [
+    rotuloDeSecao(rotulo, r),
+    `#{`,
+    `  set par(first-line-indent: 0pt, justify: false, leading: ${m.entre}, spacing: ${m.entre})`,
+    `  show outline.entry: it => context {`,
+    `    let numeros = (${numeros.join(", ")}${numeros.length === 1 ? "," : ""})`,
+    `    let largura = calc.max(0pt, ..numeros.map(x => measure(x).width))`,
+    `    let numero = if it.element.numbering == none { [] } else { destaque-do-titulo(it.level, numbering(it.element.numbering, ..counter(heading).at(it.element.location()))) }`,
+    `    let recuo = if largura == 0pt { 0pt } else { largura + 0.5em }`,
+    // O número e um espaço até a largura do mais longo (sem caixa, para ficar na mesma linha de base); as linhas seguintes do título ficam sob a primeira letra.
+    `    block(above: ${m.entre}, below: ${m.entre}, link(it.element.location(), par(hanging-indent: recuo)[#numero#h(recuo - measure(numero).width)#destaque-do-titulo(it.level, it.body()) ${"#"}${ligacao} #it.page()]))`,
+    `  }`,
+    `  outline(title: none, depth: 5)`,
+    `}`,
+    `#pagebreak()`,
+    "",
+  ].join("\n");
 }
 
 // ---------------------------------------------------------------------------

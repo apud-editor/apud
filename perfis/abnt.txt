@@ -18,9 +18,9 @@
 
 perfil: ABNT
 versão: 2025
-revisão: 7
+revisão: 8
 data da revisão: 22/11/2026
-nota da revisão: Fase 3: citação longa, notas de rodapé, figuras e tabelas no PDF. Novas regras para o espaço antes e depois da citação longa, das ilustrações e das tabelas, a posição da ilustração na página e o desenho e o espaçamento das tabelas.
+nota da revisão: Fase 3, parte 4: capa, folha de rosto, dedicatória, agradecimentos, epígrafe, resumos e sumário no PDF. Novas regras para o destaque do título na capa e na folha de rosto, os rótulos do orientador e do professor, os títulos dos agradecimentos e do resumo, o recuo do resumo e das palavras-chave, o destaque do rótulo das palavras-chave, a linha em branco antes delas e a ligação até a página no sumário.
 
 == ABNT: página e texto ==
 papel: A4                                                     | NBR 14724:2024 (UFV 2026)
@@ -93,11 +93,17 @@ equações, numeração: entre parênteses, à direita              | NBR 14724:
 capa: obrigatória                                             | NBR 14724:2024 (UFV 2026)
 capa, campos: instituição (opcional), autor, título, subtítulo, volume, cidade, ano  | NBR 14724:2024 (UFV 2026)
 capa, subtítulo: depois de dois-pontos                        | NBR 14724:2024 (UFV 2026)
+# Revisão 8: a norma não fixa o destaque do título na capa nem na folha de rosto.
+capa, destaque do título: negrito                             | NBR 14724:2024, que não fixa o destaque | faculdade
 lombada: opcional                                             | NBR 14724:2024 (UFV 2026) | desligada
 folha de rosto: obrigatória                                   | NBR 14724:2024 (UFV 2026)
 folha de rosto, campos: autor, título, subtítulo, volume, natureza, orientador, cidade, ano  | NBR 14724:2024 (UFV 2026)
 folha de rosto, natureza: tipo, objetivo, instituição, área   | NBR 14724:2024 (UFV 2026)
 folha de rosto, posição da natureza: do meio da página para a direita  | NBR 14724:2024 (UFV 2026)
+folha de rosto, destaque do título: negrito                   | NBR 14724:2024, que não fixa o destaque | faculdade
+# O rótulo antes do nome. Em trabalho de disciplina, o nome é do professor.
+folha de rosto, rótulo do orientador: Orientador(a):          | NBR 14724:2024, que não fixa o rótulo | faculdade
+folha de rosto, rótulo do professor: Professor(a):            | NBR 14724:2024, que não fixa o rótulo | faculdade
 ficha catalográfica: só em teses e dissertações               | NBR 14724:2024 (Unesp) | desligada
 ficha catalográfica, conteúdo: página reservada para a biblioteca  | NBR 14724:2024 (Unesp) | desligada
 errata: opcional                                              | NBR 14724:2024 (UFV 2026) | desligada
@@ -107,10 +113,12 @@ folha de aprovação, conteúdo: data, assinaturas da banca      | NBR 14724:202
 dedicatória: opcional                                         | NBR 14724:2024 (UFV 2026)
 dedicatória, posição: pé da página, à direita                 | NBR 14724:2024 (UFV 2026)
 agradecimentos: opcionais                                     | NBR 14724:2024 (UFV 2026)
+agradecimentos, título: AGRADECIMENTOS                        | NBR 14724:2024 (UFV 2026)
 epígrafe: opcional                                            | NBR 14724:2024 (UFV 2026)
 epígrafe, posição: pé da página, à direita                    | NBR 14724:2024 (UFV 2026)
 epígrafe, autor: sim                                          | NBR 14724:2024 (UFV 2026)
 resumo: obrigatório                                           | NBR 14724:2024 e NBR 6028:2021 (UFV 2026)
+resumo, título: RESUMO                                        | NBR 6028:2021 (UFV 2026)
 resumo em língua estrangeira: obrigatório                     | NBR 14724:2024 e NBR 6028:2021 (UFV 2026)
 resumo em língua estrangeira, título: Abstract                | NBR 6028:2021 (UFV 2026)
 resumo em língua estrangeira, rótulo das palavras-chave: Keywords:  | NBR 6028:2021 (UFV 2026)
@@ -138,11 +146,16 @@ resumo, extensão em artigo: 100 a 250 palavras              | NBR 6028:2021 (UF
 resumo, forma: parágrafo único                              | NBR 6028:2021 (UFV 2026)
 resumo, verbo: terceira pessoa                              | NBR 6028:2021 (UFV 2026)
 resumo, espaçamento: simples                                | NBR 6028:2021, que não fixa o espaçamento (UFV 2026) | faculdade
+resumo, recuo da primeira linha: nenhum                     | NBR 6028:2021, que não fixa o recuo (UFV 2026) | faculdade
 palavras-chave, posição: logo abaixo do resumo              | NBR 6028:2021 (Unesp; Unifor)
 palavras-chave, rótulo: Palavras-chave:                     | NBR 6028:2021 (Unesp; Unifor)
 palavras-chave, separador: ponto e vírgula                  | NBR 6028:2021 (Unesp; Unifor)
 palavras-chave, final: ponto                                | NBR 6028:2021 (Unesp; Unifor)
 palavras-chave, iniciais: minúsculas, exceto nomes próprios e científicos  | NBR 6028:2021 (Unesp; Unifor)
+# Revisão 8: a norma não fixa o destaque do rótulo nem o espaço antes das palavras-chave.
+palavras-chave, destaque do rótulo: negrito                 | NBR 6028:2021, que não fixa o destaque (UFV 2026) | faculdade
+palavras-chave, linhas em branco antes: 1 linha             | NBR 6028:2021, que não fixa o espaço (UFV 2026) | faculdade
+palavras-chave, recuo da primeira linha: nenhum             | NBR 6028:2021, que não fixa o recuo (UFV 2026) | faculdade
 sumário, título: SUMÁRIO                                    | NBR 6027:2012 (UFV 2026)
 sumário, alinhamento do título: centralizado                | NBR 6027:2012 (UFV 2026)
 sumário, números das seções: à esquerda                     | NBR 6027:2012 (UFV 2026)
@@ -150,6 +163,7 @@ sumário, alinhamento dos títulos: pelo número mais longo    | NBR 6027:2012 (
 sumário, grafia e destaque: iguais aos do texto             | NBR 6027:2012 (UFV 2026)
 sumário, página: inicial de cada seção                      | NBR 6027:2012 (UFV 2026)
 sumário, elementos pré-textuais: não entram                 | NBR 6027:2012 (UFV 2026)
+sumário, ligação até a página: pontilhado                   | NBR 6027:2012, que não fixa a ligação (UFV 2026) | faculdade
 
 == ABNT: títulos e numeração ==
 # Exemplo: 2.1 Método

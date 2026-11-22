@@ -21,9 +21,9 @@
 
 perfil: APA
 versão: 7
-revisão: 7
+revisão: 8
 data da revisão: 22/11/2026
-nota da revisão: Fase 3: citação em bloco, notas de rodapé, figuras e tabelas no PDF. Novas regras para o ponto final da citação em bloco, a forma das notas de rodapé, a nota das tabelas e figuras, o espaço em volta delas e o desenho das tabelas.
+nota da revisão: Fase 3, parte 4: página de título e resumos no PDF. Novas regras para a linha em branco depois do título na página de título, o recuo do resumo e a forma das palavras-chave (rótulo em itálico, com recuo, separadas por vírgula, sem ponto no fim).
 
 == APA 7: página, estrutura e títulos ==
 # A APA tem dois modos. O trabalho começa no modo estudante e passa para o
@@ -51,12 +51,21 @@ página de título (estudante), espaçamento: duplo                | APA 7 (site
 página de título (estudante), destaque do título: negrito       | APA 7 (site da APA)
 # A APA aceita 3 ou 4 linhas abaixo do topo.
 página de título (estudante), linhas antes do título: 3 linhas  | APA 7 (site da APA)
+página de título (estudante), linhas em branco depois do título: 1 linha  | APA 7 (site da APA)
 página de título (estudante), data: por extenso                 | APA 7 (site da APA)
 página de título (profissional), campos: título, autores, afiliação, nota do autor, título curto  | APA 7 (site da APA)
 resumo, no modo estudante: só se o professor pedir              | APA 7 (Abstract and Keywords Guide) | escolha: só se o professor pedir, sempre
 resumo, no modo profissional: obrigatório                       | APA 7 (Abstract and Keywords Guide)
 resumo, extensão máxima: 250 palavras                           | APA 7 (Abstract and Keywords Guide)
 palavras-chave: opcionais                                       | APA 7 (Abstract and Keywords Guide) | escolha: opcionais, obrigatórias
+# Revisão 8: o resumo sem recuo; as palavras-chave na linha de baixo, com
+# recuo, o rótulo em itálico, separadas por vírgula e sem ponto no fim.
+resumo, recuo da primeira linha: nenhum                         | APA 7 (Abstract and Keywords Guide)
+palavras-chave, rótulo: Palavras-chave:                         | APA 7 (Abstract and Keywords Guide)
+palavras-chave, destaque do rótulo: itálico                     | APA 7 (Abstract and Keywords Guide)
+palavras-chave, separador: vírgula                              | APA 7 (Abstract and Keywords Guide)
+palavras-chave, final: nenhum                                   | APA 7 (Abstract and Keywords Guide)
+palavras-chave, recuo da primeira linha: como no texto          | APA 7 (Abstract and Keywords Guide)
 ordem das partes: página de título, resumo, texto, referências, notas, tabelas, figuras, apêndices  | APA 7 (checklist do Concise Guide)
 ordem das partes, página nova: cada parte                       | APA 7 (checklist do Concise Guide)
 # Os rótulos vão em português.

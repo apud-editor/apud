@@ -148,15 +148,18 @@ export function lerTextoComCitacoes(texto: string): { trechos: Trecho[]; escrita
 
 /**
  * O documento de prova como trabalho do Apud, com a citação longa, a nota de
- * rodapé, a figura e a tabela (fase 3). Os dados do trabalho (capa, resumo)
- * entram na parte 4 da fase 3.
+ * rodapé, a figura e a tabela (fase 3, parte 2) e os dados do trabalho e a
+ * abertura (capa, folha de rosto, página de título, resumos, sumário...) de
+ * abertura.json (fase 3, parte 4).
  */
 export function documentoDeProva(): { documento: Documento; escritas: string[] } {
-  return documentoDoTexto(
+  const r = documentoDoTexto(
     readFileSync(join(PASTA_PROVA, "documento-de-prova.md"), "utf8"),
     JSON.parse(readFileSync(join(PASTA_PROVA, "referencias.json"), "utf8")) as Referencia[],
     PASTA_PROVA,
   );
+  const { dados, abertura } = JSON.parse(readFileSync(join(PASTA_PROVA, "abertura.json"), "utf8")) as Pick<Documento, "dados" | "abertura">;
+  return { ...r, documento: { ...r.documento, dados, abertura } };
 }
 
 /** Uma imagem do disco no formato do .apud: o código vem do conteúdo, e a largura e a altura do cabeçalho do PNG. */
