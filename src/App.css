@@ -1662,3 +1662,17 @@ button.linha:hover {
 .aviso-de-numero {
   color: #7a4300;
 }
+
+/* E-mail para o Crossref, na gaveta, logo abaixo da busca pelo DOI. */
+.email-crossref {
+  margin: -4px 0 12px;
+}
+.email-crossref summary {
+  cursor: pointer;
+}
+.email-crossref form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
