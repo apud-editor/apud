@@ -7,8 +7,8 @@
 #set text(font: ("Times New Roman", "Liberation Serif"), size: 12pt, lang: "pt", region: "BR", top-edge: 0.8em, bottom-edge: -0.35em, hyphenate: false, overhang: false)
 #set par(justify: true, leading: 0.575em, spacing: 0.575em, first-line-indent: (amount: 1.25cm, all: true))
 #let destaque-do-titulo(n, x) = {
-  if n == 1 { strong(x) }
-  else if n == 2 { x }
+  if n == 1 { strong(upper(x)) }
+  else if n == 2 { upper(x) }
   else if n == 3 { strong(x) }
   else if n == 4 { x }
   else if n == 5 { emph(x) }
@@ -41,7 +41,7 @@
   corpo
 })))
 
-#heading(level: 1, numbering: none)[Introdução]
+#heading(level: 1, numbering: (..n) => "1")[Introdução]
 
 A população em situação de rua \(PSR\)\, é uma das manifestações mais cruéis da questão social\, resultante de uma combinação complexa de fatores econômicos\, políticos e sociais\, sendo um dos grupos que expressa mais fortemente a materialização da violência imposta pelo sistema capitalista sobre as vidas humanas #cite(label("silva2009"), form: none)#cite(label("medeiros2020"), form: none)\(Medeiros\, 2020\; Silva\, 2009\)\. No Brasil\, diante do crescimento substancial do número de pessoas que passam a utilizar ruas e espaços públicos como formas precárias e improvisadas de moradia\, a presença da população em situação de rua\, cada vez mais indissociável da paisagem urbana contemporânea\, tem sido progressivamente incorporada ao imaginário social\. Conforme levantamento realizado pelo Instituto de Pesquisa Econômica Aplicada \(IPEA\)\, observou\-se um aumento significativo no número de PSR no Brasil ao longo da última década\. Em 2013\, esse número era de 21\.934 indivíduos\, já em 2023 a estimativa era de 227\.087 pessoas em situação de rua\. Entre os anos de 2012 e 2022\, o crescimento percentual dessa população foi de 211\% #cite(label("natalino2023"), form: none)\(Natalino\, 2023\)\.
 
@@ -79,7 +79,7 @@ A Constituição da República Federativa do Brasil \(CF\)\, de 1988\, em seu ar
 
 Neste sentido\, o artigo busca responder como os decretos narrativos do poder executivo municipal produzem políticas públicas para a população em situação de rua na região da Foz do Rio Itajaí\-açú\. Compreende\-se como decretos narrativos as entrevistas\, publicações em redes sociais em que os prefeitos e prefeitas decretam algo sobre a população de rua que pode\, ou não\, estar alinhada aos decretos administrativos e leis municipais\. Assim\, o objetivo central é analisar as narrativas sobre políticas públicas voltadas para pessoas em situação de rua na região da Foz do Rio Itajaí\, identificando os desafios e impactos das medidas implementadas\.
 
-#heading(level: 1, numbering: none)[Metodologia]
+#heading(level: 1, numbering: (..n) => "2")[Metodologia]
 
 Adotamos como referencial teórico\-metodológico a Análise de Práticas Discursivas\, conforme proposta por #cite(label("spink2013"), form: none)Spink \(2013\)\, referencial construcionista que entende o discurso como prática social produtora de sentidos\, posições de sujeito e formas de governo\. Nessa perspectiva\, a linguagem não apenas descreve os atos de governo\, mas os institui como realidade\, sendo condição de sua existência #cite(label("bernardes2007"), form: none)\(Bernardes\; Menegon\, 2007\)\. Segundo #cite(label("spinkmedrado2013"), form: none)Spink e Medrado \(2013\)\, pode\-se definir práticas discursivas como “linguagem em ação\, ou seja\, as maneiras a partir das quais as pessoas produzem sentidos e se posicionam em relações sociais cotidianas”\. Assim\, compreende\-se que as narrativas do poder público municipal constituem práticas discursivas que materializam políticas e configuram sentidos sobre determinados grupos sociais\, neste caso\, a população em situação de rua\.
 
@@ -97,13 +97,13 @@ O conjunto de materiais analisados é composto por decretos municipais\, pronunc
 
 Esses documentos são compreendidos como “decretos narrativos”\, isto é\, documentos verbais de domínio público nos quais a narrativa dos prefeitos produz efeitos simbólicos e políticos que ultrapassam o âmbito administrativo\, influenciando os modos de pensar\, agir e gerir a questão da população em situação de rua\.
 
-#heading(level: 1, numbering: none)[Resultados e Discussão]
+#heading(level: 1, numbering: (..n) => "3")[Resultados e Discussão]
 
 Para fins da presente análise\, o material foi organizado em três categorias centrais\: Sujeito\, Ofertas de Atendimento e Benefícios\. Essas categorias foram construídas a partir da recorrência temática observada nos documentos e da relevância discursiva dos enunciados para compreender como a população em situação de rua é nomeada\, caracterizada e inserida nas políticas públicas municipais\. Essa organização buscou identificar os sentidos produzidos pelos gestores municipais sobre quem é esse sujeito\, quais problemas são associados à sua presença nos espaços urbanos e quais formas de intervenção são apresentadas como legítimas\.
 
 O corpus da pesquisa é composto por 41 decretos verbais\, reunindo pronunciamentos oficiais\, entrevistas\, reportagens e conteúdos veiculados em mídias institucionais e redes sociais\. Vale ressaltar que\, embora o município de Navegantes integre o recorte territorial definido para a análise\, não foram encontrados decretos verbais relevantes dos gestores municipais sobre a população em situação de rua\. Por essa razão\, o foco da investigação recaiu principalmente sobre os municípios de Balneário Camboriú\, Camboriú\, Itajaí e Itapema\. Esses decretos narrativos foram analisados considerando tanto o conteúdo das falas quanto seus contextos de circulação\. Embora tenham sido organizadas analiticamente em três categorias\, essas dimensões aparecem de forma articulada no corpus\. Desse modo\, a análise busca evidenciar como os decretos verbais produzem uma cadeia discursiva que vai da definição do sujeito à legitimação das formas de intervenção\, revelando os sentidos atribuídos à situação de rua e às responsabilidades do poder público municipal\.
 
-#heading(level: 2, numbering: none)[A construção do sujeito nos decretos verbais]
+#heading(level: 2, numbering: (..n) => "3.1")[A construção do sujeito nos decretos verbais]
 
 Para compreender as construções do sujeito presentes nos decretos verbais analisados\, é necessário\, inicialmente\, definir a própria categoria “sujeito”\. Conforme #cite(label("spink2011"), form: none)Spink\, Figueiredo e Brasilino \(2011\)\, é “nomenclatura ao léu semântico”\, podendo referir\-se tanto ao “assujeitamento”\, entendido como a passividade frente a processos sociais impositivos\, quanto à possibilidade de subjetivação\, relacionada à capacidade de ter consciência de si\. A partir de uma leitura foucaultiana\, #cite(label("fonseca2003"), form: none)Fonseca \(2003\) esclarece que o termo “sujeito” serviria para designar um indivíduo preso a uma identidade que reconhece como própria\, constituída pelos processos de subjetivação\. Esses processos\, justapostos aos de objetivação \(a constituição do indivíduo moderno como objeto\, como corpo dócil e útil a partir dos mecanismos disciplinares\)\, permitem compreender de forma mais abrangente a identidade do indivíduo moderno\, marcada pela condição simultânea de sujeito e de objeto dócil e útil\.
 
@@ -137,7 +137,7 @@ Com base nessa construção de sujeito\, as políticas públicas passam a ser fo
 
 Em última análise\, a narrativa materializada nos decretos verbais dos gestores municipais desnuda uma faceta da violência perpetrada contra a população em situação de rua\, que ultrapassa a iminência do extermínio físico para concretizar uma morte simbólica e existencial\, experimentada em vida por esse grupo\. Essa dinâmica é sistematicamente alimentada por uma racionalidade prática e discursiva que comunica\, de forma reiterada\, a indesejabilidade desses sujeitos no espaço urbano #cite(label("medeiros2020"), form: none)\(Medeiros\, 2020\)\. É justamente nesse entrelaçamento entre práticas repressivas\, estratégias de medicalização e ações assistenciais que se configuram as formas concretas de atendimento destinadas à essa população\. Torna\-se então necessário examinar de que maneira essas lógicas se materializam nas ofertas de serviços e benefícios\, evidenciando tanto seus alcances quanto suas limitações no atendimento a esse público\.
 
-#heading(level: 2, numbering: none)[Benefícios\, ofertas de atendimento e controle nos decretos verbais]
+#heading(level: 2, numbering: (..n) => "3.2")[Benefícios\, ofertas de atendimento e controle nos decretos verbais]
 
 Nos materiais analisados\, as ofertas de atendimento e benefícios aparecem marcadas pela provisoriedade\, pela lógica do encaminhamento e pela retirada imediata das pessoas dos espaços públicos\. Casas de passagem\, internações em clínicas particulares ou comunidades terapêuticas\, concessão de passagens para retorno à cidade de origem\, encaminhamentos pontuais para emprego e ações integradas com órgãos de segurança pública são apresentadas como soluções recorrentes\, ainda que pouco se mencione sobre acompanhamento posterior\, acesso à moradia ou estratégias continuadas de garantia de direitos\.
 
@@ -239,7 +239,7 @@ Nesse processo\, o vocabulário da proteção\, da recuperação\, da dignidade 
 
 É esse tensionamento entre a linguagem “humanizada” das políticas e seus efeitos de exclusão\, disciplinamento e invisibilização que sintetiza o percurso desta seção e permite avançar\, nas considerações finais\, para a compreensão mais ampla dos modos como os decretos verbais analisados produzem a população em situação de rua como objeto simultâneo de cuidado e controle\.
 
-#heading(level: 1, numbering: none)[Considerações Finais]
+#heading(level: 1, numbering: (..n) => "4")[Considerações Finais]
 
 Este trabalho buscou analisar os modos como a população em situação de rua é constituída nos decretos verbais de gestores municipais\, observando especialmente as formas de nomeação do sujeito\, as justificativas mobilizadas para a intervenção estatal e os sentidos atribuídos às ofertas de atendimento e benefícios\. A partir do material analisado\, foi possível identificar que tais pronunciamentos participam ativamente da produção de sentidos sobre quem são essas pessoas\, quais problemas elas representam para a cidade e quais respostas públicas seriam consideradas legítimas\.
 

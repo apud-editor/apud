@@ -17,7 +17,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { documentoParaTypst, type OpcoesDoConversor } from "../src/conversor/typst";
-import type { Documento, Referencia, Resumo } from "../src/documento/modelo";
+import type { Documento, Referencia, Resumo, TipoDeTrabalho } from "../src/documento/modelo";
 import { carregarNorma, documentoDeProva, documentoDoTexto, PASTA_TESTES, PASTA_PROVA } from "./prova-lib";
 
 export const PASTA_DO_CODIGO = join(PASTA_PROVA, "codigo");
@@ -56,9 +56,10 @@ function codigo(doc: Documento, arquivo: string, ajustes: Record<string, string>
 /** Um artigo de testes/artigos, com as escolhas do autor do trabalho.json dele. */
 function artigo(pasta: string) {
   const dir = join(PASTA_TESTES, "artigos", pasta);
-  const trabalho = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8")) as { nome: string; norma: string; ajustes?: Record<string, string> };
+  const trabalho = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8")) as { nome: string; tipo?: TipoDeTrabalho; norma: string; ajustes?: Record<string, string> };
   const referencias = JSON.parse(readFileSync(join(dir, "referencias.json"), "utf8")) as Referencia[];
   const { documento } = documentoDoTexto(readFileSync(join(dir, "artigo.md"), "utf8"), referencias, dir);
+  if (trabalho.tipo) documento.dados.tipo = trabalho.tipo;
   return { documento, trabalho };
 }
 
@@ -71,13 +72,18 @@ function provaComo(mudar: (d: Documento) => Documento): Documento {
  * Põe exceções "só este" (etapa 2) em blocos do documento: o n-ésimo bloco de
  * um tipo (contando de 0) recebe as exceções dadas.
  */
-function comExcecoes(doc: Documento, pedidos: Array<{ tipo: "paragrafo" | "titulo"; nivel?: number; n: number; excecoes: Record<string, string> }>): Documento {
+function comExcecoes(
+  doc: Documento,
+  pedidos: Array<{ tipo: "paragrafo" | "titulo"; nivel?: number; n: number; excecoes?: Record<string, string>; texto?: string }>,
+): Documento {
   const d = structuredClone(doc);
   for (const p of pedidos) {
     const iguais = d.blocos.filter((b) => b.tipo === p.tipo && (p.nivel === undefined || (b.tipo === "titulo" && b.nivel === p.nivel)));
     const bloco = iguais[p.n];
     if (!bloco || (bloco.tipo !== "paragrafo" && bloco.tipo !== "titulo")) throw new Error(`não achei o bloco ${p.n} do tipo ${p.tipo}`);
-    bloco.excecoes = p.excecoes;
+    if (p.excecoes) bloco.excecoes = p.excecoes;
+    // Um texto novo (um título com o número escrito à mão, por exemplo).
+    if (p.texto !== undefined) bloco.trechos = [{ texto: p.texto }];
   }
   return d;
 }
@@ -178,7 +184,8 @@ export const CASOS: CasoDeCodigo[] = [
   },
   {
     nome: "excecoes-abnt",
-    descricao: "artigo da UNIVALI (ABNT) com exceções “só este” em parágrafos e títulos, e o Parágrafo à esquerda para todos (etapa 2)",
+    descricao:
+      "artigo da UNIVALI (ABNT) com exceções “só este” em parágrafos e títulos (sem número, sem maiúsculas, página nova mesmo em artigo), um número escrito à mão e o Parágrafo à esquerda para todos (etapa 2)",
     codigo: () => {
       const { documento, trabalho } = artigo("univali-abnt");
       const doc = comExcecoes(documento, [
@@ -188,6 +195,11 @@ export const CASOS: CasoDeCodigo[] = [
         { tipo: "paragrafo", n: 2, excecoes: { "recuo da primeira linha": "nenhum" } },
         { tipo: "paragrafo", n: 3, excecoes: { alinhamento: "justificado" } },
         { tipo: "paragrafo", n: 4, excecoes: { alinhamento: "à direita", entrelinha: "duplo" } },
+        // 2b: títulos automáticos. "Metodologia" com o número escrito à mão (sai uma vez só, o do Apud).
+        { tipo: "titulo", nivel: 1, n: 1, texto: "2 Metodologia" },
+        { tipo: "titulo", nivel: 1, n: 2, excecoes: { "numerar sozinho": "não" } },
+        { tipo: "titulo", nivel: 2, n: 0, excecoes: { "maiúsculas sozinho": "não" } },
+        { tipo: "titulo", nivel: 1, n: 3, excecoes: { "página nova": "sim" } },
       ]);
       return codigo(doc, trabalho.norma, { ...trabalho.ajustes, "Parágrafo › alinhamento": "à esquerda" }, { titulo: trabalho.nome });
     },

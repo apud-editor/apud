@@ -7,8 +7,8 @@
 #set text(font: ("Times New Roman", "Liberation Serif"), size: 12pt, lang: "pt", region: "BR", top-edge: 0.8em, bottom-edge: -0.35em, hyphenate: false, overhang: false)
 #set par(justify: true, leading: 0.575em, spacing: 0.575em, first-line-indent: (amount: 1.25cm, all: true))
 #let destaque-do-titulo(n, x) = {
-  if n == 1 { strong(x) }
-  else if n == 2 { x }
+  if n == 1 { strong(upper(x)) }
+  else if n == 2 { upper(x) }
   else if n == 3 { strong(x) }
   else if n == 4 { x }
   else if n == 5 { emph(x) }
@@ -48,7 +48,7 @@
   let corpo = if it.numbering == none { d(it.body) } else { grid(columns: (auto, 1fr), column-gutter: 0.25em, d(counter(heading).display(it.numbering)), d(it.body)) }
   block(width: 100%, above: 0.575em + 1 * 1.725em, below: 0.575em + 1 * 1.725em, sticky: true, align(center, corpo))
 }
-#heading(level: 1, numbering: none)[Introdução]
+#heading(level: 1, numbering: (..n) => "1")[Introdução]
 ]
 
 #[
@@ -122,7 +122,7 @@ A Constituição da República Federativa do Brasil \(CF\)\, de 1988\, em seu ar
 Neste sentido\, o artigo busca responder como os decretos narrativos do poder executivo municipal produzem políticas públicas para a população em situação de rua na região da Foz do Rio Itajaí\-açú\. Compreende\-se como decretos narrativos as entrevistas\, publicações em redes sociais em que os prefeitos e prefeitas decretam algo sobre a população de rua que pode\, ou não\, estar alinhada aos decretos administrativos e leis municipais\. Assim\, o objetivo central é analisar as narrativas sobre políticas públicas voltadas para pessoas em situação de rua na região da Foz do Rio Itajaí\, identificando os desafios e impactos das medidas implementadas\.
 ]
 
-#heading(level: 1, numbering: none)[Metodologia]
+#heading(level: 1, numbering: (..n) => "2")[Metodologia]
 
 #[
 #set par(justify: false, leading: 0.575em, spacing: 0.575em, first-line-indent: (amount: 1.25cm, all: true))
@@ -167,7 +167,15 @@ Para fins da presente análise\, o material foi organizado em três categorias c
 O corpus da pesquisa é composto por 41 decretos verbais\, reunindo pronunciamentos oficiais\, entrevistas\, reportagens e conteúdos veiculados em mídias institucionais e redes sociais\. Vale ressaltar que\, embora o município de Navegantes integre o recorte territorial definido para a análise\, não foram encontrados decretos verbais relevantes dos gestores municipais sobre a população em situação de rua\. Por essa razão\, o foco da investigação recaiu principalmente sobre os municípios de Balneário Camboriú\, Camboriú\, Itajaí e Itapema\. Esses decretos narrativos foram analisados considerando tanto o conteúdo das falas quanto seus contextos de circulação\. Embora tenham sido organizadas analiticamente em três categorias\, essas dimensões aparecem de forma articulada no corpus\. Desse modo\, a análise busca evidenciar como os decretos verbais produzem uma cadeia discursiva que vai da definição do sujeito à legitimação das formas de intervenção\, revelando os sentidos atribuídos à situação de rua e às responsabilidades do poder público municipal\.
 ]
 
-#heading(level: 2, numbering: none)[A construção do sujeito nos decretos verbais]
+#[
+#show heading: it => {
+  set par(justify: false, first-line-indent: 0pt)
+  let d(x) = x
+  let corpo = if it.numbering == none { d(it.body) } else { grid(columns: (auto, 1fr), column-gutter: 0.25em, d(counter(heading).display(it.numbering)), d(it.body)) }
+  block(width: 100%, above: 0.575em + 1 * 1.725em, below: 0.575em + 1 * 1.725em, sticky: true, corpo)
+}
+#heading(level: 2, numbering: (..n) => "2.1")[A construção do sujeito nos decretos verbais]
+]
 
 #[
 #set par(justify: false, leading: 0.575em, spacing: 0.575em, first-line-indent: (amount: 1.25cm, all: true))
@@ -256,7 +264,7 @@ Em última análise\, a narrativa materializada nos decretos verbais dos gestore
   let corpo = if it.numbering == none { d(it.body) } else { grid(columns: (auto, 1fr), column-gutter: 0.25em, d(counter(heading).display(it.numbering)), d(it.body)) }
   block(width: 100%, above: 0.575em + 1 * 1.725em, below: 0.575em + 1 * 1.725em, sticky: true, corpo)
 }
-#heading(level: 2, numbering: none)[Benefícios\, ofertas de atendimento e controle nos decretos verbais]
+#heading(level: 2, numbering: (..n) => "2.2")[Benefícios\, ofertas de atendimento e controle nos decretos verbais]
 ]
 
 #[
@@ -464,7 +472,8 @@ Nesse processo\, o vocabulário da proteção\, da recuperação\, da dignidade 
 É esse tensionamento entre a linguagem “humanizada” das políticas e seus efeitos de exclusão\, disciplinamento e invisibilização que sintetiza o percurso desta seção e permite avançar\, nas considerações finais\, para a compreensão mais ampla dos modos como os decretos verbais analisados produzem a população em situação de rua como objeto simultâneo de cuidado e controle\.
 ]
 
-#heading(level: 1, numbering: none)[Considerações Finais]
+#pagebreak(weak: true)
+#heading(level: 1, numbering: (..n) => "3")[Considerações Finais]
 
 #[
 #set par(justify: false, leading: 0.575em, spacing: 0.575em, first-line-indent: (amount: 1.25cm, all: true))

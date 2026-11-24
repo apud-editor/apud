@@ -167,7 +167,7 @@ export default function Configuracoes(p: Props) {
               {textoLigado("dedicatoria", "Dedicatória")}
               {textoLigado("agradecimentos", "Agradecimentos")}
               {textoLigado("epigrafe", "Epígrafe")}
-              {ligar("sumario", "Sumário", "Montado com os títulos que você numerou. O Apud não numera nada sozinho.", "sumario")}
+              {ligar("sumario", "Sumário", "Montado com os títulos do texto e os números deles.", "sumario")}
               <p className="dica-form">Os resumos você adiciona na Abertura do trabalho, no topo do editor: um por idioma.</p>
               {ligar("semIdentificacao", "Versão sem identificação", "Para avaliação cega: os nomes dos autores e do orientador ficam guardados, mas não saem no PDF.")}
             </>

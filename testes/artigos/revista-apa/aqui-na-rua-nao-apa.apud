@@ -1212,7 +1212,7 @@
   "documento": {
     "versao": 6,
     "dados": {
-      "tipo": "disciplina",
+      "tipo": "artigo",
       "idioma": "pt-BR",
       "titulo": "",
       "autores": []

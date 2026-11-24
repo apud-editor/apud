@@ -17,10 +17,10 @@
 # ==============================================================================
 
 modelo: ABNT – Universidade Exemplo
-herda de: ABNT 2025, revisão 10
-revisão: 2
+herda de: ABNT 2025, revisão 11
+revisão: 3
 data da revisão: 24/11/2026
-nota da revisão: O perfil de exemplo virou modelo (versão 2, etapa 1b), com os mesmos valores; as situações, que antes vinham do perfil ABNT, agora estão escritas. Revisão 1 (20/11/2026): fonte Arial, recuo de 1,5 cm e prenomes abreviados, como pede o manual da Universidade Exemplo.
+nota da revisão: Conferido sobre a revisão 11 da ABNT (títulos automáticos): as mudanças daqui continuam valendo. Revisão 2 (24/11/2026): o perfil de exemplo virou modelo (versão 2, etapa 1b), com os mesmos valores; as situações, que antes vinham do perfil ABNT, agora estão escritas. Revisão 1 (20/11/2026): fonte Arial, recuo de 1,5 cm e prenomes abreviados, como pede o manual da Universidade Exemplo.
 
 == Texto ==
 fonte: Arial                            | Manual de normalização da Universidade Exemplo (2025) | ajustável

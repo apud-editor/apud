@@ -1,6 +1,8 @@
 // A estrutura do trabalho (a barra da esquerda do editor): os títulos, como a
-// pessoa escreveu, e a lista de referências, onde ela pôs. O número também é
-// dela ("1.1 Contexto"): o Apud não numera sozinho.
+// pessoa escreveu, e a lista de referências, onde ela pôs. Desde a etapa 2 da
+// v2, o modelo pode numerar os títulos sozinho (o número vem de
+// modelos/titulos.ts); com a numeração desligada, o número é o que a pessoa
+// escreveu ("1.1 Contexto").
 
 import { textoSimples, type Bloco, type NivelDeTitulo } from "./modelo";
 
@@ -44,7 +46,7 @@ function numerosPossiveis(atual: number[]): string[] {
 /**
  * Confere se os números que a pessoa escreveu nos títulos seguem a ordem (1, 1.1, 1.2, 2…).
  * Devolve o aviso de cada título fora de ordem, pelo índice do bloco. Título sem número é
- * ignorado (o Apud não numera sozinho). Depois de um número fora de ordem, a conferência
+ * ignorado. Só para os títulos que o Apud não numera sozinho. Depois de um número fora de ordem, a conferência
  * segue dele, para um engano só gerar um aviso.
  */
 export function avisosDeNumeracao(titulos: EntradaDaEstrutura[]): Map<number, string> {
@@ -66,6 +68,33 @@ export function avisosDeNumeracao(titulos: EntradaDaEstrutura[]): Map<number, st
       );
     }
     atual = partes;
+  }
+  return avisos;
+}
+
+/** O que a Estrutura precisa saber do número automático de um título. */
+export interface NumeroAutomatico {
+  numero?: string;
+  /** O nível de cima que faltou (o número saiu com zero, como 1.0.1). */
+  nivelPulado?: number;
+}
+
+/**
+ * Os avisos da Estrutura. Nos títulos que o Apud numera, avisa o nível pulado
+ * (o número sai com zero); nos outros, confere os números escritos à mão
+ * (avisosDeNumeracao). `numeradoPeloApud` diz quais títulos o modelo numera.
+ */
+export function avisosDosTitulos(
+  titulos: EntradaDaEstrutura[],
+  automaticos: Map<number, NumeroAutomatico>,
+  numeradoPeloApud: (t: EntradaDaEstrutura) => boolean,
+): Map<number, string> {
+  const avisos = avisosDeNumeracao(titulos.filter((t) => !numeradoPeloApud(t)));
+  for (const t of titulos) {
+    const a = automaticos.get(t.indice);
+    if (a?.numero && a.nivelPulado) {
+      avisos.set(t.indice, `Este título é de nível ${t.nivel}, mas falta um título de nível ${a.nivelPulado} antes dele: o número sai ${a.numero}.`);
+    }
   }
   return avisos;
 }

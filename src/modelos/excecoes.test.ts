@@ -26,7 +26,7 @@ describe("o elemento de cada bloco", () => {
     expect(elementoDoBloco({ tipo: "quebra" })).toBeUndefined();
     expect(elementoDoBloco({ tipo: "citacaoLonga", trechos: [] })).toBeUndefined();
     expect(propriedadesComExcecao("paragrafo")).toEqual(["entrelinha", "alinhamento", "recuo da primeira linha"]);
-    expect(propriedadesComExcecao("titulos.nivel2")).toEqual(["destaque", "posição"]);
+    expect(propriedadesComExcecao("titulos.nivel2")).toEqual(["destaque", "posição", "numerar sozinho", "maiúsculas sozinho", "página nova"]);
     expect(propriedadesComExcecao("listas")).toEqual([]);
   });
 });

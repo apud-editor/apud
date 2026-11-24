@@ -362,6 +362,44 @@ textarea {
   content: "Lista em sequência";
 }
 
+/* Títulos automáticos (etapa 2): a linha "Página nova" acima do título, com o
+   jeito da quebra de página, e o número em cinza antes do texto. */
+.texto > .pagina-nova {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 14px;
+  color: var(--tinta-suave);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.texto > .pagina-nova::before {
+  content: "";
+  flex: 1;
+  order: 1;
+  border-top: 1px dashed var(--borda-forte);
+}
+
+.texto > .pagina-nova.selecionada {
+  color: var(--destaque);
+  outline: 2px solid var(--destaque-claro);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.texto .titulo-numero {
+  color: var(--tinta-suave);
+  font-weight: 400;
+  margin-right: 0.6em;
+  user-select: none;
+}
+
+.estrutura .estrutura-numero {
+  color: var(--tinta-suave);
+}
+
 /* No editor, os títulos só mostram a hierarquia; a aparência final vem da norma. */
 .texto h1,
 .texto h2,

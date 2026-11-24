@@ -25,6 +25,7 @@ import { ControleDoReconhecimento, reconhecerCitacaoEscrita } from "./reconhecer
 import { citacaoSelecionada, colagemDoApud } from "./citar";
 import { nosDaFase3, type ControlesDosNos } from "./nos";
 import { excecoesQueValem } from "../modelos/excecoes";
+import { TitulosDoTrabalho, titulosAutomaticos } from "./titulos";
 import { colarNaGrade, cursorNaGrade, gradeDoTextoColado, tabelaDaPlanilha } from "./ilustracoes";
 
 // ---------------------------------------------------------------------------
@@ -529,6 +530,8 @@ export function extensoesDoApud(
   controles?: ControlesDosNos,
   /** O "@" rápido e a citação escrita à mão. Sem isto (nos testes), o "@" é só um @. */
   rapido: { arroba: ControleDoArroba; reconhecimento: ControleDoReconhecimento } = { arroba: new ControleDoArroba(), reconhecimento: new ControleDoReconhecimento() },
+  /** Os títulos automáticos (número em cinza, página nova). Sem isto, os títulos ficam sem marcas. */
+  titulos: TitulosDoTrabalho = new TitulosDoTrabalho(),
 ) {
   return [
     StarterKit.configure({
@@ -547,11 +550,12 @@ export function extensoesDoApud(
     Superscript,
     QuebraDePagina,
     ExcecoesDoBloco,
+    titulosAutomaticos(titulos),
     Placeholder.configure({
       placeholder: ({ node }) => {
         switch (node.type.name) {
           case "heading":
-            return "Título. Para numerar, escreva o número antes: 1.1 Contexto";
+            return titulos.numera(node.attrs.level) ? "Título (o número, o Apud põe sozinho)" : "Título. Para numerar, escreva o número antes: 1.1 Contexto";
           case NO_DO_TITULO_DA_ILUSTRACAO:
             return "Título (o número, como “Figura 1”, o Apud põe sozinho)";
           case NO_DA_FONTE_DA_ILUSTRACAO:

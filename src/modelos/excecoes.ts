@@ -29,7 +29,7 @@ import { COMO_NO_TEXTO } from "./valores";
  */
 const PROPRIEDADES_COM_EXCECAO: Record<string, readonly string[]> = {
   paragrafo: ["entrelinha", "alinhamento", "recuo da primeira linha"],
-  titulos: ["destaque", "posição"],
+  titulos: ["destaque", "posição", "numerar sozinho", "maiúsculas sozinho", "página nova"],
 };
 
 /** O elemento da árvore de um bloco do texto que aceita exceções (parágrafo e título). */

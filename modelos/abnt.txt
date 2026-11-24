@@ -21,6 +21,8 @@
 # da revisão o que mudou. O guia completo está em modelos/LEIA-ME.md.
 #
 # Histórico: este modelo continua o perfil ABNT da versão 1 (perfis/abnt.txt).
+# Revisão 10 (24/11/2026): o perfil virou modelo (versão 2, etapa 1b), sem
+# mudar nenhum valor; a situação "faculdade" passou a se chamar "ajustável".
 # Revisão 9 (22/11/2026), a última como perfil: Tabela em mais de uma página
 # (IBGE, 8.3): número, título e cabeçalho repetidos em cada página, com as
 # indicações (continua), (continuação) e (conclusão). A posição das indicações
@@ -30,9 +32,9 @@
 modelo: ABNT
 herda de: Em branco, revisão 1
 versão: 2025
-revisão: 10
+revisão: 11
 data da revisão: 24/11/2026
-nota da revisão: O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.
+nota da revisão: Títulos automáticos (versão 2, etapa 2): o Apud numera os títulos e aplica as maiúsculas do destaque (ajustáveis), e o nível 1 começa em página nova menos em artigo (ajustável).
 
 == Texto ==
 tamanho: 12 pt                          | NBR 14724:2024 (UFV 2026)
@@ -75,8 +77,14 @@ página no verso, posição do número: canto superior esquerdo | NBR 14724:2024
 
 == Títulos ==
 # Exemplo: 2.1 Método
-# A pessoa escreve o número no começo do título (decisão de 20/11/2026). O Apud
-# não numera sozinho; só alinha as linhas seguintes sob a primeira letra do texto.
+# O Apud numera sozinho (versão 2, etapa 2, decisão 10; até a etapa 1, a pessoa
+# escrevia o número). As linhas seguintes ficam sob a primeira letra do texto.
+# Um título pode ficar sem número com "só este".
+numerar sozinho: sim                    | NBR 6024:2012 (UFSCar) | ajustável
+# O "maiúsculas" do destaque de cada nível (níveis 1 e 2) vale para as letras que
+# a pessoa escreveu (versão 2, etapa 2). No editor, o título continua como foi
+# escrito; as maiúsculas aparecem na Prévia e no PDF.
+maiúsculas sozinho: sim                 | NBR 6024:2012 (UFSCar) | ajustável
 títulos, números: arábicos              | NBR 6024:2012 (UFSCar)
 títulos, níveis: 5 níveis               | NBR 6024:2012 (UFSCar)
 títulos, entre número e título: um espaço, sem pontuação | NBR 6024:2012 (UFSCar)
@@ -86,14 +94,13 @@ espaço depois: 1 linha                  | NBR 14724:2024 (UFV 2026)
 títulos, linhas seguintes: alinhadas sob a primeira letra do título | NBR 6024:2012 (UFSCar)
 
 == Títulos › Nível 1 ==
-# Fica a critério da pessoa (decisão de 20/11/2026): o Apud não põe página nova
-# sozinho; a pessoa insere a quebra de página onde quiser (Ctrl+Enter).
-página nova: sim                        | NBR 14724:2024 (Unesp)
+# A seção primária começa em página nova nos trabalhos acadêmicos (NBR 14724);
+# no artigo (NBR 6022), não (decisão do Francisco, 24/11/2026). No editor, a
+# página nova aparece como uma quebra acima do título, que se apaga só ali.
+página nova: menos em artigo            | NBR 14724:2024 (Unesp) e NBR 6022:2018 | ajustável
 seção primária, em frente e verso: página ímpar | NBR 14724:2024 (Unesp)
 # A NBR 6024 manda diferenciar os níveis, mas não diz como. O mesmo destaque
-# vale no texto e no sumário.
-# Maiúsculas: o Apud não muda as letras do título; a pessoa escreve como preferir
-# (decisão de 20/11/2026). Negrito, itálico e sublinhado são aplicados.
+# vale no texto e no sumário. As maiúsculas valem com "maiúsculas sozinho".
 destaque: maiúsculas, negrito           | NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026) | ajustável
 
 == Títulos › Nível 2 ==

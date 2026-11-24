@@ -101,6 +101,9 @@ const existe = () => opcoes("existe", simNao());
 
 const ALINHAMENTOS = ["à esquerda", "justificado", "centralizado", "à direita"];
 
+/** Os valores da página nova dos títulos. */
+export const PAGINA_NOVA = ["não", "sim", "menos em artigo"] as const;
+
 /** "espaço antes e depois: 1 linha" escreve as duas propriedades. */
 const espacoAntesEDepois: DefinicaoDeAtalho = {
   nome: "espaço antes e depois",
@@ -235,11 +238,14 @@ export const ELEMENTOS: readonly DefinicaoDeElemento[] = [
       aparencia("posição", opcao("à esquerda", "centralizado", "com recuo")),
       opcoes("texto depois", opcao("parágrafo novo", "na mesma linha")),
       opcoes("final na mesma linha", opcao("ponto", "nenhum")),
-      // Etapa 2 (decisão 10). Na etapa 1, sem efeito: o número, as letras e as
-      // quebras de página continuam como a pessoa escreve.
-      reservada("numerar sozinho", simNao()),
-      reservada("maiúsculas sozinho", simNao()),
-      reservada("página nova", simNao()),
+      // Etapa 2 (decisão 10): o Apud numera (1, 1.1, 1.1.1), aplica o
+      // "maiúsculas" do destaque às letras que a pessoa escreveu e começa o
+      // título numa página nova. Cada título pode desligar com "só este".
+      opcoes("numerar sozinho", simNao()),
+      opcoes("maiúsculas sozinho", simNao()),
+      // "menos em artigo": a NBR 14724 pede página nova a cada seção primária,
+      // mas o artigo (NBR 6022) não.
+      opcoes("página nova", opcao(...PAGINA_NOVA)),
       ...daNorma(
         "títulos, números",
         "títulos, níveis",
