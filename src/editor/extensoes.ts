@@ -20,7 +20,9 @@ import {
 import type { Citacao } from "../documento/modelo";
 import type { CitacaoMontada } from "../citacoes/motor";
 import { CitacoesNoTexto, ControleDaJanela } from "./citacoes";
-import { citacaoSelecionada, colagemDoApud, podeAbrirAqui } from "./citar";
+import { arrobaRapido, ControleDoArroba } from "./arroba";
+import { ControleDoReconhecimento, reconhecerCitacaoEscrita } from "./reconhecer";
+import { citacaoSelecionada, colagemDoApud } from "./citar";
 import { nosDaFase3, type ControlesDosNos } from "./nos";
 import { colarNaGrade, cursorNaGrade, gradeDoTextoColado, tabelaDaPlanilha } from "./ilustracoes";
 
@@ -468,31 +470,6 @@ function citacaoNoEditor(descrever: DescreverCitacao, citacoes: CitacoesNoTexto,
 }
 
 // ---------------------------------------------------------------------------
-// "@": abre a janela da citação. Só no começo do parágrafo ou depois de um
-// espaço (como a barra "/"), para não atrapalhar e-mails. O "@" não chega a
-// entrar no texto: quem escolhe uma obra recebe a citação no lugar dele.
-
-function arrobaAbreAJanela(janela: ControleDaJanela) {
-  return Extension.create({
-    name: "arrobaAbreAJanela",
-    addProseMirrorPlugins() {
-      return [
-        new Plugin({
-          key: new PluginKey("arrobaAbreAJanela"),
-          props: {
-            handleTextInput: (view, de, ate, texto) => {
-              if (texto !== "@" || !podeAbrirAqui(view.state.doc, de)) return false;
-              janela.abrirParaInserir("arroba", de, ate);
-              return true;
-            },
-          },
-        }),
-      ];
-    },
-  });
-}
-
-// ---------------------------------------------------------------------------
 
 export function extensoesDoApud(
   controle: ControleDaBarra,
@@ -501,6 +478,8 @@ export function extensoesDoApud(
   citacoes: CitacoesNoTexto = new CitacoesNoTexto(() => []),
   janela: ControleDaJanela = new ControleDaJanela(),
   controles?: ControlesDosNos,
+  /** O "@" rápido e a citação escrita à mão. Sem isto (nos testes), o "@" é só um @. */
+  rapido: { arroba: ControleDoArroba; reconhecimento: ControleDoReconhecimento } = { arroba: new ControleDoArroba(), reconhecimento: new ControleDoReconhecimento() },
 ) {
   return [
     StarterKit.configure({
@@ -539,7 +518,8 @@ export function extensoesDoApud(
     ColarSemFormatacao,
     ListasFaceis,
     barraDeBlocos(controle),
-    arrobaAbreAJanela(janela),
+    arrobaRapido(rapido.arroba, janela),
+    reconhecerCitacaoEscrita(rapido.reconhecimento),
     citacaoNoEditor(descrever, citacoes, janela),
     listaDeReferenciasNoEditor(aparencia),
     ...nosDaFase3(controles),

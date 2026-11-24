@@ -41,7 +41,7 @@ export function resumoDaReferencia(r: Referencia): ResumoDaReferencia {
 }
 
 /** Minúsculas e sem acento, para a busca achar "psicologia" em "Psicólogo". */
-const simplificar = (s: string) =>
+export const simplificar = (s: string) =>
   s
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
