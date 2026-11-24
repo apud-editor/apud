@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "../editor/Editor";
+import type { ComandosDoEditor } from "../editor/comandos";
 import {
   VERSAO_DO_FORMATO,
   imagensUsadas,
@@ -31,6 +32,10 @@ import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../refe
 import AberturaDoTrabalho from "./AberturaDoTrabalho";
 import Configuracoes, { type AbaDasConfiguracoes } from "./Configuracoes";
 import { limparDados } from "./trabalho";
+import BarraDeMenus from "./BarraDeMenus";
+import { montarMenus } from "./menus";
+import { Simbolo } from "../marca/Marca";
+import type { EscolhaDeTema } from "../tema/tema";
 
 interface Props {
   arquivo: string;
@@ -38,9 +43,14 @@ interface Props {
   /** O trabalho acabou de ser criado: o nome já vem selecionado para trocar. */
   novo?: boolean;
   aoVoltar: () => void;
+  /** O tema escolhido e como trocá-lo: fica em Arquivo › Preferências. */
+  temaEscolhido: EscolhaDeTema;
+  aoEscolherTema: (escolha: EscolhaDeTema) => void;
 }
 
-export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Props) {
+export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, temaEscolhido, aoEscolherTema }: Props) {
+  // O "controle remoto" do editor, para os menus (desfazer, inserir...).
+  const comandos = useRef<ComandosDoEditor | null>(null);
   const lerTexto = useRef<(() => Bloco[]) | null>(null);
   const ultimoTexto = useRef<Bloco[]>(trabalho.documento.blocos);
   // As referências não passam pelo editor: ficam aqui, e o documento é montado
@@ -322,54 +332,71 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
 
   return (
     <div className="tela">
-      <header className="topo">
-        <button type="button" className="marca botao-marca" onClick={() => voltar()} aria-label="Voltar para a lista de trabalhos">
-          Apud
+      <header className="cab" data-tauri-drag-region>
+        <button
+          type="button"
+          className="cab-simbolo mk-gatilho"
+          onClick={() => voltar()}
+          aria-label="Voltar para a lista de trabalhos"
+          title="Voltar para a lista de trabalhos"
+        >
+          <Simbolo altura={34} titulo="" />
         </button>
-        <span className="barra" aria-hidden="true">
-          /
-        </span>
-        <label className="oculto" htmlFor="nome-do-trabalho">
-          Nome do trabalho
-        </label>
-        <input
-          id="nome-do-trabalho"
-          ref={campoDoNome}
-          className="campo-nome"
-          value={nome}
-          size={Math.max(12, Math.min(nome.length + 1, 60))}
-          onChange={(e) => setNome(e.target.value)}
-          onBlur={confirmarNome}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") e.currentTarget.blur();
-            if (e.key === "Escape") {
-              setNome(nomeSalvo.current);
-              setTimeout(() => campoDoNome.current?.blur());
-            }
-          }}
-        />
-        <Situacao s={situacao} />
-        <span style={{ flex: 1 }} />
-        <button type="button" className="btn" onClick={() => setConfiguracoes({ aba: "dados" })}>
-          Configurações
-        </button>
-        <div className="seletor-norma" role="group" aria-label="Norma do trabalho">
-          {normasEmbutidas().map((n) => (
-            <button
-              key={n}
-              type="button"
-              className={`seg ${n === nomeDaNorma ? "on" : ""}`}
-              aria-pressed={n === nomeDaNorma}
-              title={n === nomeDaNorma ? `${perfilAtual.current.perfil} ${perfilAtual.current.versao}, revisão ${perfilAtual.current.revisao}` : `Trocar para ${n}`}
-              onClick={() => trocarNorma(n)}
-            >
-              {n}
-            </button>
-          ))}
+        <div className="cab-andar1" data-tauri-drag-region>
+          <label className="oculto" htmlFor="nome-do-trabalho">
+            Nome do trabalho
+          </label>
+          <input
+            id="nome-do-trabalho"
+            ref={campoDoNome}
+            className="campo-nome"
+            value={nome}
+            size={Math.max(12, Math.min(nome.length + 1, 60))}
+            onChange={(e) => setNome(e.target.value)}
+            onBlur={confirmarNome}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+              if (e.key === "Escape") {
+                setNome(nomeSalvo.current);
+                setTimeout(() => campoDoNome.current?.blur());
+              }
+            }}
+          />
+          <span
+            className="cab-norma"
+            data-tauri-drag-region
+            title={`${perfilAtual.current.perfil} ${perfilAtual.current.versao}, revisão ${perfilAtual.current.revisao}`}
+          >
+            {nomeDaNorma}
+          </span>
+          <Situacao s={situacao} />
+          <span style={{ flex: 1, alignSelf: "stretch" }} data-tauri-drag-region />
+          <button type="button" className="btn primario" onClick={exportar} disabled={exportando}>
+            {exportando ? "Montando o PDF…" : "Exportar PDF"}
+          </button>
         </div>
-        <button type="button" className="btn primario" onClick={exportar} disabled={exportando}>
-          {exportando ? "Montando o PDF…" : "Exportar PDF"}
-        </button>
+        <div className="cab-andar2" data-tauri-drag-region>
+          <BarraDeMenus
+            menus={montarMenus({
+              norma: nomeDaNorma,
+              normas: normasEmbutidas(),
+              temaEscolhido,
+              painelAberto: painel,
+              podeCitar: true,
+              exportando,
+              temEscolhasDoAutor: escolhas.length > 0,
+              aoVoltar: () => voltar(),
+              aoExportar: exportar,
+              aoAbrirConfiguracoes: (aba) => setConfiguracoes({ aba }),
+              aoEscolherTema,
+              aoTrocarNorma: trocarNorma,
+              aoAlternarPainel: alternarPainel,
+              desfazer: () => comandos.current?.desfazer(),
+              refazer: () => comandos.current?.refazer(),
+              inserir: (o) => comandos.current?.inserir(o),
+            })}
+          />
+        </div>
       </header>
       {exportado && (
         <div className="faixa-ok" role="status">
@@ -418,6 +445,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar }: Pr
         previaDaCitacao={previa}
         aoCadastrarReferencia={() => setPainel("referencias")}
         imagens={imagensNoEditor}
+        comandos={comandos}
         aoMudar={() => {
           salvamento.houveMudanca();
           mudancas.dispatchEvent(new Event("mudou"));

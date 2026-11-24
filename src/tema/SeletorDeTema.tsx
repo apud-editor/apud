@@ -5,7 +5,7 @@ interface Props {
   aoEscolher: (escolha: EscolhaDeTema) => void;
 }
 
-/** Claro, Escuro ou Sistema. Fica no topo do Painel até existir Arquivo › Preferências (parte 0b). */
+/** Claro, Escuro ou Sistema. Fica no topo do Painel; no editor, em Arquivo › Preferências. */
 export default function SeletorDeTema({ escolha, aoEscolher }: Props) {
   return (
     <div className="tema-seletor" role="group" aria-label="Tema do programa">

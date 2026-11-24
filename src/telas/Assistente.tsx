@@ -3,6 +3,7 @@ import type { Trabalho } from "../arquivos/formato";
 import type { DadosDoTrabalho, TipoDeTrabalho } from "../documento/modelo";
 import { normasEmbutidas, perfilEmbutido } from "../perfis/embutidos";
 import CamposDosDados from "./CamposDosDados";
+import { Logo } from "../marca/Marca";
 import {
   TIPOS,
   aberturaPadrao,
@@ -76,8 +77,10 @@ export default function Assistente({ aoCriar, aoCancelar }: Props) {
 
   return (
     <div className="tela">
-      <header className="topo">
-        <span className="marca">Apud</span>
+      <header className="topo" data-tauri-drag-region>
+        <span className="topo-logo mk-gatilho" data-tauri-drag-region>
+          <Logo altura={32} />
+        </span>
         <span className="barra" aria-hidden="true">
           /
         </span>

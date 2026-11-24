@@ -63,6 +63,7 @@
   --borda-forte: #c9d1e3;
 
   --tinta: #262626; /* texto: grafite, nunca preto puro */
+  --logo: #262626; /* letras da logo e do símbolo: grafite */
   --tinta-suave: #5f6573; /* texto de apoio */
   --discreto: #6b7280; /* texto discreto */
 
@@ -92,6 +93,8 @@
   --erro-citacao: #f9dcd8;
   --erro-citacao-texto: #8a1c12;
   --erro-realce: #c0392b;
+  --fechar-fundo: #c42b1c; /* o vermelho do botão Fechar da janela (texto branco, 5,7:1) */
+  --fechar-texto: #ffffff;
   --perigo-fundo: #b3261e;
   --perigo-texto: #ffffff;
 
@@ -115,6 +118,7 @@
   --borda-forte: #4a4d56;
 
   --tinta: #ecedef;
+  --logo: #ffffff; /* letras da logo e do símbolo: branco */
   --tinta-suave: #a9afbd;
   --discreto: #8b90a0;
 
@@ -143,6 +147,8 @@
   --erro-citacao: #4a2623;
   --erro-citacao-texto: #ffc9c2;
   --erro-realce: #e5645a;
+  --fechar-fundo: #c42b1c;
+  --fechar-texto: #ffffff;
   --perigo-fundo: #f2877e;
   --perigo-texto: #3b0a07;
 
