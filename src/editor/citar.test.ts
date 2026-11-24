@@ -37,7 +37,7 @@ describe("@ só abre a janela no começo ou depois de um espaço", () => {
     expect(podeAbrirAqui(e.doc, 10)).toBe(false);
   });
   it("o editor tem a extensão do @ e o texto de apoio fala dele", () => {
-    expect(extensoes.map((x) => x.name)).toContain("arrobaAbreAJanela");
+    expect(extensoes.map((x) => x.name)).toContain("arrobaRapido");
   });
 });
 

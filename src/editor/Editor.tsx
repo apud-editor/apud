@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { ChainedCommands } from "@tiptap/core";
 import { EditorContent, useEditor, useEditorState, type Editor as EditorTipTap } from "@tiptap/react";
 import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
@@ -9,6 +9,7 @@ import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
 import { AparenciaDaNorma, ControleDaBarra, extensoesDoApud, inserirQuebra } from "./extensoes";
 import { CitacoesNoTexto, ControleDaJanela } from "./citacoes";
 import { escreverArroba, inserirCitacao, trocarCitacao } from "./citar";
+import { citacaoRapida } from "../citacoes/rapida";
 import JanelaDeCitacao from "./JanelaDeCitacao";
 import JanelaDaNota from "./JanelaDaNota";
 import { ControleDaNota, inserirNota, trocarNota } from "./notas";
@@ -17,6 +18,9 @@ import { apagarIlustracao, ilustracaoDoCursor, inserirFigura, inserirTabela, mud
 import type { ControlesDosNos } from "./nos";
 import type { ComandosDoEditor } from "./comandos";
 import { Icone, type NomeDoIcone } from "./icones";
+import { ControleDoArroba, type ItemDoArroba } from "./arroba";
+import { ondeFica, type Posicao } from "./posicao";
+import { ControleDoReconhecimento, transformarEmCitacao } from "./reconhecer";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -67,6 +71,8 @@ export default function Editor({
 }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
   const janela = useMemo(() => new ControleDaJanela(), []);
+  const arroba = useMemo(() => new ControleDoArroba(), []);
+  const reconhecimento = useMemo(() => new ControleDoReconhecimento(), []);
   const aparencia = useMemo(() => aparenciaDada ?? new AparenciaDaNorma(), [aparenciaDada]);
   const citacoes = useMemo(() => citacoesDadas ?? new CitacoesNoTexto(() => []), [citacoesDadas]);
   const podeCitar = !!lerReferencias;
@@ -84,7 +90,7 @@ export default function Editor({
   aoMoverCursorRef.current = aoMoverCursor;
 
   const editor = useEditor({
-    extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela, controlesDosNos),
+    extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela, controlesDosNos, { arroba, reconhecimento }),
     content: editorDosBlocos(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
     // O bloco do cursor é o filho do editor em que ele está (o mesmo número do bloco no texto).
@@ -116,6 +122,19 @@ export default function Editor({
     citacoes.agendar(0);
     return () => citacoes.ligar(null);
   }, [editor, citacoes]);
+
+  // O "@" rápido e o reconhecimento de citações escritas à mão: valem quando o trabalho pode citar.
+  arroba.ativo = podeCitar;
+  reconhecimento.ativo = podeCitar;
+  arroba.lerReferencias = lerReferencias ?? (() => []);
+  reconhecimento.lerReferencias = lerReferencias ?? (() => []);
+  arroba.aoCadastrar = aoCadastrarReferencia ?? null;
+  reconhecimento.aoTransformar = (t) => {
+    if (!editor) return;
+    editor.view.dispatch(transformarEmCitacao(editor.state, t));
+    editor.commands.focus();
+    citacoes.agendar(0);
+  };
 
   const fecharJanela = () => {
     janela.fechar();
@@ -231,6 +250,8 @@ export default function Editor({
         {colunaDeIcones}
       </div>
       <MenuDeBlocos controle={controle} />
+      <MenuDoArroba controle={arroba} previa={previaDaCitacao} />
+      <AvisoDeCitacao controle={reconhecimento} />
       {estadoDaNota.aberta && (
         <JanelaDaNota
           key={estadoDaNota.chave}
@@ -645,4 +666,119 @@ function MenuDeBlocos({ controle }: { controle: ControleDaBarra }) {
       <p className="dica rodape-menu">↑ ↓ para escolher · Enter para inserir · Esc para fechar</p>
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// A lista do "@": as obras que combinam com o que foi digitado, embaixo do cursor.
+
+function MenuDoArroba({ controle, previa }: { controle: ControleDoArroba; previa?: (c: Citacao) => CitacaoMontada | null }) {
+  const estado = useSyncExternalStore(controle.ouvir, controle.ler);
+  const caixa = useRef<HTMLDivElement>(null);
+  useDentroDaTela(caixa, estado.aberta ? estado.posicao : null, estado);
+  if (!estado.aberta || !estado.posicao) return null;
+  const haObras = estado.itens.some((i) => i.tipo === "obra");
+
+  return (
+    <div ref={caixa} className="menu-arroba" role="listbox" aria-label="Citar uma obra">
+      {!haObras && (
+        <p className="dica" style={{ margin: 8 }}>
+          {estado.totalDeObras === 0 ? "Você ainda não cadastrou nenhuma obra." : "Nenhuma obra com esse nome. Continue escrevendo para seguir como texto."}
+        </p>
+      )}
+      {estado.itens.map((item, i) => (
+        <LinhaDoArroba
+          key={chaveDoItem(item, i)}
+          item={item}
+          escolhido={i === estado.selecionado}
+          previa={i === estado.selecionado && item.tipo === "obra" ? textoDaPrevia(item, estado.consulta.localizador, previa) : null}
+          aoEscolher={() => controle.confirmar(i)}
+        />
+      ))}
+      <p className="dica rodape-menu">↑ ↓ escolher · Enter inserir · Shift+Enter autor no texto · Esc fechar</p>
+    </div>
+  );
+}
+
+const chaveDoItem = (i: ItemDoArroba, k: number) => (i.tipo === "obra" ? i.referencia.id : `${i.tipo}-${k}`);
+
+function textoDaPrevia(item: Extract<ItemDoArroba, { tipo: "obra" }>, localizador: Parameters<typeof citacaoRapida>[1], previa?: (c: Citacao) => CitacaoMontada | null): CitacaoMontada | null {
+  return previa?.(citacaoRapida(item.referencia.id, localizador)) ?? null;
+}
+
+function LinhaDoArroba({
+  item,
+  escolhido,
+  previa,
+  aoEscolher,
+}: {
+  item: ItemDoArroba;
+  escolhido: boolean;
+  previa: CitacaoMontada | null;
+  aoEscolher: () => void;
+}) {
+  if (item.tipo === "restantes") {
+    return <p className="dica linha-restantes">e mais {item.quantas}: continue digitando para achar a obra</p>;
+  }
+  const classe = `opcao ${escolhido ? "quente" : ""}`;
+  const mouse = (ev: React.MouseEvent) => {
+    ev.preventDefault();
+    aoEscolher();
+  };
+  if (item.tipo === "obra") {
+    const r = item.resumo;
+    return (
+      <button type="button" role="option" aria-selected={escolhido} className={`${classe} opcao-obra`} onMouseDown={mouse}>
+        <span className="obra-autores">
+          {r.autores} <span className="obra-ano">({r.ano})</span>
+        </span>
+        <span className="obra-titulo">{r.titulo}</span>
+        {previa && (
+          <span className="obra-previa">
+            {previa.pedacos.map((p, k) => (p.italico ? <i key={k}>{p.texto}</i> : <span key={k}>{p.texto}</span>))}
+          </span>
+        )}
+      </button>
+    );
+  }
+  return (
+    <button type="button" role="option" aria-selected={escolhido} className={`${classe} opcao-fixa`} onMouseDown={mouse}>
+      {item.tipo === "janela" ? "Mais opções…" : "Cadastrar uma referência…"}
+    </button>
+  );
+}
+
+/** O aviso embaixo de "(Silva, 2019)" escrito à mão: Tab (ou o clique) vira citação. */
+function AvisoDeCitacao({ controle }: { controle: ControleDoReconhecimento }) {
+  const estado = useSyncExternalStore(controle.ouvir, controle.ler);
+  const caixa = useRef<HTMLDivElement>(null);
+  useDentroDaTela(caixa, estado.visivel ? estado.posicao : null, estado);
+  if (!estado.visivel || !estado.posicao || !estado.trecho) return null;
+  const t = estado.trecho;
+  return (
+    <div ref={caixa} className="aviso-citacao">
+      <button
+        type="button"
+        className="btn"
+        onMouseDown={(ev) => {
+          ev.preventDefault();
+          controle.aoTransformar?.(t);
+        }}
+      >
+        <kbd>Tab</kbd> transformar em citação
+      </button>
+      <span className="dica">Esc deixa como texto</span>
+    </div>
+  );
+}
+
+/** Põe a janelinha embaixo do cursor, ou em cima se embaixo não couber, sem sair da tela. Mede depois de desenhada. */
+function useDentroDaTela(caixa: React.RefObject<HTMLDivElement | null>, posicao: Posicao | null, dependencia: unknown) {
+  useLayoutEffect(() => {
+    const el = caixa.current;
+    if (!el || !posicao) return;
+    const r = el.getBoundingClientRect();
+    const { x, y } = ondeFica(posicao, r.width, r.height, window.innerWidth, window.innerHeight);
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+  }, [caixa, posicao, dependencia]);
 }

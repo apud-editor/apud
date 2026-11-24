@@ -21,7 +21,7 @@ export type OQueSeCita =
 export type OndeNaObra = "pagina" | "tempo" | "outro";
 
 /** O tempo de um vídeo ou áudio: 1:56, 0:04, 1:02:30, ou um trecho, 1:56-2:10. */
-const TEMPO = /^\d{1,2}(:[0-5]\d){1,2}(\s*[-–]\s*\d{1,2}(:[0-5]\d){1,2})?$/;
+export const TEMPO = /^\d{1,2}(:[0-5]\d){1,2}(\s*[-–]\s*\d{1,2}(:[0-5]\d){1,2})?$/;
 
 /** Uma obra na janela. */
 export interface ObraNoFormulario {
