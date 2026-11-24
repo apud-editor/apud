@@ -89,6 +89,13 @@ export default function Editor({
   const aoMoverCursorRef = useRef(aoMoverCursor);
   aoMoverCursorRef.current = aoMoverCursor;
 
+  // Antes do editor existir: o primeiro olhar do reconhecimento (ao abrir o trabalho) já precisa disto.
+  arroba.ativo = podeCitar;
+  reconhecimento.ativo = podeCitar;
+  arroba.lerReferencias = lerReferencias ?? (() => []);
+  reconhecimento.lerReferencias = lerReferencias ?? (() => []);
+  arroba.aoCadastrar = aoCadastrarReferencia ?? null;
+
   const editor = useEditor({
     extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela, controlesDosNos, { arroba, reconhecimento }),
     content: editorDosBlocos(inicial),
@@ -123,12 +130,6 @@ export default function Editor({
     return () => citacoes.ligar(null);
   }, [editor, citacoes]);
 
-  // O "@" rápido e o reconhecimento de citações escritas à mão: valem quando o trabalho pode citar.
-  arroba.ativo = podeCitar;
-  reconhecimento.ativo = podeCitar;
-  arroba.lerReferencias = lerReferencias ?? (() => []);
-  reconhecimento.lerReferencias = lerReferencias ?? (() => []);
-  arroba.aoCadastrar = aoCadastrarReferencia ?? null;
   reconhecimento.aoTransformar = (t) => {
     if (!editor) return;
     editor.view.dispatch(transformarEmCitacao(editor.state, t));
