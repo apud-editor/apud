@@ -31,3 +31,10 @@ export function painelDoAtalho(t: Tecla): Painel | null {
   }
   return null;
 }
+
+/** Alt+F abre os ajustes do bloco onde está o cursor (a janelinha do ⚙). Mesmas regras dos outros atalhos. */
+export const ATALHO_DOS_AJUSTES = { codigo: "KeyF", texto: "Alt+F" };
+
+export function ehAtalhoDosAjustes(t: Tecla): boolean {
+  return t.altKey && !t.ctrlKey && !t.shiftKey && !t.metaKey && !t.repeat && t.code === ATALHO_DOS_AJUSTES.codigo;
+}

@@ -32,6 +32,7 @@ import type { NormaDoTrabalho } from "../modelos/norma";
 import Gaveta from "./Gaveta";
 import ColunaDeIcones from "./ColunaDeIcones";
 import { painelDoAtalho } from "./atalhos";
+import { escreverTodos, type Escrita } from "../editor/janelinha";
 import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
 import AberturaDoTrabalho from "./AberturaDoTrabalho";
 import Configuracoes, { type AbaDasConfiguracoes } from "./Configuracoes";
@@ -317,6 +318,32 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
     depoisDeMudarOsDados();
   };
 
+  /**
+   * "Todos os iguais" da janelinha do ⚙: grava nas escolhas do trabalho (a mesma
+   * camada das Escolhas do autor), com o aviso de quando o valor sai da norma.
+   */
+  const mudarTodos = (elemento: string, escrita: Escrita): { ok: true; avisos: string[] } | { ok: false; erro: string } => {
+    const nome = modeloAtual.current.identificacao.nome;
+    const r = escreverTodos(modeloAtual.current, ajustes.current[nome] ?? {}, elemento, escrita);
+    if (!r.ok) return r;
+    const novos = { ...ajustes.current };
+    if (Object.keys(r.ajustes).length) novos[nome] = r.ajustes;
+    else delete novos[nome];
+    try {
+      // Confere antes de guardar: uma escolha que o modelo não aceita nunca chega ao arquivo.
+      const { problemas } = normaDoTrabalho(modeloAtual.current, estilosEmbutidos(), novos[nome] ?? {});
+      if (problemas.length) return { ok: false, erro: problemas.map((p) => p.texto).join(" ") };
+    } catch (erro) {
+      return { ok: false, erro: (erro as Error).message };
+    }
+    ajustes.current = novos;
+    norma.current = null;
+    aparencia.mudar(rotuloDaLista());
+    avisarTitulos();
+    depoisDeMudarOsDados();
+    return { ok: true, avisos: r.avisos };
+  };
+
   const lerBlocos = useCallback(() => lerDocumento.current().blocos, []);
   const lerReferencias = useCallback(() => referencias.current, []);
   /** Como uma citação ficaria na norma, para a janela do "@". */
@@ -455,6 +482,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
         inicial={trabalho.documento.blocos}
         aparencia={aparencia}
         titulos={titulos}
+        aoMudarTodos={mudarTodos}
         citacoes={citacoes}
         lerReferencias={lerReferencias}
         previaDaCitacao={previa}
