@@ -190,6 +190,19 @@ describe("citações e lista de referências no PDF", () => {
     expect(typst).not.toContain("bibliography(");
   });
 
+  it("sem o bloco, as citações saem como texto e o PDF monta (antes, a prévia não aparecia)", () => {
+    const typst = documentoParaTypst({ ...comCitacao, blocos: comCitacao.blocos.slice(0, 1) }, perfil, { csl });
+    expect(typst).not.toContain("#cite(");
+    expect(typst.replace(/\\/g, "")).toContain("O acolhimento vem antes (Silva, 2019, p. 15).");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("com dois blocos da lista, ela sai só no primeiro (o editor avisa) e o PDF monta", () => {
+    const typst = documentoParaTypst({ ...comCitacao, blocos: [...comCitacao.blocos, { tipo: "referencias" }] }, perfil, { csl });
+    expect(typst.split("bibliography(").length - 1).toBe(1);
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
   it("a lista sai no lugar do bloco, mesmo antes de outros textos", () => {
     const blocos = [comCitacao.blocos[0], { tipo: "referencias" as const }, { tipo: "titulo" as const, nivel: 1 as const, trechos: [{ texto: "APÊNDICE A" }] }];
     const typst = documentoParaTypst({ ...comCitacao, blocos }, perfil, { csl });
