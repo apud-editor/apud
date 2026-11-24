@@ -1,13 +1,13 @@
 // Os "moldes" dos modelos da versão 2: a árvore de elementos, as propriedades
 // de cada elemento e os valores que um modelo dá a elas.
 //
-// Um modelo (Em branco, ABNT, APA, ou o de uma faculdade) é uma lista de
+// Um modelo (Em branco, ABNT, APA, ou o de uma faculdade, revista ou pessoa) é uma lista de
 // valores por elemento ("Títulos › Nível 1: destaque = negrito"). O Em branco é
 // a raiz e dá um valor a tudo o que o Apud aplica; os outros modelos guardam só
 // o que muda em relação ao modelo de onde vêm.
 //
 // Duas heranças se somam:
-//   - entre modelos: o Em branco, por cima a ABNT, por cima a faculdade
+//   - entre modelos: o Em branco, por cima a ABNT, por cima o modelo de uma revista
 //     (e, a partir da etapa 1c, as escolhas do trabalho);
 //   - entre elementos: o Nível 2 segue Títulos, que segue Texto, até alguém
 //     mudar (valorEfetivo, em herdar.ts).
@@ -120,7 +120,7 @@ export interface Modelo {
 /** Um modelo já somado aos de cima: o que o Apud usa para montar o PDF. */
 export interface ModeloResolvido {
   identificacao: IdentificacaoDoModelo;
-  /** Os modelos da raiz até este: Em branco, ABNT, faculdade... */
+  /** Os modelos da raiz até este: Em branco, ABNT, revista... */
   cadeia: IdentificacaoDoModelo[];
   /** Todos os valores, já juntos (cada um diz de que modelo veio). */
   valores: ValoresPorElemento;

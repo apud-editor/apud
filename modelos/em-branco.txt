@@ -2,7 +2,7 @@
 # Modelo do Apud: Em branco
 #
 # A raiz de todos os modelos (decisão 13 da versão 2). A ABNT, a APA e os
-# modelos de cada faculdade ou revista são "Em branco + diferenças": o que eles
+# modelos de cada faculdade, revista ou pessoa são "Em branco + diferenças": o que eles
 # não disserem vem daqui. Por isso o Em branco dá um valor a tudo o que o Apud
 # aplica, e nenhum valor de formatação fica escrito no código do programa.
 #

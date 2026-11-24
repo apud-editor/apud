@@ -8,9 +8,15 @@ Bloco de Notas.
 | Arquivo | O que é |
 | --- | --- |
 | `em-branco.txt` | O modelo **Em branco**: a raiz de todos os outros, com valores neutros |
+| `abnt.txt` | ABNT 2025 (NBR 14724:2024, 6023:2025, 10520:2023, 6024:2012, 6027:2012, 6028:2021) = Em branco + diferenças |
+| `apa.txt` | APA 7ª edição = Em branco + diferenças |
+| `exemplos/` | Exemplo de modelo de uma faculdade, que herda da ABNT |
 
-Os modelos ABNT e APA chegam na parte 1b da etapa 1, montados a partir dos
-perfis da versão 1 (pasta `perfis/`), que continuam valendo até lá.
+Os modelos ABNT e APA continuam os perfis da versão 1 (pasta `perfis/`): cada
+regra foi para o elemento a que pertence, com a mesma origem, a mesma situação
+e o mesmo comentário, e nenhum valor mudou. A tabela de correspondência está em
+`src/modelos/correspondencia.ts`, e um teste confere regra por regra. Até a
+parte 1c, o programa ainda usa os perfis; depois, só os modelos.
 
 ## A árvore de elementos
 
@@ -46,7 +52,7 @@ nota da revisão: o que mudou nesta revisão
 
 == Títulos › Nível 1 ==
 # A NBR 6024 manda diferenciar os níveis, mas não diz como.
-destaque: maiúsculas, negrito | NBR 6024:2012 (UFSCar) | faculdade
+destaque: maiúsculas, negrito | NBR 6024:2012 (UFSCar) | ajustável
 ```
 
 - **A ficha**, no começo: o nome do modelo, de quem ele herda (o Em branco não
@@ -54,8 +60,9 @@ destaque: maiúsculas, negrito | NBR 6024:2012 (UFSCar) | faculdade
 - **Cada seção** (`== ... ==`) é um elemento, pelo caminho na árvore.
 - **Cada linha** é `propriedade: valor | origem | situação`, como nos perfis:
   - a **origem** diz de onde vem o valor (a norma e o manual onde foi conferido);
-  - a **situação** é opcional: sem nada, o valor é confirmado; `faculdade`
-    quer dizer que a norma não fixa e cada trabalho pode trocar; `escolha: a, b`
+  - a **situação** é opcional: sem nada, o valor é confirmado; `ajustável`
+    quer dizer que a norma não fixa: o valor é o padrão, e cada trabalho pode
+    trocar (nos perfis da versão 1 se chamava `faculdade`); `escolha: a, b`
     dá as opções; `desligada` guarda a regra sem efeito.
 - **O comentário** (`#`) logo acima de uma linha, sem linha em branco no meio,
   fica guardado junto com o valor: é a decisão por trás dele.

@@ -1,5 +1,5 @@
 // Conferência dos modelos: lê cada arquivo, confere cada linha contra a árvore
-// de elementos, monta a cadeia de herança (Em branco › ABNT › faculdade) e
+// de elementos, monta a cadeia de herança (Em branco › ABNT › modelo de uma faculdade ou revista) e
 // confere que o Em branco dá um valor a tudo o que o Apud aplica.
 // Um modelo com erro nunca é devolvido para uso.
 
@@ -188,7 +188,12 @@ function dataValida(texto: string): boolean {
 export function lerSituacao(texto: string | undefined, tipo: TipoValor, nome: string): { ok: true; situacao: Situacao } | { ok: false; erro: string } {
   if (texto === undefined) return { ok: true, situacao: { tipo: "confirmada" } };
   const t = normalizar(texto);
-  if (t === "faculdade") return { ok: true, situacao: { tipo: "faculdade" } };
+  // "Ajustável": a norma não fixa; o valor é o padrão, e cada trabalho pode trocar
+  // (decisão 19 da v2: nos perfis da v1 se chamava "faculdade", mas vale também
+  // para revistas e para quem não está numa faculdade). Por dentro, o tipo ainda
+  // se chama "faculdade", como nos perfis, até a parte 1d.
+  if (t === "ajustavel" || t === "ajustável") return { ok: true, situacao: { tipo: "faculdade" } };
+  if (t === "faculdade") return { ok: false, erro: "nos modelos, a situação “faculdade” se chama “ajustável” (vale também para revistas e para quem não está numa faculdade)." };
   if (t === "desligada") return { ok: true, situacao: { tipo: "desligada" } };
   const escolha = texto.trim().match(/^escolha\s*:\s*(.*)$/i);
   if (escolha) {
@@ -205,7 +210,7 @@ export function lerSituacao(texto: string | undefined, tipo: TipoValor, nome: st
     }
     return { ok: true, situacao: { tipo: "escolha", opcoes } };
   }
-  return { ok: false, erro: `“${texto.trim()}” não é uma situação conhecida. Use “faculdade”, “desligada” ou “escolha: opção 1, opção 2”.` };
+  return { ok: false, erro: `“${texto.trim()}” não é uma situação conhecida. Use “ajustável”, “desligada” ou “escolha: opção 1, opção 2”.` };
 }
 
 function conferirSecoes(lido: ModeloLido, nomeDoModelo: string, arquivo: string, mensagens: Mensagem[]) {

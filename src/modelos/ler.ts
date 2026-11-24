@@ -14,7 +14,7 @@
 //
 //   == Títulos › Nível 1 ==
 //   # A NBR 6024 manda diferenciar os níveis, mas não diz como.
-//   destaque: maiúsculas, negrito | NBR 6024:2012 (UFSCar) | faculdade
+//   destaque: maiúsculas, negrito | NBR 6024:2012 (UFSCar) | ajustável
 
 import { normalizar } from "../perfis/texto";
 import type { Mensagem } from "./tipos";
@@ -29,7 +29,7 @@ export interface LinhaDeValor {
   origem: string;
   situacao?: string;
   linha: number;
-  /** Os comentários (#) logo acima da linha, sem linha em branco no meio. */
+  /** Os comentários (#) logo acima da linha, sem linha em branco no meio (uma linha de texto por linha de comentário). */
   nota?: string;
 }
 
@@ -47,7 +47,7 @@ export interface ModeloLido {
   mensagens: Mensagem[];
 }
 
-const PALAVRAS_DE_SITUACAO = /^(faculdade|desligada|escolha\s*:)/i;
+const PALAVRAS_DE_SITUACAO = /^(ajust[aá]vel|faculdade|desligada|escolha\s*:)/i;
 
 export function lerModelo(conteudo: string): ModeloLido {
   const ficha: ModeloLido["ficha"] = new Map();
@@ -66,7 +66,7 @@ export function lerModelo(conteudo: string): ModeloLido {
 
   let comentarios: string[] = [];
   const pegarComentarios = () => {
-    const nota = comentarios.length ? comentarios.join(" ") : undefined;
+    const nota = comentarios.length ? comentarios.join("\n") : undefined;
     comentarios = [];
     return nota;
   };
@@ -163,7 +163,7 @@ export function lerModelo(conteudo: string): ModeloLido {
       return;
     }
     if (partes.length === 3 && !situacao) {
-      erro(numero, "depois da segunda barra | falta a situação (faculdade, escolha: ... ou desligada).");
+      erro(numero, "depois da segunda barra | falta a situação (ajustável, escolha: ... ou desligada).");
       return;
     }
     secao.valores.push({ nome, valor, origem, situacao, linha: numero, ...(nota ? { nota } : {}) });

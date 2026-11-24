@@ -1,0 +1,30 @@
+# ==============================================================================
+# Exemplo de modelo de uma faculdade (herança)
+#
+# Um modelo de faculdade, revista ou pessoa guarda só o que muda em relação ao
+# modelo de onde vem. Todo o resto vem do modelo ABNT (e, por ele, do Em branco).
+# Quando a ABNT ganhar uma revisão nova, o Apud avisa, e você confere se as
+# mudanças abaixo continuam valendo.
+#
+# A linha "herda de" diz o modelo de cima, a versão e a revisão sobre a qual
+# este foi feito. Cada linha diz a própria situação: sem nada, o valor fica
+# confirmado (não pode ser trocado em cada trabalho).
+#
+# Continua o perfil de exemplo da versão 1 (perfis/exemplos/), com os mesmos
+# valores. Lá, a situação vinha do perfil original; aqui ela está escrita.
+# Este arquivo é só um exemplo; a versão 2 do Apud vai criar modelos assim pela
+# tela. Ele fica na pasta exemplos/ para não aparecer no programa.
+# ==============================================================================
+
+modelo: ABNT – Universidade Exemplo
+herda de: ABNT 2025, revisão 10
+revisão: 2
+data da revisão: 24/11/2026
+nota da revisão: O perfil de exemplo virou modelo (versão 2, etapa 1b), com os mesmos valores; as situações, que antes vinham do perfil ABNT, agora estão escritas. Revisão 1 (20/11/2026): fonte Arial, recuo de 1,5 cm e prenomes abreviados, como pede o manual da Universidade Exemplo.
+
+== Texto ==
+fonte: Arial                            | Manual de normalização da Universidade Exemplo (2025) | ajustável
+recuo da primeira linha: 1,5 cm         | Manual de normalização da Universidade Exemplo (2025) | ajustável
+
+== Citações e referências ==
+referências, prenomes: abreviados       | Manual de normalização da Universidade Exemplo (2025) | escolha: por extenso, abreviados
