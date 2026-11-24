@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
 import { escreverArquivo, lerArquivo, type Trabalho } from "../arquivos/formato";
 import Assistente from "./Assistente";
+import SeletorDeTema from "../tema/SeletorDeTema";
+import type { EscolhaDeTema } from "../tema/tema";
 
 interface Linha {
   arquivo: string;
@@ -12,9 +14,11 @@ interface Linha {
 
 interface Props {
   aoAbrir: (arquivo: string, trabalho: Trabalho, novo: boolean) => void;
+  temaEscolhido: EscolhaDeTema;
+  aoEscolherTema: (escolha: EscolhaDeTema) => void;
 }
 
-export default function Painel({ aoAbrir }: Props) {
+export default function Painel({ aoAbrir, temaEscolhido, aoEscolherTema }: Props) {
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [pasta, setPasta] = useState("");
   const [problema, setProblema] = useState<string | null>(null);
@@ -78,6 +82,8 @@ export default function Painel({ aoAbrir }: Props) {
     <div className="tela">
       <header className="topo">
         <span className="marca">Apud</span>
+        <span style={{ flex: 1 }} />
+        <SeletorDeTema escolha={temaEscolhido} aoEscolher={aoEscolherTema} />
       </header>
       <main className="painel">
         <div className="painel-conteudo">

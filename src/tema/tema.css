@@ -1,0 +1,159 @@
+/* A base visual do Apud: a fonte e as cores dos dois temas (Claro e Escuro).
+   As cores só existem aqui; o resto dos estilos usa as variáveis (var(--nome)).
+   Os valores vêm da tabela de claude/v2-identidade-visual.md. A Prévia do PDF
+   fica sempre branca (--papel), porque é o PDF como sairá impresso. */
+
+/* Open Sans vem dentro do programa (licença OFL, em public/fontes/open-sans): nada é baixado da internet. */
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fontes/open-sans/OpenSans-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fontes/open-sans/OpenSans-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fontes/open-sans/OpenSans-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fontes/open-sans/OpenSans-600-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fontes/open-sans/OpenSans-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fontes/open-sans/OpenSans-700-italic.woff2") format("woff2");
+}
+
+/* Tema Claro (também vale antes de o tema ser escolhido). */
+:root,
+:root[data-tema="claro"] {
+  color-scheme: light;
+
+  --fundo: #f6f8fc; /* fundo da tela, inclusive a área de escrita */
+  --cab: #ffffff; /* cabeçalho, barras e campos */
+  --fundo-claro: #ffffff; /* barra de ferramentas e cabeçalho de tabela */
+  --folha: #ffffff; /* cartões, janelas, gaveta */
+  --papel: #ffffff; /* o papel da Prévia: branco nos dois temas */
+  --previa-fundo: #e3e7f0; /* o que fica em volta do papel da Prévia */
+
+  --borda: #e3e7f0;
+  --borda-forte: #c9d1e3;
+
+  --tinta: #262626; /* texto: grafite, nunca preto puro */
+  --tinta-suave: #5f6573; /* texto de apoio */
+  --discreto: #6b7280; /* texto discreto */
+
+  --destaque: #1248d2; /* links, foco, citação, ponto */
+  --destaque-escuro: #1248d2; /* texto de destaque sobre --destaque-claro */
+  --destaque-claro: #e8eefd; /* selecionado e citação (fundo) */
+  --botao: #1248d2;
+  --botao-texto: #ffffff;
+  --hov: #eef1f8; /* passar o mouse */
+  --chip: #f4f7fe;
+  --chip-borda: #afc0ec;
+
+  --sombra: 0 8px 28px rgba(18, 40, 90, 0.16);
+  --sombra-da-folha: 0 1px 2px rgba(28, 36, 48, 0.25);
+  --veu: rgba(30, 32, 40, 0.35);
+
+  /* Avisos funcionais (não são da marca): âmbar, vermelho e verde. */
+  --aviso-fundo: #fdebc8;
+  --aviso-borda: #e3bd72;
+  --aviso-texto: #7a4300;
+  --aviso-realce: #d98a00;
+
+  --erro-fundo: #fbeceb;
+  --erro-borda: #f0c9c5;
+  --erro-texto: #7d1d14;
+  --erro-forte: #b3261e;
+  --erro-citacao: #f9dcd8;
+  --erro-citacao-texto: #8a1c12;
+  --erro-realce: #c0392b;
+  --perigo-fundo: #b3261e;
+  --perigo-texto: #ffffff;
+
+  --ok-fundo: #e9f3ec;
+  --ok-borda: #c4dfcc;
+  --ok-texto: #1d4a2a;
+}
+
+/* Tema Escuro. */
+:root[data-tema="escuro"] {
+  color-scheme: dark;
+
+  --fundo: #1a1b1e;
+  --cab: #262626; /* o grafite da marca */
+  --fundo-claro: #262626;
+  --folha: #2d2e31;
+  --papel: #ffffff;
+  --previa-fundo: #2d2e31;
+
+  --borda: #3a3c42;
+  --borda-forte: #4a4d56;
+
+  --tinta: #ecedef;
+  --tinta-suave: #a9afbd;
+  --discreto: #8b90a0;
+
+  --destaque: #8eabff; /* o azul claro da marca, só em fundo escuro */
+  --destaque-escuro: #8eabff;
+  --destaque-claro: #2b3555;
+  --botao: #8eabff;
+  --botao-texto: #0b1a4a;
+  --hov: #33353a;
+  --chip: #262e4a;
+  --chip-borda: #4a5a8f;
+
+  --sombra: 0 8px 28px rgba(0, 0, 0, 0.55);
+  --sombra-da-folha: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --veu: rgba(0, 0, 0, 0.6);
+
+  --aviso-fundo: #3a3220;
+  --aviso-borda: #7a6535;
+  --aviso-texto: #f0ddaa;
+  --aviso-realce: #e0a53a;
+
+  --erro-fundo: #3f2422;
+  --erro-borda: #7a3a35;
+  --erro-texto: #f5c2bc;
+  --erro-forte: #f2877e;
+  --erro-citacao: #4a2623;
+  --erro-citacao-texto: #ffc9c2;
+  --erro-realce: #e5645a;
+  --perigo-fundo: #f2877e;
+  --perigo-texto: #3b0a07;
+
+  --ok-fundo: #1f3326;
+  --ok-borda: #3f6b4c;
+  --ok-texto: #bfe5c9;
+}
+
+:root {
+  font-family: "Open Sans", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--tinta);
+  background: var(--fundo);
+}

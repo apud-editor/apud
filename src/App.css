@@ -1,19 +1,3 @@
-/* Cores e medidas do protótipo aprovado (fase 0). */
-:root {
-  --fundo: #f4f4f1;
-  --fundo-claro: #fbfbfa;
-  --tinta: #1c2430;
-  --tinta-suave: #596273;
-  --borda: #dadcd6;
-  --borda-forte: #c5c8c0;
-  --destaque: #2b4c9b;
-  --destaque-escuro: #1f3a78;
-  --destaque-claro: #e6ecf8;
-  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  font-size: 14px;
-  color: var(--tinta);
-  background: var(--fundo);
-}
 
 * {
   box-sizing: border-box;
@@ -28,6 +12,13 @@ input,
 select {
   font: inherit;
   color: inherit;
+}
+
+/* Campos de texto: sempre com as cores do tema (sem isso o navegador usa as dele). */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background-color: var(--cab);
 }
 
 :focus-visible {
@@ -59,7 +50,7 @@ select {
   align-items: center;
   gap: 14px;
   padding: 0 20px;
-  background: #fff;
+  background: var(--cab);
   border-bottom: 1px solid var(--borda);
 }
 
@@ -70,11 +61,11 @@ select {
 }
 
 .barra {
-  color: #8a909c;
+  color: var(--discreto);
 }
 
 .nome-do-trabalho {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 15px;
 }
 
@@ -119,15 +110,15 @@ select {
   padding: 0 14px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #fff;
+  background: var(--cab);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .btn:hover {
-  background: #f0f1ed;
+  background: var(--hov);
 }
 
 .btn.on {
@@ -151,8 +142,8 @@ select {
   padding: 0 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #fff;
-  font-weight: 500;
+  background: var(--cab);
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -203,7 +194,7 @@ select {
 }
 
 .nav:hover {
-  background: #e9eae6;
+  background: var(--hov);
 }
 
 /* O texto */
@@ -326,8 +317,8 @@ select {
 }
 .texto h5 {
   font-size: 15px;
-  font-weight: 500;
-  color: #39424f;
+  font-weight: 600;
+  color: var(--tinta-suave);
 }
 
 .texto ul,
@@ -353,7 +344,7 @@ select {
   content: attr(data-placeholder);
   float: left;
   height: 0;
-  color: #9097a3;
+  color: var(--discreto);
   pointer-events: none;
 }
 
@@ -366,10 +357,10 @@ select {
   max-height: 340px;
   overflow: auto;
   padding: 6px;
-  background: #fff;
+  background: var(--folha);
   border: 1px solid var(--borda-forte);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(28, 36, 48, 0.16);
+  box-shadow: var(--sombra);
 }
 
 .opcao {
@@ -392,7 +383,7 @@ select {
 .rodape-menu {
   margin: 6px 4px 2px;
   padding-top: 6px;
-  border-top: 1px solid #e4e5e0;
+  border-top: 1px solid var(--borda);
   font-size: 11.5px;
 }
 
@@ -408,10 +399,17 @@ select {
 }
 
 .botao-marca:hover {
-  background: #f0f1ed;
+  background: var(--hov);
+}
+
+.topo > .seletor-norma,
+.topo > .btn,
+.topo > .aviso {
+  flex: none;
 }
 
 .campo-nome {
+  flex: 0 1 auto;
   min-width: 0;
   max-width: 520px;
   height: 34px;
@@ -421,7 +419,7 @@ select {
   border-radius: 6px;
   background: transparent;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .campo-nome:hover {
@@ -430,13 +428,13 @@ select {
 
 .campo-nome:focus {
   border-color: var(--destaque);
-  background: #fff;
+  background: var(--cab);
   outline: none;
 }
 
 .aviso-erro {
-  color: #a1261b;
-  font-weight: 500;
+  color: var(--erro-forte);
+  font-weight: 600;
 }
 
 .selo-norma {
@@ -446,7 +444,7 @@ select {
   background: var(--destaque-claro);
   color: var(--destaque-escuro);
   font-size: 12.5px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .faixa-erro {
@@ -455,16 +453,16 @@ select {
   align-items: center;
   gap: 10px;
   padding: 10px 20px;
-  background: #fbeceb;
-  border-bottom: 1px solid #f0c9c5;
-  color: #7d1d14;
+  background: var(--erro-fundo);
+  border-bottom: 1px solid var(--erro-borda);
+  color: var(--erro-texto);
   font-size: 13.5px;
   line-height: 1.45;
 }
 
 .faixa-erro.caixa {
   margin: 0 0 16px;
-  border: 1px solid #f0c9c5;
+  border: 1px solid var(--erro-borda);
   border-radius: 10px;
 }
 
@@ -510,17 +508,17 @@ select {
 }
 
 .btn.primario {
-  background: var(--destaque);
-  border-color: var(--destaque);
-  color: #fff;
+  background: var(--botao);
+  border-color: var(--botao);
+  color: var(--botao-texto);
 }
 
 .btn.primario:hover {
-  background: var(--destaque-escuro);
+  filter: brightness(1.08);
 }
 
 .tabela {
-  background: #fff;
+  background: var(--folha);
   border: 1px solid var(--borda);
   border-radius: 12px;
   overflow: hidden;
@@ -534,8 +532,8 @@ select {
   width: 100%;
   padding: 16px 24px;
   border: 0;
-  border-bottom: 1px solid #e4e5e0;
-  background: #fff;
+  border-bottom: 1px solid var(--borda);
+  background: var(--folha);
   text-align: left;
   cursor: pointer;
 }
@@ -545,7 +543,7 @@ select {
 }
 
 button.linha:hover {
-  background: #f8f8f6;
+  background: var(--hov);
 }
 
 .linha.cabecalho {
@@ -553,14 +551,14 @@ button.linha:hover {
   padding-bottom: 12px;
   background: var(--fundo-claro);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--tinta-suave);
   cursor: default;
 }
 
 .linha .nome {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
@@ -574,7 +572,7 @@ button.linha:hover {
   margin-top: 2px;
   font-size: 12.5px;
   font-weight: 400;
-  color: #a1261b;
+  color: var(--erro-forte);
 }
 
 .arquivo-linha {
@@ -609,9 +607,9 @@ button.linha:hover {
   align-items: center;
   gap: 10px;
   padding: 10px 20px;
-  background: #e9f3ec;
-  border-bottom: 1px solid #c4dfcc;
-  color: #1d4a2a;
+  background: var(--ok-fundo);
+  border-bottom: 1px solid var(--ok-borda);
+  color: var(--ok-texto);
   font-size: 13.5px;
   line-height: 1.45;
   overflow-wrap: anywhere;
@@ -624,7 +622,7 @@ button.linha:hover {
   flex: none;
   overflow: auto;
   padding: 16px 24px 24px;
-  background: #e4e5e0;
+  background: var(--borda);
   border-left: 1px solid var(--borda);
 }
 
@@ -644,14 +642,14 @@ button.linha:hover {
   margin: 0 0 12px;
   padding: 8px 10px;
   border-radius: 8px;
-  background: #fff8e1;
+  background: var(--aviso-fundo);
   font-size: 12.5px;
   line-height: 1.45;
 }
 
 .previa-aviso.erro {
-  background: #fbeceb;
-  color: #7d1d14;
+  background: var(--erro-fundo);
+  color: var(--erro-texto);
   white-space: pre-wrap;
 }
 
@@ -667,8 +665,8 @@ button.linha:hover {
 }
 
 .folha-da-previa {
-  fill: #fff;
-  filter: drop-shadow(0 1px 2px rgba(28, 36, 48, 0.25));
+  fill: var(--papel);
+  filter: drop-shadow(var(--sombra-da-folha));
 }
 
 @media (max-width: 1100px) {
@@ -679,37 +677,37 @@ button.linha:hover {
 
 /* Citação no texto: uma peça só, em destaque azul (como no protótipo). */
 .texto .citacao {
-  background: #e6ecf8;
-  color: #1f3a78;
+  background: var(--destaque-claro);
+  color: var(--destaque-escuro);
   border-radius: 6px;
   padding: 1px 6px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
 }
 /* Citação com aviso (falta a página, obra sem data...): cor diferente e explicação ao passar o mouse. */
 .texto .citacao.aviso {
-  background: #fdebc8;
-  color: #7a4300;
-  box-shadow: inset 0 -2px 0 #d98a00;
+  background: var(--aviso-fundo);
+  color: var(--aviso-texto);
+  box-shadow: inset 0 -2px 0 var(--aviso-realce);
 }
 /* A citação aponta para uma referência que não existe mais. */
 .texto .citacao.aviso-grave {
-  background: #f9dcd8;
-  color: #8a1c12;
-  box-shadow: inset 0 -2px 0 #c0392b;
+  background: var(--erro-citacao);
+  color: var(--erro-citacao-texto);
+  box-shadow: inset 0 -2px 0 var(--erro-realce);
 }
 .texto .citacao {
   cursor: pointer;
 }
 .texto .citacao.ProseMirror-selectednode {
-  outline: 2px solid #2b4c9b;
+  outline: 2px solid var(--destaque);
   outline-offset: 1px;
 }
 
 /* Escolha da norma no topo do editor: ABNT | APA (como no protótipo). */
 .seletor-norma {
   display: inline-flex;
-  border: 1px solid #c5c8c0;
+  border: 1px solid var(--borda-forte);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -717,27 +715,27 @@ button.linha:hover {
   min-height: 34px;
   padding: 0 14px;
   border: 0;
-  background: #fff;
+  background: var(--cab);
   font: inherit;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
 }
 .seletor-norma .seg + .seg {
-  border-left: 1px solid #c5c8c0;
+  border-left: 1px solid var(--borda-forte);
 }
 .seletor-norma .seg.on {
-  background: #2b4c9b;
-  color: #fff;
+  background: var(--destaque-claro);
+  color: var(--destaque);
 }
 
 /* Lista de referências no texto: um bloco que mostra o título da norma. */
 .texto .lista-referencias {
   margin: 18px 0;
   padding: 12px 14px;
-  border: 1px dashed #9aa4b8;
+  border: 1px dashed var(--borda-forte);
   border-radius: 8px;
-  background: #f7f8fb;
+  background: var(--fundo);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -745,7 +743,7 @@ button.linha:hover {
   user-select: none;
 }
 .texto .lista-referencias.ProseMirror-selectednode {
-  outline: 2px solid #2b4c9b;
+  outline: 2px solid var(--destaque);
   outline-offset: 2px;
 }
 
@@ -755,7 +753,7 @@ button.linha:hover {
   flex: none;
   overflow: auto;
   padding: 16px 24px 24px;
-  background: #fff;
+  background: var(--folha);
   border-left: 1px solid var(--borda);
 }
 .gaveta-topo,
@@ -777,7 +775,7 @@ button.linha:hover {
 .gaveta-rotulo {
   margin: 0;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .dica-form {
   margin: 4px 0 8px;
@@ -794,7 +792,7 @@ button.linha:hover {
   padding: 0 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #fff;
+  background: var(--cab);
   font-size: 14px;
 }
 .mini {
@@ -802,7 +800,7 @@ button.linha:hover {
   background: none;
   color: var(--destaque);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
@@ -815,12 +813,12 @@ button.linha:hover {
   cursor: default;
 }
 .btn.perigo {
-  background: #b3261e;
-  border-color: #b3261e;
-  color: #fff;
+  background: var(--perigo-fundo);
+  border-color: var(--perigo-fundo);
+  color: var(--perigo-texto);
 }
 .btn.perigo:hover {
-  background: #8c1d18;
+  filter: brightness(1.12);
 }
 
 /* Busca pelo DOI, no topo da gaveta */
@@ -839,12 +837,12 @@ button.linha:hover {
   padding: 0 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #fff;
+  background: var(--cab);
   font-size: 14px;
   font-weight: 400;
 }
 .doi-linha input[aria-invalid="true"] {
-  border-color: #b3261e;
+  border-color: var(--erro-forte);
 }
 .doi-linha input[readonly] {
   background: var(--fundo-claro);
@@ -854,8 +852,8 @@ button.linha:hover {
   margin: 8px 0 0;
   padding: 8px 10px;
   border-radius: 8px;
-  background: #fbeceb;
-  color: #7d1d14;
+  background: var(--erro-fundo);
+  color: var(--erro-texto);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -898,7 +896,7 @@ button.linha:hover {
   padding: 0;
 }
 .fonte {
-  border-bottom: 1px solid #e4e5e0;
+  border-bottom: 1px solid var(--borda);
   padding: 10px 0;
   font-size: 13.5px;
   line-height: 1.45;
@@ -920,8 +918,8 @@ button.linha:hover {
   margin-top: 8px;
   padding: 10px 12px;
   border-radius: 8px;
-  background: #fbeceb;
-  color: #7d1d14;
+  background: var(--erro-fundo);
+  color: var(--erro-texto);
   font-size: 13px;
 }
 .confirmar-apagar p {
@@ -944,7 +942,7 @@ button.linha:hover {
   flex-direction: column;
   gap: 4px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .campo-form {
   min-width: 0;
@@ -959,24 +957,24 @@ button.linha:hover {
   padding: 0 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #fff;
+  background: var(--cab);
   font-size: 14px;
   font-weight: 400;
 }
 .form-ref [aria-invalid="true"] {
-  border-color: #b3261e;
+  border-color: var(--erro-forte);
 }
 .erro-campo {
   font-size: 12.5px;
   font-weight: 400;
-  color: #b3261e;
+  color: var(--erro-forte);
 }
 .erro-form {
   margin: 0;
   padding: 8px 10px;
   border-radius: 8px;
-  background: #fbeceb;
-  color: #7d1d14;
+  background: var(--erro-fundo);
+  color: var(--erro-texto);
   font-size: 13px;
 }
 .grade-form {
@@ -1074,9 +1072,9 @@ button.linha:hover {
   flex-direction: column;
   gap: 2px;
   padding: 8px 16px;
-  background: #fdebc8;
-  color: #7a4300;
-  border-bottom: 1px solid #e3bd72;
+  background: var(--aviso-fundo);
+  color: var(--aviso-texto);
+  border-bottom: 1px solid var(--aviso-borda);
   font-size: 14px;
 }
 
@@ -1084,7 +1082,7 @@ button.linha:hover {
 .janela-fundo {
   position: fixed;
   inset: 0;
-  background: rgba(30, 32, 28, 0.35);
+  background: var(--veu);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -1093,9 +1091,9 @@ button.linha:hover {
   z-index: 50;
 }
 .janela-citacao {
-  background: #fff;
+  background: var(--folha);
   border-radius: 10px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--sombra);
   width: min(560px, 100%);
   padding: 18px 20px;
   display: flex;
@@ -1107,7 +1105,7 @@ button.linha:hover {
   font-size: 18px;
 }
 .janela-grupo {
-  border: 1px solid #d9dcd4;
+  border: 1px solid var(--borda);
   border-radius: 8px;
   padding: 8px 12px;
   margin: 0;
@@ -1134,7 +1132,7 @@ button.linha:hover {
   gap: 8px;
 }
 .janela-obra {
-  border: 1px solid #d9dcd4;
+  border: 1px solid var(--borda);
   border-radius: 8px;
   padding: 8px 10px;
   display: flex;
@@ -1142,8 +1140,8 @@ button.linha:hover {
   gap: 6px;
 }
 .janela-obra.ativa {
-  border-color: #2b4c9b;
-  box-shadow: 0 0 0 1px #2b4c9b;
+  border-color: var(--destaque);
+  box-shadow: 0 0 0 1px var(--destaque);
 }
 .janela-obra-topo {
   display: flex;
@@ -1192,7 +1190,7 @@ button.linha:hover {
 }
 .fonte-escolha:hover:not(:disabled),
 .fonte-escolha.quente {
-  background: #e6ecf8;
+  background: var(--destaque-claro);
 }
 .fonte-escolha:disabled {
   opacity: 0.55;
@@ -1202,16 +1200,16 @@ button.linha:hover {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background: #f4f5f1;
+  background: var(--fundo);
   border-radius: 8px;
   padding: 8px 12px;
 }
 .janela-texto {
-  color: #1f3a78;
-  font-weight: 500;
+  color: var(--destaque-escuro);
+  font-weight: 600;
 }
 .aviso-form {
-  color: #7a4300;
+  color: var(--aviso-texto);
   font-size: 13px;
 }
 .janela-acoes {
@@ -1256,7 +1254,7 @@ button.linha:hover {
 .texto .nota-de-rodape:hover,
 .texto .nota-de-rodape.ProseMirror-selectednode {
   background: var(--destaque);
-  color: #fff;
+  color: var(--botao-texto);
 }
 
 /* Citação longa: recuada, sem aspas, como sai no PDF. */
@@ -1292,10 +1290,10 @@ button.linha:hover {
 }
 .figura-imagem.sem-imagem {
   padding: 18px 12px;
-  border: 1px dashed #c98a1d;
+  border: 1px dashed var(--aviso-realce);
   border-radius: 6px;
-  background: #fdebc8;
-  color: #7a4300;
+  background: var(--aviso-fundo);
+  color: var(--aviso-texto);
   font-size: 13px;
   text-align: left;
 }
@@ -1355,12 +1353,12 @@ button.linha:hover {
   min-width: 60px;
   padding: 4px 8px;
   border: 1px solid var(--borda-forte);
-  background: #fff;
+  background: var(--folha);
   vertical-align: top;
   font-size: 13.5px;
 }
 .texto .tabela th {
-  background: #eef0ea;
+  background: var(--hov);
   font-weight: 600;
   text-align: left;
 }
@@ -1375,8 +1373,8 @@ button.linha:hover {
 /* Barra de opções da figura ou da tabela (aparece quando o cursor está nela). */
 .ferramentas.contexto {
   min-height: 44px;
-  background: #eef2fb;
-  border-bottom: 1px solid #c9d4ee;
+  background: var(--chip);
+  border-bottom: 1px solid var(--chip-borda);
 }
 .contexto-rotulo {
   font-size: 13px;
@@ -1416,7 +1414,7 @@ button.linha:hover {
 .faixa-aviso.faixa-info {
   background: var(--destaque-claro);
   color: var(--destaque-escuro);
-  border-bottom-color: #c9d4ee;
+  border-bottom-color: var(--chip-borda);
 }
 .faixa-aviso:has(> button) {
   flex-direction: row;
@@ -1457,7 +1455,7 @@ button.linha:hover {
 .passos li.atual .passo-numero {
   background: var(--destaque);
   border-color: var(--destaque);
-  color: #fff;
+  color: var(--botao-texto);
 }
 .passos li.feito .passo-numero {
   background: var(--destaque-claro);
@@ -1477,7 +1475,7 @@ button.linha:hover {
   padding: 12px;
   border: 1px solid var(--borda-forte);
   border-radius: 10px;
-  background: #fff;
+  background: var(--folha);
   cursor: pointer;
 }
 .cartao-escolha.on {
@@ -1521,7 +1519,7 @@ button.linha:hover {
   padding: 8px 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #fff;
+  background: var(--cab);
   resize: vertical;
 }
 .campo-form select {
@@ -1580,7 +1578,7 @@ button.linha:hover {
   padding: 8px 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #f7f8fa;
+  background: var(--fundo);
   font-size: 14px;
   font-weight: 600;
   text-align: left;
@@ -1605,7 +1603,7 @@ button.linha:hover {
   padding: 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 10px;
-  background: #fff;
+  background: var(--folha);
 }
 .cartao-abertura.ligado {
   border-color: var(--destaque);
@@ -1619,10 +1617,10 @@ button.linha:hover {
   padding: 10px 12px;
   border: 1px solid var(--borda);
   border-radius: 10px;
-  background: #fff;
+  background: var(--folha);
 }
 .resumo-da-abertura {
-  background: #fafbfc;
+  background: var(--fundo);
 }
 .elemento-topo {
   display: flex;
@@ -1640,7 +1638,7 @@ button.linha:hover {
   padding: 8px 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: #fff;
+  background: var(--cab);
   font-size: 14px;
   outline: none;
 }
@@ -1660,7 +1658,7 @@ button.linha:hover {
 
 /* Aviso de número de título fora de ordem, na estrutura. */
 .aviso-de-numero {
-  color: #7a4300;
+  color: var(--aviso-texto);
 }
 
 /* E-mail para o Crossref, na gaveta, logo abaixo da busca pelo DOI. */
@@ -1675,4 +1673,35 @@ button.linha:hover {
   flex-direction: column;
   gap: 6px;
   margin-top: 6px;
+}
+
+/* Seletor de tema (Claro / Escuro / Sistema), no topo do Painel. */
+.tema-seletor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.tema-rotulo {
+  color: var(--tinta-suave);
+  font-weight: 600;
+}
+.tema-opcao {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  background: var(--cab);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tinta-suave);
+  cursor: pointer;
+}
+.tema-opcao:hover {
+  background: var(--hov);
+}
+.tema-opcao.on {
+  background: var(--destaque-claro);
+  border-color: var(--destaque);
+  color: var(--destaque);
 }
