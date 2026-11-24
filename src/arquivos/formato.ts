@@ -82,6 +82,7 @@ import {
 } from "../documento/modelo";
 import { modeloDoArquivo, modeloParaArquivo } from "../modelos/arquivo";
 import { conferirExcecoes } from "../modelos/excecoes";
+import { ELEMENTO_DA_ABERTURA } from "../conversor/abertura";
 import type { ModeloResolvido } from "../modelos/tipos";
 
 export const VERSAO_DO_ARQUIVO = 7;
@@ -420,9 +421,8 @@ function conferirResumo(v: unknown): Resumo | null {
   return { tipo: "resumo", idioma: v.idioma, ...(v.titulo !== undefined ? { titulo: v.titulo } : {}), trechos, palavrasChave: [...v.palavrasChave] };
 }
 
-/** Um bloco da abertura (versão 7), ou null se estiver estragado. */
-function conferirBlocoDaAbertura(v: unknown): BlocoDaAbertura | null {
-  if (!objeto(v)) return null;
+/** Um bloco da abertura (versão 7), sem as exceções; null se estiver estragado. */
+function conferirConteudoDaAbertura(v: Record<string, unknown>): BlocoDaAbertura | null {
   switch (v.tipo) {
     case "capa":
     case "folhaDeRosto":
@@ -443,6 +443,19 @@ function conferirBlocoDaAbertura(v: unknown): BlocoDaAbertura | null {
     default:
       return null;
   }
+}
+
+/**
+ * Um bloco da abertura (versão 7), com as exceções "só este" conferidas como
+ * as do texto. Null se estiver estragado; um texto com o motivo, quando há um.
+ */
+function conferirBlocoDaAbertura(v: unknown): BlocoDaAbertura | string | null {
+  if (!objeto(v)) return null;
+  const bloco = conferirConteudoDaAbertura(v);
+  if (!bloco || v.excecoes === undefined) return bloco;
+  const c = conferirExcecoes(ELEMENTO_DA_ABERTURA[bloco.tipo], v.excecoes);
+  if (!c.ok) return c.erro;
+  return c.excecoes ? { ...bloco, excecoes: c.excecoes } : bloco;
 }
 
 /** Dois blocos que não podem estar juntos: duas capas, ou dois resumos guardados no mesmo idioma. */
@@ -476,6 +489,7 @@ function conferirAbertura(v: unknown): Abertura | string {
   for (const [i, b] of v.blocos.entries()) {
     const bloco = conferirBlocoDaAbertura(b);
     if (!bloco) return `o bloco ${i + 1} da abertura está estragado`;
+    if (typeof bloco === "string") return `o bloco ${i + 1} da abertura está estragado: ${bloco}`;
     const anterior = blocos[blocos.length - 1];
     if (anterior && ORDEM_DA_ABERTURA.indexOf(anterior.tipo) > ORDEM_DA_ABERTURA.indexOf(bloco.tipo)) {
       return `o bloco ${i + 1} da abertura (${NOME_NA_ABERTURA[bloco.tipo]}) está fora da ordem`;
@@ -487,7 +501,7 @@ function conferirAbertura(v: unknown): Abertura | string {
   const guardados: TextoGuardavel[] = [];
   for (const [i, g] of v.guardados.entries()) {
     const bloco = conferirBlocoDaAbertura(g);
-    if (!bloco || bloco.tipo === "capa" || bloco.tipo === "folhaDeRosto" || bloco.tipo === "paginaDeTitulo" || bloco.tipo === "sumario") {
+    if (!bloco || typeof bloco === "string" || bloco.tipo === "capa" || bloco.tipo === "folhaDeRosto" || bloco.tipo === "paginaDeTitulo" || bloco.tipo === "sumario") {
       return `o texto guardado ${i + 1} da abertura está estragado`;
     }
     guardados.push(bloco as TextoGuardavel);

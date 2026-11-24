@@ -30,7 +30,7 @@
 # ==============================================================================
 
 modelo: ABNT
-herda de: Em branco, revisão 1
+herda de: Em branco, revisão 2
 versão: 2025
 revisão: 11
 data da revisão: 24/11/2026

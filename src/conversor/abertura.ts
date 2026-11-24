@@ -6,7 +6,20 @@
 // A forma de cada elemento na página (medidas, destaques, rótulos da norma)
 // vem do modelo e fica em typst.ts.
 
-import { ehTexto, ordenarAbertura, type Abertura, type Bloco, type DadosDoTrabalho, type Data, type Epigrafe, type Resumo, type TextoDaAbertura } from "../documento/modelo";
+import {
+  ehTexto,
+  ordenarAbertura,
+  type Abertura,
+  type Bloco,
+  type DadosDoTrabalho,
+  type Data,
+  type Epigrafe,
+  type Excecoes,
+  type Resumo,
+  type TextoDaAbertura,
+  type TipoDaAbertura,
+} from "../documento/modelo";
+import { valorNoBloco } from "../modelos/excecoes";
 import { valorEfetivo } from "../modelos/herdar";
 import type { ModeloResolvido } from "../modelos/tipos";
 
@@ -21,7 +34,7 @@ export type ElementoDaAbertura =
   | { tipo: "agradecimentos"; bloco: TextoDaAbertura }
   | { tipo: "epigrafe"; bloco: Epigrafe }
   | { tipo: "resumo"; resumo: Resumo }
-  | { tipo: "sumario" };
+  | { tipo: "sumario"; excecoes?: Excecoes };
 
 /** O elemento da árvore de cada parte da abertura. */
 export const ELEMENTO_DA_ABERTURA: Record<ElementoDaAbertura["tipo"], string> = {
@@ -73,11 +86,42 @@ export function elementosDaAbertura(abertura: Abertura, existe: (elemento: Eleme
       case "resumo":
         if (b.trechos.some((t) => ehTexto(t) && t.texto.trim())) lista.push({ tipo: "resumo", resumo: b });
         break;
+      case "sumario":
+        lista.push(b.excecoes ? { tipo: "sumario", excecoes: b.excecoes } : { tipo: "sumario" });
+        break;
       default:
         lista.push({ tipo: b.tipo });
     }
   }
   return lista.filter((e) => existe(e.tipo));
+}
+
+// ---------------------------------------------------------------------------
+// Página nova entre os elementos
+
+/**
+ * Os elementos que ocupam a folha inteira (a capa, a dedicatória no pé da
+ * página...): o que vem depois deles começa sempre numa página nova.
+ */
+export const OCUPAM_A_FOLHA: ReadonlySet<TipoDaAbertura> = new Set(["capa", "folhaDeRosto", "paginaDeTitulo", "dedicatoria", "epigrafe"]);
+
+/** Os elementos que podem ficar sem página nova ("só este"), por exemplo dois resumos na mesma página. */
+export const PODEM_FICAR_SEM_PAGINA_NOVA: ReadonlySet<TipoDaAbertura> = new Set(["agradecimentos", "resumo", "sumario"]);
+
+/** Se o elemento começa numa página nova: o modelo diz (Abertura › página nova) e o bloco pode ter um "só este". */
+export function comecaEmPaginaNovaNaAbertura(modelo: ModeloResolvido, tipo: TipoDaAbertura, excecoes?: Excecoes): boolean {
+  if (!PODEM_FICAR_SEM_PAGINA_NOVA.has(tipo)) return true;
+  const v = valorNoBloco(modelo, ELEMENTO_DA_ABERTURA[tipo], "página nova", excecoes)?.valor;
+  return v?.tipo === "simnao" ? v.valor : true;
+}
+
+/**
+ * Se a página nova antes de um elemento pode sair: ele aceita, e o anterior não
+ * ocupa a folha inteira (depois da capa, a página nova vem de qualquer jeito).
+ * O primeiro elemento não tem página nova antes.
+ */
+export function paginaNovaPodeSair(anterior: TipoDaAbertura | undefined, tipo: TipoDaAbertura): boolean {
+  return !!anterior && PODEM_FICAR_SEM_PAGINA_NOVA.has(tipo) && !OCUPAM_A_FOLHA.has(anterior);
 }
 
 // ---------------------------------------------------------------------------

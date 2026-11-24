@@ -669,6 +669,23 @@ describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, r
     expect(documentoParaTypst(doc({ ...tudo, semIdentificacao: true }), apa)).not.toContain("Ana Souza");
   });
 
+  it("resumo sem página nova (“só este”) fica na mesma página do anterior; depois de uma folha inteira, a página nova fica", () => {
+    const quebras = (a: Documento["abertura"]) => (documentoParaTypst(doc(a), abnt).match(/#pagebreak\(\)/g) ?? []).length;
+    const semPagina = (tipo: string, idioma?: string) => ({
+      ...tudo,
+      blocos: tudo.blocos.map((b) => (b.tipo === tipo && (!idioma || (b.tipo === "resumo" && b.idioma === idioma)) ? { ...b, excecoes: { "página nova": "não" } } : b)),
+    });
+    const todas = quebras(tudo);
+    // O resumo em inglês sobe para a página do resumo em português; o sumário, para a do espanhol.
+    expect(quebras(semPagina("resumo", "en"))).toBe(todas - 1);
+    expect(quebras(semPagina("sumario"))).toBe(todas - 1);
+    // O primeiro resumo vem depois da epígrafe, que ocupa a folha inteira: a página nova continua.
+    expect(quebras(semPagina("resumo", "pt-BR"))).toBe(todas);
+    const codigo = documentoParaTypst(doc(semPagina("resumo", "en")), abnt);
+    const entre = codigo.slice(codigo.indexOf("Este trabalho relata."), codigo.indexOf("This paper reports."));
+    expect(entre).not.toContain("#pagebreak()");
+  });
+
   it("APA: página de título com tudo centralizado e a data por extenso; sem capa, dedicatória nem sumário", () => {
     const typst = documentoParaTypst(doc(), apa);
     expect(typst).toContain("#strong[O acolhimento: um relato]");

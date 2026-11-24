@@ -11,15 +11,15 @@
     "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
     "herdaDe": {
       "nome": "Em branco",
-      "revisao": 1
+      "revisao": 2
     },
     "cadeia": [
       {
         "id": "em-branco",
         "nome": "Em branco",
-        "revisao": 1,
+        "revisao": 2,
         "dataDaRevisao": "24/11/2026",
-        "notaDaRevisao": "Primeira revisão (versão 2, etapa 1)."
+        "notaDaRevisao": "Revisão 2 (etapa 3a): “página nova” na Abertura (cada elemento antes do texto numa folha; agradecimentos, resumos e sumário podem ficar sem página nova, “só este”). Revisão 1: a primeira (versão 2, etapa 1)."
       },
       {
         "id": "apa",
@@ -30,7 +30,7 @@
         "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
         "herdaDe": {
           "nome": "Em branco",
-          "revisao": 1
+          "revisao": 2
         }
       }
     ],
@@ -481,6 +481,24 @@
           "nota": "Decisão de 20/11/2026: as quebras de página são manuais, e a lista de referências\né um bloco que a pessoa põe onde quiser. Esta regra fica como referência: o Apud\nnão a aplica sozinho."
         }
       },
+      "abertura": {
+        "página nova": {
+          "valor": "sim",
+          "origem": "Em branco, um elemento em cada folha",
+          "de": "Em branco",
+          "nota": "Cada elemento antes do texto começa numa página nova."
+        },
+        "ordem das partes": {
+          "valor": "página de título, resumo, texto, referências, notas, tabelas, figuras, apêndices",
+          "origem": "APA 7 (checklist do Concise Guide)",
+          "de": "APA"
+        },
+        "ordem das partes, página nova": {
+          "valor": "cada parte",
+          "origem": "APA 7 (checklist do Concise Guide)",
+          "de": "APA"
+        }
+      },
       "abertura.capa": {
         "existe": {
           "valor": "não",
@@ -873,18 +891,6 @@
         "rótulos de seção, destaque": {
           "valor": "negrito",
           "origem": "APA 7 (site da APA)",
-          "de": "APA"
-        }
-      },
-      "abertura": {
-        "ordem das partes": {
-          "valor": "página de título, resumo, texto, referências, notas, tabelas, figuras, apêndices",
-          "origem": "APA 7 (checklist do Concise Guide)",
-          "de": "APA"
-        },
-        "ordem das partes, página nova": {
-          "valor": "cada parte",
-          "origem": "APA 7 (checklist do Concise Guide)",
           "de": "APA"
         }
       },

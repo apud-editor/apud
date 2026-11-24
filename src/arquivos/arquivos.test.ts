@@ -196,6 +196,13 @@ describe("formato do arquivo .apud", () => {
     expect(comAbertura({ ...base, blocos: [], guardados: [{ tipo: "capa" }] })).toEqual({ ok: false, erro: "o texto guardado 1 da abertura está estragado" });
     const resumo = { tipo: "resumo", idioma: "en", trechos: [{ texto: "A." }], palavrasChave: [] };
     expect(comAbertura({ ...base, blocos: [], guardados: [resumo, resumo] })).toEqual({ ok: false, erro: "a abertura tem resumo guardado duas vezes" });
+    // A página nova "só este" de um resumo é lida; uma exceção que o bloco não aceita recusa o arquivo.
+    const semPagina = comAbertura({ ...base, blocos: [{ ...resumo, excecoes: { "Página nova": "Não" } }] });
+    expect(semPagina.ok && semPagina.trabalho.documento.abertura.blocos[0]).toEqual({ ...resumo, excecoes: { "página nova": "não" } });
+    expect(comAbertura({ ...base, blocos: [{ tipo: "capa", excecoes: { "página nova": "não" } }] })).toEqual({
+      ok: false,
+      erro: "o bloco 1 da abertura está estragado: “página nova” não pode ser uma exceção de Abertura › Capa",
+    });
     // Dois resumos no mesmo idioma na abertura são aceitos (a pessoa pode estar escrevendo um de novo).
     expect(comAbertura({ ...base, blocos: [resumo, resumo] }).ok).toBe(true);
   });

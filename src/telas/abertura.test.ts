@@ -4,7 +4,17 @@
 import { describe, expect, it } from "vitest";
 import { carregarPerfil } from "../../scripts/prova-lib";
 import { aberturaVazia, dadosVazios, tirarDaAbertura, type Abertura, type DadosDoTrabalho } from "../documento/modelo";
-import { chaveDoBloco, faixasDaFolha, mudarPeca, nomeDoBlocoDaAbertura, opcoesDeAdicionar, situacaoDoBloco } from "./abertura";
+import {
+  chaveDoBloco,
+  comPaginaNova,
+  faixasDaFolha,
+  linhasDePaginaNova,
+  mudarPeca,
+  nomeDoBlocoDaAbertura,
+  opcoesDeAdicionar,
+  situacaoDoBloco,
+  temEscolhaDePaginaNova,
+} from "./abertura";
 
 const abnt = carregarPerfil("abnt.txt").modelo;
 const apa = carregarPerfil("apa.txt").modelo;
@@ -137,5 +147,27 @@ describe("mudar uma peça muda os dados do trabalho", () => {
     expect(mudarPeca(dados(), "natureza", "Relatório.\nSegunda linha. ")).toEqual({ ok: true, dados: dados({ natureza: "Relatório.\nSegunda linha." }) });
     const r = mudarPeca(dados({ natureza: "X" }), "natureza", " ");
     expect(r.ok && r.dados).not.toHaveProperty("natureza");
+  });
+});
+
+describe("a página nova entre os blocos da abertura", () => {
+  const r = (idioma: string, excecoes?: Record<string, string>) => ({ tipo: "resumo" as const, idioma, trechos: [{ texto: "A." }], palavrasChave: [], ...(excecoes ? { excecoes } : {}) });
+
+  it("uma linha acima de cada bloco menos o primeiro; só sai depois de um bloco que não ocupa a folha inteira", () => {
+    const blocos = [{ tipo: "capa" as const }, { tipo: "folhaDeRosto" as const }, r("pt-BR"), r("en"), { tipo: "sumario" as const }];
+    expect(linhasDePaginaNova(blocos, abnt)).toEqual([null, { podeSair: false }, { podeSair: false }, { podeSair: true }, { podeSair: true }]);
+  });
+
+  it("um bloco sem página nova (“só este”) não tem linha; um bloco que a norma não tem também não", () => {
+    const blocos = [{ tipo: "capa" as const }, { tipo: "paginaDeTitulo" as const }, r("pt-BR"), r("en", { "página nova": "não" })];
+    expect(linhasDePaginaNova(blocos, abnt)).toEqual([null, null, { podeSair: false }, null]);
+  });
+
+  it("tirar e pôr de volta a página nova escreve e apaga a exceção do bloco", () => {
+    const sem = comPaginaNova(r("en"), abnt, false);
+    expect(sem.excecoes).toEqual({ "página nova": "não" });
+    expect(comPaginaNova(sem, abnt, true)).toEqual(r("en"));
+    expect(temEscolhaDePaginaNova({ tipo: "capa" })).toBe(false);
+    expect(temEscolhaDePaginaNova(r("en"))).toBe(true);
   });
 });

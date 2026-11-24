@@ -15,7 +15,15 @@ import {
   type DadosDoTrabalho,
   type TipoDaAbertura,
 } from "../documento/modelo";
-import { anoDoTrabalho, dataPorExtenso, existeNoModelo, naturezaDoTrabalho } from "../conversor/abertura";
+import {
+  anoDoTrabalho,
+  comecaEmPaginaNovaNaAbertura,
+  dataPorExtenso,
+  existeNoModelo,
+  naturezaDoTrabalho,
+  paginaNovaPodeSair,
+  PODEM_FICAR_SEM_PAGINA_NOVA,
+} from "../conversor/abertura";
 import { valorEfetivo } from "../modelos/herdar";
 import type { ModeloResolvido } from "../modelos/tipos";
 import { IDIOMAS_DO_RESUMO, dataDoCampo, dataParaCampo, lerAno, nomeDoIdioma } from "./trabalho";
@@ -69,6 +77,50 @@ export function situacaoDoBloco(b: BlocoDaAbertura, modelo: ModeloResolvido, nom
 const FEMININOS = new Set<TipoDaAbertura>(["capa", "folhaDeRosto", "paginaDeTitulo", "dedicatoria", "epigrafe"]);
 const genero = (t: TipoDaAbertura) => (FEMININOS.has(t) ? "a" : "o");
 const artigo = (t: TipoDaAbertura) => (t === "agradecimentos" ? "os" : FEMININOS.has(t) ? "a" : "o");
+
+// ---------------------------------------------------------------------------
+// A página nova entre os blocos (como a linha "Página nova" acima dos títulos)
+
+export interface LinhaDePaginaNova {
+  /** A linha some com Delete (vira "só este: sem página nova"). */
+  podeSair: boolean;
+}
+
+/**
+ * A linha "Página nova" acima de cada bloco que começa numa página nova no PDF.
+ * O primeiro bloco não tem (a abertura já começa numa página), nem um bloco que
+ * a norma não tem (ele não sai no PDF). Depois de um elemento que ocupa a folha
+ * inteira, a linha aparece, mas não sai (a página nova vem de qualquer jeito).
+ */
+export function linhasDePaginaNova(blocos: BlocoDaAbertura[], modelo: ModeloResolvido): Array<LinhaDePaginaNova | null> {
+  const tem = existeNoModelo(modelo);
+  let anterior: TipoDaAbertura | undefined;
+  return blocos.map((b) => {
+    if (!tem(b.tipo)) return null;
+    const antes = anterior;
+    anterior = b.tipo;
+    if (!antes || !comecaEmPaginaNovaNaAbertura(modelo, b.tipo, b.excecoes)) return null;
+    return { podeSair: paginaNovaPodeSair(antes, b.tipo) };
+  });
+}
+
+/** Se o ⚙ do bloco oferece "Começar em página nova" (agradecimentos, resumos e sumário). */
+export const temEscolhaDePaginaNova = (b: BlocoDaAbertura) => PODEM_FICAR_SEM_PAGINA_NOVA.has(b.tipo);
+
+/**
+ * O bloco com ou sem página nova, como "só este": igual ao modelo, a exceção
+ * sai; diferente, fica escrita no bloco ("página nova": "não").
+ */
+export function comPaginaNova<T extends BlocoDaAbertura>(b: T, modelo: ModeloResolvido, quer: boolean): T {
+  const padrao = comecaEmPaginaNovaNaAbertura(modelo, b.tipo, undefined);
+  const excecoes = { ...(b.excecoes ?? {}) };
+  delete excecoes["página nova"];
+  if (quer !== padrao) excecoes["página nova"] = quer ? "sim" : "não";
+  const novo = { ...b };
+  if (Object.keys(excecoes).length) novo.excecoes = excecoes;
+  else delete novo.excecoes;
+  return novo;
+}
 
 // ---------------------------------------------------------------------------
 // "Adicionar à abertura"

@@ -13,15 +13,19 @@ import {
 import CampoDeParagrafos from "../editor/CampoDeParagrafos";
 import { Icone } from "../editor/icones";
 import { nomeDoIdiomaNoModelo } from "../conversor/abertura";
+import { comecaEmPaginaNovaNaAbertura } from "../conversor/abertura";
 import { valorEfetivo } from "../modelos/herdar";
 import type { ModeloResolvido } from "../modelos/tipos";
 import {
   chaveDoBloco,
+  comPaginaNova,
   faixasDaFolha,
+  linhasDePaginaNova,
   mudarPeca,
   nomeDoBlocoDaAbertura,
   opcoesDeAdicionar,
   situacaoDoBloco,
+  temEscolhaDePaginaNova,
   type FolhaComPecas,
   type Peca,
 } from "./abertura";
@@ -53,6 +57,8 @@ interface Props {
  */
 export default function AberturaEmBlocos({ abertura, dados, nomeDaNorma, modelo, aoMudar, aoMudarDados, pedidoDeAdicionar = 0 }: Props) {
   const [menuAberto, setMenuAberto] = useState(false);
+  // A Abertura se recolhe numa linha só (a seta no divisor), para escrever o texto sem ela à vista.
+  const [aberta, setAberta] = useState(true);
   const [ajustes, setAjustes] = useState<string | null>(null);
   const secao = useRef<HTMLElement>(null);
   const opcoes = opcoesDeAdicionar(abertura, modelo);
@@ -62,6 +68,7 @@ export default function AberturaEmBlocos({ abertura, dados, nomeDaNorma, modelo,
 
   useEffect(() => {
     if (!pedidoDeAdicionar) return;
+    setAberta(true);
     setMenuAberto(true);
     secao.current?.scrollIntoView?.({ block: "start", behavior: "smooth" });
   }, [pedidoDeAdicionar]);
@@ -84,6 +91,7 @@ export default function AberturaEmBlocos({ abertura, dados, nomeDaNorma, modelo,
   });
 
   const adicionar = (tipo: TipoDaAbertura, idioma?: string) => {
+    setAberta(true);
     let nova: Abertura | null = null;
     aoMudar((a) => (nova = adicionarAAbertura(a, tipo, idioma)), true);
     setMenuAberto(false);
@@ -103,39 +111,89 @@ export default function AberturaEmBlocos({ abertura, dados, nomeDaNorma, modelo,
   const mudarBloco = (indice: number, fazer: (b: BlocoDaAbertura) => BlocoDaAbertura, redesenhar = false) =>
     aoMudar((a) => ({ ...a, blocos: a.blocos.map((b, i) => (i === indice ? fazer(b) : b)) }), redesenhar);
 
+  const linhas = linhasDePaginaNova(blocos, modelo);
+  const quantos = blocos.length === 1 ? "1 elemento" : `${blocos.length} elementos`;
+
   return (
-    <section ref={secao} className="ab" aria-label="Abertura do trabalho">
+    <section ref={secao} className={`ab ${aberta ? "" : "recolhida"}`} aria-label="Abertura do trabalho">
       <div className="ab-divisor">
-        <span className="ab-divisor-nome">Abertura</span>
+        <button
+          type="button"
+          className="ab-recolher"
+          aria-expanded={aberta}
+          title={aberta ? "Recolher a abertura" : "Mostrar a abertura"}
+          onClick={() => setAberta(!aberta)}
+        >
+          <span className={`ab-seta ${aberta ? "" : "fechada"}`} aria-hidden="true">
+            <Icone nome="baixo" tamanho={14} />
+          </span>
+          <span className="ab-divisor-nome">Abertura</span>
+          {!aberta && blocos.length > 0 && <span className="ab-quantos">{quantos}</span>}
+        </button>
         <span className="ab-divisor-linha" aria-hidden="true" />
         <MenuDeAdicionar aberto={menuAberto} aoAlternar={setMenuAberto} opcoes={opcoes} nomeDaNorma={nomeDaNorma} aoEscolher={adicionar} />
       </div>
-      {blocos.length === 0 && <p className="ab-vazia">Nada antes do texto. A capa, os resumos e o resto entram por “Adicionar à abertura”.</p>}
-      {blocos.map((b, i) => {
-        const chave = chaveDoBloco(blocos, i);
-        return (
-          <BlocoNaTela
-            key={chave}
-            chave={chave}
-            bloco={b}
-            dados={dados}
-            modelo={modelo}
-            nomeDaNorma={nomeDaNorma}
-            semIdentificacao={abertura.semIdentificacao}
-            ajustesAbertos={ajustes === chave}
-            aoAlternarAjustes={() => setAjustes((x) => (x === chave ? null : chave))}
-            aoFecharAjustes={() => setAjustes(null)}
-            aoTirar={() => tirar(i)}
-            aoMudar={(fazer, redesenhar) => mudarBloco(i, fazer, redesenhar)}
-            aoMudarDados={aoMudarDados}
-          />
-        );
-      })}
+      {aberta && blocos.length === 0 && <p className="ab-vazia">Nada antes do texto. A capa, os resumos e o resto entram por “Adicionar à abertura”.</p>}
+      {aberta &&
+        blocos.map((b, i) => {
+          const chave = chaveDoBloco(blocos, i);
+          const linha = linhas[i];
+          return (
+            <div key={chave} className="ab-lugar">
+              {linha && <LinhaDePaginaNova podeSair={linha.podeSair} nome={nomeDoBlocoDaAbertura(b)} aoTirar={() => mudarBloco(i, (x) => comPaginaNova(x, modelo, false), true)} />}
+              <BlocoNaTela
+                chave={chave}
+                bloco={b}
+                dados={dados}
+                modelo={modelo}
+                nomeDaNorma={nomeDaNorma}
+                semIdentificacao={abertura.semIdentificacao}
+                ajustesAbertos={ajustes === chave}
+                aoAlternarAjustes={() => setAjustes((x) => (x === chave ? null : chave))}
+                aoFecharAjustes={() => setAjustes(null)}
+                aoTirar={() => tirar(i)}
+                aoMudar={(fazer, redesenhar) => mudarBloco(i, fazer, redesenhar)}
+                aoMudarDados={aoMudarDados}
+              />
+            </div>
+          );
+        })}
       <div className="ab-divisor ab-divisor-texto">
         <span className="ab-divisor-nome">Texto</span>
         <span className="ab-divisor-linha" aria-hidden="true" />
       </div>
     </section>
+  );
+}
+
+/**
+ * A linha "Página nova" acima do bloco, como a dos títulos: clicar e apertar
+ * Delete (ou Backspace) tira a página nova só deste bloco. Depois de um
+ * elemento que ocupa a folha inteira, ela só mostra (não dá para tirar).
+ */
+function LinhaDePaginaNova({ podeSair, nome, aoTirar }: { podeSair: boolean; nome: string; aoTirar: () => void }) {
+  if (!podeSair) {
+    return (
+      <div className="ab-pagina-nova fixa" title="Começa numa página nova: o elemento de cima ocupa a folha inteira.">
+        <span>Página nova</span>
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className="ab-pagina-nova"
+      aria-label={`Página nova antes de ${nome}. Aperte Delete para tirar.`}
+      title="Clique e aperte Delete para tirar a página nova só deste bloco (ele fica na mesma página do anterior). Para pôr de volta, use o ⚙."
+      onKeyDown={(ev) => {
+        if (ev.key === "Delete" || ev.key === "Backspace") {
+          ev.preventDefault();
+          aoTirar();
+        }
+      }}
+    >
+      <span>Página nova</span>
+    </button>
   );
 }
 
@@ -515,6 +573,9 @@ function AjustesDoBlocoDaAbertura(p: PropsDoBloco & { nome: string }) {
           </select>
         </label>
       )}
+      {temEscolhaDePaginaNova(b) && (
+        <PaginaNovaNoAjuste bloco={b} modelo={p.modelo} aoMudar={(quer) => p.aoMudar((x) => comPaginaNova(x, p.modelo, quer), true)} />
+      )}
       <div className="janelinha-mover">
         <button type="button" className="btn" onClick={p.aoTirar}>
           Tirar da abertura
@@ -525,5 +586,20 @@ function AjustesDoBlocoDaAbertura(p: PropsDoBloco & { nome: string }) {
       </div>
       <p className="dica">{guarda ? "O texto fica guardado no trabalho e volta com “Adicionar à abertura”." : "Volta quando quiser, por “Adicionar à abertura”."}</p>
     </div>
+  );
+}
+
+/** "Começar em página nova" no ⚙ (agradecimentos, resumos e sumário): só neste bloco. */
+function PaginaNovaNoAjuste({ bloco, modelo, aoMudar }: { bloco: BlocoDaAbertura; modelo: ModeloResolvido; aoMudar: (quer: boolean) => void }) {
+  const ligada = comecaEmPaginaNovaNaAbertura(modelo, bloco.tipo, bloco.excecoes);
+  const soEste = !!bloco.excecoes?.["página nova"];
+  return (
+    <>
+      <button type="button" className={`janelinha-chave ${ligada ? "on" : ""}`} aria-pressed={ligada} onClick={() => aoMudar(!ligada)}>
+        <span>Começar em página nova</span>
+        <span className="janelinha-tg" aria-hidden="true" />
+      </button>
+      {soEste && <p className="dica janelinha-so-este">Só neste bloco. O modelo põe cada elemento numa página nova.</p>}
+    </>
   );
 }

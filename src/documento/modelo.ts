@@ -253,12 +253,16 @@ export type TipoDeFolhaMontada = (typeof FOLHAS_MONTADAS)[number];
 /** Capa, folha de rosto, página de título ou sumário: só o lugar; o conteúdo vem dos dados e do texto. */
 export interface FolhaMontada {
   tipo: TipoDeFolhaMontada;
+  /** "Só este" (por enquanto, só a página nova do sumário). */
+  excecoes?: Excecoes;
 }
 
 /** Dedicatória ou agradecimentos: parágrafos da pessoa. */
 export interface TextoDaAbertura {
   tipo: "dedicatoria" | "agradecimentos";
   paragrafos: TrechoDeTexto[][];
+  /** "Só este" (nos agradecimentos, a página nova). */
+  excecoes?: Excecoes;
 }
 
 export interface Epigrafe {
@@ -266,6 +270,7 @@ export interface Epigrafe {
   paragrafos: TrechoDeTexto[][];
   /** Quem escreveu a frase, como deve sair ("Clarice Lispector"). */
   autoria: string;
+  excecoes?: Excecoes;
 }
 
 /** Um resumo, num idioma, com o título nesse idioma (revistas pedem) e as palavras-chave. */
@@ -278,6 +283,8 @@ export interface Resumo {
   /** Um parágrafo só (NBR 6028: parágrafo único). */
   trechos: TrechoDeTexto[];
   palavrasChave: string[];
+  /** "Só este": { "página nova": "não" } põe o resumo na mesma página do anterior. */
+  excecoes?: Excecoes;
 }
 
 export type BlocoDaAbertura = FolhaMontada | TextoDaAbertura | Epigrafe | Resumo;

@@ -67,6 +67,7 @@ import {
 import { caminhosDasImagens, larguraPadrao, pontoDaCitacaoLonga } from "./elementos";
 import {
   anoDoTrabalho,
+  comecaEmPaginaNovaNaAbertura,
   dataPorExtenso,
   elementosDaAbertura,
   existeNoModelo,
@@ -74,6 +75,7 @@ import {
   juntarNomes,
   naturezaDoTrabalho,
   palavrasChave,
+  paginaNovaPodeSair,
   repetirTituloNoTexto,
   nomeDoIdiomaNoModelo,
   type ElementoDaAbertura,
@@ -684,7 +686,10 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: L
   const folha = (corpo: string) => `#block(width: 100%, height: 100%, {\n  set par(first-line-indent: 0pt, justify: false)\n  ${corpo}\n})\n#pagebreak()\n`;
   const campos = (elemento: string, propriedade = "campos") => r.lista(elemento, propriedade).map((c) => c.replace(" (opcional)", ""));
 
+  // Onde começa a parte de cada elemento, para tirar a página nova do fim dela quando o seguinte não a quer.
+  const inicioDe: number[] = [];
   for (const el of elementos) {
+    inicioDe.push(partes.length);
     switch (el.tipo) {
       case "capa": {
         const c = campos("abertura.capa");
@@ -763,6 +768,16 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: L
         partes.push(sumarioParaTypst(doc, r, m));
         break;
     }
+  }
+  // Um elemento sem página nova ("só este", como dois resumos na mesma página)
+  // fica logo depois do anterior: sai a quebra do fim da parte anterior. Só
+  // depois de um elemento que não ocupa a folha inteira (paginaNovaPodeSair).
+  for (let i = 1; i < elementos.length; i++) {
+    const el = elementos[i];
+    const excecoes = el.tipo === "resumo" ? el.resumo.excecoes : el.tipo === "agradecimentos" ? el.bloco.excecoes : el.tipo === "sumario" ? el.excecoes : undefined;
+    if (!paginaNovaPodeSair(elementos[i - 1].tipo, el.tipo) || comecaEmPaginaNovaNaAbertura(m.modelo, el.tipo, excecoes)) continue;
+    const k = inicioDe[i] - 1;
+    partes[k] = partes[k].replace(/\n?#pagebreak\(\)\n$/, "\n");
   }
   return partes;
 }
