@@ -1,0 +1,169 @@
+# ==============================================================================
+# Modelo do Apud: Em branco
+#
+# A raiz de todos os modelos (decisão 13 da versão 2). A ABNT, a APA e os
+# modelos de cada faculdade ou revista são "Em branco + diferenças": o que eles
+# não disserem vem daqui. Por isso o Em branco dá um valor a tudo o que o Apud
+# aplica, e nenhum valor de formatação fica escrito no código do programa.
+#
+# Valores neutros: Times New Roman 12, espaço simples, texto à esquerda, sem
+# recuo; títulos em negrito, sem número; capa, folha de rosto, página de título
+# e resumos desligados. Onde a versão 1 tinha um valor no código para quando o
+# perfil não dizia nada ("Fonte:", o filete de 5 cm, "Referências"...), o
+# Em branco usa esse mesmo valor.
+#
+# Cada linha é um valor:   propriedade: valor | origem | situação
+# Cada seção (== ... ==) é um elemento da árvore. O guia completo está em
+# modelos/LEIA-ME.md.
+# ==============================================================================
+
+modelo: Em branco
+revisão: 1
+data da revisão: 24/11/2026
+nota da revisão: Primeira revisão (versão 2, etapa 1).
+
+== Texto ==
+fonte: Times New Roman                   | Em branco
+tamanho: 12 pt                           | Em branco
+entrelinha: simples                      | Em branco
+alinhamento: à esquerda                  | Em branco
+recuo da primeira linha: nenhum          | Em branco
+recuo à esquerda: 0 cm                   | Em branco
+destaque: normal                         | Em branco
+espaço antes: nenhuma                    | Em branco
+espaço depois: nenhuma                   | Em branco
+
+== Página ==
+margens: 2,5 cm                          | Em branco
+
+== Página › Número da página ==
+posição: canto superior direito          | Em branco
+distância vertical: 1,25 cm              | Em branco, como o cabeçalho do Word
+distância lateral: na margem             | Em branco
+# Todas as páginas contam e mostram o número.
+contar desde: capa                       | Em branco
+mostrar desde: primeira página contada   | Em branco
+
+== Títulos ==
+destaque: negrito                        | Em branco
+posição: à esquerda                      | Em branco
+espaço antes: 1 linha                    | Em branco
+espaço depois: nenhuma                   | Em branco
+texto depois: parágrafo novo             | Em branco
+final na mesma linha: nenhum             | valor do código da versão 1
+# Etapa 2 da versão 2 (decisão 10): no Em branco, tudo desligado.
+numerar sozinho: não                     | Em branco (decisão 13 da versão 2)
+maiúsculas sozinho: não                  | Em branco (decisão 13 da versão 2)
+página nova: não                         | Em branco (decisão 13 da versão 2)
+
+== Títulos › Nível 1 › Título repetido ==
+repetir no começo do texto: não          | Em branco
+
+== Listas ==
+marcador em sequência: 1.                | Em branco
+marcador sem sequência: •                | Em branco
+marcador da sub-lista: igual ao da lista | Em branco
+recuo à esquerda: 1,25 cm                | Em branco
+recuo a mais da sub-lista: 1,25 cm       | Em branco
+
+== Citação longa ==
+recuo à esquerda: 4 cm                   | Em branco
+ponto final: como a pessoa escreveu      | valor do código da versão 1
+
+== Nota de rodapé ==
+tamanho: 10 pt                           | Em branco, como a nota do Word
+filete: 5 cm                             | valor do código da versão 1
+linhas seguintes: na margem              | valor do código da versão 1
+
+== Ilustrações ==
+espécies: Figura, Quadro, Gráfico        | Em branco
+posição: centralizada                    | valor do código da versão 1
+largura do título e da fonte: largura do texto  | valor do código da versão 1
+espaço antes e depois: 1 linha           | Em branco
+
+== Ilustrações › Tabela ==
+rótulo: Tabela                           | valor do código da versão 1
+fios: todos os fios                      | valor do código da versão 1
+alinhamento das células: à esquerda      | valor do código da versão 1
+largura: largura do texto                | valor do código da versão 1
+em mais de uma página: só o cabeçalho se repete  | valor do código da versão 1
+indicações: (continua), (continuação), (conclusão)  | valor do código da versão 1
+posição das indicações: à direita        | valor do código da versão 1
+
+== Ilustrações › Identificação ==
+separador: travessão                     | valor do código da versão 1
+destaque do número: normal               | valor do código da versão 1
+título na linha de baixo: não            | valor do código da versão 1
+destaque do título: normal               | valor do código da versão 1
+
+== Ilustrações › Fonte e nota ==
+rótulo da fonte: Fonte:                  | valor do código da versão 1
+fonte quando é sua: nenhuma              | valor do código da versão 1
+rótulo da nota: Nota.                    | valor do código da versão 1
+destaque do rótulo da nota: itálico      | valor do código da versão 1
+fonte dentro da nota: não                | valor do código da versão 1
+
+== Lista de referências ==
+título: Referências                      | valor do código da versão 1
+espaço entre as referências: nenhuma     | valor do código da versão 1
+recuo das linhas seguintes: 0 cm         | valor do código da versão 1
+página nova: não                         | Em branco (decisão 13 da versão 2)
+
+== Abertura › Capa ==
+existe: não                              | Em branco (decisão 13 da versão 2)
+campos: instituição (opcional), autor, título, subtítulo, cidade, ano  | Em branco
+destaque do título: negrito              | Em branco
+
+== Abertura › Folha de rosto ==
+existe: não                              | Em branco (decisão 13 da versão 2)
+campos: autor, título, subtítulo, natureza, orientador, cidade, ano  | Em branco
+destaque do título: negrito              | Em branco
+rótulo do orientador: Orientador(a):     | Em branco
+rótulo do professor: Professor(a):       | Em branco
+
+== Abertura › Página de título ==
+existe: não                              | Em branco (decisão 13 da versão 2)
+modo quando o trabalho é artigo: estudante  | Em branco
+campos no modo estudante: título, autor, departamento e universidade, código e nome da disciplina, professor, data de entrega  | Em branco
+campos no modo profissional: título, autores, afiliação, nota do autor, título curto  | Em branco
+destaque do título: negrito              | Em branco
+linhas antes do título: 3 linhas         | Em branco
+linhas depois do título: 1 linha         | Em branco
+
+== Abertura › Dedicatória ==
+existe: não                              | Em branco
+
+== Abertura › Epígrafe ==
+existe: não                              | Em branco
+autoria: sim                             | Em branco
+
+== Abertura › Agradecimentos ==
+existe: não                              | Em branco
+título: Agradecimentos                   | valor do código da versão 1
+
+== Abertura › Resumo ==
+existe: não                              | Em branco (decisão 13 da versão 2)
+# Os rótulos que a versão 1 tinha no código para cada idioma.
+título em português: Resumo              | valor do código da versão 1
+título em inglês: Abstract               | valor do código da versão 1
+título em espanhol: Resumen              | valor do código da versão 1
+título em francês: Résumé                | valor do código da versão 1
+título em italiano: Riassunto            | valor do código da versão 1
+título em alemão: Zusammenfassung        | valor do código da versão 1
+recuo da primeira linha: nenhum          | valor do código da versão 1
+
+== Abertura › Resumo › Palavras-chave ==
+rótulo em português: Palavras-chave:     | valor do código da versão 1
+rótulo em inglês: Keywords:              | valor do código da versão 1
+rótulo em espanhol: Palabras clave:      | valor do código da versão 1
+rótulo em francês: Mots-clés :           | valor do código da versão 1
+rótulo em italiano: Parole chiave:       | valor do código da versão 1
+rótulo em alemão: Schlüsselwörter:       | valor do código da versão 1
+destaque do rótulo: normal               | valor do código da versão 1
+separador: ponto e vírgula               | valor do código da versão 1
+final: ponto                             | valor do código da versão 1
+
+== Abertura › Sumário ==
+existe: não                              | Em branco
+título: Sumário                          | valor do código da versão 1
+ligação até a página: pontilhado         | valor do código da versão 1
