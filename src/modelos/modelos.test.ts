@@ -70,7 +70,8 @@ describe("árvore de elementos", () => {
     expect(propriedade("titulos.nivel2", "fonte")?.grupo).toBe("aparência");
     expect(propriedade("titulos.nivel2", "posição")?.grupo).toBe("aparência");
     expect(propriedade("titulos.nivel2", "filete")).toBeUndefined();
-    expect(propriedade("titulos", "página nova")?.reservada).toBe(true);
+    expect(propriedade("titulos", "página nova")?.reservada).toBeUndefined();
+    expect(propriedade("referencias", "página nova")?.reservada).toBe(true);
   });
 
   it("cada atalho escreve só propriedades que o elemento tem, com valores que elas aceitam", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { avisosDeNumeracao, type EntradaDaEstrutura } from "./estrutura";
+import { avisosDeNumeracao, avisosDosTitulos, type EntradaDaEstrutura } from "./estrutura";
 
 const t = (texto: string, indice: number, nivel: 1 | 2 | 3 = 1): EntradaDaEstrutura => ({ indice, nivel, texto });
 const avisos = (...textos: string[]) => avisosDeNumeracao(textos.map((x, i) => t(x, i)));
@@ -33,5 +33,19 @@ describe("avisos de número de título fora de ordem", () => {
   });
   it("a lista de referências não conta", () => {
     expect(avisosDeNumeracao([t("1 A", 0), { indice: 1, nivel: 1, texto: "", referencias: true }, t("2 B", 2)]).size).toBe(0);
+  });
+});
+
+describe("avisos da Estrutura com a numeração automática", () => {
+  it("os títulos do Apud avisam o nível pulado; os outros continuam conferidos pelo número escrito", () => {
+    const titulos = [t("Introdução", 0), t("Pulou", 1, 3), t("3 Escrito à mão", 2)];
+    const automaticos = new Map([
+      [0, { numero: "1" }],
+      [1, { numero: "1.0.1", nivelPulado: 2 }],
+    ]);
+    const a = avisosDosTitulos(titulos, automaticos, (x) => x.indice !== 2);
+    expect(a.get(1)).toBe("Este título é de nível 3, mas falta um título de nível 2 antes dele: o número sai 1.0.1.");
+    expect(a.get(2)).toBe("O primeiro título numerado deveria ser o 1, e não o 3.");
+    expect(a.has(0)).toBe(false);
   });
 });

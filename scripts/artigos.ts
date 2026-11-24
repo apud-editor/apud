@@ -2,7 +2,7 @@
 // final de cada fase. Cada pasta de testes/artigos tem:
 //   artigo.md          o texto, com as citações na forma curta do documento de prova
 //   referencias.json   as fontes, no formato do .apud
-//   trabalho.json      o nome, a norma ("abnt.txt" ou "apa.txt") e as escolhas do autor
+//   trabalho.json      o nome, o tipo de trabalho ("artigo"), a norma ("abnt.txt" ou "apa.txt") e as escolhas do autor
 //   original-*.txt     como as citações e a lista saíram no original (para comparar)
 //   gabarito-*.txt     como o Apud deve montar, já conferido (os testes usam)
 //
@@ -21,7 +21,7 @@ import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { documentoParaTypst } from "../src/conversor/typst";
 import { escreverArquivo } from "../src/arquivos/formato";
-import type { Referencia } from "../src/documento/modelo";
+import type { Referencia, TipoDeTrabalho } from "../src/documento/modelo";
 import { carregarNorma, compararComGabarito, documentoDoTexto, lerGabarito, mapearImagens, PASTA_TESTES, rodarTrabalho } from "./prova-lib";
 
 const PASTA = join(PASTA_TESTES, "artigos");
@@ -33,6 +33,8 @@ let algumaDiferenca = false;
 
 interface Trabalho {
   nome: string;
+  /** O tipo de trabalho (os dois são artigos: sem página nova antes do título na ABNT). */
+  tipo?: TipoDeTrabalho;
   arquivo: string;
   norma: string;
   original: string;
@@ -60,6 +62,7 @@ for (const pasta of readdirSync(PASTA, { withFileTypes: true }).filter((d) => d.
   const trabalho = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8")) as Trabalho;
   const referencias = JSON.parse(readFileSync(join(dir, "referencias.json"), "utf8")) as Referencia[];
   const lido = documentoDoTexto(readFileSync(join(dir, "artigo.md"), "utf8"), referencias);
+  if (trabalho.tipo) lido.documento.dados.tipo = trabalho.tipo;
   const norma = carregarNorma(trabalho.norma, trabalho.ajustes ?? {});
   const { identificacao: id } = norma.perfil;
 

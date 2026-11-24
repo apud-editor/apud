@@ -9,11 +9,13 @@
 // o número em negrito e o título em itálico na linha de baixo, é a Identificação
 // com "título na linha de baixo: sim").
 //
-// O que fica com a pessoa (decisão de 20/11/2026): as letras dos títulos saem
-// como ela escreveu (o Apud não põe em maiúsculas), o número do título é o que
-// ela escreveu ("1.1 Contexto"), a página nova só acontece onde ela pôs uma
-// quebra de página, e a lista de referências sai onde ela pôs o bloco "Lista
-// de referências". Tudo o que sai no PDF tem um lugar no editor.
+// Títulos automáticos (versão 2, etapa 2, decisão 10): quando o modelo liga,
+// o Apud numera os títulos (1, 1.1...), aplica as maiúsculas do destaque e
+// começa o título numa página nova (modelos/titulos.ts, a mesma conta que o
+// editor mostra). Com a opção desligada, vale o que a pessoa escreveu: as
+// letras como estão, o número escrito no começo ("1.1 Contexto") e a página
+// nova só onde ela pôs uma quebra. A lista de referências sai onde ela pôs o
+// bloco "Lista de referências". Tudo o que sai no PDF tem um lugar no editor.
 //
 // Citações e referências (fase 2): cada citação é montada pelo motor de
 // citações (citacoes/motor.ts) com as regras de citação do modelo, e uma marca invisível
@@ -79,6 +81,7 @@ import {
 import { separarNumero } from "../documento/estrutura";
 import { valorEfetivo } from "../modelos/herdar";
 import { valorNoBloco } from "../modelos/excecoes";
+import { formaDosTitulos, numeraSozinho, numeroEscritoNoTitulo, vaiEmMaiusculas, type FormaDoTitulo } from "../modelos/titulos";
 import { perfilDeCitacoes } from "../modelos/ponte";
 import type { ModeloResolvido } from "../modelos/tipos";
 import { criarMotor, temGrifo, type Motor, type Pedaco } from "../citacoes/motor";
@@ -231,6 +234,8 @@ interface Medidas {
   modelo: ModeloResolvido;
   /** A forma do parágrafo nas regras gerais (a do Texto). Um parágrafo diferente sai com a própria. */
   formaDoTexto: FormaDoParagrafo;
+  /** O número, a página nova e as maiúsculas de cada título do texto (os vazios não contam). */
+  formasDosTitulos: Map<Bloco, FormaDoTitulo>;
 }
 
 /** O que muda de um parágrafo para outro: o alinhamento, a entrelinha e o recuo da primeira linha. */
@@ -356,6 +361,7 @@ export function documentoParaTypst(doc: Documento, modelo: ModeloResolvido, opco
     ilustracoes: ilustracoes(r, entre, passo, margens),
     modelo,
     formaDoTexto: formaDoParagrafo(modelo, "texto"),
+    formasDosTitulos: formasDosTitulos(doc, modelo),
   };
   escreverTitulos(l, r, medidas);
   escreverNotas(l, r, justificado);
@@ -406,6 +412,8 @@ export function documentoParaTypst(doc: Documento, modelo: ModeloResolvido, opco
   };
   for (let i = 0; i < doc.blocos.length; i++) {
     const b = doc.blocos[i];
+    // A página nova vem antes da marca da prévia: a marca fica na página do título.
+    if (b.tipo === "titulo" && medidas.formasDosTitulos.get(b)?.paginaNova) l(PAGINA_NOVA);
     // Título na mesma linha do texto (APA, níveis 4 e 5): junta com o parágrafo seguinte.
     const seguinte = doc.blocos[i + 1];
     if (b.tipo === "titulo" && medidas.naMesmaLinha.has(b.nivel) && temConteudo(b.trechos) && seguinte?.tipo === "paragrafo" && temConteudo(seguinte.trechos)) {
@@ -557,9 +565,13 @@ function escreverNotas(l: (s?: string) => void, r: Leitor, justificado: boolean)
   l(`}`);
 }
 
-/** Negrito, itálico e sublinhado de um título, como expressão do Typst em volta de `x`. "Maiúsculas" não é aplicado: o título sai com as letras que a pessoa escreveu. */
-function destaqueDoTituloTypst(d: { negrito: boolean; italico: boolean; sublinhado: boolean }, x: string): string {
-  let s = x;
+/**
+ * O destaque de um título, como expressão do Typst em volta de `x`: negrito,
+ * itálico e sublinhado, e as maiúsculas só quando o Apud pode mexer nas letras
+ * ("maiúsculas sozinho"); senão, o título sai com as letras que a pessoa escreveu.
+ */
+function destaqueDoTituloTypst(d: { negrito: boolean; italico: boolean; sublinhado: boolean }, x: string, maiusculas = false): string {
+  let s = maiusculas ? `upper(${x})` : x;
   if (d.negrito) s = `strong(${s})`;
   if (d.italico) s = `emph(${s})`;
   if (d.sublinhado) s = `underline(${s})`;
@@ -595,7 +607,7 @@ function escreverTitulos(l: (s?: string) => void, r: Leitor, m: Medidas) {
   const depois = r.numero("titulos", "espaço depois");
   l(`#let destaque-do-titulo(n, x) = {`);
   for (let nivel = 1; nivel <= 5; nivel++) {
-    const x = destaqueDoTituloTypst(r.destaque(`titulos.nivel${nivel}`, "destaque"), "x");
+    const x = destaqueDoTituloTypst(r.destaque(`titulos.nivel${nivel}`, "destaque"), "x", vaiEmMaiusculas(r.modelo, nivel as NivelDeTitulo));
     l(`  ${nivel === 1 ? "if" : "else if"} n == ${nivel} { ${x} }`);
   }
   l(`  else { x }`);
@@ -619,13 +631,13 @@ function escreverTitulos(l: (s?: string) => void, r: Leitor, m: Medidas) {
  * Undefined quando o título não tem exceção dessas.
  */
 function regraDoTituloComExcecao(nivel: NivelDeTitulo, excecoes: Excecoes | undefined, m: Medidas): string[] | undefined {
-  if (!excecoes || !Object.keys(excecoes).some((k) => k === "destaque" || k === "posição")) return undefined;
+  if (!excecoes || !Object.keys(excecoes).some((k) => k === "destaque" || k === "posição" || k === "maiúsculas sozinho")) return undefined;
   const r = new Leitor(m.modelo);
   const el = `titulos.nivel${nivel}`;
   const destaque = valorNoBloco(m.modelo, el, "destaque", excecoes)!.valor;
   const posicao = valorNoBloco(m.modelo, el, "posição", excecoes)!.texto;
   if (destaque.tipo !== "destaque") throw new Error(`“destaque” em ${el} precisa ser um destaque`);
-  return regraDosTitulos(destaqueDoTituloTypst(destaque, "x"), posicaoDoTituloTypst(posicao, "corpo", m), r.numero("titulos", "espaço antes"), r.numero("titulos", "espaço depois"), m);
+  return regraDosTitulos(destaqueDoTituloTypst(destaque, "x", vaiEmMaiusculas(m.modelo, nivel, excecoes)), posicaoDoTituloTypst(posicao, "corpo", m), r.numero("titulos", "espaço antes"), r.numero("titulos", "espaço depois"), m);
 }
 
 // ---------------------------------------------------------------------------
@@ -802,8 +814,8 @@ function resumoParaTypst(resumo: Resumo, r: Leitor, m: Medidas, e: Escrita): str
 function sumarioParaTypst(doc: Documento, r: Leitor, m: Medidas): string {
   const rotulo = r.texto("abertura.sumario", "título");
   const numeros = doc.blocos.flatMap((b) => {
-    if (b.tipo !== "titulo") return [];
-    const { numero: n } = numeroDoTitulo(b.trechos);
+    if (b.tipo !== "titulo" || !temConteudo(b.trechos)) return [];
+    const { numero: n } = numeroETexto(b, m);
     return n ? [`destaque-do-titulo(${b.nivel}, [${escaparTexto(n)}])`] : [];
   });
   const ligacao = r.texto("abertura.sumario", "ligação até a página") === "nenhuma" ? "h(1fr)" : "box(width: 1fr, repeat(gap: 0.15em)[.])";
@@ -986,6 +998,29 @@ export const registrar = (id: string) => `#cite(label(${texto(id)}), form: none)
 /** Se há algo escrito (texto ou citação), sem montar as citações. */
 const temConteudo = (trechos: Trecho[]) => trechos.some((t) => !ehTexto(t) || t.texto.trim());
 
+/** A forma de cada título com conteúdo, na ordem do texto (a mesma conta do editor). */
+function formasDosTitulos(doc: Documento, modelo: ModeloResolvido): Map<Bloco, FormaDoTitulo> {
+  const titulos = doc.blocos.filter((b): b is Titulo => b.tipo === "titulo" && temConteudo(b.trechos));
+  const formas = formaDosTitulos(modelo, titulos, doc.dados.tipo);
+  return new Map(titulos.map((t, i) => [t, formas[i]]));
+}
+
+/**
+ * O número do título e o texto sem ele. Com a numeração automática, o número
+ * é o do Apud, e um número de seção escrito à mão no começo sai do texto (para
+ * não sair duas vezes). Sem ela, o número é o que a pessoa escreveu.
+ */
+function numeroETexto(b: Titulo, m: Medidas): { numero: string; trechos: Trecho[] } {
+  if (!numeraSozinho(m.modelo, b.nivel, b.excecoes)) return numeroDoTitulo(b.trechos);
+  const numero = m.formasDosTitulos.get(b)?.numero ?? "";
+  const primeiro = b.trechos[0];
+  const escrito = primeiro && ehTexto(primeiro) ? numeroEscritoNoTitulo(primeiro.texto) : undefined;
+  return { numero, trechos: escrito ? [{ ...primeiro, texto: escrito.resto }, ...b.trechos.slice(1)] : b.trechos };
+}
+
+/** A quebra antes de um título que começa em página nova ("fraca": não deixa página em branco). */
+const PAGINA_NOVA = "#pagebreak(weak: true)";
+
 const mesmaForma = (a: FormaDoParagrafo, b: FormaDoParagrafo) => a.alinhamento === b.alinhamento && a.entrelinha === b.entrelinha && a.recuo === b.recuo;
 
 /**
@@ -1011,9 +1046,9 @@ function blocoParaTypst(b: Bloco, m: Medidas, e: Escrita): string {
     }
     case "titulo": {
       if (!temConteudo(b.trechos)) return "";
-      // O número escrito pela pessoa vai como a "numeração" do título: assim ele fica
-      // numa coluna própria (para o alinhamento) e, no futuro, também no sumário.
-      const { numero, trechos } = numeroDoTitulo(b.trechos);
+      // O número (do Apud ou o escrito pela pessoa) vai como a "numeração" do título:
+      // assim ele fica numa coluna própria (para o alinhamento) e também no sumário.
+      const { numero, trechos } = numeroETexto(b, m);
       const numeracao = numero ? `(..n) => ${texto(numero)}` : "none";
       const fim = m.naMesmaLinha.has(b.nivel) ? finalDoTitulo(trechos, m) : "";
       const titulo = `#heading(level: ${b.nivel}, numbering: ${numeracao})[${trechosParaTypst(trechos, e)}${fim}]`;
@@ -1242,11 +1277,16 @@ function finalDoTitulo(trechos: Trecho[], m: Medidas): string {
  * parágrafo só, começando pelo título com o destaque do nível e o ponto.
  */
 function tituloNaMesmaLinha(titulo: Titulo, paragrafo: Trecho[], m: Medidas, e: Escrita): string {
-  const { trechos } = numeroDoTitulo(titulo.trechos);
+  const { trechos } = numeroETexto(titulo, m);
   const corpo = `${trechosParaTypst(trechos, e)}${finalDoTitulo(trechos, m)}`;
-  // Com exceção de destaque, o destaque é o do título; senão, o do nível.
-  const destaque = titulo.excecoes?.destaque !== undefined ? valorNoBloco(m.modelo, `titulos.nivel${titulo.nivel}`, "destaque", titulo.excecoes)!.valor : undefined;
-  const destacado = destaque?.tipo === "destaque" ? `#${destaqueDoTituloTypst(destaque, `[${corpo}]`)}` : `#destaque-do-titulo(${titulo.nivel}, [${corpo}])`;
+  // Com exceção de destaque ou de maiúsculas, o destaque é o do título; senão, o do nível.
+  const ex = titulo.excecoes;
+  const proprio = ex && (ex.destaque !== undefined || ex["maiúsculas sozinho"] !== undefined);
+  const destaque = proprio ? valorNoBloco(m.modelo, `titulos.nivel${titulo.nivel}`, "destaque", ex)!.valor : undefined;
+  const destacado =
+    destaque?.tipo === "destaque"
+      ? `#${destaqueDoTituloTypst(destaque, `[${corpo}]`, vaiEmMaiusculas(m.modelo, titulo.nivel, ex))}`
+      : `#destaque-do-titulo(${titulo.nivel}, [${corpo}])`;
   return `${destacado} ${trechosParaTypst(paragrafo, e)}\n`;
 }
 

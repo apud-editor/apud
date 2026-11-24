@@ -82,8 +82,8 @@ describe("modelos que vêm no programa", () => {
   it("a norma embutida tem o modelo, as regras de citação e o CSL; escolhas com erro voltam como problemas", () => {
     const n = normaEmbutida("ABNT", { "referências, prenomes": "abreviados" });
     expect(n.problemas).toEqual([]);
-    expect(nomeDoModelo(n.modelo)).toBe("ABNT 2025, revisão 10");
-    expect(n.perfil.identificacao).toMatchObject({ perfil: "ABNT", norma: "ABNT", versao: "2025", revisao: 10 });
+    expect(nomeDoModelo(n.modelo)).toBe("ABNT 2025, revisão 11");
+    expect(n.perfil.identificacao).toMatchObject({ perfil: "ABNT", norma: "ABNT", versao: "2025", revisao: 11 });
     expect(n.csl).toContain("<style");
     const errada = normaEmbutida("APA", { "referências, prenomes": "talvez" });
     expect(errada.problemas).toHaveLength(1);

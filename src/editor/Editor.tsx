@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalS
 import type { ChainedCommands } from "@tiptap/core";
 import { EditorContent, useEditor, useEditorState, type Editor as EditorTipTap } from "@tiptap/react";
 import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
-import { avisosDeNumeracao, estrutura } from "../documento/estrutura";
+import { avisosDosTitulos, estrutura } from "../documento/estrutura";
 import type { Bloco, Citacao, Referencia } from "../documento/modelo";
 import type { CitacaoMontada } from "../citacoes/motor";
 import { blocoAtual, TIPOS_DE_BLOCO } from "./blocos";
@@ -21,6 +21,8 @@ import { Icone, type NomeDoIcone } from "./icones";
 import { ControleDoArroba, type ItemDoArroba } from "./arroba";
 import { ondeFica, type Posicao } from "./posicao";
 import { ControleDoReconhecimento, transformarEmCitacao } from "./reconhecer";
+import { TitulosDoTrabalho, tirarNumerosEscritos } from "./titulos";
+import { numeraSozinho } from "../modelos/titulos";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -39,6 +41,8 @@ interface Props {
   antes?: React.ReactNode;
   /** O que depende da norma do trabalho (o título da lista de referências). */
   aparencia?: AparenciaDaNorma;
+  /** O modelo e o tipo do trabalho, para os títulos automáticos (número em cinza e página nova). */
+  titulos?: TitulosDoTrabalho;
   /** Quem sabe escrever as citações na norma (o texto mostrado em cada citação e os avisos do texto). */
   citacoes?: CitacoesNoTexto;
   /** As referências do trabalho, para a janela da citação. Sem isto, não há "@" nem "Citar @". */
@@ -62,6 +66,7 @@ export default function Editor({
   lateral,
   antes,
   aparencia: aparenciaDada,
+  titulos: titulosDados,
   citacoes: citacoesDadas,
   lerReferencias,
   previaDaCitacao,
@@ -74,6 +79,7 @@ export default function Editor({
   const arroba = useMemo(() => new ControleDoArroba(), []);
   const reconhecimento = useMemo(() => new ControleDoReconhecimento(), []);
   const aparencia = useMemo(() => aparenciaDada ?? new AparenciaDaNorma(), [aparenciaDada]);
+  const titulos = useMemo(() => titulosDados ?? new TitulosDoTrabalho(), [titulosDados]);
   const citacoes = useMemo(() => citacoesDadas ?? new CitacoesNoTexto(() => []), [citacoesDadas]);
   const podeCitar = !!lerReferencias;
   const notaCtl = useMemo(() => new ControleDaNota(), []);
@@ -97,7 +103,7 @@ export default function Editor({
   arroba.aoCadastrar = aoCadastrarReferencia ?? null;
 
   const editor = useEditor({
-    extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela, controlesDosNos, { arroba, reconhecimento }),
+    extensions: extensoesDoApud(controle, undefined, aparencia, citacoes, janela, controlesDosNos, { arroba, reconhecimento }, titulos),
     content: editorDosBlocos(inicial),
     editorProps: { attributes: { class: "texto", "aria-label": "Texto do trabalho", spellcheck: "true", lang: "pt-BR" } },
     // O bloco do cursor é o filho do editor em que ele está (o mesmo número do bloco no texto).
@@ -121,6 +127,19 @@ export default function Editor({
   }, [editor, lerTexto]);
 
   useEffect(() => () => window.clearTimeout(espera.current), []);
+
+  // Com a numeração automática, o número escrito à mão nos títulos sai do texto:
+  // ao abrir o trabalho e quando o modelo muda (Ctrl+Z desfaz). A Estrutura se refaz.
+  useEffect(() => {
+    if (!editor) return;
+    const acertar = () => {
+      const tr = titulos.modelo && tirarNumerosEscritos(editor.state, titulos.modelo);
+      if (tr) editor.view.dispatch(tr);
+      setBlocos(blocosDoEditor(editor.getJSON()));
+    };
+    acertar();
+    return titulos.ouvir(acertar);
+  }, [editor, titulos]);
 
   // O texto das citações na norma: monta a primeira vez ao abrir e depois a cada pausa.
   useEffect(() => {
@@ -242,7 +261,7 @@ export default function Editor({
       )}
       <AvisosDoTexto citacoes={citacoes} />
       <div className="colunas">
-        <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} />
+        <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} titulos={titulos} />
         <main className="folha">
           {antes}
           <EditorContent editor={editor} />
@@ -571,9 +590,14 @@ function BarraDaIlustracao({ editor, aoEscolherImagem }: { editor: EditorTipTap 
 
 // ---------------------------------------------------------------------------
 
-function Estrutura({ blocos, editor, aparencia }: { blocos: Bloco[]; editor: EditorTipTap | null; aparencia: AparenciaDaNorma }) {
+function Estrutura({ blocos, editor, aparencia, titulos: doTrabalho }: { blocos: Bloco[]; editor: EditorTipTap | null; aparencia: AparenciaDaNorma; titulos: TitulosDoTrabalho }) {
+  useSyncExternalStore(doTrabalho.ouvir, () => doTrabalho.modelo);
   const titulos = estrutura(blocos);
-  const avisos = avisosDeNumeracao(titulos);
+  const formas = doTrabalho.formasDosBlocos(blocos);
+  const avisos = avisosDosTitulos(titulos, formas, (t) => {
+    const b = blocos[t.indice];
+    return b?.tipo === "titulo" && !!doTrabalho.modelo && numeraSozinho(doTrabalho.modelo, b.nivel, b.excecoes);
+  });
   const rotulo = useSyncExternalStore(
     (f) => {
       aparencia.addEventListener("mudou", f);
@@ -584,19 +608,26 @@ function Estrutura({ blocos, editor, aparencia }: { blocos: Bloco[]; editor: Edi
 
   const irPara = (indice: number) => {
     if (!editor) return;
-    // O bloco número "indice" do documento é o filho número "indice" do editor.
-    const dom = editor.view.dom.children[indice] as HTMLElement | undefined;
-    if (!dom) return;
-    dom.scrollIntoView({ behavior: "smooth", block: "center" });
-    const pos = editor.view.posAtDOM(dom, 0);
-    editor.chain().focus().setTextSelection(pos).run();
+    // O bloco número "indice" do documento é o filho número "indice" do editor
+    // (pela posição no texto: as marcas de página nova também são filhas no desenho).
+    const doc = editor.state.doc;
+    if (indice >= doc.childCount) return;
+    let pos = 0;
+    for (let i = 0; i < indice; i++) pos += doc.child(i).nodeSize;
+    const dom = editor.view.nodeDOM(pos) as HTMLElement | null;
+    dom?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+    editor.chain().focus().setTextSelection(pos + 1).run();
   };
 
   return (
     <nav className="estrutura" aria-label="Estrutura do trabalho">
       <p className="rotulo-secao">Estrutura</p>
       {titulos.length === 0 ? (
-        <p className="dica">Os títulos que você escrever aparecem aqui. Para numerar, escreva o número antes do título: 1.1 Contexto.</p>
+        <p className="dica">
+          {doTrabalho.numera(1)
+            ? "Os títulos que você escrever aparecem aqui, já com o número que o modelo põe."
+            : "Os títulos que você escrever aparecem aqui. Para numerar, escreva o número antes do título: 1.1 Contexto."}
+        </p>
       ) : (
         titulos.map((t) => (
           <button
@@ -615,6 +646,7 @@ function Estrutura({ blocos, editor, aparencia }: { blocos: Bloco[]; editor: Edi
               </>
             ) : (
               <>
+                {formas.get(t.indice)?.numero && <span className="estrutura-numero">{formas.get(t.indice)!.numero} </span>}
                 {t.texto || <span className="dica">(título vazio)</span>}
                 {avisos.has(t.indice) && (
                   <span className="dica aviso-de-numero" style={{ display: "block" }} role="note">

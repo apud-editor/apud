@@ -24,6 +24,7 @@ import { estilosEmbutidos, modeloEmbutido, normasEmbutidas, textoNoModelo } from
 import { normaDoTrabalho, nomeDoModelo } from "../modelos/norma";
 import { perfilDeCitacoes } from "../modelos/ponte";
 import { AparenciaDaNorma } from "../editor/extensoes";
+import { TitulosDoTrabalho } from "../editor/titulos";
 import { ImagensNoEditor } from "../editor/imagens";
 import { CitacoesNoTexto } from "../editor/citacoes";
 import { montarTodas, previaDaCitacao } from "../citacoes/todas";
@@ -89,6 +90,11 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
   });
   const rotuloDaLista = () => textoNoModelo(lerNorma.current().modelo, "referencias", "título") ?? "Referências";
   const aparencia = useMemo(() => new AparenciaDaNorma(rotuloDaLista()), []);
+  // Os títulos automáticos do editor (número em cinza, página nova): seguem o
+  // modelo do trabalho, com as escolhas dele, e o tipo de trabalho.
+  const titulos = useMemo(() => new TitulosDoTrabalho(), []);
+  const avisarTitulos = () => titulos.mudar(lerNorma.current().modelo, dados.current.tipo);
+  if (!titulos.modelo) avisarTitulos();
   // O texto de cada citação na norma: o motor monta todas juntas, na ordem do
   // texto, depois de uma pausa, e refaz quando as referências, a norma ou as
   // escolhas do autor mudam.
@@ -244,6 +250,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
       norma.current = null;
       setNomeDaNorma(m.identificacao.nome);
       aparencia.mudar(rotuloDaLista());
+      avisarTitulos();
       citacoes.agendar(0);
       salvamento.houveMudanca();
       mudancas.dispatchEvent(new Event("mudou"));
@@ -282,6 +289,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
   /** Os dados do trabalho (título, autores...) mudaram: o PDF e a prévia se refazem. */
   const mudarDados = (d: DadosDoTrabalho) => {
     dados.current = d;
+    avisarTitulos();
     depoisDeMudarDadosOuAbertura(true);
   };
 
@@ -305,6 +313,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
     ajustes.current = novos;
     norma.current = null;
     aparencia.mudar(rotuloDaLista());
+    avisarTitulos();
     depoisDeMudarOsDados();
   };
 
@@ -445,6 +454,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
       <Editor
         inicial={trabalho.documento.blocos}
         aparencia={aparencia}
+        titulos={titulos}
         citacoes={citacoes}
         lerReferencias={lerReferencias}
         previaDaCitacao={previa}

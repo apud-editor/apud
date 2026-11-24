@@ -6,9 +6,9 @@
     "id": "abnt",
     "nome": "ABNT",
     "versao": "2025",
-    "revisao": 10,
+    "revisao": 11,
     "dataDaRevisao": "24/11/2026",
-    "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
+    "notaDaRevisao": "Títulos automáticos (versão 2, etapa 2): o Apud numera os títulos e aplica as maiúsculas do destaque (ajustáveis), e o nível 1 começa em página nova menos em artigo (ajustável).",
     "herdaDe": {
       "nome": "Em branco",
       "revisao": 1
@@ -25,9 +25,9 @@
         "id": "abnt",
         "nome": "ABNT",
         "versao": "2025",
-        "revisao": 10,
+        "revisao": 11,
         "dataDaRevisao": "24/11/2026",
-        "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
+        "notaDaRevisao": "Títulos automáticos (versão 2, etapa 2): o Apud numera os títulos e aplica as maiúsculas do destaque (ajustáveis), e o nível 1 começa em página nova menos em artigo (ajustável).",
         "herdaDe": {
           "nome": "Em branco",
           "revisao": 1
@@ -253,15 +253,18 @@
           "de": "Em branco"
         },
         "numerar sozinho": {
-          "valor": "não",
-          "origem": "Em branco (decisão 13 da versão 2)",
-          "de": "Em branco",
-          "nota": "Etapa 2 da versão 2 (decisão 10): no Em branco, tudo desligado."
+          "valor": "sim",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Exemplo: 2.1 Método\nO Apud numera sozinho (versão 2, etapa 2, decisão 10; até a etapa 1, a pessoa\nescrevia o número). As linhas seguintes ficam sob a primeira letra do texto.\nUm título pode ficar sem número com \"só este\"."
         },
         "maiúsculas sozinho": {
-          "valor": "não",
-          "origem": "Em branco (decisão 13 da versão 2)",
-          "de": "Em branco"
+          "valor": "sim",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "O \"maiúsculas\" do destaque de cada nível (níveis 1 e 2) vale para as letras que\na pessoa escreveu (versão 2, etapa 2). No editor, o título continua como foi\nescrito; as maiúsculas aparecem na Prévia e no PDF."
         },
         "página nova": {
           "valor": "não",
@@ -271,8 +274,7 @@
         "títulos, números": {
           "valor": "arábicos",
           "origem": "NBR 6024:2012 (UFSCar)",
-          "de": "ABNT",
-          "nota": "Exemplo: 2.1 Método\nA pessoa escreve o número no começo do título (decisão de 20/11/2026). O Apud\nnão numera sozinho; só alinha as linhas seguintes sob a primeira letra do texto."
+          "de": "ABNT"
         },
         "títulos, níveis": {
           "valor": "5 níveis",
@@ -1015,10 +1017,11 @@
       },
       "titulos.nivel1": {
         "página nova": {
-          "valor": "sim",
-          "origem": "NBR 14724:2024 (Unesp)",
+          "valor": "menos em artigo",
+          "origem": "NBR 14724:2024 (Unesp) e NBR 6022:2018",
+          "situacao": "ajustável",
           "de": "ABNT",
-          "nota": "Fica a critério da pessoa (decisão de 20/11/2026): o Apud não põe página nova\nsozinho; a pessoa insere a quebra de página onde quiser (Ctrl+Enter)."
+          "nota": "A seção primária começa em página nova nos trabalhos acadêmicos (NBR 14724);\nno artigo (NBR 6022), não (decisão do Francisco, 24/11/2026). No editor, a\npágina nova aparece como uma quebra acima do título, que se apaga só ali."
         },
         "seção primária, em frente e verso": {
           "valor": "página ímpar",
@@ -1030,7 +1033,7 @@
           "origem": "NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026)",
           "situacao": "ajustável",
           "de": "ABNT",
-          "nota": "A NBR 6024 manda diferenciar os níveis, mas não diz como. O mesmo destaque\nvale no texto e no sumário.\nMaiúsculas: o Apud não muda as letras do título; a pessoa escreve como preferir\n(decisão de 20/11/2026). Negrito, itálico e sublinhado são aplicados."
+          "nota": "A NBR 6024 manda diferenciar os níveis, mas não diz como. O mesmo destaque\nvale no texto e no sumário. As maiúsculas valem com \"maiúsculas sozinho\"."
         }
       },
       "titulos.nivel2": {
@@ -1730,7 +1733,7 @@
   "documento": {
     "versao": 6,
     "dados": {
-      "tipo": "disciplina",
+      "tipo": "artigo",
       "idioma": "pt-BR",
       "titulo": "",
       "autores": []

@@ -25,6 +25,7 @@ describe("artigos de teste", () => {
     const trabalho = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8"));
     const referencias = JSON.parse(readFileSync(join(dir, "referencias.json"), "utf8")) as Referencia[];
     const lido = documentoDoTexto(readFileSync(join(dir, "artigo.md"), "utf8"), referencias);
+    if (trabalho.tipo) lido.documento.dados.tipo = trabalho.tipo;
 
     it(`${pasta.name}: as chamadas e a lista saem iguais ao gabarito conferido`, () => {
       const resultado = rodarTrabalho(lido, carregarNorma(trabalho.norma, trabalho.ajustes ?? {}));

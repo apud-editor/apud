@@ -7,8 +7,8 @@
 #set text(font: ("Times New Roman", "Liberation Serif"), size: 12pt, lang: "pt", region: "BR", top-edge: 0.8em, bottom-edge: -0.35em, hyphenate: false, overhang: false)
 #set par(justify: true, leading: 0.575em, spacing: 0.575em, first-line-indent: (amount: 1.25cm, all: true))
 #let destaque-do-titulo(n, x) = {
-  if n == 1 { strong(x) }
-  else if n == 2 { x }
+  if n == 1 { strong(upper(x)) }
+  else if n == 2 { upper(x) }
   else if n == 3 { strong(x) }
   else if n == 4 { x }
   else if n == 5 { emph(x) }
@@ -119,7 +119,7 @@ Aos colegas de estágio e à equipe do serviço\, que abriram as portas para est
 #{
   set par(first-line-indent: 0pt, justify: false, leading: 0.575em, spacing: 0.575em)
   show outline.entry: it => context {
-    let numeros = ()
+    let numeros = (destaque-do-titulo(1, [1]), destaque-do-titulo(1, [2]), destaque-do-titulo(2, [2\.1]), destaque-do-titulo(3, [2\.1\.1]), destaque-do-titulo(4, [2\.1\.1\.1]), destaque-do-titulo(5, [2\.1\.1\.1\.1]), destaque-do-titulo(4, [2\.1\.1\.2]), destaque-do-titulo(2, [2\.2]), destaque-do-titulo(1, [3]))
     let largura = calc.max(0pt, ..numeros.map(x => measure(x).width))
     let numero = if it.element.numbering == none { [] } else { destaque-do-titulo(it.level, numbering(it.element.numbering, ..counter(heading).at(it.element.location()))) }
     let recuo = if largura == 0pt { 0pt } else { largura + 0.5em }
@@ -130,7 +130,8 @@ Aos colegas de estágio e à equipe do serviço\, que abriram as portas para est
 #pagebreak()
 
 #metadata("texto") <apud-texto>
-#heading(level: 1, numbering: none)[Introdução]
+#pagebreak(weak: true)
+#heading(level: 1, numbering: (..n) => "1")[Introdução]
 
 O acolhimento é a primeira forma de cuidado oferecida a quem chega a um serviço de saúde mental #cite(label("silva2019"), form: none)\(Silva\, 2019\, p\. 15\)\. Segundo #cite(label("lima2018"), form: none)Lima\, Costa e Reis \(2018\)\, ele começa antes da primeira consulta\. A Lei da Reforma Psiquiátrica redirecionou o modelo assistencial para serviços abertos #cite(label("brasil2001"), form: none)\(Brasil\, 2001\)\.
 
@@ -142,17 +143,18 @@ Este relato está dividido em três partes\:
 #alinea(1.25cm + 1 * 1.25cm, [—], [encaminhamento\;])
 #alinea(1.25cm, [c\)], [as considerações finais\.])
 
-#heading(level: 1, numbering: none)[Desenvolvimento]
+#pagebreak(weak: true)
+#heading(level: 1, numbering: (..n) => "2")[Desenvolvimento]
 
-#heading(level: 2, numbering: none)[O serviço de saúde mental]
+#heading(level: 2, numbering: (..n) => "2.1")[O serviço de saúde mental]
 
 O serviço atende adultos com sofrimento psíquico intenso e segue as diretrizes da formação em psicologia #cite(label("abep2023"), form: none)\(Associação Brasileira de Ensino de Psicologia\, 2023\)\. Dados nacionais mostram a distribuição dos profissionais pelo país #cite(label("inpsi2011"), form: none)\(INPSI\, 2011\)\.#footnote[As atividades descritas foram autorizadas pela coordenação do serviço e pelo supervisor de estágio\.]
 
-#heading(level: 3, numbering: none)[Atividades realizadas]
+#heading(level: 3, numbering: (..n) => "2.1.1")[Atividades realizadas]
 
-#heading(level: 4, numbering: none)[Escuta inicial]
+#heading(level: 4, numbering: (..n) => "2.1.1.1")[Escuta inicial]
 
-#heading(level: 5, numbering: none)[Primeiros contatos]
+#heading(level: 5, numbering: (..n) => "2.1.1.1.1")[Primeiros contatos]
 
 Nos primeiros contatos\, a escuta qualificada orienta a conduta da equipe #cite(label("souza2020a"), form: none)#cite(label("souza2020b"), form: none)\(Souza\, 2020a\, 2020b\)\. Uma usuária descreveu assim a chegada ao serviço\: “aqui ninguém me apressou” \(Usuária A\)\. O supervisor lembrou que o primeiro atendimento define o vínculo \(R\. Melo\, comunicação pessoal\, 3 de março de 2026\)\.
 
@@ -164,7 +166,7 @@ Nos primeiros contatos\, a escuta qualificada orienta a conduta da equipe #cite(
 #block(above: 0em + 0.3em, below: 0pt)[#set text(size: 10pt); #set par(leading: 0em, spacing: 0em); Fonte\: Elaborado pelo próprio autor]
 ]))
 
-#heading(level: 4, numbering: none)[Encaminhamento]
+#heading(level: 4, numbering: (..n) => "2.1.1.2")[Encaminhamento]
 
 A rede de atenção psicossocial depende da articulação entre serviços #cite(label("costa2021"), form: none)\(Costa\, 2021\, p\. 12\)\. A avaliação inicial pode usar instrumentos padronizados #cite(label("alves2022"), form: none)\(Alves\; Brito\; Cunha\; Dias\, 2022\)\, com cuidado para não reduzir o sujeito ao diagnóstico\, como lembram #cite(label("alves2022"), form: none)Alves\, Brito\, Cunha e Dias \(2022\, p\. 40\)\.
 
@@ -197,7 +199,7 @@ let grade(colunas, topo: true) = {
 ])
 })]
 
-#heading(level: 2, numbering: none)[O acolhimento como prática clínica]
+#heading(level: 2, numbering: (..n) => "2.2")[O acolhimento como prática clínica]
 
 Para #cite(label("dias2025"), form: none)Dias e Lopes \(2025\, p\. 4\)\, o vínculo terapêutico se constrói “na regularidade do encontro e na confiança de que o serviço estará lá” #cite(label("dias2025"), form: none)\(Dias\; Lopes\, 2025\, p\. 4\)\. Grupos terapêuticos também favorecem esse vínculo #cite(label("ferraz2024"), form: none)\(Ferraz\, 2024\)\.
 
@@ -215,7 +217,8 @@ Na universidade\, o sofrimento psíquico de estudantes tem crescido #cite(label(
 
 A população em situação de rua cresceu na última década #cite(label("nogueira2023"), form: none)\(Nogueira\, 2023\)\, e a proteção social a esse grupo ainda é frágil #cite(label("freitas2017"), form: none)\(Freitas\, 2017\)\. Discursos de gestores circulam em redes sociais #cite(label("prado2025"), form: none)\(Prado\, 2025\) e na imprensa #cite(label("abrigo2024"), form: none)\(Abrigo \[\.\.\.\]\, 2024\)\, e já foram estudados em eventos científicos #cite(label("teles2024"), form: none)\(Teles\; Andrade\, 2024\)\.
 
-#heading(level: 1, numbering: none)[Considerações finais]
+#pagebreak(weak: true)
+#heading(level: 1, numbering: (..n) => "3")[Considerações finais]
 
 O estágio mostrou que o acolhimento é uma prática de toda a equipe #cite(label("lima2018"), form: none)#cite(label("silva2019"), form: none)\(Lima\; Costa\; Reis\, 2018\; Silva\, 2019\)\.
 

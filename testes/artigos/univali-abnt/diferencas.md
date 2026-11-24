@@ -110,3 +110,20 @@ depois:
 **Fase 3:**
 - **Citação longa: resolvido na parte 2 da fase 3 (22/11/2026).** As citações longas saem com recuo de 4 cm, fonte 10 e espaço simples, com uma linha em branco antes e depois. **Diferença que fica, porque vale a norma:** o original põe o ponto final antes da chamada ("…desta Missão. (Conselho…, 2024, p. 37)"); a ABNT pede o ponto depois dela, e o Apud põe assim: "…desta Missão (Conselho…, 2024, p. 37)."
 - **Bloco de abertura da UNIVALI.** Não entra no .apud o bloco com escola, curso, título, área, orientador e acadêmico.
+
+## 5. Títulos automáticos (versão 2, etapa 2, 24/11/2026)
+
+Desde a revisão 11 do modelo ABNT, o Apud numera os títulos e aplica as
+maiúsculas do destaque (decisão 10 da v2). Por decisão do Francisco, o artigo de
+teste segue o modelo novo:
+
+- **Números:** 1 Introdução, 2 Metodologia, 3 Resultados e Discussão (3.1 e 3.2)
+  e 4 Considerações Finais. O original não numera as seções; a NBR 6022 pede a
+  numeração progressiva da NBR 6024.
+- **Maiúsculas:** os títulos de nível 1 saem em maiúsculas e negrito e os de
+  nível 2 em maiúsculas, como o destaque do modelo (no original, as letras saem
+  como escritas).
+- **Página nova:** não, porque é artigo (`"tipo": "artigo"` em `trabalho.json`;
+  a NBR 6022 não pede página nova a cada seção).
+
+As chamadas e a lista de referências não mudaram (`gabarito-abnt.txt` igual).

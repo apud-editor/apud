@@ -6,8 +6,15 @@ import { documentoParaTypst, escaparTexto, letraDaAlinea, MARCA_DAS_POSICOES, MA
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
 import { documentoVazio, type Documento, type Marca } from "../documento/modelo";
 import { somar, valorProprio } from "../modelos/herdar";
+import { aplicarAjustes } from "../modelos/ajustes";
 
 const { modelo: perfil } = carregarPerfil("abnt.txt");
+/** A ABNT com os títulos automáticos desligados: o número, as letras e as páginas como a pessoa escreveu. */
+const manual = aplicarAjustes(perfil, {
+  "Títulos › numerar sozinho": "não",
+  "Títulos › maiúsculas sozinho": "não",
+  "Títulos › Nível 1 › página nova": "não",
+}).modelo!;
 const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "..", "public", "fontes")] }] });
 
 /** Compila e devolve o PDF; falha o teste com as mensagens do Typst se não compilar. Com o documento, as imagens das figuras vão junto. */
@@ -90,48 +97,103 @@ describe("conversor para o Typst", () => {
     expect(Math.abs(linhas - Math.round(linhas))).toBeLessThan(0.01);
   });
 
-  it("a página nova só acontece onde a pessoa pôs a quebra de página", () => {
+  it("com a página nova desligada, ela só acontece onde a pessoa pôs a quebra de página", () => {
     const blocos: Documento["blocos"] = [
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Um" }] },
       { tipo: "paragrafo", trechos: [{ texto: "texto" }] },
       { tipo: "titulo", nivel: 1, trechos: [{ texto: "2 Dois" }] },
     ];
-    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos }, perfil)))).toBe(1);
+    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos }, manual)))).toBe(1);
     const comQuebra: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: comQuebra }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: comQuebra }, manual)))).toBe(2);
     // Duas quebras seguidas não deixam uma página em branco.
     const duas: Documento["blocos"] = [...blocos.slice(0, 2), { tipo: "quebra" }, { tipo: "quebra" }, blocos[2]];
-    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: duas }, perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: duas }, manual)))).toBe(2);
+  });
+
+  it("na ABNT, o título de nível 1 começa em página nova, menos em artigo e onde o título diz “só este: não”", () => {
+    const blocos: Documento["blocos"] = [
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Um" }] },
+      { tipo: "paragrafo", trechos: [{ texto: "texto" }] },
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "Um ponto um" }] },
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Dois" }] },
+    ];
+    const doc = (tipo: Documento["dados"]["tipo"], b = blocos) => ({ ...documentoVazio(), dados: { ...documentoVazio().dados, tipo }, referencias: [], blocos: b });
+    // O primeiro título não deixa página em branco; o nível 2 não começa página.
+    expect(paginas(compilar(documentoParaTypst(doc("tcc"), perfil)))).toBe(2);
+    expect(paginas(compilar(documentoParaTypst(doc("artigo"), perfil)))).toBe(1);
+    const semPagina = blocos.map((b, i) => (i === 3 ? { ...b, excecoes: { "página nova": "não" } } : b)) as Documento["blocos"];
+    expect(paginas(compilar(documentoParaTypst(doc("tcc", semPagina), perfil)))).toBe(1);
+    // Com uma quebra à mão logo antes, a página nova não deixa página em branco.
+    const comQuebra: Documento["blocos"] = [...blocos.slice(0, 3), { tipo: "quebra" }, blocos[3]];
+    expect(paginas(compilar(documentoParaTypst(doc("tcc", comQuebra), perfil)))).toBe(2);
   });
 });
 
 describe("títulos", () => {
-  const typstDe = (blocos: Documento["blocos"]) =>
-    documentoParaTypst({ ...documentoVazio(), referencias: [], blocos }, perfil) +
+  const typstDe = (blocos: Documento["blocos"], modelo = perfil) =>
+    documentoParaTypst({ ...documentoVazio(), referencias: [], blocos }, modelo) +
     `#context [#metadata(query(heading).map(h => (if h.numbering == none { "" } else { numbering(h.numbering, 1) }, h.body.fields().at("text", default: repr(h.body))))) <t>]\n`;
 
-  it("o número é o que a pessoa escreveu; sem número escrito, sai sem número", () => {
-    const typst = typstDe([
-      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Resumo" }] },
-      { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] },
-      { tipo: "titulo", nivel: 2, trechos: [{ texto: "3.2 Fora de ordem" }] },
-    ]);
+  it("sem a numeração automática, o número é o que a pessoa escreveu; sem número escrito, sai sem número", () => {
+    const typst = typstDe(
+      [
+        { tipo: "titulo", nivel: 1, trechos: [{ texto: "Resumo" }] },
+        { tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] },
+        { tipo: "titulo", nivel: 2, trechos: [{ texto: "3.2 Fora de ordem" }] },
+      ],
+      manual,
+    );
     const r = compilador.query({ mainFileContent: typst }, { selector: "<t>" })[0].value as Array<[string, string]>;
     expect(r.map((x) => x[0])).toEqual(["", "1", "3.2"]);
     expect(r[1][1]).toContain("Introdução");
     expect(r[1][1]).not.toContain("1 ");
   });
 
-  it("as letras saem como a pessoa escreveu (o Apud não põe em maiúsculas)", () => {
-    const typst = documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, perfil);
+  it("com a numeração automática (ABNT), o Apud numera, e o número escrito à mão não sai duas vezes", () => {
+    const typst = typstDe([
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
+      { tipo: "titulo", nivel: 2, trechos: [{ texto: "3.2 Fora de ordem" }] },
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "Sem número" }], excecoes: { "numerar sozinho": "não" } },
+      { tipo: "titulo", nivel: 1, trechos: [{ texto: "1964 e o golpe" }] },
+      { tipo: "titulo", nivel: 3, trechos: [{ texto: "Pulando um nível" }] },
+    ]);
+    const r = compilador.query({ mainFileContent: typst }, { selector: "<t>" })[0].value as Array<[string, string]>;
+    expect(r.map((x) => x[0])).toEqual(["1", "1.1", "", "2", "2.0.1"]);
+    expect(r[1][1]).toBe("Fora de ordem");
+    // Um ano no começo do título não é número de seção: fica no texto.
+    expect(r[3][1]).toBe("1964 e o golpe");
+  });
+
+  it("sem “maiúsculas sozinho”, as letras saem como a pessoa escreveu", () => {
+    const typst = documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "1 Introdução" }] }] }, manual);
     expect(typst).not.toContain("upper(");
     expect(typst).toContain("strong(x)");
+  });
+
+  it("com “maiúsculas sozinho” (ABNT), as maiúsculas do destaque valem nos níveis 1 e 2, e um título pode desligar", () => {
+    const typst = documentoParaTypst(
+      {
+        ...documentoVazio(),
+        referencias: [],
+        blocos: [
+          { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }] },
+          { tipo: "titulo", nivel: 2, trechos: [{ texto: "Como escrevi" }], excecoes: { "maiúsculas sozinho": "não" } },
+        ],
+      },
+      perfil,
+    );
+    expect(typst).toContain("if n == 1 { strong(upper(x)) }");
+    expect(typst).toContain("else if n == 2 { upper(x) }");
+    expect(typst).toContain("else if n == 3 { strong(x) }");
+    expect(typst).toMatch(/let d\(x\) = x\n.*\n.*\n}\n#heading\(level: 2, numbering: \(\.\.n\) => "1\.1"\)\[Como escrevi\]/);
+    expect(() => compilar(typst)).not.toThrow();
   });
 
   it("título longo: a segunda linha fica sob a primeira letra do texto, não sob o número", () => {
     const longo = "palavra ".repeat(30).trim();
     const marca = `#show heading: it => { it; context [#metadata(here().position()) <fim>] }`;
-    const typst = documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, perfil);
+    const typst = documentoParaTypst({ ...documentoVazio(), referencias: [], blocos: [{ tipo: "titulo", nivel: 3, trechos: [{ texto: `1.1.1 ${longo}` }] }] }, manual);
     expect(() => compilar(typst + marca)).not.toThrow();
     expect(typst).toContain('numbering: (..n) => "1.1.1"');
   });
@@ -698,7 +760,9 @@ describe("pontuação dobrada na lista de referências", () => {
 });
 
 describe("marcas da prévia (acompanhar o cursor)", () => {
-  const { modelo: perfil } = carregarNorma("abnt.txt");
+  const { modelo: abnt } = carregarNorma("abnt.txt");
+  // Sem a página nova dos títulos: a página 2 começa só na quebra que a pessoa pôs.
+  const perfil = aplicarAjustes(abnt, { "Títulos › Nível 1 › página nova": "não" }).modelo!;
   const doc: Documento = {
     ...documentoVazio(),
     blocos: [
