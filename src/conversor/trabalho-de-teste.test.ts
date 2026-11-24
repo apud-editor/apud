@@ -25,8 +25,8 @@ describe("trabalho de teste do Apud", () => {
     expect(trechos.some((t) => "nota" in t)).toBe(true);
     expect(new Set(referencias.map((r) => r.tipo)).size).toBe(10);
     expect(imagens).toHaveLength(3);
-    expect(abertura.capa && abertura.folhaDeRosto && abertura.sumario).toBe(true);
-    expect(abertura.resumos.map((r) => r.idioma)).toEqual(["pt-BR", "en", "es"]);
+    expect(abertura.blocos.map((b) => b.tipo)).toEqual(["capa", "folhaDeRosto", "paginaDeTitulo", "dedicatoria", "agradecimentos", "epigrafe", "resumo", "resumo", "resumo", "sumario"]);
+    expect(abertura.blocos.flatMap((b) => (b.tipo === "resumo" ? [b.idioma] : []))).toEqual(["pt-BR", "en", "es"]);
   });
 
   it("abre no Apud do jeito que foi gravado", () => {

@@ -21,6 +21,7 @@ function contexto(p: Partial<ContextoDosMenus> = {}): ContextoDosMenus {
     aoVoltar: nada,
     aoExportar: nada,
     aoAbrirConfiguracoes: nada,
+    aoAdicionarAAbertura: nada,
     aoEscolherTema: nada,
     aoTrocarNorma: nada,
     aoAlternarPainel: nada,

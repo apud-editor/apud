@@ -28,7 +28,7 @@
 # ==============================================================================
 
 modelo: APA
-herda de: Em branco, revisão 1
+herda de: Em branco, revisão 2
 versão: 7
 revisão: 9
 data da revisão: 24/11/2026

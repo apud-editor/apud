@@ -417,7 +417,13 @@ export const ELEMENTOS: readonly DefinicaoDeElemento[] = [
     nome: "Abertura",
     pai: "texto",
     descricao: "O que vem antes do texto.",
-    propriedades: daNorma("ordem das partes", "ordem das partes, página nova"),
+    propriedades: [
+      // Cada elemento começa numa página nova. Nos que não ocupam a folha inteira
+      // (agradecimentos, resumos, sumário), a pessoa pode tirar a página nova de um
+      // bloco ("só este"), por exemplo para pôr dois resumos na mesma página.
+      opcoes("página nova", simNao()),
+      ...daNorma("ordem das partes", "ordem das partes, página nova"),
+    ],
   },
   {
     id: "abertura.capa",

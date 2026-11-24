@@ -20,13 +20,18 @@
 //      cópia do modelo. As versões 1 a 4 eram da versão de testes e não abrem mais.
 //   6. Etapa 2 da versão 2: as exceções "só este" nos parágrafos e títulos. Um
 //      arquivo da versão 5 é o mesmo documento sem exceções e abre como está.
+//   7. Etapa 3 da versão 2 (parte 3a): a abertura vira uma lista de blocos, como
+//      o texto (capa, folha de rosto, dedicatória, um resumo por idioma...),
+//      mais os textos "guardados" (tirados da abertura sem perder o que foi
+//      escrito). Um documento das versões 5 e 6, com as caixas de marcar, é
+//      convertido ao abrir (arquivos/formato.ts), sem perder nada.
 
 import type { Citacao, Data, Referencia } from "./referencias";
 
 export * from "./referencias";
 
 /** Versão do formato. Sobe quando o formato mudar, para os arquivos antigos serem convertidos. */
-export const VERSAO_DO_FORMATO = 6;
+export const VERSAO_DO_FORMATO = 7;
 
 /** A versão mais antiga do documento que este Apud lê (a primeira da versão 2). */
 export const PRIMEIRA_VERSAO_DO_FORMATO = 5;
@@ -229,51 +234,82 @@ export interface DadosDoTrabalho {
   natureza?: string;
 }
 
+// ---------------------------------------------------------------------------
+// A abertura: os blocos antes do texto (versão 7)
+
+/**
+ * Os blocos da abertura, na ordem em que ficam no editor e saem no PDF
+ * (NBR 14724: capa, folha de rosto, dedicatória, agradecimentos, epígrafe,
+ * resumos, sumário; a página de título é da APA e vem no lugar da capa).
+ * A ordem é fixa: os blocos da abertura não se arrastam (decisão 16).
+ */
+export const ORDEM_DA_ABERTURA = ["capa", "folhaDeRosto", "paginaDeTitulo", "dedicatoria", "agradecimentos", "epigrafe", "resumo", "sumario"] as const;
+export type TipoDaAbertura = (typeof ORDEM_DA_ABERTURA)[number];
+
+/** Os blocos montados pelo Apud com os dados do trabalho (as peças) ou com os títulos do texto (o sumário). */
+export const FOLHAS_MONTADAS = ["capa", "folhaDeRosto", "paginaDeTitulo", "sumario"] as const;
+export type TipoDeFolhaMontada = (typeof FOLHAS_MONTADAS)[number];
+
+/** Capa, folha de rosto, página de título ou sumário: só o lugar; o conteúdo vem dos dados e do texto. */
+export interface FolhaMontada {
+  tipo: TipoDeFolhaMontada;
+  /** "Só este" (por enquanto, só a página nova do sumário). */
+  excecoes?: Excecoes;
+}
+
+/** Dedicatória ou agradecimentos: parágrafos da pessoa. */
+export interface TextoDaAbertura {
+  tipo: "dedicatoria" | "agradecimentos";
+  paragrafos: TrechoDeTexto[][];
+  /** "Só este" (nos agradecimentos, a página nova). */
+  excecoes?: Excecoes;
+}
+
+export interface Epigrafe {
+  tipo: "epigrafe";
+  paragrafos: TrechoDeTexto[][];
+  /** Quem escreveu a frase, como deve sair ("Clarice Lispector"). */
+  autoria: string;
+  excecoes?: Excecoes;
+}
+
 /** Um resumo, num idioma, com o título nesse idioma (revistas pedem) e as palavras-chave. */
 export interface Resumo {
+  tipo: "resumo";
   /** Código do idioma: "pt-BR", "en", "es", "fr"... */
   idioma: string;
   /** O título do trabalho neste idioma. Ausente: não sai. */
   titulo?: string;
+  /** Um parágrafo só (NBR 6028: parágrafo único). */
   trechos: TrechoDeTexto[];
   palavrasChave: string[];
+  /** "Só este": { "página nova": "não" } põe o resumo na mesma página do anterior. */
+  excecoes?: Excecoes;
 }
 
-/** Um elemento de texto antes do texto principal, que a pessoa liga e desliga sem perder o que escreveu. */
-export interface ElementoDeTexto {
-  incluir: boolean;
-  /** Parágrafos. */
-  paragrafos: TrechoDeTexto[][];
-}
-
-export interface Epigrafe extends ElementoDeTexto {
-  /** Quem escreveu a frase, como deve sair ("Clarice Lispector"). */
-  autoria: string;
-}
+export type BlocoDaAbertura = FolhaMontada | TextoDaAbertura | Epigrafe | Resumo;
+/** Os blocos da abertura que têm texto da pessoa (os que podem ficar guardados). */
+export type TextoGuardavel = TextoDaAbertura | Epigrafe | Resumo;
 
 /**
- * Os elementos antes do texto, que aparecem na "Abertura do trabalho", no
- * topo do editor. A ordem no PDF é da norma, não daqui. Desligar um elemento
- * guarda o que foi escrito.
+ * Os elementos antes do texto, no alto do editor (versão 7). Ligar é ter o
+ * bloco na lista; "Tirar da abertura" leva o texto escrito para os guardados,
+ * e "Adicionar à abertura" o traz de volta (decisão do Francisco, 24/11/2026).
+ * Se o modelo não tem um elemento (a APA não tem capa), o bloco fica no
+ * trabalho mas não sai no PDF.
  */
 export interface Abertura {
-  capa: boolean;
-  folhaDeRosto: boolean;
-  /** Página de título da APA. */
-  paginaDeTitulo: boolean;
-  dedicatoria: ElementoDeTexto;
-  agradecimentos: ElementoDeTexto;
-  epigrafe: Epigrafe;
-  /** Na ordem em que saem. Um resumo na lista sai no PDF. */
-  resumos: Resumo[];
-  sumario: boolean;
+  /** Na ordem de ORDEM_DA_ABERTURA; os resumos na ordem em que saem. */
+  blocos: BlocoDaAbertura[];
+  /** O que foi tirado da abertura com texto: no máximo um de cada tipo, e um resumo por idioma. */
+  guardados: TextoGuardavel[];
   /** Versão sem identificação, para avaliação cega: os nomes ficam guardados, mas não saem no PDF. */
   semIdentificacao: boolean;
 }
 
 /** O trabalho inteiro: os dados, a abertura, o texto, as referências e as imagens. */
 export interface Documento {
-  /** Ao abrir, um documento da versão 5 passa a ser da 6 (é o mesmo, sem exceções). */
+  /** Ao abrir, um documento das versões 5 e 6 passa a ser da 7 (a abertura é convertida em blocos). */
   versao: typeof VERSAO_DO_FORMATO;
   dados: DadosDoTrabalho;
   abertura: Abertura;
@@ -295,19 +331,9 @@ export function dadosVazios(): DadosDoTrabalho {
   return { tipo: "disciplina", idioma: "pt-BR", titulo: "", autores: [] };
 }
 
-/** Tudo desligado: o PDF começa direto no texto, como nas fases 1 e 2. */
+/** Nenhum bloco: o PDF começa direto no texto, como nas fases 1 e 2. */
 export function aberturaVazia(): Abertura {
-  return {
-    capa: false,
-    folhaDeRosto: false,
-    paginaDeTitulo: false,
-    dedicatoria: { incluir: false, paragrafos: [] },
-    agradecimentos: { incluir: false, paragrafos: [] },
-    epigrafe: { incluir: false, paragrafos: [], autoria: "" },
-    resumos: [],
-    sumario: false,
-    semIdentificacao: false,
-  };
+  return { blocos: [], guardados: [], semIdentificacao: false };
 }
 
 export function documentoVazio(): Documento {
@@ -370,4 +396,83 @@ export function textosDosBlocos(blocos: Bloco[]): Trecho[][] {
 /** As imagens que alguma figura usa. */
 export function imagensUsadas(blocos: Bloco[]): Set<string> {
   return new Set(blocos.flatMap((b) => (b.tipo === "figura" ? [b.imagem] : [])));
+}
+
+// ---------------------------------------------------------------------------
+// A abertura em blocos
+
+const posicaoNaOrdem = (tipo: TipoDaAbertura) => ORDEM_DA_ABERTURA.indexOf(tipo);
+
+export const ehFolhaMontada = (b: BlocoDaAbertura): b is FolhaMontada => (FOLHAS_MONTADAS as readonly string[]).includes(b.tipo);
+
+/** Os blocos na ordem da norma; os resumos ficam na ordem em que estavam. */
+export function ordenarAbertura<T extends BlocoDaAbertura>(blocos: T[]): T[] {
+  return blocos
+    .map((b, i) => ({ b, i }))
+    .sort((x, y) => posicaoNaOrdem(x.b.tipo) - posicaoNaOrdem(y.b.tipo) || x.i - y.i)
+    .map((x) => x.b);
+}
+
+/** Se o bloco tem algo escrito pela pessoa (o que não pode se perder). */
+export function temTextoNaAbertura(b: BlocoDaAbertura): boolean {
+  const algum = (ts: TrechoDeTexto[]) => ts.some((t) => t.texto.trim());
+  switch (b.tipo) {
+    case "dedicatoria":
+    case "agradecimentos":
+      return b.paragrafos.some(algum);
+    case "epigrafe":
+      return b.paragrafos.some(algum) || !!b.autoria.trim();
+    case "resumo":
+      return algum(b.trechos) || b.palavrasChave.some((p) => p.trim()) || !!b.titulo?.trim();
+    default:
+      return false;
+  }
+}
+
+/** Mesmo lugar nos guardados: o mesmo tipo e, no resumo, o mesmo idioma. */
+const mesmoLugar = (a: BlocoDaAbertura, b: BlocoDaAbertura) => a.tipo === b.tipo && (a.tipo !== "resumo" || (b as Resumo).idioma === a.idioma);
+
+/** O bloco vazio de cada tipo, como entra com "Adicionar à abertura". */
+export function blocoVazioDaAbertura(tipo: TipoDaAbertura, idioma = "pt-BR"): BlocoDaAbertura {
+  switch (tipo) {
+    case "dedicatoria":
+    case "agradecimentos":
+      return { tipo, paragrafos: [] };
+    case "epigrafe":
+      return { tipo, paragrafos: [], autoria: "" };
+    case "resumo":
+      return { tipo, idioma, trechos: [], palavrasChave: [] };
+    default:
+      return { tipo };
+  }
+}
+
+/**
+ * Tira um bloco da abertura. Se ele tem texto, o texto vai para os guardados
+ * (no lugar de um guardado do mesmo tipo e idioma, se houver).
+ */
+export function tirarDaAbertura(abertura: Abertura, indice: number): Abertura {
+  const bloco = abertura.blocos[indice];
+  if (!bloco) return abertura;
+  const blocos = abertura.blocos.filter((_, i) => i !== indice);
+  const guardados = temTextoNaAbertura(bloco)
+    ? [...abertura.guardados.filter((g) => !mesmoLugar(g, bloco)), structuredClone(bloco) as TextoGuardavel]
+    : abertura.guardados;
+  return { ...abertura, blocos, guardados };
+}
+
+/**
+ * Põe um bloco na abertura, no lugar da norma. Se há um guardado desse tipo
+ * (e idioma, no resumo), ele volta com o texto e sai dos guardados. Um tipo que
+ * só pode haver um (capa, dedicatória...) e já está na abertura não entra de novo.
+ */
+export function adicionarAAbertura(abertura: Abertura, tipo: TipoDaAbertura, idioma?: string): Abertura {
+  if (tipo !== "resumo" && abertura.blocos.some((b) => b.tipo === tipo)) return abertura;
+  const vazio = blocoVazioDaAbertura(tipo, idioma);
+  const guardado = abertura.guardados.find((g) => mesmoLugar(g, vazio));
+  const bloco = guardado ? structuredClone(guardado) : vazio;
+  const depois = abertura.blocos.findIndex((b) => posicaoNaOrdem(b.tipo) > posicaoNaOrdem(tipo));
+  const blocos = [...abertura.blocos];
+  blocos.splice(depois === -1 ? blocos.length : depois, 0, bloco);
+  return { ...abertura, blocos, guardados: guardado ? abertura.guardados.filter((g) => g !== guardado) : abertura.guardados };
 }

@@ -18,9 +18,9 @@
 # ==============================================================================
 
 modelo: Em branco
-revisão: 1
+revisão: 2
 data da revisão: 24/11/2026
-nota da revisão: Primeira revisão (versão 2, etapa 1).
+nota da revisão: Revisão 2 (etapa 3a): “página nova” na Abertura (cada elemento antes do texto numa folha; agradecimentos, resumos e sumário podem ficar sem página nova, “só este”). Revisão 1: a primeira (versão 2, etapa 1).
 
 == Texto ==
 fonte: Times New Roman                   | Em branco
@@ -108,6 +108,10 @@ título: Referências                      | valor do código da versão 1
 espaço entre as referências: nenhuma     | valor do código da versão 1
 recuo das linhas seguintes: 0 cm         | valor do código da versão 1
 página nova: não                         | Em branco (decisão 13 da versão 2)
+
+== Abertura ==
+# Cada elemento antes do texto começa numa página nova.
+página nova: sim                         | Em branco, um elemento em cada folha
 
 == Abertura › Capa ==
 existe: não                              | Em branco (decisão 13 da versão 2)

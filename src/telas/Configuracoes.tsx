@@ -5,12 +5,11 @@ import type { EscolhaDoAutor } from "../referencias/escolhas";
 import type { ModeloResolvido } from "../modelos/tipos";
 import CamposDosDados from "./CamposDosDados";
 import EscolhasDoAutor from "./EscolhasDoAutor";
-import { TIPOS, elementosDaNorma } from "./trabalho";
+import { TIPOS } from "./trabalho";
 
 export const ABAS = [
   { id: "trabalho", nome: "Trabalho" },
   { id: "dados", nome: "Dados" },
-  { id: "elementos", nome: "Elementos" },
   { id: "escolhas", nome: "Escolhas do autor" },
 ] as const;
 export type AbaDasConfiguracoes = (typeof ABAS)[number]["id"];
@@ -20,7 +19,7 @@ interface Props {
   aoTrocarAba: (a: AbaDasConfiguracoes) => void;
   dados: DadosDoTrabalho;
   abertura: Abertura;
-  /** A norma do trabalho (o padrão dela, para saber que elementos ela tem). */
+  /** O nome da norma do trabalho. */
   nomeDaNorma: string;
   modelo: ModeloResolvido;
   normas: string[];
@@ -32,10 +31,13 @@ interface Props {
   aoFechar: () => void;
 }
 
-/** As Configurações do trabalho: tipo, norma, dados, elementos antes do texto e escolhas do autor. */
+/**
+ * As Configurações do trabalho: tipo, norma, versão sem identificação, dados e
+ * escolhas do autor. Os elementos antes do texto (capa, resumos...) ficam na
+ * Abertura, no alto do texto (etapa 3, parte 3a).
+ */
 export default function Configuracoes(p: Props) {
   const janela = useRef<HTMLDivElement>(null);
-  const noElementos = elementosDaNorma(p.modelo);
 
   useEffect(() => {
     const aoApertar = (ev: KeyboardEvent) => {
@@ -60,37 +62,6 @@ export default function Configuracoes(p: Props) {
     p.aoTrocarAba(novo.id);
     requestAnimationFrame(() => document.getElementById(`aba-${novo.id}`)?.focus());
   };
-
-  const ligar = (chave: "capa" | "folhaDeRosto" | "paginaDeTitulo" | "sumario" | "semIdentificacao", rotulo: string, ajuda: string, elemento?: keyof typeof noElementos) => {
-    const naNorma = elemento ? noElementos[elemento] : true;
-    return (
-      <div className="opcao-elemento">
-        <label className="marcar-form">
-          <input type="checkbox" checked={p.abertura[chave]} onChange={(e) => p.aoMudarAbertura((a) => ({ ...a, [chave]: e.target.checked }))} />
-          <span>{rotulo}</span>
-        </label>
-        <p className="dica-form">{naNorma ? ajuda : `A ${p.nomeDaNorma} não tem este elemento: o que você ligar fica guardado, mas não sai no PDF.`}</p>
-      </div>
-    );
-  };
-
-  const textoLigado = (chave: "dedicatoria" | "agradecimentos" | "epigrafe", rotulo: string) => (
-    <div className="opcao-elemento">
-      <label className="marcar-form">
-        <input
-          type="checkbox"
-          checked={p.abertura[chave].incluir}
-          onChange={(e) => p.aoMudarAbertura((a) => ({ ...a, [chave]: { ...a[chave], incluir: e.target.checked } }))}
-        />
-        <span>{rotulo}</span>
-      </label>
-      <p className="dica-form">
-        {noElementos[chave]
-          ? "Você escreve o texto na Abertura do trabalho, no topo do editor."
-          : `A ${p.nomeDaNorma} não tem este elemento: o que você escrever fica guardado, mas não sai no PDF.`}
-      </p>
-    </div>
-  );
 
   return (
     <div className="janela-fundo">
@@ -152,26 +123,23 @@ export default function Configuracoes(p: Props) {
                 </div>
                 <p className="dica-form">Trocar de norma não apaga nada: o texto, os dados e as referências continuam, e o PDF muda de forma.</p>
               </fieldset>
+              <fieldset className="grupo-form">
+                <legend>Avaliação cega</legend>
+                <label className="marcar-form">
+                  <input
+                    type="checkbox"
+                    checked={p.abertura.semIdentificacao}
+                    onChange={(e) => p.aoMudarAbertura((a) => ({ ...a, semIdentificacao: e.target.checked }))}
+                  />
+                  <span>Versão sem identificação</span>
+                </label>
+                <p className="dica-form">Os nomes dos autores e do orientador ficam guardados, mas não saem no PDF.</p>
+              </fieldset>
               <p className="dica-form">Idioma do trabalho: português do Brasil.</p>
             </>
           )}
 
           {p.aba === "dados" && <CamposDosDados dados={p.dados} aoMudar={p.aoMudarDados} nomeDaNorma={p.nomeDaNorma} />}
-
-          {p.aba === "elementos" && (
-            <>
-              <p className="dica-form">Os elementos antes do texto. O Apud põe cada um na ordem da {p.nomeDaNorma}, cada um na sua folha.</p>
-              {ligar("capa", "Capa", "Instituição, curso, autores, título, cidade e ano.", "capa")}
-              {ligar("folhaDeRosto", "Folha de rosto", "Autores, título, natureza do trabalho, orientador, cidade e ano.", "folhaDeRosto")}
-              {ligar("paginaDeTitulo", "Página de título", "Título, autores, curso, instituição, disciplina, professor e data.", "paginaDeTitulo")}
-              {textoLigado("dedicatoria", "Dedicatória")}
-              {textoLigado("agradecimentos", "Agradecimentos")}
-              {textoLigado("epigrafe", "Epígrafe")}
-              {ligar("sumario", "Sumário", "Montado com os títulos do texto e os números deles.", "sumario")}
-              <p className="dica-form">Os resumos você adiciona na Abertura do trabalho, no topo do editor: um por idioma.</p>
-              {ligar("semIdentificacao", "Versão sem identificação", "Para avaliação cega: os nomes dos autores e do orientador ficam guardados, mas não saem no PDF.")}
-            </>
-          )}
 
           {p.aba === "escolhas" && <EscolhasDoAutor escolhas={p.escolhas} nomeDaNorma={p.nomeDaNorma} aoEscolher={p.aoEscolher} />}
         </div>

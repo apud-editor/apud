@@ -30,6 +30,10 @@ import { COMO_NO_TEXTO } from "./valores";
 const PROPRIEDADES_COM_EXCECAO: Record<string, readonly string[]> = {
   paragrafo: ["entrelinha", "alinhamento", "recuo da primeira linha"],
   titulos: ["destaque", "posição", "numerar sozinho", "maiúsculas sozinho", "página nova"],
+  // Etapa 3a: os blocos da abertura que não ocupam a folha inteira podem ficar sem página nova.
+  "abertura.agradecimentos": ["página nova"],
+  "abertura.resumo": ["página nova"],
+  "abertura.sumario": ["página nova"],
 };
 
 /** O elemento da árvore de um bloco do texto que aceita exceções (parágrafo e título). */

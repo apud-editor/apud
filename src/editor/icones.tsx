@@ -102,6 +102,12 @@ const CAMINHOS = {
       <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0-6 0" />
     </>
   ),
+  mais: (
+    <>
+      <path d="M12 5l0 14" />
+      <path d="M5 12l14 0" />
+    </>
+  ),
   fechar: (
     <>
       <path d="M18 6l-12 12" />

@@ -8,7 +8,9 @@
 import type { Trabalho } from "../arquivos/formato";
 import {
   aberturaVazia,
+  adicionarAAbertura,
   documentoVazio,
+  ordenarAbertura,
   type Abertura,
   type DadosDoTrabalho,
   type Data,
@@ -38,12 +40,12 @@ export const nomeDoTipo = (tipo: TipoDeTrabalho) => TIPOS.find((t) => t.tipo ===
  */
 export function aberturaPadrao(tipo: TipoDeTrabalho, modelo: ModeloResolvido): Abertura {
   const tem = existeNoModelo(modelo);
-  const a = aberturaVazia();
+  let a = aberturaVazia();
   const completo = tipo !== "artigo";
-  a.capa = completo && tem("capa");
-  a.folhaDeRosto = completo && tem("folhaDeRosto");
-  a.paginaDeTitulo = tem("paginaDeTitulo");
-  a.sumario = (tipo === "estagio" || tipo === "tcc") && tem("sumario");
+  if (completo && tem("capa")) a = adicionarAAbertura(a, "capa");
+  if (completo && tem("folhaDeRosto")) a = adicionarAAbertura(a, "folhaDeRosto");
+  if (tem("paginaDeTitulo")) a = adicionarAAbertura(a, "paginaDeTitulo");
+  if ((tipo === "estagio" || tipo === "tcc") && tem("sumario")) a = adicionarAAbertura(a, "sumario");
   return a;
 }
 
@@ -124,7 +126,7 @@ export function resumoDoAssistente(idioma: string, texto: string, palavras: stri
   const t = texto.replace(/\s+/g, " ").trim();
   const chaves = palavrasChaveDoTexto(palavras);
   if (!t && chaves.length === 0) return null;
-  return { idioma, trechos: t ? [{ texto: t }] : [], palavrasChave: chaves };
+  return { tipo: "resumo", idioma, trechos: t ? [{ texto: t }] : [], palavrasChave: chaves };
 }
 
 /** O texto de um resumo de volta para o campo (palavras separadas por ponto e vírgula). */
@@ -145,7 +147,7 @@ export function trabalhoNovo(r: RespostasDoAssistente, modelo: ModeloResolvido, 
   const documento = documentoVazio();
   documento.dados = dados;
   documento.abertura = aberturaPadrao(dados.tipo, modelo);
-  if (r.resumo) documento.abertura.resumos = [r.resumo];
+  if (r.resumo) documento.abertura = { ...documento.abertura, blocos: ordenarAbertura([...documento.abertura.blocos, r.resumo]) };
   return {
     nome: dados.titulo.slice(0, 80) || "Trabalho sem título",
     modelo,

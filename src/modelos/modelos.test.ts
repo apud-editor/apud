@@ -15,7 +15,7 @@ const PASTA = join(import.meta.dirname, "..", "..", "modelos");
 const emBranco: Arquivo = { nome: "em-branco.txt", conteudo: readFileSync(join(PASTA, "em-branco.txt"), "utf8") };
 
 /** Um modelo de teste que herda do Em branco. */
-const filho = (corpo: string, ficha = "modelo: Teste\nherda de: Em branco, revisão 1"): Arquivo => ({
+const filho = (corpo: string, ficha = "modelo: Teste\nherda de: Em branco, revisão 2"): Arquivo => ({
   nome: "teste.txt",
   conteudo: `${ficha}\nrevisão: 1\ndata da revisão: 24/11/2026\nnota da revisão: teste\n\n${corpo}\n`,
 });
@@ -148,7 +148,7 @@ describe("conferência dos modelos", () => {
   it("o Em branco está certo e é a raiz", () => {
     const [r] = conferirModelos([emBranco]);
     expect(r.mensagens).toEqual([]);
-    expect(r.resolvido!.identificacao).toMatchObject({ id: "em-branco", nome: "Em branco", revisao: 1 });
+    expect(r.resolvido!.identificacao).toMatchObject({ id: "em-branco", nome: "Em branco", revisao: 2 });
     expect(r.resolvido!.identificacao.herdaDe).toBeUndefined();
   });
 
@@ -189,7 +189,7 @@ describe("conferência dos modelos", () => {
 
   it("monta a cadeia de herança e avisa quando o modelo de cima mudou de revisão", () => {
     const r = conferir(filho("== Texto ==\nfonte: Arial | x", "modelo: Teste\nherda de: Em branco, revisão 7"));
-    expect(r[1].mensagens).toEqual([expect.objectContaining({ gravidade: "aviso", texto: expect.stringMatching(/revisão 7 de Em branco, que agora está na revisão 1/) })]);
+    expect(r[1].mensagens).toEqual([expect.objectContaining({ gravidade: "aviso", texto: expect.stringMatching(/revisão 7 de Em branco, que agora está na revisão 2/) })]);
     expect(r[1].resolvido!.cadeia.map((c) => c.nome)).toEqual(["Em branco", "Teste"]);
   });
 

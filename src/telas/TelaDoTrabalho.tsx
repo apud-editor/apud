@@ -34,7 +34,7 @@ import ColunaDeIcones from "./ColunaDeIcones";
 import { painelDoAtalho } from "./atalhos";
 import { escreverTodos, type Escrita } from "../editor/janelinha";
 import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
-import AberturaDoTrabalho from "./AberturaDoTrabalho";
+import AberturaEmBlocos from "./AberturaEmBlocos";
 import Configuracoes, { type AbaDasConfiguracoes } from "./Configuracoes";
 import { limparDados } from "./trabalho";
 import BarraDeMenus from "./BarraDeMenus";
@@ -63,7 +63,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
   const referencias = useRef<Referencia[]>(trabalho.documento.referencias);
   // Os dados do trabalho, a abertura (capa, resumos...) e as imagens também
   // ficam aqui, fora do editor, e voltam inteiros ao gravar. Os dados e a
-  // abertura são mudados pelas Configurações e pela "Abertura do trabalho";
+  // abertura são mudados pelas Configurações e pela Abertura em blocos;
   // a tela se redesenha pela versaoDaAbertura (os valores ficam nos refs).
   const dados = useRef<DadosDoTrabalho>(trabalho.documento.dados);
   const abertura = useRef<Abertura>(trabalho.documento.abertura);
@@ -160,6 +160,8 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
   const [versaoDosDados, setVersaoDosDados] = useState(0);
   // Sobe quando os dados ou a abertura mudam por uma tela que precisa se redesenhar.
   const [, setVersaoDaAbertura] = useState(0);
+  // O menu Modelo › Adicionar à abertura… abre a lista da Abertura.
+  const [pedidoDeAdicionar, setPedidoDeAdicionar] = useState(0);
   const [configuracoes, setConfiguracoes] = useState<{ aba: AbaDasConfiguracoes } | null>(null);
   const [exportando, setExportando] = useState(false);
   const [exportado, setExportado] = useState<string | null>(null);
@@ -429,6 +431,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
               aoVoltar: () => voltar(),
               aoExportar: exportar,
               aoAbrirConfiguracoes: (aba) => setConfiguracoes({ aba }),
+              aoAdicionarAAbertura: () => setPedidoDeAdicionar((n) => n + 1),
               aoEscolherTema,
               aoTrocarNorma: trocarNorma,
               aoAlternarPainel: alternarPainel,
@@ -496,13 +499,14 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
         lerTexto={lerTexto}
         aoMoverCursor={moverCursor}
         antes={
-          <AberturaDoTrabalho
+          <AberturaEmBlocos
             abertura={abertura.current}
             dados={dados.current}
             nomeDaNorma={nomeDaNorma}
             modelo={modeloAtual.current}
             aoMudar={mudarAbertura}
-            aoConfigurar={(aba) => setConfiguracoes({ aba })}
+            aoMudarDados={mudarDados}
+            pedidoDeAdicionar={pedidoDeAdicionar}
           />
         }
         colunaDeIcones={<ColunaDeIcones aberto={painel} aoAlternar={alternarPainel} />}

@@ -1,6 +1,6 @@
 {
   "formato": "apud",
-  "versao": 6,
+  "versao": 7,
   "nome": "Aqui na rua, não (UNIVALI, ABNT)",
   "modelo": {
     "id": "abnt",
@@ -11,15 +11,15 @@
     "notaDaRevisao": "Títulos automáticos (versão 2, etapa 2): o Apud numera os títulos e aplica as maiúsculas do destaque (ajustáveis), e o nível 1 começa em página nova menos em artigo (ajustável).",
     "herdaDe": {
       "nome": "Em branco",
-      "revisao": 1
+      "revisao": 2
     },
     "cadeia": [
       {
         "id": "em-branco",
         "nome": "Em branco",
-        "revisao": 1,
+        "revisao": 2,
         "dataDaRevisao": "24/11/2026",
-        "notaDaRevisao": "Primeira revisão (versão 2, etapa 1)."
+        "notaDaRevisao": "Revisão 2 (etapa 3a): “página nova” na Abertura (cada elemento antes do texto numa folha; agradecimentos, resumos e sumário podem ficar sem página nova, “só este”). Revisão 1: a primeira (versão 2, etapa 1)."
       },
       {
         "id": "abnt",
@@ -30,7 +30,7 @@
         "notaDaRevisao": "Títulos automáticos (versão 2, etapa 2): o Apud numera os títulos e aplica as maiúsculas do destaque (ajustáveis), e o nível 1 começa em página nova menos em artigo (ajustável).",
         "herdaDe": {
           "nome": "Em branco",
-          "revisao": 1
+          "revisao": 2
         }
       }
     ],
@@ -640,6 +640,14 @@
           "valor": "à esquerda",
           "origem": "NBR 6023:2025 (UFRB)",
           "de": "ABNT"
+        }
+      },
+      "abertura": {
+        "página nova": {
+          "valor": "sim",
+          "origem": "Em branco, um elemento em cada folha",
+          "de": "Em branco",
+          "nota": "Cada elemento antes do texto começa numa página nova."
         }
       },
       "abertura.capa": {
@@ -1731,7 +1739,7 @@
   "criadoEm": "2026-11-20T00:00:00.000Z",
   "modificadoEm": "2026-11-20T00:00:00.000Z",
   "documento": {
-    "versao": 6,
+    "versao": 7,
     "dados": {
       "tipo": "artigo",
       "idioma": "pt-BR",
@@ -1739,24 +1747,8 @@
       "autores": []
     },
     "abertura": {
-      "capa": false,
-      "folhaDeRosto": false,
-      "paginaDeTitulo": false,
-      "dedicatoria": {
-        "incluir": false,
-        "paragrafos": []
-      },
-      "agradecimentos": {
-        "incluir": false,
-        "paragrafos": []
-      },
-      "epigrafe": {
-        "incluir": false,
-        "paragrafos": [],
-        "autoria": ""
-      },
-      "resumos": [],
-      "sumario": false,
+      "blocos": [],
+      "guardados": [],
       "semIdentificacao": false
     },
     "blocos": [
