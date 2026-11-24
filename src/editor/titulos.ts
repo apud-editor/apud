@@ -32,11 +32,14 @@ import type { ModeloResolvido } from "../modelos/tipos";
 export class TitulosDoTrabalho extends EventTarget {
   modelo: ModeloResolvido | null = null;
   tipo: TipoDeTrabalho = "disciplina";
+  /** Sobe a cada mudança: quem desenha o que depende do modelo ou do tipo sabe que precisa refazer. */
+  versao = 0;
 
   mudar(modelo: ModeloResolvido | null, tipo: TipoDeTrabalho) {
     if (modelo === this.modelo && tipo === this.tipo) return;
     this.modelo = modelo;
     this.tipo = tipo;
+    this.versao++;
     this.dispatchEvent(new Event("mudou"));
   }
 

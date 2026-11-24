@@ -23,6 +23,7 @@ import { ondeFica, type Posicao } from "./posicao";
 import { ControleDoReconhecimento, transformarEmCitacao } from "./reconhecer";
 import { TitulosDoTrabalho, tirarNumerosEscritos } from "./titulos";
 import { numeraSozinho } from "../modelos/titulos";
+import { AjustesDoBloco, ControleDosAjustes, QuadroNaBarra, type MudarTodos } from "./Ajustes";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -43,6 +44,8 @@ interface Props {
   aparencia?: AparenciaDaNorma;
   /** O modelo e o tipo do trabalho, para os títulos automáticos (número em cinza e página nova). */
   titulos?: TitulosDoTrabalho;
+  /** "Todos os iguais" da janelinha do ⚙: muda o elemento inteiro nas escolhas do trabalho (quem guarda as escolhas é a tela do trabalho). */
+  aoMudarTodos?: MudarTodos;
   /** Quem sabe escrever as citações na norma (o texto mostrado em cada citação e os avisos do texto). */
   citacoes?: CitacoesNoTexto;
   /** As referências do trabalho, para a janela da citação. Sem isto, não há "@" nem "Citar @". */
@@ -67,6 +70,7 @@ export default function Editor({
   antes,
   aparencia: aparenciaDada,
   titulos: titulosDados,
+  aoMudarTodos,
   citacoes: citacoesDadas,
   lerReferencias,
   previaDaCitacao,
@@ -78,6 +82,8 @@ export default function Editor({
   const janela = useMemo(() => new ControleDaJanela(), []);
   const arroba = useMemo(() => new ControleDoArroba(), []);
   const reconhecimento = useMemo(() => new ControleDoReconhecimento(), []);
+  const ajustesCtl = useMemo(() => new ControleDosAjustes(), []);
+  const folha = useRef<HTMLElement>(null);
   const aparencia = useMemo(() => aparenciaDada ?? new AparenciaDaNorma(), [aparenciaDada]);
   const titulos = useMemo(() => titulosDados ?? new TitulosDoTrabalho(), [titulosDados]);
   const citacoes = useMemo(() => citacoesDadas ?? new CitacoesNoTexto(() => []), [citacoesDadas]);
@@ -244,6 +250,8 @@ export default function Editor({
         editor={editor}
         janela={podeCitar ? janela : undefined}
         aoInserir={(o) => controle.aoPedir?.(o)}
+        titulos={titulos}
+        ajustes={ajustesCtl}
       />
       <BarraDaIlustracao editor={editor} aoEscolherImagem={escolherImagem} />
       {preparandoImagem && (
@@ -262,9 +270,18 @@ export default function Editor({
       <AvisosDoTexto citacoes={citacoes} />
       <div className="colunas">
         <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} titulos={titulos} />
-        <main className="folha">
+        <main className="folha" ref={folha}>
           {antes}
           <EditorContent editor={editor} />
+          {editor && (
+            <AjustesDoBloco
+              editor={editor}
+              folha={folha}
+              titulos={titulos}
+              controle={ajustesCtl}
+              aoMudarTodos={aoMudarTodos ?? (() => ({ ok: false, erro: "Aqui não dá para mudar “todos os iguais”." }))}
+            />
+          )}
         </main>
         {lateral}
         {colunaDeIcones}
@@ -352,10 +369,14 @@ function BarraDeFerramentas({
   editor,
   janela,
   aoInserir,
+  titulos,
+  ajustes,
 }: {
   editor: EditorTipTap | null;
   janela?: ControleDaJanela;
   aoInserir: (o: "imagem" | "tabela" | "nota") => void;
+  titulos: TitulosDoTrabalho;
+  ajustes: ControleDosAjustes;
 }) {
   const estado = useEditorState({
     editor,
@@ -398,6 +419,7 @@ function BarraDeFerramentas({
           </option>
         ))}
       </select>
+      <QuadroNaBarra editor={editor} titulos={titulos} controle={ajustes} />
 
       <span className="fb-sep" aria-hidden="true" />
       <Ferramenta nome="negrito" rotulo="Negrito (Ctrl+B)" ligada={estado.negrito} aoClicar={() => editor.chain().focus().toggleBold().run()} />
