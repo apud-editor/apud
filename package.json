@@ -13,7 +13,8 @@
     "exemplo-pdf": "tsx scripts/exemplo-pdf.ts",
     "artigos": "tsx scripts/artigos.ts",
     "codigo": "tsx scripts/codigo.ts",
-    "conferir-modelos": "tsx scripts/conferir-modelos.ts"
+    "conferir-modelos": "tsx scripts/conferir-modelos.ts",
+    "trabalho-de-teste": "tsx scripts/trabalho-de-teste.ts"
   },
   "dependencies": {
     "@myriaddreamin/typst-ts-renderer": "^0.7.0",

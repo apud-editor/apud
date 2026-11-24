@@ -197,6 +197,8 @@ export function mapearImagens(compilador: NodeCompiler, doc: Documento, raiz = p
  *                                     "nota:", "largura:" (60%) e "espécie:" (gráfico, quadro)
  *   ::: tabela                        com "título:", "dados:" (| a | b | ; | c | d |, a
  *                                     primeira linha é o cabeçalho), "fonte:" e "nota:"
+ *   ::: quebra / :::                  quebra de página posta pela pessoa
+ *   1. item                           lista em sequência (a lista com "- " não é)
  * A fonte "Elaborado pelo próprio autor" vira a caixa "fonte própria".
  */
 export function documentoDoTexto(
@@ -239,16 +241,18 @@ export function documentoDoTexto(
   };
   let paragrafo: string[] = [];
   let lista: ItemDeLista[] | null = null;
+  let sequencia = false;
   let bloco: { tipo: string; linhas: string[] } | null = null;
   const fechar = () => {
     if (paragrafo.length) blocos.push({ tipo: "paragrafo", trechos: texto(paragrafo.join(" ")) });
-    if (lista) blocos.push({ tipo: "lista", sequencia: false, itens: lista });
+    if (lista) blocos.push({ tipo: "lista", sequencia, itens: lista });
     paragrafo = [];
     lista = null;
   };
   const fecharBloco = (b: { tipo: string; linhas: string[] }) => {
     if (b.tipo === "citação-longa") blocos.push({ tipo: "citacaoLonga", trechos: texto(b.linhas.join(" ")) });
     if (b.tipo === "referências") blocos.push({ tipo: "referencias" });
+    if (b.tipo === "quebra") blocos.push({ tipo: "quebra" });
     if (b.tipo === "figura") {
       const c = campos(b.linhas);
       if (!pastaDasImagens) throw new Error("a figura precisa da pasta das imagens");
@@ -277,7 +281,7 @@ export function documentoDoTexto(
     }
     const abertura = linha.match(/^:::\s*(\S+)/);
     const titulo = linha.match(/^(#{1,5})\s+(.*)$/);
-    const item = linha.match(/^(\s*)-\s+(.*)$/);
+    const item = linha.match(/^(\s*)(-|\d+\.)\s+(.*)$/);
     if (abertura) {
       fechar();
       bloco = { tipo: abertura[1], linhas: [] };
@@ -289,8 +293,9 @@ export function documentoDoTexto(
         blocos.push({ tipo: "paragrafo", trechos: texto(paragrafo.join(" ")) });
         paragrafo = [];
       }
+      if (!lista) sequencia = item[2] !== "-";
       lista ??= [];
-      const novo: ItemDeLista = { trechos: texto(item[2]) };
+      const novo: ItemDeLista = { trechos: texto(item[3]) };
       if (item[1].length >= 2 && lista.length) (lista[lista.length - 1].subitens ??= []).push(novo);
       else lista.push(novo);
     } else if (!linha.trim()) {

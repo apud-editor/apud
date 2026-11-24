@@ -1,0 +1,119 @@
+{
+  "dados": {
+    "tipo": "tcc",
+    "idioma": "pt-BR",
+    "titulo": "Trabalho de teste do Apud",
+    "subtitulo": "o acolhimento em saúde mental num relato de estágio",
+    "autores": [
+      "Ana Beatriz Souza"
+    ],
+    "ano": 2026,
+    "curso": "Psicologia",
+    "instituicao": "Universidade do Vale do Itajaí",
+    "orientador": "Profa. Dra. Marta Ribeiro",
+    "cidade": "Itajaí",
+    "dataDeEntrega": {
+      "ano": 2026,
+      "mes": 11,
+      "dia": 30
+    }
+  },
+  "abertura": {
+    "capa": true,
+    "folhaDeRosto": true,
+    "paginaDeTitulo": true,
+    "dedicatoria": {
+      "incluir": true,
+      "paragrafos": [
+        [
+          {
+            "texto": "Às equipes dos serviços de saúde mental, que acolhem todos os dias."
+          }
+        ]
+      ]
+    },
+    "agradecimentos": {
+      "incluir": true,
+      "paragrafos": [
+        [
+          {
+            "texto": "À professora orientadora, pela escuta atenta e pelas leituras do texto."
+          }
+        ],
+        [
+          {
+            "texto": "Aos colegas de estágio e à equipe do serviço, que abriram as portas para este trabalho."
+          }
+        ]
+      ]
+    },
+    "epigrafe": {
+      "incluir": true,
+      "paragrafos": [
+        [
+          {
+            "texto": "Ninguém escapa ao sonho de voar, de ultrapassar os limites do espaço onde nasceu."
+          }
+        ]
+      ],
+      "autoria": "Rubem Alves"
+    },
+    "resumos": [
+      {
+        "idioma": "pt-BR",
+        "trechos": [
+          {
+            "texto": "Este trabalho relata a experiência de estágio em um serviço de saúde mental, com foco no acolhimento das pessoas que chegam ao serviço. Descreve as atividades de escuta inicial e de encaminhamento e discute o acolhimento como prática clínica, a partir da literatura da "
+          },
+          {
+            "texto": "reforma psiquiátrica",
+            "marcas": [
+              "italico"
+            ]
+          },
+          {
+            "texto": " brasileira. Conclui que o acolhimento é o primeiro momento do cuidado e pede escuta qualificada de toda a equipe."
+          }
+        ],
+        "palavrasChave": [
+          "acolhimento",
+          "saúde mental",
+          "estágio",
+          "Psicologia"
+        ]
+      },
+      {
+        "idioma": "en",
+        "titulo": "Apud test work: welcoming in mental health in an internship report",
+        "trechos": [
+          {
+            "texto": "This paper reports an internship experience in a mental health service, focusing on how people are welcomed when they arrive. It describes the initial listening and referral activities and discusses welcoming as a clinical practice, based on the literature of the Brazilian psychiatric reform. It concludes that welcoming is the first moment of care and requires qualified listening from the whole team."
+          }
+        ],
+        "palavrasChave": [
+          "welcoming",
+          "mental health",
+          "internship",
+          "Psychology"
+        ]
+      },
+      {
+        "idioma": "es",
+        "titulo": "El acogimiento en salud mental: relato de una experiencia de prácticas",
+        "trechos": [
+          {
+            "texto": "Este trabajo relata una experiencia de prácticas en un servicio de salud mental, centrada en el acogimiento de las personas que llegan al servicio. Describe las actividades de escucha inicial y de derivación y discute el acogimiento como práctica clínica. Concluye que el acogimiento es el primer momento del cuidado."
+          }
+        ],
+        "palavrasChave": [
+          "acogimiento",
+          "salud mental",
+          "prácticas",
+          "Psicología"
+        ]
+      }
+    ],
+    "sumario": true,
+    "semIdentificacao": false
+  }
+}
