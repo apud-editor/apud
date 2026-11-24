@@ -39,7 +39,7 @@ interface Props {
   colunaDeIcones?: React.ReactNode;
   /** Um painel ao lado do texto (como a prévia do PDF). */
   lateral?: React.ReactNode;
-  /** O que vem acima do texto, dentro da folha (a "Abertura do trabalho"). */
+  /** O que vem acima do texto, dentro da folha (a Abertura, em blocos). */
   antes?: React.ReactNode;
   /** O que depende da norma do trabalho (o título da lista de referências). */
   aparencia?: AparenciaDaNorma;
@@ -279,7 +279,8 @@ export default function Editor({
       <AvisosDoTexto citacoes={citacoes} />
       <div className="colunas">
         <Estrutura blocos={blocos} editor={editor} aparencia={aparencia} titulos={titulos} />
-        <main className="folha" ref={folha}>
+        {/* "ver-elementos" vale também para os blocos da Abertura, que ficam acima do texto. */}
+        <main className={`folha ${verElementos ? "ver-elementos" : ""}`} ref={folha}>
           {antes}
           <EditorContent editor={editor} />
           {editor && (

@@ -19,47 +19,54 @@
     }
   },
   "abertura": {
-    "capa": true,
-    "folhaDeRosto": true,
-    "paginaDeTitulo": true,
-    "dedicatoria": {
-      "incluir": true,
-      "paragrafos": [
-        [
-          {
-            "texto": "Às equipes dos serviços de saúde mental, que acolhem todos os dias."
-          }
-        ]
-      ]
-    },
-    "agradecimentos": {
-      "incluir": true,
-      "paragrafos": [
-        [
-          {
-            "texto": "À professora orientadora, pela escuta atenta e pelas leituras do texto."
-          }
-        ],
-        [
-          {
-            "texto": "Aos colegas de estágio e à equipe do serviço, que abriram as portas para este trabalho."
-          }
-        ]
-      ]
-    },
-    "epigrafe": {
-      "incluir": true,
-      "paragrafos": [
-        [
-          {
-            "texto": "Ninguém escapa ao sonho de voar, de ultrapassar os limites do espaço onde nasceu."
-          }
-        ]
-      ],
-      "autoria": "Rubem Alves"
-    },
-    "resumos": [
+    "blocos": [
       {
+        "tipo": "capa"
+      },
+      {
+        "tipo": "folhaDeRosto"
+      },
+      {
+        "tipo": "paginaDeTitulo"
+      },
+      {
+        "tipo": "dedicatoria",
+        "paragrafos": [
+          [
+            {
+              "texto": "Às equipes dos serviços de saúde mental, que acolhem todos os dias."
+            }
+          ]
+        ]
+      },
+      {
+        "tipo": "agradecimentos",
+        "paragrafos": [
+          [
+            {
+              "texto": "À professora orientadora, pela escuta atenta e pelas leituras do texto."
+            }
+          ],
+          [
+            {
+              "texto": "Aos colegas de estágio e à equipe do serviço, que abriram as portas para este trabalho."
+            }
+          ]
+        ]
+      },
+      {
+        "tipo": "epigrafe",
+        "paragrafos": [
+          [
+            {
+              "texto": "Ninguém escapa ao sonho de voar, de ultrapassar os limites do espaço onde nasceu."
+            }
+          ]
+        ],
+        "autoria": "Rubem Alves"
+      },
+      {
+        "tipo": "resumo",
         "idioma": "pt-BR",
         "trechos": [
           {
@@ -83,6 +90,7 @@
         ]
       },
       {
+        "tipo": "resumo",
         "idioma": "en",
         "titulo": "Apud test work: welcoming in mental health in an internship report",
         "trechos": [
@@ -98,6 +106,7 @@
         ]
       },
       {
+        "tipo": "resumo",
         "idioma": "es",
         "titulo": "El acogimiento en salud mental: relato de una experiencia de prácticas",
         "trechos": [
@@ -111,9 +120,12 @@
           "prácticas",
           "Psicología"
         ]
+      },
+      {
+        "tipo": "sumario"
       }
     ],
-    "sumario": true,
+    "guardados": [],
     "semIdentificacao": false
   }
 }

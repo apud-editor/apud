@@ -586,18 +586,18 @@ describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, r
   ];
   const tudo: Documento["abertura"] = {
     ...documentoVazio().abertura,
-    capa: true,
-    folhaDeRosto: true,
-    paginaDeTitulo: true,
-    dedicatoria: { incluir: true, paragrafos: [[{ texto: "À minha família." }]] },
-    agradecimentos: { incluir: true, paragrafos: [[{ texto: "Obrigado a todos." }]] },
-    epigrafe: { incluir: true, paragrafos: [[{ texto: "Uma frase." }]], autoria: "Rubem Alves" },
-    resumos: [
-      { idioma: "pt-BR", trechos: [{ texto: "Este trabalho relata." }], palavrasChave: ["acolhimento", "saúde mental"] },
-      { idioma: "en", trechos: [{ texto: "This paper reports." }], palavrasChave: ["welcoming", "mental health"] },
-      { idioma: "es", trechos: [{ texto: "Este trabajo relata." }], palavrasChave: ["acogida"] },
+    blocos: [
+      { tipo: "capa" },
+      { tipo: "folhaDeRosto" },
+      { tipo: "paginaDeTitulo" },
+      { tipo: "dedicatoria", paragrafos: [[{ texto: "À minha família." }]] },
+      { tipo: "agradecimentos", paragrafos: [[{ texto: "Obrigado a todos." }]] },
+      { tipo: "epigrafe", paragrafos: [[{ texto: "Uma frase." }]], autoria: "Rubem Alves" },
+      { tipo: "resumo", idioma: "pt-BR", trechos: [{ texto: "Este trabalho relata." }], palavrasChave: ["acolhimento", "saúde mental"] },
+      { tipo: "resumo", idioma: "en", trechos: [{ texto: "This paper reports." }], palavrasChave: ["welcoming", "mental health"] },
+      { tipo: "resumo", idioma: "es", trechos: [{ texto: "Este trabajo relata." }], palavrasChave: ["acogida"] },
+      { tipo: "sumario" },
     ],
-    sumario: true,
   };
   const doc = (abertura = tudo, extra: Partial<Documento> = {}): Documento => ({ ...documentoVazio(), dados, abertura, blocos, ...extra });
   /** O número da página (a contagem) e a folha (física) onde o texto começa. */
@@ -637,7 +637,7 @@ describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, r
   });
 
   it("ABNT: capa sem instituição começa pelo autor; só a capa ligada, o texto começa na página 1", () => {
-    const so = { ...documentoVazio().abertura, capa: true };
+    const so: Documento["abertura"] = { ...documentoVazio().abertura, blocos: [{ tipo: "capa" }] };
     const typst = documentoParaTypst(doc(so, { dados: { ...dados, instituicao: undefined, curso: undefined } }), abnt);
     expect(typst).toContain("grid(rows: (auto, 1fr, auto, 2fr, auto), [Ana Souza");
     expect(inicioDoTexto(typst)).toEqual({ contagem: 1, folha: 2 });

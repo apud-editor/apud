@@ -6,7 +6,7 @@
 // A forma de cada elemento na página (medidas, destaques, rótulos da norma)
 // vem do modelo e fica em typst.ts.
 
-import { ehTexto, type Abertura, type Bloco, type DadosDoTrabalho, type Data, type Resumo } from "../documento/modelo";
+import { ehTexto, ordenarAbertura, type Abertura, type Bloco, type DadosDoTrabalho, type Data, type Epigrafe, type Resumo, type TextoDaAbertura } from "../documento/modelo";
 import { valorEfetivo } from "../modelos/herdar";
 import type { ModeloResolvido } from "../modelos/tipos";
 
@@ -17,9 +17,9 @@ export type ElementoDaAbertura =
   | { tipo: "capa" }
   | { tipo: "folhaDeRosto" }
   | { tipo: "paginaDeTitulo" }
-  | { tipo: "dedicatoria" }
-  | { tipo: "agradecimentos" }
-  | { tipo: "epigrafe" }
+  | { tipo: "dedicatoria"; bloco: TextoDaAbertura }
+  | { tipo: "agradecimentos"; bloco: TextoDaAbertura }
+  | { tipo: "epigrafe"; bloco: Epigrafe }
   | { tipo: "resumo"; resumo: Resumo }
   | { tipo: "sumario" };
 
@@ -48,31 +48,35 @@ export function existeNoModelo(modelo: ModeloResolvido) {
 }
 
 /**
- * Os elementos ligados, na ordem da norma:
+ * Os blocos da abertura que saem no PDF, na ordem da norma:
  *   - ABNT (NBR 14724): capa, folha de rosto, dedicatória, agradecimentos,
- *     epígrafe, resumos (na ordem da lista) e sumário (sempre o último);
+ *     epígrafe, resumos (na ordem dos blocos) e sumário (sempre o último);
  *   - APA 7: página de título e resumos. A APA não tem capa, folha de rosto,
- *     dedicatória, epígrafe, agradecimentos nem sumário: eles ficam guardados,
- *     mas não saem (vale a norma).
- * Um elemento só sai se o modelo o tem (`existe`): o modelo de uma faculdade
- * pode desligar um elemento, e a APA não tem os outros.
- * Elemento de texto ligado mas vazio (dedicatória sem texto) não sai.
+ *     dedicatória, epígrafe, agradecimentos nem sumário: os blocos ficam no
+ *     trabalho, mas não saem (vale a norma).
+ * Um bloco só sai se o modelo tem o elemento (`existe`): o modelo de uma
+ * faculdade pode desligar um elemento, e a APA não tem os outros.
+ * Bloco de texto vazio (dedicatória sem texto, resumo sem texto) não sai.
  */
 export function elementosDaAbertura(abertura: Abertura, existe: (elemento: ElementoDaAbertura["tipo"]) => boolean): ElementoDaAbertura[] {
   const temTexto = (paragrafos: { texto: string }[][]) => paragrafos.some((p) => p.some((t) => t.texto.trim()));
-  const resumos = abertura.resumos
-    .filter((r) => r.trechos.some((t) => ehTexto(t) && t.texto.trim()))
-    .map((resumo): ElementoDaAbertura => ({ tipo: "resumo", resumo }));
-  const lista: ElementoDaAbertura[] = [
-    ...(abertura.capa ? [{ tipo: "capa" as const }] : []),
-    ...(abertura.folhaDeRosto ? [{ tipo: "folhaDeRosto" as const }] : []),
-    ...(abertura.paginaDeTitulo ? [{ tipo: "paginaDeTitulo" as const }] : []),
-    ...(abertura.dedicatoria.incluir && temTexto(abertura.dedicatoria.paragrafos) ? [{ tipo: "dedicatoria" as const }] : []),
-    ...(abertura.agradecimentos.incluir && temTexto(abertura.agradecimentos.paragrafos) ? [{ tipo: "agradecimentos" as const }] : []),
-    ...(abertura.epigrafe.incluir && temTexto(abertura.epigrafe.paragrafos) ? [{ tipo: "epigrafe" as const }] : []),
-    ...resumos,
-    ...(abertura.sumario ? [{ tipo: "sumario" as const }] : []),
-  ];
+  const lista: ElementoDaAbertura[] = [];
+  for (const b of ordenarAbertura(abertura.blocos)) {
+    switch (b.tipo) {
+      case "dedicatoria":
+      case "agradecimentos":
+        if (temTexto(b.paragrafos)) lista.push({ tipo: b.tipo, bloco: b });
+        break;
+      case "epigrafe":
+        if (temTexto(b.paragrafos)) lista.push({ tipo: "epigrafe", bloco: b });
+        break;
+      case "resumo":
+        if (b.trechos.some((t) => ehTexto(t) && t.texto.trim())) lista.push({ tipo: "resumo", resumo: b });
+        break;
+      default:
+        lista.push({ tipo: b.tipo });
+    }
+  }
   return lista.filter((e) => existe(e.tipo));
 }
 

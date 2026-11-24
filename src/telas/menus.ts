@@ -88,6 +88,8 @@ export interface ContextoDosMenus {
   aoVoltar: () => void;
   aoExportar: () => void;
   aoAbrirConfiguracoes: (aba: AbaDasConfiguracoes) => void;
+  /** Abre a lista "Adicionar à abertura", no alto do texto. */
+  aoAdicionarAAbertura: () => void;
   aoEscolherTema: (e: EscolhaDeTema) => void;
   aoTrocarNorma: (n: string) => void;
   aoAlternarPainel: (p: "previa" | "referencias") => void;
@@ -212,12 +214,12 @@ export function montarMenus(c: ContextoDosMenus): Menu[] {
           marcado: n === c.norma,
           aoEscolher: () => c.aoTrocarNorma(n),
         })),
-        { tipo: "separador", id: "sep-elementos" },
+        { tipo: "separador", id: "sep-abertura" },
         {
           tipo: "acao",
-          id: "elementos",
-          rotulo: "Elementos do trabalho…",
-          aoEscolher: () => c.aoAbrirConfiguracoes("elementos"),
+          id: "abertura",
+          rotulo: "Adicionar à abertura…",
+          aoEscolher: c.aoAdicionarAAbertura,
         },
       ],
     },

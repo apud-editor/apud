@@ -1657,99 +1657,360 @@ button.linha:hover {
   gap: 12px;
   padding: 4px 2px 8px;
 }
-.opcao-elemento {
+/* A Abertura em blocos (etapa 3, parte 3a): acima do texto, na mesma coluna
+   dele, com a etiqueta na margem, o contorno e o ⚙ como os blocos do texto. */
+.ab {
+  max-width: 792px;
+  margin: 0 auto;
+  padding: 28px 24px 0 140px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.ab-divisor {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.opcao-elemento .dica-form {
-  margin: 0 0 0 26px;
-}
-
-.abertura {
-  max-width: 760px;
-  margin: 24px auto 0;
-  padding: 0 24px 0 108px;
-}
-.abertura-titulo {
-  display: flex;
-  gap: 8px;
   align-items: center;
-  width: 100%;
-  padding: 8px 10px;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.ab-divisor-nome {
+  color: var(--tinta-suave);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ab-divisor-linha {
+  flex: 1;
+  border-top: 1px solid var(--borda-forte);
+}
+.ab-divisor-texto {
+  margin: 26px 0 0;
+}
+.ab-vazia {
+  margin: 0 0 6px;
+  color: var(--tinta-suave);
+  font-size: 13px;
+}
+.ab-menu {
+  position: relative;
+}
+.ab-adicionar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
   border: 1px solid var(--borda-forte);
   border-radius: 8px;
-  background: var(--fundo);
-  font-size: 14px;
+  background: var(--cab);
+  color: var(--destaque);
+  font-size: 13px;
   font-weight: 600;
-  text-align: left;
   cursor: pointer;
 }
-.abertura-corpo {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 12px 4px 4px;
-}
-.cartoes-abertura {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 8px;
-}
-.cartao-abertura {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-start;
-  padding: 10px;
-  border: 1px solid var(--borda-forte);
-  border-radius: 10px;
-  background: var(--folha);
-}
-.cartao-abertura.ligado {
+.ab-adicionar:hover,
+.ab-adicionar[aria-expanded="true"] {
   border-color: var(--destaque);
   background: var(--destaque-claro);
 }
-.elemento-de-texto,
-.resumo-da-abertura {
+.ab-opcoes {
+  position: absolute;
+  right: 0;
+  top: 34px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  padding: 6px;
+  background: var(--folha);
+  border: 1px solid var(--borda-forte);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+}
+.ab-opcao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--tinta);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.ab-opcao:hover,
+.ab-opcao:focus-visible {
+  background: var(--hov);
+  outline: none;
+}
+.ab-opcao > span:first-child {
+  flex: 1;
+}
+.ab-etiqueta {
+  padding: 0 7px;
+  border: 1px solid var(--chip-borda);
+  border-radius: 10px;
+  background: var(--chip);
+  color: var(--tinta-suave);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.ab-etiqueta-aviso {
+  border-color: var(--aviso-borda);
+  background: var(--aviso-fundo);
+  color: var(--aviso-texto);
+}
+.ab-opcoes-vazio {
+  margin: 6px 8px;
+  font-size: 13px;
+}
+
+.ab-bloco {
+  position: relative;
+  margin: 0 0 22px;
+  border-radius: 4px;
+}
+/* A etiqueta do tipo na margem: ao passar o mouse, com o foco dentro, ou em todos com "Ver elementos". */
+.ab-bloco::after {
+  content: attr(data-etiqueta);
+  position: absolute;
+  top: 0.35em;
+  left: -134px;
+  width: 72px;
+  opacity: 0;
+  text-align: right;
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: var(--tinta-suave);
+  pointer-events: none;
+}
+.ab-bloco:hover::after,
+.ab-bloco:focus-within::after,
+.ab-bloco.com-ajustes::after,
+.folha.ver-elementos .ab-bloco::after {
+  opacity: 1;
+}
+/* O contorno: tracejado ao passar o mouse, contínuo em cobalto com o foco dentro (como no texto). */
+.ab-bloco:hover {
+  outline: 1px dashed var(--borda-forte);
+  outline-offset: 6px;
+}
+.ab-bloco:focus-within,
+.ab-bloco.com-ajustes {
+  outline: 1.5px solid var(--destaque);
+  outline-offset: 6px;
+}
+/* O ⚙ na margem, só ao passar o mouse ou com o foco dentro. Os blocos da Abertura não têm alça: a ordem é da norma. */
+.ab-engrenagem {
+  top: 0;
+  left: -34px;
+  margin-top: 0;
+  opacity: 0;
+}
+.ab-bloco:hover > .ab-engrenagem,
+.ab-bloco:focus-within > .ab-engrenagem,
+.ab-bloco.com-ajustes > .ab-engrenagem {
+  opacity: 1;
+}
+.ab-bloco.fora-da-norma > :not(.ab-engrenagem):not(.ab-situacao):not(.ab-janelinha) {
+  opacity: 0.55;
+}
+.ab-situacao {
+  margin: 4px 0 0;
+  color: var(--tinta-suave);
+  font-size: 12.5px;
+}
+.ab-situacao.aviso {
+  color: var(--aviso-texto);
+}
+.ab-montado {
+  margin: 0;
+  color: var(--tinta-suave);
+  font-size: 14px;
+}
+
+/* Os textos da Abertura, direto no fluxo, sem moldura. */
+.campo-da-abertura {
+  outline: none;
+}
+.campo-da-abertura p {
+  margin: 0 0 8px;
+}
+.campo-da-abertura p:last-child {
+  margin-bottom: 0;
+}
+.campo-da-abertura p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: var(--tinta-suave);
+  pointer-events: none;
+}
+.ab-linha {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+.ab-linha-rotulo {
+  flex: none;
+  color: var(--tinta-suave);
+  font-size: 13px;
+}
+.ab .ab-linha input {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--tinta);
+  font: inherit;
+}
+.ab .ab-linha input:hover {
+  border-color: var(--borda);
+}
+.ab .ab-linha input:focus {
+  border-color: var(--destaque);
+  outline: none;
+  background-color: var(--cab);
+}
+.ab-autoria {
+  justify-content: flex-end;
+}
+.ab-autoria input {
+  flex: 0 1 260px;
+  text-align: right;
+}
+.ab-idioma {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+/* A capa, a folha de rosto e a página de título: as peças em faixas (topo, meio, pé). */
+.ab-folha {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1px solid var(--borda);
   border-radius: 10px;
   background: var(--folha);
 }
-.resumo-da-abertura {
-  background: var(--fundo);
-}
-.elemento-topo {
+.ab-faixa {
   display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
 }
-.campo-abertura {
+.ab-faixa + .ab-faixa {
+  padding-top: 8px;
+  border-top: 1px dashed var(--borda);
+}
+.ab-faixa-nome {
+  flex: none;
+  width: 34px;
+  padding-top: 6px;
+  color: var(--tinta-suave);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ab-pecas {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
-.campo-da-abertura {
-  min-height: 72px;
-  padding: 8px 10px;
-  border: 1px solid var(--borda-forte);
+.ab-peca {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid transparent;
   border-radius: 8px;
-  background: var(--cab);
+  background: none;
+  color: var(--tinta);
+  font: inherit;
   font-size: 14px;
+  line-height: 1.45;
+  text-align: left;
+  cursor: text;
+}
+.ab-peca:hover,
+.ab-peca:focus-visible {
+  border-color: var(--borda-forte);
+  background: var(--hov);
   outline: none;
 }
-.campo-da-abertura:focus {
+.ab-peca-rotulo {
+  flex: none;
+  width: 118px;
+  color: var(--tinta-suave);
+  font-size: 12.5px;
+}
+.ab-peca-valor {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.ab-peca.vazia .ab-peca-valor {
+  color: var(--tinta-suave);
+  font-style: italic;
+}
+.ab-peca-nota {
+  color: var(--tinta-suave);
+  font-size: 12px;
+}
+.ab-peca.editando {
+  flex-wrap: wrap;
   border-color: var(--destaque);
-  box-shadow: 0 0 0 1px var(--destaque);
+  background: var(--cab);
+  cursor: default;
 }
-.campo-da-abertura p {
-  margin: 0 0 6px;
+.ab-peca.editando input,
+.ab-peca.editando textarea {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 6px;
+  background: var(--cab);
+  color: var(--tinta);
+  font: inherit;
 }
+.ab-peca.editando input:focus,
+.ab-peca.editando textarea:focus {
+  border-color: var(--destaque);
+  outline: none;
+}
+.ab-peca.editando > .dica,
+.ab-peca.editando > .erro-campo {
+  flex-basis: 100%;
+  margin: 2px 0 0 128px;
+  font-size: 12px;
+}
+.ab-dica-folha {
+  margin: 2px 0 0;
+  font-size: 12px;
+}
+
+/* O ⚙ de um bloco da Abertura: a janelinha logo abaixo do bloco. */
+.ab-janelinha {
+  position: absolute;
+  left: -34px;
+  top: calc(100% + 10px);
+  z-index: 20;
+}
+
 .escolhas-atalho {
   display: flex;
   flex-direction: column;

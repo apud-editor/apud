@@ -384,12 +384,11 @@ describe("fase 3: blocos novos entre o Apud e o editor", () => {
     expect([...imagensUsadas(BLOCOS_DA_FASE_3)]).toEqual(["img-a1b2", "img-c3d4"]);
   });
 
-  it("um documento vazio tem a abertura toda desligada e os dados sem título", () => {
+  it("um documento vazio tem a abertura sem blocos e os dados sem título", () => {
     const d = documentoVazio();
-    expect(d.versao).toBe(6);
+    expect(d.versao).toBe(7);
     expect(d.dados).toEqual({ tipo: "disciplina", idioma: "pt-BR", titulo: "", autores: [] });
-    expect(Object.entries(d.abertura).filter(([, v]) => v === true)).toEqual([]);
-    expect([d.abertura.dedicatoria.incluir, d.abertura.agradecimentos.incluir, d.abertura.epigrafe.incluir]).toEqual([false, false, false]);
+    expect(d.abertura).toEqual({ blocos: [], guardados: [], semIdentificacao: false });
     expect(d.imagens).toEqual([]);
   });
 });

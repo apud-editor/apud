@@ -3,7 +3,18 @@
 // extenso e as palavras-chave.
 
 import { describe, expect, it } from "vitest";
-import { aberturaVazia, dadosVazios, type Abertura, type DadosDoTrabalho } from "../documento/modelo";
+import {
+  aberturaVazia,
+  adicionarAAbertura,
+  blocoVazioDaAbertura,
+  dadosVazios,
+  ordenarAbertura,
+  temTextoNaAbertura,
+  tirarDaAbertura,
+  type Abertura,
+  type DadosDoTrabalho,
+  type Resumo,
+} from "../documento/modelo";
 import {
   dataPorExtenso,
   deNome,
@@ -17,19 +28,20 @@ import {
 } from "./abertura";
 
 const texto = (t: string) => [[{ texto: t }]];
+const resumo = (idioma: string, t: string): Resumo => ({ tipo: "resumo", idioma, trechos: t ? [{ texto: t }] : [], palavrasChave: [] });
 const tudoLigado = (): Abertura => ({
   ...aberturaVazia(),
-  capa: true,
-  folhaDeRosto: true,
-  paginaDeTitulo: true,
-  dedicatoria: { incluir: true, paragrafos: texto("A minha mãe.") },
-  agradecimentos: { incluir: true, paragrafos: texto("Obrigado.") },
-  epigrafe: { incluir: true, paragrafos: texto("Uma frase."), autoria: "Autor" },
-  resumos: [
-    { idioma: "pt-BR", trechos: [{ texto: "Resumo." }], palavrasChave: [] },
-    { idioma: "en", trechos: [{ texto: "Abstract." }], palavrasChave: [] },
+  blocos: [
+    { tipo: "capa" },
+    { tipo: "folhaDeRosto" },
+    { tipo: "paginaDeTitulo" },
+    { tipo: "dedicatoria", paragrafos: texto("A minha mãe.") },
+    { tipo: "agradecimentos", paragrafos: texto("Obrigado.") },
+    { tipo: "epigrafe", paragrafos: texto("Uma frase."), autoria: "Autor" },
+    resumo("pt-BR", "Resumo."),
+    resumo("en", "Abstract."),
+    { tipo: "sumario" },
   ],
-  sumario: true,
 });
 
 describe("quais elementos saem, e em que ordem", () => {
@@ -50,18 +62,25 @@ describe("quais elementos saem, e em que ordem", () => {
     expect(r).toEqual(["pt-BR", "en"]);
   });
 
-  it("elemento desligado não sai, mesmo com texto; ligado mas vazio também não", () => {
-    const a = tudoLigado();
-    a.dedicatoria.incluir = false;
-    a.epigrafe.paragrafos = [[{ texto: "   " }]];
-    a.resumos.push({ idioma: "es", trechos: [], palavrasChave: ["x"] });
+  it("bloco tirado da abertura não sai, mesmo com o texto guardado; bloco vazio também não", () => {
+    let a = tudoLigado();
+    a = tirarDaAbertura(a, a.blocos.findIndex((b) => b.tipo === "dedicatoria"));
+    a.blocos = a.blocos.map((b) => (b.tipo === "epigrafe" ? { ...b, paragrafos: [[{ texto: "   " }]] } : b));
+    a.blocos = ordenarAbertura([...a.blocos, { ...resumo("es", ""), palavrasChave: ["x"] }]);
     const tipos = elementosDaAbertura(a, () => true).map((e) => e.tipo);
     expect(tipos).not.toContain("dedicatoria");
     expect(tipos).not.toContain("epigrafe");
     expect(tipos.filter((t) => t === "resumo")).toHaveLength(2);
   });
 
-  it("arquivo antigo (tudo desligado): nada sai", () => {
+  it("a ordem é a da norma, mesmo que os blocos venham noutra ordem", () => {
+    const a = tudoLigado();
+    a.blocos = [...a.blocos].reverse();
+    const tipos = elementosDaAbertura(a, () => true).map((e) => (e.tipo === "resumo" ? e.resumo.idioma : e.tipo));
+    expect(tipos).toEqual(["capa", "folhaDeRosto", "paginaDeTitulo", "dedicatoria", "agradecimentos", "epigrafe", "en", "pt-BR", "sumario"]);
+  });
+
+  it("abertura sem blocos: nada sai", () => {
     expect(elementosDaAbertura(aberturaVazia(), () => true)).toEqual([]);
   });
 });
@@ -139,5 +158,51 @@ describe("rótulos, datas, nomes e palavras-chave", () => {
     expect(repetirTituloNoTexto(d, [{ tipo: "paragrafo", trechos: [] }, { tipo: "titulo", nivel: 1, trechos: [{ texto: "O Acolhimento: um relato" }] }])).toBe(false);
     expect(repetirTituloNoTexto(d, [{ tipo: "titulo", nivel: 1, trechos: [{ texto: "o acolhimento" }] }])).toBe(false);
     expect(repetirTituloNoTexto({ ...d, titulo: "" }, [])).toBe(false);
+  });
+});
+
+describe("tirar e adicionar à abertura", () => {
+  it("tirar um bloco com texto guarda o texto; adicionar de novo traz o texto de volta, no lugar da norma", () => {
+    let a = tudoLigado();
+    a = tirarDaAbertura(a, 3);
+    expect(a.blocos.map((b) => b.tipo)).not.toContain("dedicatoria");
+    expect(a.guardados).toEqual([{ tipo: "dedicatoria", paragrafos: texto("A minha mãe.") }]);
+    a = adicionarAAbertura(a, "dedicatoria");
+    expect(a.blocos[3]).toEqual({ tipo: "dedicatoria", paragrafos: texto("A minha mãe.") });
+    expect(a.guardados).toEqual([]);
+  });
+
+  it("tirar um bloco sem texto (capa, sumário, dedicatória vazia) não guarda nada", () => {
+    let a = tudoLigado();
+    a = tirarDaAbertura(a, 0);
+    a = tirarDaAbertura(adicionarAAbertura({ ...a, blocos: a.blocos.filter((b) => b.tipo !== "dedicatoria") }, "dedicatoria"), 2);
+    expect(a.guardados).toEqual([]);
+    expect(a.blocos.map((b) => b.tipo)).toEqual(["folhaDeRosto", "paginaDeTitulo", "agradecimentos", "epigrafe", "resumo", "resumo", "sumario"]);
+  });
+
+  it("os resumos se guardam por idioma: tirar o inglês duas vezes fica com o último", () => {
+    let a = tudoLigado();
+    a = tirarDaAbertura(a, a.blocos.findIndex((b) => b.tipo === "resumo" && b.idioma === "en"));
+    a = adicionarAAbertura(a, "resumo", "es");
+    expect(a.blocos.filter((b) => b.tipo === "resumo").map((b) => (b as Resumo).idioma)).toEqual(["pt-BR", "es"]);
+    a = { ...a, blocos: ordenarAbertura([...a.blocos, resumo("en", "Outro.")]) };
+    a = tirarDaAbertura(a, a.blocos.findIndex((b) => b.tipo === "resumo" && b.idioma === "en"));
+    expect(a.guardados).toEqual([resumo("en", "Outro.")]);
+    a = adicionarAAbertura(a, "resumo", "en");
+    expect(a.blocos.filter((b) => b.tipo === "resumo").map((b) => (b as Resumo).trechos)).toEqual([[{ texto: "Resumo." }], [], [{ texto: "Outro." }]]);
+    expect(a.blocos[a.blocos.length - 1]).toEqual({ tipo: "sumario" });
+  });
+
+  it("um elemento que só pode haver um não entra duas vezes", () => {
+    const a = tudoLigado();
+    expect(adicionarAAbertura(a, "capa")).toBe(a);
+  });
+
+  it("o que conta como texto da pessoa", () => {
+    expect(temTextoNaAbertura({ tipo: "capa" })).toBe(false);
+    expect(temTextoNaAbertura(blocoVazioDaAbertura("epigrafe"))).toBe(false);
+    expect(temTextoNaAbertura({ tipo: "epigrafe", paragrafos: [], autoria: "Rubem Alves" })).toBe(true);
+    expect(temTextoNaAbertura({ ...resumo("en", ""), palavrasChave: ["a"] })).toBe(true);
+    expect(temTextoNaAbertura({ ...resumo("en", ""), titulo: " " })).toBe(false);
   });
 });

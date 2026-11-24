@@ -1,6 +1,7 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Superscript from "@tiptap/extension-superscript";
+import Placeholder from "@tiptap/extension-placeholder";
 import type { TrechoDeTexto } from "../documento/modelo";
 import { campoParaParagrafos, paragrafosParaCampo } from "./campo";
 
@@ -13,11 +14,12 @@ interface Props {
   aoMudar: (paragrafos: TrechoDeTexto[][]) => void;
   /** Um parágrafo só (o resumo da ABNT). Enter não cria outro. */
   unico?: boolean;
-  dica?: string;
+  /** O texto cinza do campo vazio. */
+  convite?: string;
 }
 
 /** Só texto com negrito, itálico e sobrescrito: nada de títulos, listas ou citações. */
-const EXTENSOES = [
+const extensoes = (convite: string) => [
   StarterKit.configure({
     blockquote: false,
     bulletList: false,
@@ -34,12 +36,17 @@ const EXTENSOES = [
     underline: false,
   }),
   Superscript,
+  Placeholder.configure({ placeholder: convite }),
 ];
 
-/** Um campo de texto pequeno, com negrito, itálico e sobrescrito, para a "Abertura do trabalho". */
-export default function CampoDeParagrafos({ id, rotulo, inicial, aoMudar, unico, dica }: Props) {
+/**
+ * Um texto da Abertura (dedicatória, epígrafe, agradecimentos, resumo), direto
+ * no fluxo do texto, sem moldura de formulário (etapa 3, parte 3a). Negrito,
+ * itálico e sobrescrito pelos atalhos (Ctrl+B, Ctrl+I, Ctrl+.).
+ */
+export default function CampoDeParagrafos({ id, rotulo, inicial, aoMudar, unico, convite = "" }: Props) {
   const campo = useEditor({
-    extensions: EXTENSOES,
+    extensions: extensoes(convite),
     immediatelyRender: false,
     content: paragrafosParaCampo(inicial),
     editorProps: {
@@ -55,46 +62,5 @@ export default function CampoDeParagrafos({ id, rotulo, inicial, aoMudar, unico,
     onUpdate: ({ editor }) => aoMudar(campoParaParagrafos(editor.getJSON(), unico)),
   });
 
-  const botao = (nome: string, titulo: string, ativo: boolean, fazer: () => void, conteudo: React.ReactNode) => (
-    <button
-      type="button"
-      className={`btn quadrado ${ativo ? "on" : ""}`}
-      aria-label={nome}
-      title={titulo}
-      aria-pressed={ativo}
-      onMouseDown={(ev) => {
-        ev.preventDefault();
-        fazer();
-      }}
-      onKeyDown={(ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
-          ev.preventDefault();
-          ev.stopPropagation();
-          fazer();
-        }
-      }}
-    >
-      {conteudo}
-    </button>
-  );
-
-  return (
-    <div className="campo-abertura">
-      <div className="ferramentas-da-nota" role="toolbar" aria-label={`Formatação: ${rotulo}`}>
-        {botao("Negrito", "Negrito (Ctrl+B)", !!campo?.isActive("bold"), () => campo?.chain().focus().toggleBold().run(), <b>B</b>)}
-        {botao("Itálico", "Itálico (Ctrl+I)", !!campo?.isActive("italic"), () => campo?.chain().focus().toggleItalic().run(), <i>I</i>)}
-        {botao(
-          "Sobrescrito",
-          "Sobrescrito",
-          !!campo?.isActive("superscript"),
-          () => campo?.chain().focus().toggleSuperscript().run(),
-          <span>
-            x<sup>2</sup>
-          </span>,
-        )}
-      </div>
-      <EditorContent editor={campo} className="area-da-nota" />
-      {dica && <p className="dica-form">{dica}</p>}
-    </div>
-  );
+  return <EditorContent editor={campo} className="area-da-abertura" />;
 }

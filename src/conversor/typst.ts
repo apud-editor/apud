@@ -746,14 +746,14 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: L
       case "dedicatoria":
       case "epigrafe": {
         // NBR 14724: no pé da página, do meio para a direita, sem título.
-        const el2 = el.tipo === "dedicatoria" ? doc.abertura.dedicatoria : doc.abertura.epigrafe;
-        const autoria = el.tipo === "epigrafe" && r.sim("abertura.epigrafe", "autoria") && doc.abertura.epigrafe.autoria.trim() ? `\n\n#align(right)[${escaparTexto(doc.abertura.epigrafe.autoria.trim())}]` : "";
+        const el2 = el.bloco;
+        const autoria = el.tipo === "epigrafe" && r.sim("abertura.epigrafe", "autoria") && el.bloco.autoria.trim() ? `\n\n#align(right)[${escaparTexto(el.bloco.autoria.trim())}]` : "";
         partes.push(folha(`align(bottom, pad(left: 50%, {\n  set par(justify: ${justificado}, leading: ${m.entre}, spacing: ${m.entre})\n  [${paragrafos(el2.paragrafos)}${autoria}]\n}))`));
         break;
       }
       case "agradecimentos": {
         const rotulo = r.texto("abertura.agradecimentos", "título");
-        partes.push(`${rotuloDeSecao(rotulo, r)}\n${paragrafos(doc.abertura.agradecimentos.paragrafos)}\n#pagebreak()\n`);
+        partes.push(`${rotuloDeSecao(rotulo, r)}\n${paragrafos(el.bloco.paragrafos)}\n#pagebreak()\n`);
         break;
       }
       case "resumo":

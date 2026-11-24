@@ -23,20 +23,16 @@ const dados = (p: Partial<DadosDoTrabalho> = {}): DadosDoTrabalho => ({ ...dados
 
 describe("elementos que ligam sozinhos", () => {
   it("ABNT: disciplina com capa e folha de rosto; estágio e TCC também com sumário; artigo sem nenhum", () => {
-    const de = (t: DadosDoTrabalho["tipo"]) => {
-      const a = aberturaPadrao(t, abnt);
-      return [a.capa, a.folhaDeRosto, a.sumario, a.paginaDeTitulo];
-    };
-    expect(de("disciplina")).toEqual([true, true, false, false]);
-    expect(de("estagio")).toEqual([true, true, true, false]);
-    expect(de("tcc")).toEqual([true, true, true, false]);
-    expect(de("artigo")).toEqual([false, false, false, false]);
+    const de = (t: DadosDoTrabalho["tipo"]) => aberturaPadrao(t, abnt).blocos.map((b) => b.tipo);
+    expect(de("disciplina")).toEqual(["capa", "folhaDeRosto"]);
+    expect(de("estagio")).toEqual(["capa", "folhaDeRosto", "sumario"]);
+    expect(de("tcc")).toEqual(["capa", "folhaDeRosto", "sumario"]);
+    expect(de("artigo")).toEqual([]);
   });
 
   it("APA: só a página de título, em todos os tipos; nada de capa, folha de rosto ou sumário", () => {
     for (const t of ["disciplina", "estagio", "artigo", "tcc"] as const) {
-      const a = aberturaPadrao(t, apa);
-      expect([a.capa, a.folhaDeRosto, a.sumario, a.paginaDeTitulo]).toEqual([false, false, false, true]);
+      expect(aberturaPadrao(t, apa).blocos).toEqual([{ tipo: "paginaDeTitulo" }]);
     }
   });
 
@@ -77,7 +73,7 @@ describe("dados do trabalho", () => {
 
   it("resumo do assistente: pulado dá null; com texto, um parágrafo no idioma do trabalho", () => {
     expect(resumoDoAssistente("pt-BR", "  ", " ")).toBeNull();
-    expect(resumoDoAssistente("pt-BR", "Este trabalho\n  estuda.", "a; b")).toEqual({ idioma: "pt-BR", trechos: [{ texto: "Este trabalho estuda." }], palavrasChave: ["a", "b"] });
+    expect(resumoDoAssistente("pt-BR", "Este trabalho\n  estuda.", "a; b")).toEqual({ tipo: "resumo", idioma: "pt-BR", trechos: [{ texto: "Este trabalho estuda." }], palavrasChave: ["a", "b"] });
   });
 
   it("data do campo de data e de volta", () => {
@@ -100,16 +96,14 @@ describe("trabalho novo", () => {
     expect(t.nome).toBe("Um título");
     expect(t.modelo.identificacao.nome).toBe("ABNT");
     expect(t.documento.dados).toMatchObject({ tipo: "tcc", titulo: "Um título", autores: ["Maria Silva"], curso: "Psicologia", ano: 2026 });
-    expect(t.documento.abertura).toMatchObject({ capa: true, folhaDeRosto: true, sumario: true, paginaDeTitulo: false });
-    expect(t.documento.abertura.resumos).toEqual([resumo]);
+    expect(t.documento.abertura.blocos).toEqual([{ tipo: "capa" }, { tipo: "folhaDeRosto" }, resumo, { tipo: "sumario" }]);
     expect(t.documento.blocos).toEqual([{ tipo: "paragrafo", trechos: [] }]);
     expect(t.criadoEm).toBe("2026-11-22T12:00:00.000Z");
   });
 
   it("pulando o resumo, não cria resumo vazio", () => {
     const t = trabalhoNovo({ dados: dados(), resumo: null }, apa);
-    expect(t.documento.abertura.resumos).toEqual([]);
-    expect(t.documento.abertura.paginaDeTitulo).toBe(true);
+    expect(t.documento.abertura.blocos).toEqual([{ tipo: "paginaDeTitulo" }]);
   });
 
   it("o arquivo do trabalho novo é lido de volta igual, e a abertura gera os elementos da norma", () => {

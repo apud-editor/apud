@@ -17,7 +17,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { documentoParaTypst, type OpcoesDoConversor } from "../src/conversor/typst";
-import type { Documento, Referencia, Resumo, TipoDeTrabalho } from "../src/documento/modelo";
+import { ordenarAbertura, type Documento, type Referencia, type Resumo, type TipoDeTrabalho } from "../src/documento/modelo";
 import { carregarNorma, documentoDeProva, documentoDoTexto, PASTA_TESTES, PASTA_PROVA } from "./prova-lib";
 
 export const PASTA_DO_CODIGO = join(PASTA_PROVA, "codigo");
@@ -89,6 +89,7 @@ function comExcecoes(
 }
 
 const resumoEmEspanhol: Resumo = {
+  tipo: "resumo",
   idioma: "es",
   titulo: "La acogida en salud mental",
   trechos: [{ texto: "Este trabajo relata una experiencia de pasantía en un servicio de salud mental." }],
@@ -135,7 +136,7 @@ export const CASOS: CasoDeCodigo[] = [
         provaComo((d) => ({
           ...d,
           dados: { ...d.dados, tipo: "tcc" },
-          abertura: { ...d.abertura, resumos: [...d.abertura.resumos, resumoEmEspanhol] },
+          abertura: { ...d.abertura, blocos: ordenarAbertura([...d.abertura.blocos, resumoEmEspanhol]) },
         })),
         "abnt.txt",
         {

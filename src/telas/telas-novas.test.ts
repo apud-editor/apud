@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { carregarPerfil } from "../../scripts/prova-lib";
 import { aberturaVazia, dadosVazios, type Abertura } from "../documento/modelo";
 import { escolhasDoAutor } from "../referencias/escolhas";
-import AberturaDoTrabalho from "./AberturaDoTrabalho";
+import AberturaEmBlocos from "./AberturaEmBlocos";
 import Assistente from "./Assistente";
 import Configuracoes, { ABAS, type AbaDasConfiguracoes } from "./Configuracoes";
 
@@ -21,7 +21,7 @@ const dados = { ...dadosVazios(), titulo: "Meu trabalho", autores: ["Maria Silva
 
 function areaDaAbertura(a: Abertura, norma: "ABNT" | "APA", d = dados) {
   return renderToStaticMarkup(
-    createElement(AberturaDoTrabalho, { abertura: a, dados: d, nomeDaNorma: norma, modelo: (norma === "ABNT" ? abnt : apa).modelo, aoMudar: nada, aoConfigurar: nada }),
+    createElement(AberturaEmBlocos, { abertura: a, dados: d, nomeDaNorma: norma, modelo: (norma === "ABNT" ? abnt : apa).modelo, aoMudar: nada, aoMudarDados: nada }),
   );
 }
 
@@ -59,9 +59,10 @@ describe("assistente de novo trabalho", () => {
 });
 
 describe("Configurações do trabalho", () => {
-  it("tem as quatro abas, com a escolhida marcada", () => {
+  it("tem as três abas (os elementos foram para a Abertura), com a escolhida marcada", () => {
     const html = configuracoes("dados");
     for (const a of ABAS) expect(html).toContain(a.nome);
+    expect(ABAS.map((a) => a.id)).toEqual(["trabalho", "dados", "escolhas"]);
     expect(html).toContain('role="tablist"');
     expect(html).toMatch(/id="aba-dados"[^>]*aria-selected="true"/);
   });
@@ -77,17 +78,6 @@ describe("Configurações do trabalho", () => {
     expect(configuracoes("dados", "APA")).toContain("Professor (ou orientador)");
   });
 
-  it("aba Elementos: na ABNT oferece capa e sumário; na APA avisa que a norma não tem", () => {
-    const abnt = configuracoes("elementos");
-    expect(abnt).toContain("Capa");
-    expect(abnt).toContain("Sumário");
-    // A ABNT não tem página de título (é da APA): só ela recebe o aviso.
-    expect(abnt.match(/A ABNT não tem este elemento/g)).toHaveLength(1);
-    const apa = configuracoes("elementos", "APA");
-    expect(apa).toContain("A APA não tem este elemento");
-    expect(apa).toContain("Versão sem identificação");
-  });
-
   it("aba Escolhas do autor: as escolhas da norma com o padrão marcado", () => {
     const abnt = configuracoes("escolhas");
     expect(abnt).toContain("Prenomes na lista de referências");
@@ -95,8 +85,10 @@ describe("Configurações do trabalho", () => {
     expect(configuracoes("escolhas", "APA")).toContain("Cidade da editora na lista");
   });
 
-  it("aba Trabalho: tipo, norma e idioma", () => {
+  it("aba Trabalho: tipo, norma, versão sem identificação e idioma", () => {
     const html = configuracoes("trabalho");
+    expect(html).toContain("Versão sem identificação");
+    expect(configuracoes("trabalho", "ABNT", abertura({ semIdentificacao: true }))).toMatch(/checked=""[^>]*\/?><span>Versão sem identificação/);
     expect(html).toContain("Tipo de trabalho");
     expect(html).toContain("Trabalho de disciplina");
     expect(html).toContain('aria-pressed="true"');
@@ -104,48 +96,72 @@ describe("Configurações do trabalho", () => {
   });
 });
 
-describe("Abertura do trabalho no editor", () => {
-  it("sem nada ligado, fica fechada e diz que não há nada ligado", () => {
+describe("Abertura em blocos no editor", () => {
+  it("sem blocos: o divisor Abertura, o botão de adicionar e o divisor Texto", () => {
     const html = areaDaAbertura(abertura(), "ABNT");
-    expect(html).toContain("Abertura do trabalho");
-    expect(html).toContain("nada ligado ainda");
-    expect(html).not.toContain("Editar dados");
+    expect(html).toContain("Abertura");
+    expect(html).toContain("Adicionar à abertura");
+    expect(html).toContain("Nada antes do texto");
+    expect(html).toContain(">Texto<");
+    expect(html).not.toContain("ab-bloco");
   });
 
-  it("com capa, folha de rosto e sumário ligados, mostra os cartões e o que entra no PDF", () => {
-    const html = areaDaAbertura(abertura({ capa: true, folhaDeRosto: true, sumario: true }), "ABNT");
-    expect(html).toContain("Capa");
-    expect(html).toContain("Folha de rosto");
-    expect(html).toContain("Entra no PDF");
-    expect(html).toContain("Montado com os títulos numerados");
-    expect(html).toContain("Dedicatória");
-    expect(html).toContain("Adicionar resumo");
+  it("capa e folha de rosto mostram as peças em faixas, com os dados do trabalho", () => {
+    const html = areaDaAbertura(abertura({ blocos: [{ tipo: "capa" }, { tipo: "folhaDeRosto" }, { tipo: "sumario" }] }), "ABNT", {
+      ...dados,
+      instituicao: "Universidade do Vale do Itajaí",
+      cidade: "Itajaí",
+      ano: 2026,
+    });
+    expect(html).toContain('data-etiqueta="Capa"');
+    expect(html).toContain('data-etiqueta="Folha de rosto"');
+    expect(html).toContain('data-etiqueta="Sumário"');
+    for (const f of ["Topo", "Meio", "Pé"]) expect(html).toContain(`>${f}<`);
+    expect(html).toContain("Universidade do Vale do Itajaí");
+    expect(html).toContain("Maria Silva");
+    expect(html).toContain("Meu trabalho");
+    expect(html).toContain("2026");
+    // A peça vazia convida a preencher.
+    expect(html).toContain("clique para preencher");
+    expect(html).toContain("Montado pelo Apud com os títulos do texto");
+    expect(html).not.toContain("alca");
   });
 
-  it("avisa quando falta o título para a capa", () => {
-    expect(areaDaAbertura(abertura({ capa: true }), "ABNT", { ...dados, titulo: "" })).toContain("Falta o título");
+  it("na APA, a capa que já estava no trabalho fica apagada e avisa que não sai no PDF", () => {
+    const html = areaDaAbertura(abertura({ blocos: [{ tipo: "capa" }, { tipo: "paginaDeTitulo" }] }), "APA");
+    expect(html).toContain("A APA não tem a capa: fica guardada no trabalho, mas não sai no PDF.");
+    expect(html).toContain("fora-da-norma");
+    expect(html).toContain('data-etiqueta="Página de título"');
   });
 
-  it("na APA mostra a página de título e não oferece capa nem dedicatória", () => {
-    const html = areaDaAbertura(abertura({ paginaDeTitulo: true }), "APA");
-    expect(html).toContain("Página de título");
-    expect(html).not.toContain("Dedicatória");
-    expect(html).not.toContain("Folha de rosto");
-  });
-
-  it("na APA, elemento da ABNT que já estava ligado aparece avisando que não sai", () => {
-    const html = areaDaAbertura(abertura({ capa: true }), "APA");
-    expect(html).toContain("A APA não tem: não sai no PDF");
-  });
-
-  it("mostra cada resumo com o idioma", () => {
+  it("cada resumo com o idioma na etiqueta, as palavras-chave e o título no idioma estrangeiro", () => {
     const html = areaDaAbertura(
-      abertura({ resumos: [{ idioma: "pt-BR", trechos: [{ texto: "Texto." }], palavrasChave: ["a", "b"] }, { idioma: "en", trechos: [], palavrasChave: [] }] }),
+      abertura({
+        blocos: [
+          { tipo: "resumo", idioma: "pt-BR", trechos: [{ texto: "Texto." }], palavrasChave: ["a", "b"] },
+          { tipo: "resumo", idioma: "en", titulo: "Title", trechos: [], palavrasChave: [] },
+        ],
+      }),
       "ABNT",
     );
-    expect(html).toContain("Resumo em Português");
-    expect(html).toContain("Resumo em Inglês");
-    expect(html).toContain("a; b");
-    expect(html).toContain("Adicionar resumo em outro idioma");
+    expect(html).toContain('data-etiqueta="Resumo (Português)"');
+    expect(html).toContain('data-etiqueta="Resumo (Inglês)"');
+    expect(html).toContain('value="a; b"');
+    expect(html).toContain('value="Title"');
+    expect(html).toContain("Keywords");
+    // O resumo em português não pede título (é o do trabalho); o vazio avisa que não sai.
+    expect(html.match(/Título neste idioma/g)).toHaveLength(1);
+    expect(html).toContain("Vazio: só sai no PDF depois de ter texto.");
+  });
+
+  it("a epígrafe tem a linha de quem escreveu", () => {
+    const html = areaDaAbertura(abertura({ blocos: [{ tipo: "epigrafe", paragrafos: [], autoria: "Rubem Alves" }] }), "ABNT");
+    expect(html).toContain("Quem escreveu");
+    expect(html).toContain('value="Rubem Alves"');
+  });
+
+  it("na versão sem identificação, o autor aparece com o aviso de que não sai no PDF", () => {
+    const html = areaDaAbertura(abertura({ blocos: [{ tipo: "capa" }], semIdentificacao: true }), "ABNT");
+    expect(html).toContain("não sai no PDF: versão sem identificação");
   });
 });

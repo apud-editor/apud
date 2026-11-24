@@ -25,12 +25,8 @@ const PASSOS = ["Tipo e norma", "Dados", "Resumo"] as const;
 function frasesDoQueLiga(tipo: TipoDeTrabalho, norma: string): string[] {
   const modelo = modeloEmbutido(norma);
   const a = aberturaPadrao(tipo, modelo);
-  const lista: string[] = [];
-  if (a.capa) lista.push("capa");
-  if (a.folhaDeRosto) lista.push("folha de rosto");
-  if (a.paginaDeTitulo) lista.push("página de título");
-  if (a.sumario) lista.push("sumário");
-  return lista;
+  const nomes: Record<string, string> = { capa: "capa", folhaDeRosto: "folha de rosto", paginaDeTitulo: "página de título", sumario: "sumário" };
+  return a.blocos.flatMap((b) => (nomes[b.tipo] ? [nomes[b.tipo]] : []));
 }
 
 /** "Novo trabalho" em 3 passos: tipo e norma, dados, resumo (dá para pular). Nada é criado antes do último passo. */
@@ -139,7 +135,7 @@ export default function Assistente({ aoCriar, aoCancelar }: Props) {
           {passo === 2 && (
             <section aria-labelledby="passo-3">
               <h1 id="passo-3">Resumo e palavras-chave</h1>
-              <p className="dica-grande">Se já tiver o resumo, cole aqui. Dá para pular e escrever depois, na Abertura do trabalho, no topo do texto.</p>
+              <p className="dica-grande">Se já tiver o resumo, cole aqui. Dá para pular e escrever depois, na Abertura, no alto do texto.</p>
               <label className="campo-form" htmlFor="resumo-novo">
                 Resumo
                 <textarea id="resumo-novo" rows={8} value={textoDoResumo} onChange={(e) => setTextoDoResumo(e.target.value)} />

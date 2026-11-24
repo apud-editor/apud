@@ -1,4 +1,4 @@
-// O formato do arquivo .apud (versão 6; a versão 5 foi a primeira da versão 2 do Apud).
+// O formato do arquivo .apud (versão 7; a versão 5 foi a primeira da versão 2 do Apud).
 //
 // É um arquivo de texto (JSON), legível em qualquer editor de texto: se um dia
 // algo der errado, o conteúdo do trabalho ainda pode ser recuperado à mão.
@@ -6,14 +6,14 @@
 //
 //   {
 //     "formato": "apud",
-//     "versao": 6,
+//     "versao": 7,
 //     "nome": "Relato de experiência de estágio",
 //     "modelo": { "nome": "ABNT", "versao": "2025", "revisao": 10, "cadeia": [...],
 //                 "valores": { ... }, "atalhos": { ... } },
 //     "ajustes": { "ABNT": { "referências, prenomes": "abreviados" } },
 //     "criadoEm": "2026-11-20T18:40:00.000Z",
 //     "modificadoEm": "2026-11-20T19:02:11.000Z",
-//     "documento": { "versao": 6, "dados": { ... }, "abertura": { ... },
+//     "documento": { "versao": 7, "dados": { ... }, "abertura": { ... },
 //                    "blocos": [ ... ], "referencias": [ ... ], "imagens": [ ... ] }
 //   }
 //
@@ -35,6 +35,18 @@
 // Um arquivo da versão 5 é o mesmo trabalho, sem exceções: abre como está e é
 // gravado na versão 6 quando o trabalho muda.
 //
+// Versão 7 (etapa 3 da v2, parte 3a): a abertura vira uma lista de blocos, como
+// o texto:
+//   "abertura": { "blocos": [ { "tipo": "capa" }, { "tipo": "dedicatoria", "paragrafos": [...] },
+//                             { "tipo": "resumo", "idioma": "pt-BR", "trechos": [...], "palavrasChave": [...] } ],
+//                 "guardados": [ ... ], "semIdentificacao": false }
+// "guardados" são os textos tirados da abertura (voltam com "Adicionar à
+// abertura"). Um arquivo das versões 5 e 6 (caixas de marcar) é convertido ao
+// abrir, sem perder nada: o que estava ligado vira bloco, e uma dedicatória,
+// epígrafe ou agradecimentos desligados mas com texto ficam guardados. Ele é
+// gravado na versão 7 quando o trabalho muda. A versão subiu para que um Apud
+// antigo recuse o arquivo, em vez de não achar a abertura e perdê-la.
+//
 // Os arquivos das versões 1 a 4 são da versão de testes do Apud (a versão 1 do
 // programa) e não abrem mais (decisão do Francisco, 23/11/2026): são recusados
 // com uma mensagem clara e ficam como estão no disco. Arquivo de uma versão
@@ -46,6 +58,8 @@ import {
   TIPOS_DE_TRABALHO,
   PRIMEIRA_VERSAO_DO_FORMATO,
   VERSAO_DO_FORMATO,
+  ORDEM_DA_ABERTURA,
+  temTextoNaAbertura,
   type Abertura,
   type Autor,
   type Bloco,
@@ -53,7 +67,8 @@ import {
   type DadosDoTrabalho,
   type Data,
   type Documento,
-  type ElementoDeTexto,
+  type BlocoDaAbertura,
+  type TextoGuardavel,
   type Excecoes,
   type Identificacao,
   type Imagem,
@@ -69,7 +84,7 @@ import { modeloDoArquivo, modeloParaArquivo } from "../modelos/arquivo";
 import { conferirExcecoes } from "../modelos/excecoes";
 import type { ModeloResolvido } from "../modelos/tipos";
 
-export const VERSAO_DO_ARQUIVO = 6;
+export const VERSAO_DO_ARQUIVO = 7;
 
 /** A primeira versão do arquivo na versão 2 do Apud. As anteriores são da versão de testes. */
 export const PRIMEIRA_VERSAO_DA_V2 = 5;
@@ -191,7 +206,8 @@ function conferirDocumento(v: unknown): Documento | string {
 
   const dados = conferirDados(v.dados);
   if (!dados) return "os dados do trabalho (título, autores, curso...) estão estragados";
-  const abertura = conferirAbertura(v.abertura);
+  // Versões 5 e 6: a abertura em caixas de marcar, convertida em blocos.
+  const abertura = v.versao < 7 ? conferirAberturaDaVersao6(v.abertura) : conferirAbertura(v.abertura);
   if (typeof abertura === "string") return abertura;
   if (!Array.isArray(v.imagens)) return "falta a lista de imagens do trabalho";
   const imagens: Imagem[] = [];
@@ -384,34 +400,119 @@ function conferirDados(v: unknown): DadosDoTrabalho | null {
   return structuredClone(v) as unknown as DadosDoTrabalho;
 }
 
-function conferirElemento(v: unknown): ElementoDeTexto | null {
-  if (!objeto(v) || typeof v.incluir !== "boolean" || !Array.isArray(v.paragrafos)) return null;
+/** Parágrafos só de texto (dedicatória, epígrafe, agradecimentos). */
+function conferirParagrafos(v: unknown): TrechoDeTexto[][] | null {
+  if (!Array.isArray(v)) return null;
   const paragrafos: TrechoDeTexto[][] = [];
-  for (const p of v.paragrafos) {
+  for (const p of v) {
     const t = conferirSoTexto(p);
     if (!t) return null;
     paragrafos.push(t);
   }
-  return { incluir: v.incluir, paragrafos };
+  return paragrafos;
 }
 
+/** Os campos de um resumo (com ou sem o "tipo", que a versão 6 não tinha). */
 function conferirResumo(v: unknown): Resumo | null {
   if (!objeto(v) || !texto(v.idioma) || !v.idioma || !opcional(v.titulo, texto)) return null;
   const trechos = conferirSoTexto(v.trechos);
   if (!trechos || !Array.isArray(v.palavrasChave) || !v.palavrasChave.every(texto)) return null;
-  return { idioma: v.idioma, ...(v.titulo !== undefined ? { titulo: v.titulo } : {}), trechos, palavrasChave: [...v.palavrasChave] };
+  return { tipo: "resumo", idioma: v.idioma, ...(v.titulo !== undefined ? { titulo: v.titulo } : {}), trechos, palavrasChave: [...v.palavrasChave] };
 }
 
-/** A abertura do trabalho, ou o motivo do erro. */
+/** Um bloco da abertura (versão 7), ou null se estiver estragado. */
+function conferirBlocoDaAbertura(v: unknown): BlocoDaAbertura | null {
+  if (!objeto(v)) return null;
+  switch (v.tipo) {
+    case "capa":
+    case "folhaDeRosto":
+    case "paginaDeTitulo":
+    case "sumario":
+      return { tipo: v.tipo };
+    case "dedicatoria":
+    case "agradecimentos": {
+      const paragrafos = conferirParagrafos(v.paragrafos);
+      return paragrafos ? { tipo: v.tipo, paragrafos } : null;
+    }
+    case "epigrafe": {
+      const paragrafos = conferirParagrafos(v.paragrafos);
+      return paragrafos && texto(v.autoria) ? { tipo: "epigrafe", paragrafos, autoria: v.autoria } : null;
+    }
+    case "resumo":
+      return conferirResumo(v);
+    default:
+      return null;
+  }
+}
+
+/** Dois blocos que não podem estar juntos: duas capas, ou dois resumos guardados no mesmo idioma. */
+function repetido(blocos: BlocoDaAbertura[], umPorIdioma: boolean): BlocoDaAbertura | undefined {
+  const vistos = new Set<string>();
+  for (const b of blocos) {
+    if (b.tipo === "resumo" && !umPorIdioma) continue;
+    const chave = b.tipo === "resumo" ? `resumo ${b.idioma}` : b.tipo;
+    if (vistos.has(chave)) return b;
+    vistos.add(chave);
+  }
+  return undefined;
+}
+
+const NOME_NA_ABERTURA: Record<BlocoDaAbertura["tipo"], string> = {
+  capa: "capa",
+  folhaDeRosto: "folha de rosto",
+  paginaDeTitulo: "página de título",
+  dedicatoria: "dedicatória",
+  agradecimentos: "agradecimentos",
+  epigrafe: "epígrafe",
+  resumo: "resumo",
+  sumario: "sumário",
+};
+
+/** A abertura da versão 7: os blocos na ordem da norma, os guardados e a versão sem identificação. */
 function conferirAbertura(v: unknown): Abertura | string {
+  const erro = "os elementos antes do texto (capa, resumos...) estão estragados";
+  if (!objeto(v) || !Array.isArray(v.blocos) || !Array.isArray(v.guardados) || typeof v.semIdentificacao !== "boolean") return erro;
+  const blocos: BlocoDaAbertura[] = [];
+  for (const [i, b] of v.blocos.entries()) {
+    const bloco = conferirBlocoDaAbertura(b);
+    if (!bloco) return `o bloco ${i + 1} da abertura está estragado`;
+    const anterior = blocos[blocos.length - 1];
+    if (anterior && ORDEM_DA_ABERTURA.indexOf(anterior.tipo) > ORDEM_DA_ABERTURA.indexOf(bloco.tipo)) {
+      return `o bloco ${i + 1} da abertura (${NOME_NA_ABERTURA[bloco.tipo]}) está fora da ordem`;
+    }
+    blocos.push(bloco);
+  }
+  const dobrado = repetido(blocos, false);
+  if (dobrado) return `a abertura tem ${NOME_NA_ABERTURA[dobrado.tipo]} duas vezes`;
+  const guardados: TextoGuardavel[] = [];
+  for (const [i, g] of v.guardados.entries()) {
+    const bloco = conferirBlocoDaAbertura(g);
+    if (!bloco || bloco.tipo === "capa" || bloco.tipo === "folhaDeRosto" || bloco.tipo === "paginaDeTitulo" || bloco.tipo === "sumario") {
+      return `o texto guardado ${i + 1} da abertura está estragado`;
+    }
+    guardados.push(bloco as TextoGuardavel);
+  }
+  const guardadoDobrado = repetido(guardados, true);
+  if (guardadoDobrado) return `a abertura tem ${NOME_NA_ABERTURA[guardadoDobrado.tipo]} guardado duas vezes`;
+  return { blocos, guardados, semIdentificacao: v.semIdentificacao };
+}
+
+/**
+ * A abertura das versões 5 e 6 (caixas de marcar), convertida em blocos. Nada
+ * se perde: o que estava ligado vira bloco, na ordem da norma; dedicatória,
+ * agradecimentos e epígrafe desligados mas com texto ficam guardados (como na
+ * versão 6, em que desligar guardava o texto). Todos os resumos viram blocos.
+ */
+export function conferirAberturaDaVersao6(v: unknown): Abertura | string {
   const erro = "os elementos antes do texto (capa, resumos...) estão estragados";
   if (!objeto(v)) return erro;
   const chaves = ["capa", "folhaDeRosto", "paginaDeTitulo", "sumario", "semIdentificacao"] as const;
   if (!chaves.every((c) => typeof v[c] === "boolean")) return erro;
-  const dedicatoria = conferirElemento(v.dedicatoria);
-  const agradecimentos = conferirElemento(v.agradecimentos);
-  const epigrafe = conferirElemento(v.epigrafe);
-  if (!dedicatoria || !agradecimentos || !epigrafe || !objeto(v.epigrafe) || !texto(v.epigrafe.autoria)) return erro;
+  const elemento = (x: unknown) => (objeto(x) && typeof x.incluir === "boolean" ? { incluir: x.incluir, paragrafos: conferirParagrafos(x.paragrafos) } : null);
+  const dedicatoria = elemento(v.dedicatoria);
+  const agradecimentos = elemento(v.agradecimentos);
+  const epigrafe = elemento(v.epigrafe);
+  if (!dedicatoria?.paragrafos || !agradecimentos?.paragrafos || !epigrafe?.paragrafos || !objeto(v.epigrafe) || !texto(v.epigrafe.autoria)) return erro;
   if (!Array.isArray(v.resumos)) return erro;
   const resumos: Resumo[] = [];
   for (const [i, r] of v.resumos.entries()) {
@@ -419,17 +520,23 @@ function conferirAbertura(v: unknown): Abertura | string {
     if (!resumo) return `o resumo ${i + 1} está estragado`;
     resumos.push(resumo);
   }
-  return {
-    capa: v.capa as boolean,
-    folhaDeRosto: v.folhaDeRosto as boolean,
-    paginaDeTitulo: v.paginaDeTitulo as boolean,
-    dedicatoria,
-    agradecimentos,
-    epigrafe: { ...epigrafe, autoria: v.epigrafe.autoria },
-    resumos,
-    sumario: v.sumario as boolean,
-    semIdentificacao: v.semIdentificacao as boolean,
-  };
+  const textos: TextoGuardavel[] = [
+    { tipo: "dedicatoria", paragrafos: dedicatoria.paragrafos },
+    { tipo: "agradecimentos", paragrafos: agradecimentos.paragrafos },
+    { tipo: "epigrafe", paragrafos: epigrafe.paragrafos, autoria: v.epigrafe.autoria },
+  ];
+  const incluir = { dedicatoria: dedicatoria.incluir, agradecimentos: agradecimentos.incluir, epigrafe: epigrafe.incluir };
+  const blocos: BlocoDaAbertura[] = [];
+  const guardados: TextoGuardavel[] = [];
+  for (const tipo of ["capa", "folhaDeRosto", "paginaDeTitulo"] as const) if (v[tipo]) blocos.push({ tipo });
+  for (const t of textos) {
+    const tipo = t.tipo as "dedicatoria" | "agradecimentos" | "epigrafe";
+    if (incluir[tipo]) blocos.push(t);
+    else if (temTextoNaAbertura(t)) guardados.push(t);
+  }
+  blocos.push(...resumos);
+  if (v.sumario) blocos.push({ tipo: "sumario" });
+  return { blocos, guardados, semIdentificacao: v.semIdentificacao as boolean };
 }
 
 const BASE64 = /^[A-Za-z0-9+/]*={0,2}$/;

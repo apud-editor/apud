@@ -84,7 +84,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa arquivo de uma versão mais nova do Apud", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.versao = 7;
+    novo.versao = 8;
     const r = lerArquivo(JSON.stringify(novo));
     expect(r.ok).toBe(false);
     expect(!r.ok && r.erro).toContain("versão mais nova");
@@ -92,7 +92,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa texto numa versão do modelo que este Apud não conhece", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.documento.versao = 7;
+    novo.documento.versao = 8;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
     novo.documento.versao = 4;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
@@ -125,16 +125,79 @@ describe("formato do arquivo .apud", () => {
     expect(lerArquivo(JSON.stringify(arquivo))).toMatchObject({ ok: false, erro: expect.stringMatching(/^o bloco 4 do texto está estragado: /) });
   });
 
-  it("abre um arquivo da versão 5 (sem exceções) como está, e grava na versão 6", () => {
+  /** A abertura como as versões 5 e 6 guardavam: caixas de marcar. */
+  const aberturaDaVersao6 = {
+    capa: true,
+    folhaDeRosto: false,
+    paginaDeTitulo: true,
+    dedicatoria: { incluir: true, paragrafos: [[{ texto: "À minha família." }]] },
+    agradecimentos: { incluir: false, paragrafos: [[{ texto: "Aos colegas." }]] },
+    epigrafe: { incluir: false, paragrafos: [], autoria: "" },
+    resumos: [
+      { idioma: "pt-BR", trechos: [{ texto: "Resumo." }], palavrasChave: ["estágio"] },
+      { idioma: "en", titulo: "Report", trechos: [], palavrasChave: [] },
+    ],
+    sumario: true,
+    semIdentificacao: true,
+  };
+
+  for (const versao of [5, 6]) {
+    it(`abre um arquivo da versão ${versao}, converte a abertura em blocos sem perder nada e grava na versão 7`, () => {
+      const antigo = JSON.parse(escreverArquivo(trabalho));
+      antigo.versao = versao;
+      antigo.documento.versao = versao;
+      antigo.documento.abertura = aberturaDaVersao6;
+      const r = lerArquivo(JSON.stringify(antigo));
+      if (!r.ok) throw new Error(r.erro);
+      expect(r.trabalho.documento.blocos).toEqual(trabalho.documento.blocos);
+      expect(r.trabalho.documento.versao).toBe(7);
+      expect(r.trabalho.documento.abertura).toEqual({
+        blocos: [
+          { tipo: "capa" },
+          { tipo: "paginaDeTitulo" },
+          { tipo: "dedicatoria", paragrafos: [[{ texto: "À minha família." }]] },
+          { tipo: "resumo", idioma: "pt-BR", trechos: [{ texto: "Resumo." }], palavrasChave: ["estágio"] },
+          { tipo: "resumo", idioma: "en", titulo: "Report", trechos: [], palavrasChave: [] },
+          { tipo: "sumario" },
+        ],
+        // Os agradecimentos estavam desligados, com texto: ficam guardados. A epígrafe desligada e vazia some.
+        guardados: [{ tipo: "agradecimentos", paragrafos: [[{ texto: "Aos colegas." }]] }],
+        semIdentificacao: true,
+      });
+      const regravado = JSON.parse(escreverArquivo(r.trabalho));
+      expect([regravado.versao, regravado.documento.versao]).toEqual([7, 7]);
+      expect(lerArquivo(JSON.stringify(regravado))).toEqual(r);
+    });
+  }
+
+  it("recusa a abertura antiga estragada, e a abertura antiga num arquivo da versão 7", () => {
     const antigo = JSON.parse(escreverArquivo(trabalho));
-    antigo.versao = 5;
-    antigo.documento.versao = 5;
-    const r = lerArquivo(JSON.stringify(antigo));
-    if (!r.ok) throw new Error(r.erro);
-    expect(r.trabalho.documento.blocos).toEqual(trabalho.documento.blocos);
-    expect(r.trabalho.documento.versao).toBe(6);
-    const regravado = JSON.parse(escreverArquivo(r.trabalho));
-    expect([regravado.versao, regravado.documento.versao]).toEqual([6, 6]);
+    antigo.documento.versao = 6;
+    antigo.documento.abertura = { ...aberturaDaVersao6, capa: "sim" };
+    expect(lerArquivo(JSON.stringify(antigo))).toEqual({ ok: false, erro: "os elementos antes do texto (capa, resumos...) estão estragados" });
+    antigo.documento.abertura = { ...aberturaDaVersao6, resumos: [{ idioma: "en" }] };
+    expect(lerArquivo(JSON.stringify(antigo))).toEqual({ ok: false, erro: "o resumo 1 está estragado" });
+    antigo.documento.versao = 7;
+    antigo.documento.abertura = aberturaDaVersao6;
+    expect(lerArquivo(JSON.stringify(antigo))).toEqual({ ok: false, erro: "os elementos antes do texto (capa, resumos...) estão estragados" });
+  });
+
+  it("recusa a abertura com blocos fora da ordem, repetidos ou estragados, dizendo o motivo", () => {
+    const comAbertura = (abertura: unknown) => {
+      const a = JSON.parse(escreverArquivo(trabalho));
+      a.documento.abertura = abertura;
+      return lerArquivo(JSON.stringify(a));
+    };
+    const base = { guardados: [], semIdentificacao: false };
+    expect(comAbertura({ ...base, blocos: [{ tipo: "sumario" }, { tipo: "capa" }] })).toEqual({ ok: false, erro: "o bloco 2 da abertura (capa) está fora da ordem" });
+    expect(comAbertura({ ...base, blocos: [{ tipo: "capa" }, { tipo: "capa" }] })).toEqual({ ok: false, erro: "a abertura tem capa duas vezes" });
+    expect(comAbertura({ ...base, blocos: [{ tipo: "dedicatoria" }] })).toEqual({ ok: false, erro: "o bloco 1 da abertura está estragado" });
+    expect(comAbertura({ ...base, blocos: [{ tipo: "lombada" }] })).toEqual({ ok: false, erro: "o bloco 1 da abertura está estragado" });
+    expect(comAbertura({ ...base, blocos: [], guardados: [{ tipo: "capa" }] })).toEqual({ ok: false, erro: "o texto guardado 1 da abertura está estragado" });
+    const resumo = { tipo: "resumo", idioma: "en", trechos: [{ texto: "A." }], palavrasChave: [] };
+    expect(comAbertura({ ...base, blocos: [], guardados: [resumo, resumo] })).toEqual({ ok: false, erro: "a abertura tem resumo guardado duas vezes" });
+    // Dois resumos no mesmo idioma na abertura são aceitos (a pessoa pode estar escrevendo um de novo).
+    expect(comAbertura({ ...base, blocos: [resumo, resumo] }).ok).toBe(true);
   });
 
   it("abre os arquivos da versão de teste que guardava a escolha de numerar", () => {
@@ -415,17 +478,16 @@ const completo: Trabalho = {
       natureza: "Relatório apresentado à disciplina de Estágio Básico II.",
     },
     abertura: {
-      capa: true,
-      folhaDeRosto: true,
-      paginaDeTitulo: false,
-      dedicatoria: { incluir: true, paragrafos: [[{ texto: "À minha família." }]] },
-      agradecimentos: { incluir: false, paragrafos: [[{ texto: "À supervisora " }, { texto: "Maria", marcas: ["negrito"] }], [{ texto: "Aos colegas." }]] },
-      epigrafe: { incluir: true, paragrafos: [[{ texto: "Viver é muito perigoso." }]], autoria: "Guimarães Rosa" },
-      resumos: [
-        { idioma: "pt-BR", trechos: [{ texto: "Este relato descreve " }, { texto: "o estágio", marcas: ["italico"] }], palavrasChave: ["estágio", "saúde mental"] },
-        { idioma: "en", titulo: "Experience report", trechos: [{ texto: "This report describes the internship." }], palavrasChave: ["internship"] },
+      blocos: [
+        { tipo: "capa" },
+        { tipo: "folhaDeRosto" },
+        { tipo: "dedicatoria", paragrafos: [[{ texto: "À minha família." }]] },
+        { tipo: "epigrafe", paragrafos: [[{ texto: "Viver é muito perigoso." }]], autoria: "Guimarães Rosa" },
+        { tipo: "resumo", idioma: "pt-BR", trechos: [{ texto: "Este relato descreve " }, { texto: "o estágio", marcas: ["italico"] }], palavrasChave: ["estágio", "saúde mental"] },
+        { tipo: "resumo", idioma: "en", titulo: "Experience report", trechos: [{ texto: "This report describes the internship." }], palavrasChave: ["internship"] },
+        { tipo: "sumario" },
       ],
-      sumario: true,
+      guardados: [{ tipo: "agradecimentos", paragrafos: [[{ texto: "À supervisora " }, { texto: "Maria", marcas: ["negrito"] }], [{ texto: "Aos colegas." }]] }],
       semIdentificacao: false,
     },
     blocos: [
@@ -473,13 +535,13 @@ describe("um trabalho com tudo", () => {
 
   it("escreve e lê de volta sem mudar nada", () => {
     const texto = escreverArquivo(completo);
-    expect(JSON.parse(texto).versao).toBe(6);
+    expect(JSON.parse(texto).versao).toBe(7);
     expect(lerArquivo(texto)).toEqual({ ok: true, trabalho: completo });
   });
 
-  it("desligar um elemento da abertura não apaga o que foi escrito nele", () => {
+  it("o texto tirado da abertura fica guardado no arquivo", () => {
     const r = lerArquivo(escreverArquivo(completo));
-    expect(r.ok && r.trabalho.documento.abertura.agradecimentos).toEqual(completo.documento.abertura.agradecimentos);
+    expect(r.ok && r.trabalho.documento.abertura.guardados).toEqual(completo.documento.abertura.guardados);
   });
 
   it("os arquivos .apud dos artigos de teste abrem inteiros", () => {
@@ -535,11 +597,13 @@ describe("um trabalho com tudo", () => {
     expect(comMudanca((a) => (a.documento.dados.dataDeEntrega = { ano: 2026, mes: 13 }))).toEqual(dadosRuins);
     expect(comMudanca((a) => delete a.documento.dados)).toEqual(dadosRuins);
     const aberturaRuim = { ok: false, erro: "os elementos antes do texto (capa, resumos...) estão estragados" };
-    expect(comMudanca((a) => (a.documento.abertura.capa = "sim"))).toEqual(aberturaRuim);
-    expect(comMudanca((a) => delete a.documento.abertura.epigrafe.autoria)).toEqual(aberturaRuim);
-    expect(comMudanca((a) => (a.documento.abertura.dedicatoria.paragrafos = [[{ citacao: { tipo: "sem-referencia", texto: "x" } }]]))).toEqual(aberturaRuim);
-    expect(comMudanca((a) => (a.documento.abertura.resumos[1].palavrasChave = "a; b"))).toEqual({ ok: false, erro: "o resumo 2 está estragado" });
-    expect(comMudanca((a) => (a.documento.abertura.resumos[0].idioma = ""))).toEqual({ ok: false, erro: "o resumo 1 está estragado" });
+    const bloco = (a: any, tipo: string, n = 0) => a.documento.abertura.blocos.filter((b: any) => b.tipo === tipo)[n];
+    expect(comMudanca((a) => (a.documento.abertura.semIdentificacao = "sim"))).toEqual(aberturaRuim);
+    expect(comMudanca((a) => delete a.documento.abertura.guardados)).toEqual(aberturaRuim);
+    expect(comMudanca((a) => delete bloco(a, "epigrafe").autoria)).toEqual({ ok: false, erro: "o bloco 4 da abertura está estragado" });
+    expect(comMudanca((a) => (bloco(a, "dedicatoria").paragrafos = [[{ citacao: { tipo: "sem-referencia", texto: "x" } }]]))).toEqual({ ok: false, erro: "o bloco 3 da abertura está estragado" });
+    expect(comMudanca((a) => (bloco(a, "resumo", 1).palavrasChave = "a; b"))).toEqual({ ok: false, erro: "o bloco 6 da abertura está estragado" });
+    expect(comMudanca((a) => (bloco(a, "resumo").idioma = ""))).toEqual({ ok: false, erro: "o bloco 5 da abertura está estragado" });
   });
 
   it("nota de rodapé só com texto: citação ou nota dentro da nota estraga o bloco", () => {

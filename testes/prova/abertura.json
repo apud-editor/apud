@@ -4,55 +4,114 @@
     "idioma": "pt-BR",
     "titulo": "O acolhimento em saúde mental",
     "subtitulo": "relato de uma experiência de estágio",
-    "autores": ["Ana Beatriz Souza", "Carlos Eduardo Lima"],
+    "autores": [
+      "Ana Beatriz Souza",
+      "Carlos Eduardo Lima"
+    ],
     "ano": 2026,
     "curso": "Psicologia",
     "instituicao": "Universidade do Vale do Itajaí",
     "orientador": "Profa. Dra. Marta Ribeiro",
     "cidade": "Itajaí",
     "disciplina": "Estágio Básico em Psicologia",
-    "dataDeEntrega": { "ano": 2026, "mes": 11, "dia": 30 }
+    "dataDeEntrega": {
+      "ano": 2026,
+      "mes": 11,
+      "dia": 30
+    }
   },
   "abertura": {
-    "capa": true,
-    "folhaDeRosto": true,
-    "paginaDeTitulo": true,
-    "dedicatoria": {
-      "incluir": true,
-      "paragrafos": [[{ "texto": "Às equipes dos serviços de saúde mental, que acolhem todos os dias." }]]
-    },
-    "agradecimentos": {
-      "incluir": true,
-      "paragrafos": [
-        [{ "texto": "À professora orientadora, pela escuta atenta e pelas leituras do texto." }],
-        [{ "texto": "Aos colegas de estágio e à equipe do serviço, que abriram as portas para este trabalho." }]
-      ]
-    },
-    "epigrafe": {
-      "incluir": true,
-      "paragrafos": [[{ "texto": "Ninguém escapa ao sonho de voar, de ultrapassar os limites do espaço onde nasceu." }]],
-      "autoria": "Rubem Alves"
-    },
-    "resumos": [
+    "blocos": [
       {
-        "idioma": "pt-BR",
-        "trechos": [
-          { "texto": "Este trabalho relata a experiência de estágio em um serviço de saúde mental, com foco no acolhimento das pessoas que chegam ao serviço. Descreve as atividades de escuta inicial e de encaminhamento e discute o acolhimento como prática clínica, a partir da literatura da " },
-          { "texto": "reforma psiquiátrica", "marcas": ["italico"] },
-          { "texto": " brasileira. Conclui que o acolhimento é o primeiro momento do cuidado e pede escuta qualificada de toda a equipe." }
-        ],
-        "palavrasChave": ["acolhimento", "saúde mental", "estágio", "Psicologia"]
+        "tipo": "capa"
       },
       {
+        "tipo": "folhaDeRosto"
+      },
+      {
+        "tipo": "paginaDeTitulo"
+      },
+      {
+        "tipo": "dedicatoria",
+        "paragrafos": [
+          [
+            {
+              "texto": "Às equipes dos serviços de saúde mental, que acolhem todos os dias."
+            }
+          ]
+        ]
+      },
+      {
+        "tipo": "agradecimentos",
+        "paragrafos": [
+          [
+            {
+              "texto": "À professora orientadora, pela escuta atenta e pelas leituras do texto."
+            }
+          ],
+          [
+            {
+              "texto": "Aos colegas de estágio e à equipe do serviço, que abriram as portas para este trabalho."
+            }
+          ]
+        ]
+      },
+      {
+        "tipo": "epigrafe",
+        "paragrafos": [
+          [
+            {
+              "texto": "Ninguém escapa ao sonho de voar, de ultrapassar os limites do espaço onde nasceu."
+            }
+          ]
+        ],
+        "autoria": "Rubem Alves"
+      },
+      {
+        "tipo": "resumo",
+        "idioma": "pt-BR",
+        "trechos": [
+          {
+            "texto": "Este trabalho relata a experiência de estágio em um serviço de saúde mental, com foco no acolhimento das pessoas que chegam ao serviço. Descreve as atividades de escuta inicial e de encaminhamento e discute o acolhimento como prática clínica, a partir da literatura da "
+          },
+          {
+            "texto": "reforma psiquiátrica",
+            "marcas": [
+              "italico"
+            ]
+          },
+          {
+            "texto": " brasileira. Conclui que o acolhimento é o primeiro momento do cuidado e pede escuta qualificada de toda a equipe."
+          }
+        ],
+        "palavrasChave": [
+          "acolhimento",
+          "saúde mental",
+          "estágio",
+          "Psicologia"
+        ]
+      },
+      {
+        "tipo": "resumo",
         "idioma": "en",
         "titulo": "Welcoming in mental health: an internship experience report",
         "trechos": [
-          { "texto": "This paper reports an internship experience in a mental health service, focusing on how people are welcomed when they arrive. It describes the initial listening and referral activities and discusses welcoming as a clinical practice, based on the literature of the Brazilian psychiatric reform. It concludes that welcoming is the first moment of care and requires qualified listening from the whole team." }
+          {
+            "texto": "This paper reports an internship experience in a mental health service, focusing on how people are welcomed when they arrive. It describes the initial listening and referral activities and discusses welcoming as a clinical practice, based on the literature of the Brazilian psychiatric reform. It concludes that welcoming is the first moment of care and requires qualified listening from the whole team."
+          }
         ],
-        "palavrasChave": ["welcoming", "mental health", "internship", "Psychology"]
+        "palavrasChave": [
+          "welcoming",
+          "mental health",
+          "internship",
+          "Psychology"
+        ]
+      },
+      {
+        "tipo": "sumario"
       }
     ],
-    "sumario": true,
+    "guardados": [],
     "semIdentificacao": false
   }
 }

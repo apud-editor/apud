@@ -268,15 +268,19 @@ export function AjustesDoBloco({
   // Durante o arrastar, o bloco sob o mouse não vira o alvo (a alça fica no bloco que se arrasta).
   const { arrasto, iniciar, emCurso: emArrasto } = useArrastar(editor, folha);
 
-  // Cada mudança no texto, ou no tamanho da janela, mexe no lugar dos blocos.
+  // Cada mudança no texto, no tamanho da janela ou no que vem acima do texto (a
+  // Abertura, que cresce ao escrever ou ao pôr um bloco) mexe no lugar dos blocos.
   useEffect(() => {
     editor.on("transaction", refazer);
     window.addEventListener("resize", refazer);
+    const tamanhos = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => refazer());
+    if (tamanhos && folha.current) for (const filho of Array.from(folha.current.children)) tamanhos.observe(filho);
     return () => {
       editor.off("transaction", refazer);
       window.removeEventListener("resize", refazer);
+      tamanhos?.disconnect();
     };
-  }, [editor]);
+  }, [editor, folha]);
 
   // O bloco sob o mouse. Pela altura, e não pelo alvo do mouse: o ⚙ fica na margem, fora do texto.
   useEffect(() => {
