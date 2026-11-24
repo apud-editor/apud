@@ -25,6 +25,10 @@ jobs:
       - name: Conferir os perfis
         run: npm run conferir-perfis
 
+      # 1b. Os modelos da versão 2 (pasta modelos/) estão escritos certo?
+      - name: Conferir os modelos
+        run: npm run conferir-modelos
+
       # 2. Testes do código, inclusive a cobertura do checklist.
       - name: Testes
         run: npm test

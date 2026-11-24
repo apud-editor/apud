@@ -12,7 +12,9 @@
     "conferir-perfis": "tsx scripts/conferir-perfis.ts",
     "prova": "tsx scripts/prova.ts",
     "exemplo-pdf": "tsx scripts/exemplo-pdf.ts",
-    "artigos": "tsx scripts/artigos.ts"
+    "artigos": "tsx scripts/artigos.ts",
+    "codigo": "tsx scripts/codigo.ts",
+    "conferir-modelos": "tsx scripts/conferir-modelos.ts"
   },
   "dependencies": {
     "@myriaddreamin/typst-ts-renderer": "^0.7.0",
