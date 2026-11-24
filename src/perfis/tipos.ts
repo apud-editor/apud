@@ -36,10 +36,10 @@ export type Valor =
     }
   | { tipo: "meses"; itens: string[] };
 
-/** A coluna "Situação" do checklist, escrita depois da segunda barra. */
+/** A situação de um valor, escrita depois da segunda barra. "Ajustável": a norma não fixa, e cada trabalho pode trocar. */
 export type Situacao =
   | { tipo: "confirmada" }
-  | { tipo: "faculdade" }
+  | { tipo: "ajustavel" }
   | { tipo: "escolha"; opcoes: string[] }
   | { tipo: "desligada" };
 

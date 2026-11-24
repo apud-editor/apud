@@ -1,17 +1,1734 @@
 {
   "formato": "apud",
-  "versao": 4,
+  "versao": 5,
   "nome": "Aqui na rua, não (UNIVALI, ABNT)",
-  "perfil": {
-    "perfil": "ABNT",
+  "modelo": {
+    "id": "abnt",
+    "nome": "ABNT",
     "versao": "2025",
-    "revisao": 10
+    "revisao": 10,
+    "dataDaRevisao": "24/11/2026",
+    "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
+    "herdaDe": {
+      "nome": "Em branco",
+      "revisao": 1
+    },
+    "cadeia": [
+      {
+        "id": "em-branco",
+        "nome": "Em branco",
+        "revisao": 1,
+        "dataDaRevisao": "24/11/2026",
+        "notaDaRevisao": "Primeira revisão (versão 2, etapa 1)."
+      },
+      {
+        "id": "abnt",
+        "nome": "ABNT",
+        "versao": "2025",
+        "revisao": 10,
+        "dataDaRevisao": "24/11/2026",
+        "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
+        "herdaDe": {
+          "nome": "Em branco",
+          "revisao": 1
+        }
+      }
+    ],
+    "valores": {
+      "texto": {
+        "fonte": {
+          "valor": "Times New Roman",
+          "origem": "NBR 14724:2024, que não fixa a fonte (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "tamanho": {
+          "valor": "12 pt",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "entrelinha": {
+          "valor": "1,5",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "alinhamento": {
+          "valor": "justificado",
+          "origem": "NBR 14724:2024, que não fixa o alinhamento (UNIP)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "recuo da primeira linha": {
+          "valor": "1,25 cm",
+          "origem": "NBR 14724:2024, que não fixa o recuo",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "recuo à esquerda": {
+          "valor": "0 cm",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "destaque": {
+          "valor": "normal",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "espaço antes": {
+          "valor": "nenhuma",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "espaço depois": {
+          "valor": "nenhuma",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "fonte menor": {
+          "valor": "10 pt",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "fonte menor, onde": {
+          "valor": "citações longas, notas de rodapé, número de página, legendas, fontes de ilustrações e tabelas",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "espaço simples, onde": {
+          "valor": "citações longas, notas de rodapé, referências, legendas, fontes de ilustrações e tabelas, natureza do trabalho",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "siglas, primeira vez": {
+          "valor": "nome completo e sigla entre parênteses",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT",
+          "nota": "O Apud não muda o seu texto; o verificador da versão 2 vai avisar."
+        },
+        "introdução, desenvolvimento e conclusão": {
+          "valor": "obrigatórios",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "texto, divisão": {
+          "valor": "seções numeradas",
+          "origem": "NBR 14724:2024 e NBR 6024:2012 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "pagina": {
+        "margem superior": {
+          "valor": "3 cm",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "margem inferior": {
+          "valor": "2 cm",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "margem esquerda": {
+          "valor": "3 cm",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "margem direita": {
+          "valor": "2 cm",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "papel": {
+          "valor": "A4",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "papel, cor do texto": {
+          "valor": "preto",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "papel, cor nas ilustrações": {
+          "valor": "permitida",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "margens, inverter no verso": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (UFV 2026; UFRGS)",
+          "de": "ABNT"
+        },
+        "impressão": {
+          "valor": "só frente",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "situacao": {
+            "escolha": [
+              "só frente",
+              "frente e verso"
+            ]
+          },
+          "de": "ABNT"
+        }
+      },
+      "pagina.numero": {
+        "posição": {
+          "valor": "canto superior direito",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Algumas faculdades pedem o número embaixo; o padrão segue a norma."
+        },
+        "distância vertical": {
+          "valor": "2 cm",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "atalho": "distância das bordas"
+        },
+        "distância lateral": {
+          "valor": "2 cm",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "atalho": "distância das bordas"
+        },
+        "contar desde": {
+          "valor": "folha de rosto",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "As folhas são contadas desde a folha de rosto; a capa não conta."
+        },
+        "mostrar desde": {
+          "valor": "primeira folha do texto",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "tamanho": {
+          "valor": "10 pt",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "A fonte menor (10 pt) vale para número de página (regras “fonte menor” e\n“fonte menor, onde”)."
+        },
+        "numeração de página, algarismos": {
+          "valor": "arábicos",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "página no verso, posição do número": {
+          "valor": "canto superior esquerdo",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Só vale na impressão frente e verso."
+        }
+      },
+      "titulos": {
+        "destaque": {
+          "valor": "negrito",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "posição": {
+          "valor": "à esquerda",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "espaço antes": {
+          "valor": "1 linha",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "Uma linha em branco do tamanho da entrelinha (1,5)."
+        },
+        "espaço depois": {
+          "valor": "1 linha",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "texto depois": {
+          "valor": "parágrafo novo",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "final na mesma linha": {
+          "valor": "nenhum",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "numerar sozinho": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco",
+          "nota": "Etapa 2 da versão 2 (decisão 10): no Em branco, tudo desligado."
+        },
+        "maiúsculas sozinho": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "página nova": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "títulos, números": {
+          "valor": "arábicos",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT",
+          "nota": "Exemplo: 2.1 Método\nA pessoa escreve o número no começo do título (decisão de 20/11/2026). O Apud\nnão numera sozinho; só alinha as linhas seguintes sob a primeira letra do texto."
+        },
+        "títulos, níveis": {
+          "valor": "5 níveis",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT"
+        },
+        "títulos, entre número e título": {
+          "valor": "um espaço, sem pontuação",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT"
+        },
+        "títulos, linhas seguintes": {
+          "valor": "alinhadas sob a primeira letra do título",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT"
+        }
+      },
+      "titulos.repetido": {
+        "repetir no começo do texto": {
+          "valor": "não",
+          "origem": "Em branco",
+          "de": "Em branco"
+        }
+      },
+      "listas": {
+        "marcador em sequência": {
+          "valor": "a)",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT",
+          "nota": "As listas do texto viram alíneas: a), b), c).",
+          "atalho": "marcador"
+        },
+        "marcador sem sequência": {
+          "valor": "a)",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT",
+          "nota": "As listas do texto viram alíneas: a), b), c).",
+          "atalho": "marcador"
+        },
+        "marcador da sub-lista": {
+          "valor": "travessão",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT"
+        },
+        "recuo à esquerda": {
+          "valor": "1,25 cm",
+          "origem": "NBR 6024:2012, que pede recuo mas não fixa a medida",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "recuo a mais da sub-lista": {
+          "valor": "1,25 cm",
+          "origem": "NBR 6024:2012, que pede recuo maior mas não fixa a medida",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "alíneas, linhas seguintes": {
+          "valor": "alinhadas ao texto da alínea",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT"
+        },
+        "alíneas, pontuação": {
+          "valor": "dois-pontos antes, ponto e vírgula em cada uma, ponto na última",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT",
+          "nota": "O Apud não reescreve a pontuação; o verificador da versão 2 vai avisar."
+        },
+        "alíneas, inicial": {
+          "valor": "minúscula",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT"
+        }
+      },
+      "citacaoLonga": {
+        "recuo à esquerda": {
+          "valor": "4 cm",
+          "origem": "NBR 10520:2023, que recomenda 4 cm (UFC; FZEA-USP)",
+          "de": "ABNT",
+          "nota": "Mais de 3 linhas: parágrafo próprio, fonte menor e espaço simples (ver página e texto)."
+        },
+        "ponto final": {
+          "valor": "depois da chamada",
+          "origem": "NBR 10520:2023 (UFMS)",
+          "de": "ABNT",
+          "nota": "Exemplo: “[...]” (Clarac; Bonnin, 1985, p. 72)."
+        },
+        "tamanho": {
+          "valor": "10 pt",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "A fonte menor (10 pt) vale para citações longas (regras “fonte menor” e\n“fonte menor, onde”)."
+        },
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "O espaço simples vale para citações longas (regra “espaço simples, onde”)."
+        },
+        "citação longa, aspas": {
+          "valor": "não",
+          "origem": "NBR 10520:2023 (UFC; FZEA-USP)",
+          "de": "ABNT"
+        },
+        "espaço antes": {
+          "valor": "1 linha",
+          "origem": "NBR 10520:2023, que não fixa o espaço",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Revisão 7: a norma não fixa o espaço entre a citação longa e o texto.",
+          "atalho": "espaço antes e depois"
+        },
+        "espaço depois": {
+          "valor": "1 linha",
+          "origem": "NBR 10520:2023, que não fixa o espaço",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Revisão 7: a norma não fixa o espaço entre a citação longa e o texto.",
+          "atalho": "espaço antes e depois"
+        }
+      },
+      "nota": {
+        "tamanho": {
+          "valor": "10 pt",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "A fonte menor (10 pt) vale para notas de rodapé (regras “fonte menor” e\n“fonte menor, onde”)."
+        },
+        "filete": {
+          "valor": "5 cm",
+          "origem": "NBR 14724:2024 (UFV 2026; UFC)",
+          "de": "ABNT",
+          "nota": "Tamanho e espaçamento das notas: ver \"fonte menor, onde\" e \"espaço simples, onde\"."
+        },
+        "linhas seguintes": {
+          "valor": "alinhadas sob a primeira letra",
+          "origem": "NBR 14724:2024 (UFV 2026; UFC)",
+          "de": "ABNT"
+        },
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "O espaço simples vale para notas de rodapé (regra “espaço simples, onde”)."
+        },
+        "numeração das notas": {
+          "valor": "contínua no trabalho todo",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "numeração das notas, algarismos": {
+          "valor": "arábicos",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        }
+      },
+      "ilustracoes": {
+        "espécies": {
+          "valor": "Figura, Quadro, Gráfico",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "posição": {
+          "valor": "centralizada",
+          "origem": "NBR 14724:2024, que não fixa a posição",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Acrescentadas na revisão 7 (fase 3). A norma não fixa o espaço em volta da\nilustração e da tabela nem a posição na página; o padrão é o costume dos manuais."
+        },
+        "largura do título e da fonte": {
+          "valor": "largura da ilustração",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "espaço antes": {
+          "valor": "1 linha",
+          "origem": "NBR 14724:2024, que não fixa o espaço",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "atalho": "espaço antes e depois"
+        },
+        "espaço depois": {
+          "valor": "1 linha",
+          "origem": "NBR 14724:2024, que não fixa o espaço",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "atalho": "espaço antes e depois"
+        },
+        "ilustração, posição do título": {
+          "valor": "acima",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "Exemplo de título de ilustração: Figura 1 – Fluxo do atendimento"
+        },
+        "ilustração, posição da fonte": {
+          "valor": "abaixo",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "ilustração, fonte obrigatória": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "ilustração, depois da fonte": {
+          "valor": "legenda, notas",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "tabelas, identificação e fonte": {
+          "valor": "iguais às das ilustrações",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        }
+      },
+      "ilustracoes.tabela": {
+        "rótulo": {
+          "valor": "Tabela",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "fios": {
+          "valor": "acima e abaixo do cabeçalho e no fim, sem fios nas laterais",
+          "origem": "IBGE, Normas de apresentação tabular (1993)",
+          "de": "ABNT",
+          "nota": "Revisão 7: o desenho do IBGE. Três fios horizontais (topo, embaixo do\ncabeçalho e fim) e nenhum fio nas laterais."
+        },
+        "alinhamento das células": {
+          "valor": "cabeçalho ao centro, primeira coluna à esquerda, demais ao centro",
+          "origem": "IBGE, Normas de apresentação tabular (1993), que não fixam o alinhamento",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "largura": {
+          "valor": "largura do conteúdo",
+          "origem": "IBGE, Normas de apresentação tabular (1993)",
+          "de": "ABNT",
+          "nota": "A tabela na largura do conteúdo, no meio da página, com o título e a fonte\nna largura da tabela. Na versão 1, era o ramo ABNT do conversor."
+        },
+        "em mais de uma página": {
+          "valor": "número, título e cabeçalho repetidos em cada página",
+          "origem": "IBGE, Normas de apresentação tabular (1993), 8.3",
+          "de": "ABNT",
+          "nota": "Revisão 9: tabela que passa de página. O fio de baixo e a fonte só aparecem\nna última página (o Apud já fazia assim)."
+        },
+        "indicações": {
+          "valor": "(continua), (continuação), (conclusão)",
+          "origem": "IBGE, Normas de apresentação tabular (1993), 8.3 e Anexo B",
+          "de": "ABNT"
+        },
+        "posição das indicações": {
+          "valor": "à direita",
+          "origem": "IBGE, Normas de apresentação tabular (1993), que não fixam a posição",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "tabelas, desenho": {
+          "valor": "normas tabulares do IBGE",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "IBGE, Normas de apresentação tabular (1993), que não fixam o espaço",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "ilustracoes.identificacao": {
+        "separador": {
+          "valor": "travessão",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "destaque do número": {
+          "valor": "normal",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título na linha de baixo": {
+          "valor": "não",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "destaque do título": {
+          "valor": "normal",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        }
+      },
+      "ilustracoes.fonte": {
+        "rótulo da fonte": {
+          "valor": "Fonte:",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "fonte quando é sua": {
+          "valor": "Elaborado pelo próprio autor",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "rótulo da nota": {
+          "valor": "Nota.",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "destaque do rótulo da nota": {
+          "valor": "itálico",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "fonte dentro da nota": {
+          "valor": "não",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "tamanho": {
+          "valor": "10 pt",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "A fonte menor (10 pt) vale para legendas e fontes de ilustrações e tabelas\n(regras “fonte menor” e “fonte menor, onde”)."
+        },
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "O espaço simples vale para legendas e fontes de ilustrações e tabelas (regra\n“espaço simples, onde”)."
+        }
+      },
+      "referencias": {
+        "título": {
+          "valor": "REFERÊNCIAS",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "Título da lista, que o Apud escreve sozinho no fim do trabalho (revisão 4)."
+        },
+        "espaço entre as referências": {
+          "valor": "1 linha em branco",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "recuo das linhas seguintes": {
+          "valor": "0 cm",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "página nova": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "O espaço simples vale para referências (regra “espaço simples, onde”)."
+        },
+        "referências": {
+          "valor": "obrigatórias",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "alinhamento": {
+          "valor": "à esquerda",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        }
+      },
+      "abertura.capa": {
+        "existe": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "campos": {
+          "valor": "instituição (opcional), autor, título, subtítulo, volume, cidade, ano",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "destaque do título": {
+          "valor": "negrito",
+          "origem": "NBR 14724:2024, que não fixa o destaque",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Revisão 8: a norma não fixa o destaque do título na capa nem na folha de rosto."
+        },
+        "capa": {
+          "valor": "obrigatória",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "O Apud monta o trabalho na ordem destas linhas e pula os opcionais que\na pessoa não preencheu. Títulos centralizados e sem número: ver a seção\n\"títulos e numeração\"."
+        },
+        "capa, subtítulo": {
+          "valor": "depois de dois-pontos",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "abertura.folhaDeRosto": {
+        "existe": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "campos": {
+          "valor": "autor, título, subtítulo, volume, natureza, orientador, cidade, ano",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "destaque do título": {
+          "valor": "negrito",
+          "origem": "NBR 14724:2024, que não fixa o destaque",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "rótulo do orientador": {
+          "valor": "Orientador(a):",
+          "origem": "NBR 14724:2024, que não fixa o rótulo",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "O rótulo antes do nome. Em trabalho de disciplina, o nome é do professor."
+        },
+        "rótulo do professor": {
+          "valor": "Professor(a):",
+          "origem": "NBR 14724:2024, que não fixa o rótulo",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "folha de rosto": {
+          "valor": "obrigatória",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "folha de rosto, natureza": {
+          "valor": "tipo, objetivo, instituição, área",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "abertura.paginaDeTitulo": {
+        "existe": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "modo quando o trabalho é artigo": {
+          "valor": "estudante",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "campos no modo estudante": {
+          "valor": "título, autor, departamento e universidade, código e nome da disciplina, professor, data de entrega",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "campos no modo profissional": {
+          "valor": "título, autores, afiliação, nota do autor, título curto",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "destaque do título": {
+          "valor": "negrito",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "linhas antes do título": {
+          "valor": "3 linhas",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "linhas depois do título": {
+          "valor": "1 linha",
+          "origem": "Em branco",
+          "de": "Em branco"
+        }
+      },
+      "abertura.dedicatoria": {
+        "existe": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "dedicatória": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "dedicatória, posição": {
+          "valor": "pé da página, à direita",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "abertura.epigrafe": {
+        "existe": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "autoria": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "epígrafe": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "epígrafe, posição": {
+          "valor": "pé da página, à direita",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "abertura.agradecimentos": {
+        "existe": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "título": {
+          "valor": "AGRADECIMENTOS",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "agradecimentos": {
+          "valor": "opcionais",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "abertura.resumo": {
+        "existe": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 e NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "título em português": {
+          "valor": "RESUMO",
+          "origem": "NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "título em inglês": {
+          "valor": "Abstract",
+          "origem": "NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "título em espanhol": {
+          "valor": "Resumen",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título em francês": {
+          "valor": "Résumé",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título em italiano": {
+          "valor": "Riassunto",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título em alemão": {
+          "valor": "Zusammenfassung",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "recuo da primeira linha": {
+          "valor": "nenhum",
+          "origem": "NBR 6028:2021, que não fixa o recuo (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "resumo": {
+          "valor": "obrigatório",
+          "origem": "NBR 14724:2024 e NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "resumo em língua estrangeira": {
+          "valor": "obrigatório",
+          "origem": "NBR 14724:2024 e NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "resumo, extensão em trabalho acadêmico": {
+          "valor": "150 a 500 palavras",
+          "origem": "NBR 6028:2021 (UFPel)",
+          "de": "ABNT",
+          "nota": "O tipo de trabalho escolhido no assistente decide qual extensão vale."
+        },
+        "resumo, extensão em artigo": {
+          "valor": "100 a 250 palavras",
+          "origem": "NBR 6028:2021 (UFPel)",
+          "de": "ABNT"
+        },
+        "resumo, forma": {
+          "valor": "parágrafo único",
+          "origem": "NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "resumo, verbo": {
+          "valor": "terceira pessoa",
+          "origem": "NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "NBR 6028:2021, que não fixa o espaçamento (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "abertura.resumo.palavrasChave": {
+        "rótulo em português": {
+          "valor": "Palavras-chave:",
+          "origem": "NBR 6028:2021 (Unesp; Unifor)",
+          "de": "ABNT"
+        },
+        "rótulo em inglês": {
+          "valor": "Keywords:",
+          "origem": "NBR 6028:2021 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "rótulo em espanhol": {
+          "valor": "Palabras clave:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo em francês": {
+          "valor": "Mots-clés :",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo em italiano": {
+          "valor": "Parole chiave:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo em alemão": {
+          "valor": "Schlüsselwörter:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "destaque do rótulo": {
+          "valor": "negrito",
+          "origem": "NBR 6028:2021, que não fixa o destaque (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Revisão 8: a norma não fixa o destaque do rótulo nem o espaço antes das palavras-chave."
+        },
+        "separador": {
+          "valor": "ponto e vírgula",
+          "origem": "NBR 6028:2021 (Unesp; Unifor)",
+          "de": "ABNT"
+        },
+        "final": {
+          "valor": "ponto",
+          "origem": "NBR 6028:2021 (Unesp; Unifor)",
+          "de": "ABNT"
+        },
+        "palavras-chave, posição": {
+          "valor": "logo abaixo do resumo",
+          "origem": "NBR 6028:2021 (Unesp; Unifor)",
+          "de": "ABNT"
+        },
+        "palavras-chave, iniciais": {
+          "valor": "minúsculas, exceto nomes próprios e científicos",
+          "origem": "NBR 6028:2021 (Unesp; Unifor)",
+          "de": "ABNT"
+        },
+        "espaço antes": {
+          "valor": "1 linha",
+          "origem": "NBR 6028:2021, que não fixa o espaço (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "recuo da primeira linha": {
+          "valor": "nenhum",
+          "origem": "NBR 6028:2021, que não fixa o recuo (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "abertura.sumario": {
+        "existe": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 e NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "título": {
+          "valor": "SUMÁRIO",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "ligação até a página": {
+          "valor": "pontilhado",
+          "origem": "NBR 6027:2012, que não fixa a ligação (UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        },
+        "sumário": {
+          "valor": "obrigatório",
+          "origem": "NBR 14724:2024 e NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sumário, posição": {
+          "valor": "último elemento antes do texto",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sumário, alinhamento do título": {
+          "valor": "centralizado",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sumário, números das seções": {
+          "valor": "à esquerda",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sumário, alinhamento dos títulos": {
+          "valor": "pelo número mais longo",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sumário, grafia e destaque": {
+          "valor": "iguais aos do texto",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sumário, página": {
+          "valor": "inicial de cada seção",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sumário, elementos pré-textuais": {
+          "valor": "não entram",
+          "origem": "NBR 6027:2012 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "titulos.nivel1": {
+        "página nova": {
+          "valor": "sim",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT",
+          "nota": "Fica a critério da pessoa (decisão de 20/11/2026): o Apud não põe página nova\nsozinho; a pessoa insere a quebra de página onde quiser (Ctrl+Enter)."
+        },
+        "seção primária, em frente e verso": {
+          "valor": "página ímpar",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "de": "ABNT"
+        },
+        "destaque": {
+          "valor": "maiúsculas, negrito",
+          "origem": "NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "A NBR 6024 manda diferenciar os níveis, mas não diz como. O mesmo destaque\nvale no texto e no sumário.\nMaiúsculas: o Apud não muda as letras do título; a pessoa escreve como preferir\n(decisão de 20/11/2026). Negrito, itálico e sublinhado são aplicados."
+        }
+      },
+      "titulos.nivel2": {
+        "destaque": {
+          "valor": "maiúsculas",
+          "origem": "NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "titulos.nivel3": {
+        "destaque": {
+          "valor": "negrito",
+          "origem": "NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "titulos.nivel4": {
+        "destaque": {
+          "valor": "normal",
+          "origem": "NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "titulos.nivel5": {
+        "destaque": {
+          "valor": "itálico",
+          "origem": "NBR 6024:2012, que não fixa o destaque (UFSCar; UFV 2026)",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "titulos.semNumero": {
+        "alinhamento": {
+          "valor": "centralizado",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "títulos sem número, destaque": {
+          "valor": "igual ao nível 1",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "títulos sem número, onde": {
+          "valor": "errata, agradecimentos, listas, resumos, sumário, referências, glossário, apêndices, anexos, índice",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "sem título nem número": {
+          "valor": "folha de aprovação, dedicatória, epígrafe",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "equacoes": {
+        "equações, numeração": {
+          "valor": "entre parênteses, à direita",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "abertura.folhaDeRosto.natureza": {
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT",
+          "nota": "O espaço simples vale para natureza do trabalho (regra “espaço simples,\nonde”)."
+        },
+        "folha de rosto, posição da natureza": {
+          "valor": "do meio da página para a direita",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "abertura.lombada": {
+        "lombada": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "abertura.fichaCatalografica": {
+        "ficha catalográfica, contada": {
+          "valor": "não",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "ficha catalográfica, posição no pdf": {
+          "valor": "logo após a folha de rosto",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "ficha catalográfica": {
+          "valor": "só em teses e dissertações",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "ficha catalográfica, conteúdo": {
+          "valor": "página reservada para a biblioteca",
+          "origem": "NBR 14724:2024 (Unesp)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "abertura.errata": {
+        "errata": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "errata, colunas": {
+          "valor": "Folha, Linha, Onde se lê, Leia-se",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "abertura.folhaDeAprovacao": {
+        "folha de aprovação": {
+          "valor": "obrigatória",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "folha de aprovação, conteúdo": {
+          "valor": "data, assinaturas da banca",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "abertura.listas": {
+        "listas de ilustrações, tabelas, siglas e símbolos": {
+          "valor": "opcionais",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "listas, conteúdo": {
+          "valor": "na ordem do texto, com a página",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "lista de siglas, ordem": {
+          "valor": "alfabética",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "depois.glossario": {
+        "glossário": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "depois.apendice": {
+        "apêndice": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "apêndice, título": {
+          "valor": "APÊNDICE A – TÍTULO",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "depois.anexo": {
+        "anexo": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "anexo, título": {
+          "valor": "ANEXO A – TÍTULO",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "anexo, referências": {
+          "valor": "no próprio anexo",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "depois.indice": {
+        "índice": {
+          "valor": "opcional",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "índice, norma": {
+          "valor": "NBR 6034",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        }
+      },
+      "citacoes": {
+        "sistema de chamada": {
+          "valor": "autor-data",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Sistema autor-data. O sistema numérico fica para depois (última linha)."
+        },
+        "estilo csl": {
+          "valor": "abnt.csl",
+          "origem": "NBR 10520:2023 e NBR 6023:2025",
+          "de": "ABNT",
+          "nota": "O estilo CSL fica na pasta perfis/estilos e monta a lista de referências.\nAs chamadas no texto são montadas pelo Apud com as regras desta seção."
+        },
+        "citação, autor na chamada": {
+          "valor": "maiúsculas e minúsculas",
+          "origem": "NBR 10520:2023 (Furb)",
+          "de": "ABNT",
+          "nota": "Exemplos: (Barros, 2023) ou Barros (2023)"
+        },
+        "citação, instituição como autor": {
+          "valor": "nome por extenso, em maiúsculas e minúsculas",
+          "origem": "NBR 10520:2023 (UFC; Emescam)",
+          "de": "ABNT",
+          "nota": "Exemplos: (Organização Mundial da Saúde, 2023), (IBGE, 2011), (Brasil, 2021)"
+        },
+        "citação, sigla como autor": {
+          "valor": "toda em maiúsculas",
+          "origem": "NBR 10520:2023 (UFC; Emescam)",
+          "de": "ABNT"
+        },
+        "citação, órgão de governo": {
+          "valor": "pela jurisdição ou órgão superior",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação, página na citação direta": {
+          "valor": "obrigatória",
+          "origem": "NBR 10520:2023 (FZEA-USP; UFC)",
+          "de": "ABNT",
+          "nota": "Exemplo: (Silva, 2019, p. 15)"
+        },
+        "citação, página na citação indireta": {
+          "valor": "opcional",
+          "origem": "NBR 10520:2023 (FZEA-USP; UFC)",
+          "de": "ABNT"
+        },
+        "citação, rótulo da página": {
+          "valor": "p.",
+          "origem": "NBR 10520:2023 (FZEA-USP; UFC)",
+          "de": "ABNT"
+        },
+        "citação, rótulo de várias páginas": {
+          "valor": "p.",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Acrescentadas na revisão 4 (20/11/2026): intervalo de páginas, como em (Silva, 2019, p. 4-5)."
+        },
+        "citação, traço entre páginas": {
+          "valor": "-",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação, outros localizadores": {
+          "valor": "cap., art., slide, min, local.",
+          "origem": "NBR 10520:2023 (Furb)",
+          "de": "ABNT",
+          "nota": "Quando não há página. Exemplo: (Garcia, 2015, local. 7)"
+        },
+        "citação curta, até": {
+          "valor": "3 linhas",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação curta, aspas": {
+          "valor": "duplas",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação curta, aspas internas": {
+          "valor": "simples",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação curta, passou do limite": {
+          "valor": "avisar",
+          "origem": "decisão de 20/11/2026 sobre a NBR 10520:2023",
+          "de": "ABNT",
+          "nota": "Decisão de 20/11/2026: o Apud avisa, sem trocar sozinho por citação longa."
+        },
+        "citação direta sem página": {
+          "valor": "avisar",
+          "origem": "decisão de 20/11/2026 sobre a NBR 10520:2023",
+          "de": "ABNT",
+          "nota": "Decisão de 20/11/2026: o Apud avisa quando falta a página, sem impedir."
+        },
+        "citação, supressão": {
+          "valor": "[...]",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação, comentário seu": {
+          "valor": "[ ]",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação, destaque seu": {
+          "valor": "grifo nosso",
+          "origem": "NBR 10520:2023 (UFC)",
+          "situacao": {
+            "escolha": [
+              "grifo nosso",
+              "grifo próprio"
+            ]
+          },
+          "de": "ABNT"
+        },
+        "citação, tradução sua": {
+          "valor": "tradução nossa",
+          "origem": "NBR 10520:2023 (UFC)",
+          "situacao": {
+            "escolha": [
+              "tradução nossa",
+              "tradução própria"
+            ]
+          },
+          "de": "ABNT"
+        },
+        "citação, separador entre autores": {
+          "valor": "ponto e vírgula",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Entre parênteses: (Lima; Costa; Reis, 2018). No texto: Lima, Costa e Reis (2018)."
+        },
+        "citação narrativa, separador entre autores": {
+          "valor": "vírgula",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação narrativa, antes do último autor": {
+          "valor": "e",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "autores, quatro ou mais": {
+          "valor": "todos",
+          "origem": "NBR 10520:2023 e NBR 6023:2025 (UFC; UFRB)",
+          "situacao": {
+            "escolha": [
+              "todos",
+              "primeiro com et al."
+            ]
+          },
+          "de": "ABNT",
+          "nota": "A mesma escolha vale para as citações e para as referências."
+        },
+        "citação, mesmo sobrenome e ano": {
+          "valor": "acrescentar iniciais",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Exemplo: (Silva, J., 2019; Silva, M., 2019)"
+        },
+        "citação, entidade subordinada": {
+          "valor": "só a entidade principal",
+          "origem": "NBR 10520:2023: a chamada usa o primeiro elemento da referência (UFPE 2026; Unicamp)",
+          "de": "ABNT",
+          "nota": "Instituição com subordinação, escrita com ponto entre os níveis (revisão 5).\nExemplo: BRASIL. Ministério da Saúde, na lista, vira (Brasil, 2014) na chamada."
+        },
+        "citação, mesmo autor e ano": {
+          "valor": "letras depois do ano",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Exemplo: (Souza, 2020a) e (Souza, 2020b). Citadas juntas: (Souza, 2020a, 2020b)."
+        },
+        "citação, sem data, marcador": {
+          "valor": "s.d.",
+          "origem": "decisão de 20/11/2026: o Apud monta e avisa",
+          "de": "ABNT",
+          "nota": "A NBR 6023 pede a data provável entre colchetes ([2019?]) quando não há data.\nEnquanto a pessoa não escreve a data, a chamada mostra este marcador, e o Apud avisa."
+        },
+        "citação, mesmo autor em anos diferentes": {
+          "valor": "anos separados por vírgula",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Exemplo: (Rudio, 2002, 2003)"
+        },
+        "citação, várias obras": {
+          "valor": "ponto e vírgula, em ordem alfabética",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Exemplo: (Ferreira, 2006; Silva, 2007)"
+        },
+        "citação, obra sem autor": {
+          "valor": "primeira palavra do título e [...]",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Exemplo: (Guia [...], 2025, p. 3)"
+        },
+        "citação de citação, expressão": {
+          "valor": "apud",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação de citação, destaque": {
+          "valor": "itálico",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação de citação, nas referências": {
+          "valor": "só a obra consultada",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "citação sem referência": {
+          "valor": "permitida",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT",
+          "nota": "Entrevistas e falas de pacientes ou participantes (decisão de 20/11/2026)."
+        },
+        "citação sem referência, nome de quem fala": {
+          "valor": "pode ser omitido",
+          "origem": "NBR 10520:2023 (UFC)",
+          "de": "ABNT"
+        },
+        "expressões latinas": {
+          "valor": "só em notas de referência",
+          "origem": "NBR 10520:2023 (UFC; Mackenzie)",
+          "situacao": "desligada",
+          "de": "ABNT",
+          "nota": "Idem, ibidem, op. cit., loc. cit., passim, cf. e et seq."
+        },
+        "expressões latinas, destaque": {
+          "valor": "itálico",
+          "origem": "NBR 10520:2023 (UFC; Mackenzie)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "sistema numérico, com notas explicativas": {
+          "valor": "não pode",
+          "origem": "NBR 10520:2023 (UFC)",
+          "situacao": "desligada",
+          "de": "ABNT"
+        },
+        "referências, ordem": {
+          "valor": "alfabética pelo sobrenome do primeiro autor",
+          "origem": "NBR 6023:2025 (UFV 2026)",
+          "de": "ABNT"
+        },
+        "referências, mesmo autor": {
+          "valor": "pelo título, com os números em ordem crescente",
+          "origem": "NBR 6023:2025, 9.1",
+          "de": "ABNT",
+          "nota": "Mesmo autor (21/11/2026): no exemplo da NBR 6023:2025 (9.1), \"BRASIL. Lei nº\n9.979 (2000)\" vem antes de \"BRASIL. Lei nº 12.384 (1998)\". A ordem segue os\nelementos da referência (o título, depois do autor), com os números em ordem\ncrescente; o ano não decide. As letras (2020a, 2020b) seguem essa ordem."
+        },
+        "referências, sobrenome": {
+          "valor": "maiúsculas",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT",
+          "nota": "Exemplo: SILVA, João"
+        },
+        "referências, entidade subordinada": {
+          "valor": "só a principal em maiúsculas",
+          "origem": "NBR 6023:2025 (UFPE 2026; Unicamp)",
+          "de": "ABNT",
+          "nota": "Exemplo: BRASIL. Ministério do Desenvolvimento Social (revisão 5)."
+        },
+        "referências, entre sobrenome e prenomes": {
+          "valor": "vírgula",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "referências, prenomes": {
+          "valor": "por extenso",
+          "origem": "NBR 6023:2025 (UFU)",
+          "situacao": {
+            "escolha": [
+              "por extenso",
+              "abreviados"
+            ]
+          },
+          "de": "ABNT",
+          "nota": "Por extenso: SILVA, João. Abreviados: SILVA, J. Igual na lista toda."
+        },
+        "referências, até três autores": {
+          "valor": "todos, separados por ponto e vírgula",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "referências, quatro ou mais autores": {
+          "valor": "a mesma escolha das citações",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "referências, destaque do título": {
+          "valor": "negrito",
+          "origem": "NBR 6023:2025 (Unicamp)",
+          "situacao": {
+            "escolha": [
+              "negrito",
+              "itálico",
+              "sublinhado"
+            ]
+          },
+          "de": "ABNT"
+        },
+        "referências, destaque do subtítulo": {
+          "valor": "nenhum",
+          "origem": "NBR 6023:2025 (Unicamp)",
+          "de": "ABNT"
+        },
+        "referências, obra sem autor": {
+          "valor": "entra pelo título, primeira palavra em maiúsculas",
+          "origem": "NBR 6023:2025 (UFU)",
+          "de": "ABNT",
+          "nota": "Exemplo: GUIA de normalização. Cidade: Editora, 2025."
+        },
+        "referências, obra sem autor, destaque do título": {
+          "valor": "nenhum",
+          "origem": "NBR 6023:2025 (UFU)",
+          "de": "ABNT"
+        },
+        "referências, em itálico": {
+          "valor": "In, et al., [S. l.], [s. n.]",
+          "origem": "NBR 6023:2025 (ESPM)",
+          "de": "ABNT"
+        },
+        "referências, sem local": {
+          "valor": "[S. l.]",
+          "origem": "NBR 6023:2025 (ESPM)",
+          "de": "ABNT"
+        },
+        "referências, sem editora": {
+          "valor": "[s. n.]",
+          "origem": "NBR 6023:2025 (ESPM)",
+          "de": "ABNT"
+        },
+        "referências, sem local e editora": {
+          "valor": "[S. l.: s. n.]",
+          "origem": "NBR 6023:2025 (ESPM)",
+          "de": "ABNT"
+        },
+        "referências, data provável": {
+          "valor": "[2019?]",
+          "origem": "NBR 6023:2025 (Facha)",
+          "de": "ABNT",
+          "nota": "Como escrever a data quando ela não é certa:"
+        },
+        "referências, década certa": {
+          "valor": "[201-]",
+          "origem": "NBR 6023:2025 (Facha)",
+          "de": "ABNT"
+        },
+        "referências, década provável": {
+          "valor": "[201-?]",
+          "origem": "NBR 6023:2025 (Facha)",
+          "de": "ABNT"
+        },
+        "modelo, livro": {
+          "valor": "SOBRENOME, Prenome. **Título**: subtítulo. 2. ed. Cidade: Editora, ano.",
+          "origem": "NBR 6023:2025 (Unicamp)",
+          "de": "ABNT",
+          "nota": "Os modelos servem para conferência: quem monta a referência é o estilo CSL.\nNegrito entre ** **, itálico entre * *."
+        },
+        "modelo, capítulo": {
+          "valor": "SOBRENOME, Prenome. Título do capítulo. *In*: SOBRENOME, Prenome (org.). **Título do livro**. Cidade: Editora, ano. p. 9-30.",
+          "origem": "NBR 6023:2025 (Unicamp)",
+          "de": "ABNT"
+        },
+        "modelo, artigo": {
+          "valor": "SOBRENOME, Prenome. Título do artigo. **Título da Revista**, cidade, v. 10, n. 2, p. 1-15, mar. 2025. DOI: 10.0000/xxxx.",
+          "origem": "NBR 6023:2025 (Unicamp)",
+          "de": "ABNT"
+        },
+        "modelo, tese": {
+          "valor": "SOBRENOME, Prenome. **Título**: subtítulo. 2017. 312 f. Tese (Doutorado em Área) – Universidade, Cidade, 2017.",
+          "origem": "NBR 6023:2025, 7.1.2 (Unicamp; UFJ)",
+          "de": "ABNT",
+          "nota": "Tipos acrescentados em 20/11/2026, a partir de dois artigos reais. No evento, o\nApud mostra só a designação dos anais (Anais [...]); na rede social, o perfil (@)."
+        },
+        "modelo, relatório": {
+          "valor": "SOBRENOME, Prenome. **Título**. Cidade: Editora, ano. (Nota Técnica, n. 103).",
+          "origem": "NBR 6023:2025, 8.10, série com número",
+          "de": "ABNT"
+        },
+        "modelo, trabalho em evento": {
+          "valor": "SOBRENOME, Prenome. Título do trabalho. *In*: NOME DO EVENTO, 20., 2024, Cidade. **Anais** [...]. Cidade: Editora, ano. p. 15-30.",
+          "origem": "NBR 6023:2025, 7.8.4 (Unicamp; UFJ)",
+          "de": "ABNT"
+        },
+        "modelo, notícia": {
+          "valor": "TÍTULO da notícia. **Nome do Jornal**, Cidade, 3 jul. 2024. Disponível em: https://exemplo.org. Acesso em: 3 jul. 2024.",
+          "origem": "NBR 6023:2025, 7.7.7 e 7.7.8 (UFJ)",
+          "de": "ABNT"
+        },
+        "modelo, rede social": {
+          "valor": "SOBRENOME, Prenome. **Texto da postagem**. Cidade, 16 fev. 2025. Instagram: @perfil. Disponível em: https://exemplo.org. Acesso em: 20 maio 2026.",
+          "origem": "NBR 6023:2025, 7.20",
+          "de": "ABNT"
+        },
+        "modelo, lei": {
+          "valor": "JURISDIÇÃO. **Lei nº 10.216, de 6 de abril de 2001**. Ementa. Cidade: Editora, ano.",
+          "origem": "NBR 6023:2025, 7.11.1 e 7.11.2",
+          "de": "ABNT",
+          "nota": "Lei (21/11/2026): conferido no texto da NBR 6023:2025. A lei consultada sozinha\n(no site do governo, num livro só dela) tem a epígrafe em negrito: CURITIBA.\n**Lei nº 12.092, de 21 de dezembro de 2006**. Na Constituição, o negrito fica no\ntítulo, depois de [Constituição (1988)]: BRASIL. [Constituição (1988)].\n**Constituição da República Federativa do Brasil**. Escreva o \"[Constituição\n(1988)].\" no começo do título, e o Apud tira o negrito dele. A lei publicada\ndentro de outra obra (no Diário Oficial, num vade-mécum) leva o destaque na\nobra; o formulário do Apud ainda não tem esse caso."
+        },
+        "referências, artigo sem página": {
+          "valor": "número eletrônico no lugar das páginas",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "referências, issn": {
+          "valor": "não mostrar",
+          "origem": "NBR 6023:2025, que o tornou opcional (UFRB)",
+          "de": "ABNT"
+        },
+        "referências, rótulo do endereço": {
+          "valor": "Disponível em:",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT",
+          "nota": "Exemplo: Disponível em: https://exemplo.org. Acesso em: 15 maio 2025."
+        },
+        "referências, rótulo do acesso": {
+          "valor": "Acesso em:",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "referências, endereço entre < >": {
+          "valor": "não",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "referências, doi dispensa endereço e acesso": {
+          "valor": "não",
+          "origem": "NBR 6023:2025 (UFRB)",
+          "de": "ABNT"
+        },
+        "meses": {
+          "valor": "jan., fev., mar., abr., maio, jun., jul., ago., set., out., nov., dez.",
+          "origem": "NBR 6023:2025, anexo A (Facha)",
+          "de": "ABNT"
+        }
+      }
+    },
+    "atalhos": {
+      "pagina": {},
+      "ilustracoes": {
+        "espaço antes e depois": {
+          "valor": "1 linha",
+          "origem": "NBR 14724:2024, que não fixa o espaço",
+          "situacao": "ajustável",
+          "de": "ABNT"
+        }
+      },
+      "pagina.numero": {
+        "distância das bordas": {
+          "valor": "2 cm",
+          "origem": "NBR 14724:2024 (UFV 2026)",
+          "de": "ABNT"
+        }
+      },
+      "listas": {
+        "marcador": {
+          "valor": "a)",
+          "origem": "NBR 6024:2012 (UFSCar)",
+          "de": "ABNT",
+          "nota": "As listas do texto viram alíneas: a), b), c)."
+        }
+      },
+      "citacaoLonga": {
+        "espaço antes e depois": {
+          "valor": "1 linha",
+          "origem": "NBR 10520:2023, que não fixa o espaço",
+          "situacao": "ajustável",
+          "de": "ABNT",
+          "nota": "Revisão 7: a norma não fixa o espaço entre a citação longa e o texto."
+        }
+      }
+    }
   },
   "ajustes": {},
   "criadoEm": "2026-11-20T00:00:00.000Z",
   "modificadoEm": "2026-11-20T00:00:00.000Z",
   "documento": {
-    "versao": 4,
+    "versao": 5,
     "dados": {
       "tipo": "disciplina",
       "idioma": "pt-BR",

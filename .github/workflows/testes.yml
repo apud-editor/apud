@@ -1,4 +1,4 @@
-# Confere os perfis de norma e roda os testes a cada mudança.
+# Confere os modelos de norma e roda os testes a cada mudança.
 # Roda em todo pull request e em todo envio de branch. O resultado aparece
 # como um sinal verde (passou) ou vermelho (falhou) no PR.
 name: Testes
@@ -21,15 +21,11 @@ jobs:
 
       - run: npm ci
 
-      # 1. Os perfis em perfis/ estão escritos certo? Mostra os erros em português.
-      - name: Conferir os perfis
-        run: npm run conferir-perfis
-
-      # 1b. Os modelos da versão 2 (pasta modelos/) estão escritos certo?
+      # 1. Os modelos em modelos/ estão escritos certo? Mostra os erros em português.
       - name: Conferir os modelos
         run: npm run conferir-modelos
 
-      # 2. Testes do código, inclusive a cobertura do checklist.
+      # 2. Testes do código, inclusive o gabarito do código Typst (testes/prova/codigo).
       - name: Testes
         run: npm test
 
@@ -56,8 +52,8 @@ jobs:
         with:
           name: documento-de-prova
           path: |
-            perfis/prova/saida/*.pdf
-            perfis/prova/saida/*.apud
+            testes/prova/saida/*.pdf
+            testes/prova/saida/*.apud
           if-no-files-found: ignore
 
       - name: Guardar os artigos de teste
@@ -66,6 +62,6 @@ jobs:
         with:
           name: artigos-de-teste
           path: |
-            perfis/artigos/saida/*.pdf
-            perfis/artigos/*/*.apud
+            testes/artigos/saida/*.pdf
+            testes/artigos/*/*.apud
           if-no-files-found: ignore

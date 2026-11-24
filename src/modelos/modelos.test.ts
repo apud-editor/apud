@@ -216,7 +216,7 @@ describe("conferência dos modelos", () => {
 describe("herança entre modelos", () => {
   it("o que o modelo de baixo não diz vem do Em branco; o que diz, vale por cima", () => {
     const m = resolvido(filho("== Texto ==\n# Manual da faculdade.\nfonte: Arial | Manual X | ajustável"));
-    expect(valorProprio(m, "texto", "fonte")).toMatchObject({ texto: "Arial", origem: "Manual X", situacao: { tipo: "faculdade" }, de: "Teste", nota: "Manual da faculdade." });
+    expect(valorProprio(m, "texto", "fonte")).toMatchObject({ texto: "Arial", origem: "Manual X", situacao: { tipo: "ajustavel" }, de: "Teste", nota: "Manual da faculdade." });
     expect(valorProprio(m, "texto", "tamanho")).toMatchObject({ texto: "12 pt", de: "Em branco" });
   });
 

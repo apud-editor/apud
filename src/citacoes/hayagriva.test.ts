@@ -5,12 +5,12 @@ import { paraHayagriva, dataDoTypst } from "./hayagriva";
 import { conferirReferencia } from "../arquivos/formato";
 import { TIPOS_DE_REFERENCIA, type Referencia } from "../documento/modelo";
 
-const PASTA = join(import.meta.dirname, "..", "..", "perfis", "prova");
+const PASTA = join(import.meta.dirname, "..", "..", "testes", "prova");
 const doApud = JSON.parse(readFileSync(join(PASTA, "referencias.json"), "utf8")) as Referencia[];
 
 describe("referências do Apud para o Typst", () => {
   // As referências do documento de prova saem certas na lista (gabaritos de
-  // perfis/prova). Aqui fica conferido o caminho até o Typst, campo por campo,
+  // testes/prova). Aqui fica conferido o caminho até o Typst, campo por campo,
   // em alguns tipos.
   it("o documento de prova tem as 27 referências, dos 10 tipos", () => {
     expect(doApud).toHaveLength(27);

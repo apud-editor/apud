@@ -455,7 +455,7 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
   });
 
   it("indicações vêm do modelo (texto e posição)", () => {
-    const outro = carregarNorma("abnt.txt", { "tabelas em mais de uma página, posição das indicações": "à esquerda" }).modelo;
+    const outro = carregarNorma("abnt.txt", { "Ilustrações › Tabela › posição das indicações": "à esquerda" }).modelo;
     expect(documentoParaTypst(doc([tabela()]), outro)).toContain("align(left, if aqui");
     // Um modelo em que só o cabeçalho se repete (como no Em branco).
     const v = valorProprio(abnt, "ilustracoes.tabela", "em mais de uma página")!;

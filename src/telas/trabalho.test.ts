@@ -98,7 +98,7 @@ describe("trabalho novo", () => {
     const resumo = resumoDoAssistente("pt-BR", "Resumo.", "x; y");
     const t = trabalhoNovo({ dados: dados({ tipo: "tcc", curso: "Psicologia", ano: 2026 }), resumo }, abnt, new Date("2026-11-22T12:00:00Z"));
     expect(t.nome).toBe("Um título");
-    expect(t.perfil.perfil).toBe("ABNT");
+    expect(t.modelo.identificacao.nome).toBe("ABNT");
     expect(t.documento.dados).toMatchObject({ tipo: "tcc", titulo: "Um título", autores: ["Maria Silva"], curso: "Psicologia", ano: 2026 });
     expect(t.documento.abertura).toMatchObject({ capa: true, folhaDeRosto: true, sumario: true, paginaDeTitulo: false });
     expect(t.documento.abertura.resumos).toEqual([resumo]);

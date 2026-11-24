@@ -1,4 +1,4 @@
-// Os artigos de teste (perfis/artigos) e os casos que a conferência com o
+// Os artigos de teste (testes/artigos) e os casos que a conferência com o
 // artigo da UNIVALI revelou (fase 2, parte 5b). Passam pelo Typst de verdade,
 // como o documento de prova.
 
@@ -11,13 +11,13 @@ import {
   documentoDoTexto,
   lerGabarito,
   lerTextoComCitacoes,
-  PASTA_PERFIS,
+  PASTA_TESTES,
   rodarTrabalho,
 } from "../../scripts/prova-lib";
 import { lerArquivo } from "../arquivos/formato";
 import { niveisDaInstituicao, type Referencia } from "../documento/modelo";
 
-const PASTA = join(PASTA_PERFIS, "artigos");
+const PASTA = join(PASTA_TESTES, "artigos");
 
 describe("artigos de teste", () => {
   for (const pasta of readdirSync(PASTA, { withFileTypes: true }).filter((d) => d.isDirectory() && d.name !== "saida")) {

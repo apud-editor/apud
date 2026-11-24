@@ -1,4 +1,4 @@
-// Pequenas funções de texto usadas pela leitura e pela conferência dos perfis.
+// Pequenas funções de texto usadas pela leitura e pela conferência dos modelos.
 
 /** Deixa um texto comparável: sem espaços sobrando e em minúsculas. */
 export function normalizar(texto: string): string {

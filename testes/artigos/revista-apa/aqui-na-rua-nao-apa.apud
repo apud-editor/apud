@@ -1,11 +1,1204 @@
 {
   "formato": "apud",
-  "versao": 4,
+  "versao": 5,
   "nome": "Aqui na rua, não (Revista Psicologia Política, APA)",
-  "perfil": {
-    "perfil": "APA",
+  "modelo": {
+    "id": "apa",
+    "nome": "APA",
     "versao": "7",
-    "revisao": 9
+    "revisao": 9,
+    "dataDaRevisao": "24/11/2026",
+    "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
+    "herdaDe": {
+      "nome": "Em branco",
+      "revisao": 1
+    },
+    "cadeia": [
+      {
+        "id": "em-branco",
+        "nome": "Em branco",
+        "revisao": 1,
+        "dataDaRevisao": "24/11/2026",
+        "notaDaRevisao": "Primeira revisão (versão 2, etapa 1)."
+      },
+      {
+        "id": "apa",
+        "nome": "APA",
+        "versao": "7",
+        "revisao": 9,
+        "dataDaRevisao": "24/11/2026",
+        "notaDaRevisao": "O perfil virou modelo (versão 2, etapa 1b): cada regra foi para o elemento a que pertence, com a mesma origem, a mesma situação e o mesmo comentário; nenhum valor mudou. A situação “faculdade” passou a se chamar “ajustável”.",
+        "herdaDe": {
+          "nome": "Em branco",
+          "revisao": 1
+        }
+      }
+    ],
+    "valores": {
+      "texto": {
+        "fonte": {
+          "valor": "Times New Roman",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA",
+          "atalho": "fonte e tamanho"
+        },
+        "tamanho": {
+          "valor": "12 pt",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA",
+          "atalho": "fonte e tamanho"
+        },
+        "entrelinha": {
+          "valor": "duplo",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "alinhamento": {
+          "valor": "à esquerda",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA",
+          "nota": "Margem direita irregular; nunca justificado."
+        },
+        "recuo da primeira linha": {
+          "valor": "1,27 cm",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "recuo à esquerda": {
+          "valor": "0 cm",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "destaque": {
+          "valor": "normal",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "espaço antes": {
+          "valor": "nenhuma",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "espaço depois": {
+          "valor": "nenhuma",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "entrelinhas, vale para": {
+          "valor": "tudo, inclusive citação em bloco e referências",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "pagina": {
+        "margem superior": {
+          "valor": "2,54 cm",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "atalho": "margens"
+        },
+        "margem inferior": {
+          "valor": "2,54 cm",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "atalho": "margens"
+        },
+        "margem esquerda": {
+          "valor": "2,54 cm",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "atalho": "margens"
+        },
+        "margem direita": {
+          "valor": "2,54 cm",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "atalho": "margens"
+        },
+        "papel": {
+          "valor": "A4",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "pagina.numero": {
+        "posição": {
+          "valor": "canto superior direito",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "distância vertical": {
+          "valor": "1,27 cm",
+          "origem": "APA 7 (Student Paper Setup Guide: cabeçalho a 0,5 polegada, como no Word)",
+          "situacao": "ajustável",
+          "de": "APA",
+          "nota": "Acrescentada na revisão 5: o número fica no cabeçalho, alinhado à margem direita."
+        },
+        "distância lateral": {
+          "valor": "na margem",
+          "origem": "APA 7 (Student Paper Setup Guide: cabeçalho a 0,5 polegada, como no Word)",
+          "de": "APA",
+          "nota": "O número fica no cabeçalho, alinhado à margem direita. Na versão 1, era o\nramo APA do conversor."
+        },
+        "contar desde": {
+          "valor": "capa",
+          "origem": "Em branco",
+          "de": "Em branco",
+          "nota": "Todas as páginas contam e mostram o número."
+        },
+        "mostrar desde": {
+          "valor": "primeira página contada",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "número de página, desde": {
+          "valor": "página de título",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        }
+      },
+      "titulos": {
+        "destaque": {
+          "valor": "negrito",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "posição": {
+          "valor": "à esquerda",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "espaço antes": {
+          "valor": "nenhuma",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "atalho": "espaço antes e depois"
+        },
+        "espaço depois": {
+          "valor": "nenhuma",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "atalho": "espaço antes e depois"
+        },
+        "texto depois": {
+          "valor": "parágrafo novo",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "final na mesma linha": {
+          "valor": "ponto",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "numerar sozinho": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco",
+          "nota": "Etapa 2 da versão 2 (decisão 10): no Em branco, tudo desligado."
+        },
+        "maiúsculas sozinho": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "página nova": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "títulos, numeração": {
+          "valor": "nenhuma",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "títulos, maiúsculas": {
+          "valor": "palavras principais",
+          "origem": "APA 7 (site da APA)",
+          "situacao": "ajustável",
+          "de": "APA",
+          "nota": "A APA pede maiúscula nas palavras principais (regra do inglês). Há faculdades\nbrasileiras que pedem maiúscula só na primeira palavra."
+        }
+      },
+      "titulos.repetido": {
+        "repetir no começo do texto": {
+          "valor": "sim",
+          "origem": "APA 7 (Heading Template)",
+          "de": "APA"
+        },
+        "início do texto, destaque": {
+          "valor": "igual ao nível 1",
+          "origem": "APA 7 (Heading Template)",
+          "de": "APA"
+        },
+        "início do texto, título introdução": {
+          "valor": "não usar",
+          "origem": "APA 7 (Heading Template)",
+          "de": "APA"
+        }
+      },
+      "listas": {
+        "marcador em sequência": {
+          "valor": "1.",
+          "origem": "APA 7 (6.51, listas numeradas)",
+          "de": "APA",
+          "nota": "Exemplo: Tabela 1 (negrito), e o título em itálico na linha de baixo.\nListas (revisão 5). A APA numera só as listas em que a ordem importa (decisão\nda fase 1: o bloco \"Lista em sequência\"); as outras levam marcadores."
+        },
+        "marcador sem sequência": {
+          "valor": "•",
+          "origem": "APA 7 (6.52, listas com marcadores)",
+          "de": "APA"
+        },
+        "marcador da sub-lista": {
+          "valor": "igual ao da lista",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "recuo à esquerda": {
+          "valor": "1,27 cm",
+          "origem": "APA 7 (6.51 e 6.52), com o recuo de parágrafo",
+          "situacao": "ajustável",
+          "de": "APA"
+        },
+        "recuo a mais da sub-lista": {
+          "valor": "1,27 cm",
+          "origem": "APA 7, que não fixa a medida",
+          "situacao": "ajustável",
+          "de": "APA"
+        }
+      },
+      "citacaoLonga": {
+        "recuo à esquerda": {
+          "valor": "1,27 cm",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "ponto final": {
+          "valor": "antes da chamada",
+          "origem": "APA 7 (site da APA: citações em bloco)",
+          "de": "APA",
+          "nota": "Revisão 7: na citação em bloco, o ponto vai no fim do texto, antes da\nchamada, e nada vem depois dela. Exemplo: ... semana seguinte. (Silva, 2019, p. 15)"
+        },
+        "citação em bloco, aspas": {
+          "valor": "não",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "nota": {
+        "tamanho": {
+          "valor": "10 pt",
+          "origem": "APA 7 (2.13), com o padrão do processador de texto",
+          "de": "APA",
+          "nota": "A APA recomenda a forma padrão do processador de texto: fonte 10 e espaço simples."
+        },
+        "filete": {
+          "valor": "5 cm",
+          "origem": "padrão do Word, que a APA 7 (2.13) recomenda usar",
+          "de": "APA"
+        },
+        "linhas seguintes": {
+          "valor": "na margem",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "entrelinha": {
+          "valor": "simples",
+          "origem": "APA 7 (2.13), com o padrão do processador de texto",
+          "de": "APA"
+        }
+      },
+      "ilustracoes": {
+        "espécies": {
+          "valor": "Figura",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "posição": {
+          "valor": "centralizada",
+          "origem": "APA 7, que não fixa a posição",
+          "situacao": "ajustável",
+          "de": "APA"
+        },
+        "largura do título e da fonte": {
+          "valor": "largura do texto",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "espaço antes": {
+          "valor": "1 linha",
+          "origem": "APA 7 (site da APA: tabela ou figura na mesma página do texto)",
+          "de": "APA",
+          "atalho": "espaço antes e depois"
+        },
+        "espaço depois": {
+          "valor": "1 linha",
+          "origem": "APA 7 (site da APA: tabela ou figura na mesma página do texto)",
+          "de": "APA",
+          "atalho": "espaço antes e depois"
+        },
+        "tabelas e figuras, nota": {
+          "valor": "abaixo",
+          "origem": "APA 7 (site da APA; checklist da APA)",
+          "de": "APA"
+        },
+        "tabelas e figuras, posição": {
+          "valor": "no texto, depois da primeira menção",
+          "origem": "APA 7 (checklist da APA)",
+          "de": "APA"
+        }
+      },
+      "ilustracoes.tabela": {
+        "rótulo": {
+          "valor": "Tabela",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "fios": {
+          "valor": "acima e abaixo do cabeçalho e no fim, sem fios nas laterais",
+          "origem": "APA 7 (site da APA: bordas das tabelas)",
+          "de": "APA",
+          "nota": "Fios só no topo, embaixo do cabeçalho e no fim; nenhum fio vertical."
+        },
+        "alinhamento das células": {
+          "valor": "cabeçalho ao centro, primeira coluna à esquerda, demais ao centro",
+          "origem": "APA 7 (site da APA: corpo da tabela)",
+          "de": "APA"
+        },
+        "largura": {
+          "valor": "largura do texto",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "em mais de uma página": {
+          "valor": "só o cabeçalho se repete",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "indicações": {
+          "valor": "(continua), (continuação), (conclusão)",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "posição das indicações": {
+          "valor": "à direita",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "entrelinha": {
+          "valor": "duplo",
+          "origem": "APA 7 (site da APA)",
+          "situacao": {
+            "escolha": [
+              "simples",
+              "1,5",
+              "duplo"
+            ]
+          },
+          "de": "APA",
+          "nota": "O corpo da tabela pode ser simples, 1,5 ou duplo; o padrão segue o resto do trabalho."
+        }
+      },
+      "ilustracoes.identificacao": {
+        "separador": {
+          "valor": "travessão",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "destaque do número": {
+          "valor": "negrito",
+          "origem": "APA 7 (site da APA; checklist da APA)",
+          "de": "APA"
+        },
+        "título na linha de baixo": {
+          "valor": "sim",
+          "origem": "APA 7 (site da APA; checklist da APA)",
+          "de": "APA"
+        },
+        "destaque do título": {
+          "valor": "itálico",
+          "origem": "APA 7 (site da APA; checklist da APA)",
+          "de": "APA"
+        },
+        "entrelinha": {
+          "valor": "duplo",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "ilustracoes.fonte": {
+        "rótulo da fonte": {
+          "valor": "Fonte:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "fonte quando é sua": {
+          "valor": "nenhuma",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo da nota": {
+          "valor": "Nota.",
+          "origem": "APA 7 (site da APA: tabelas e figuras)",
+          "de": "APA",
+          "nota": "Acrescentadas na revisão 7 (fase 3).\nA nota começa por \"Nota.\" em itálico; a fonte (direitos autorais) vai dentro dela."
+        },
+        "destaque do rótulo da nota": {
+          "valor": "itálico",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "fonte dentro da nota": {
+          "valor": "sim",
+          "origem": "APA 7 (site da APA: atribuição de direitos autorais)",
+          "de": "APA"
+        },
+        "entrelinha": {
+          "valor": "duplo",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "referencias": {
+        "título": {
+          "valor": "Referências",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "espaço entre as referências": {
+          "valor": "nenhuma",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "recuo das linhas seguintes": {
+          "valor": "1,27 cm",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "página nova": {
+          "valor": "sim",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Decisão de 20/11/2026: as quebras de página são manuais, e a lista de referências\né um bloco que a pessoa põe onde quiser. Esta regra fica como referência: o Apud\nnão a aplica sozinho."
+        }
+      },
+      "abertura.capa": {
+        "existe": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "campos": {
+          "valor": "instituição (opcional), autor, título, subtítulo, cidade, ano",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "destaque do título": {
+          "valor": "negrito",
+          "origem": "Em branco",
+          "de": "Em branco"
+        }
+      },
+      "abertura.folhaDeRosto": {
+        "existe": {
+          "valor": "não",
+          "origem": "Em branco (decisão 13 da versão 2)",
+          "de": "Em branco"
+        },
+        "campos": {
+          "valor": "autor, título, subtítulo, natureza, orientador, cidade, ano",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "destaque do título": {
+          "valor": "negrito",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "rótulo do orientador": {
+          "valor": "Orientador(a):",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "rótulo do professor": {
+          "valor": "Professor(a):",
+          "origem": "Em branco",
+          "de": "Em branco"
+        }
+      },
+      "abertura.paginaDeTitulo": {
+        "existe": {
+          "valor": "sim",
+          "origem": "APA 7 (site da APA; checklist da APA)",
+          "de": "APA"
+        },
+        "modo quando o trabalho é artigo": {
+          "valor": "profissional",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "campos no modo estudante": {
+          "valor": "título, autor, departamento e universidade, código e nome da disciplina, professor, data de entrega",
+          "origem": "APA 7 (site da APA; checklist da APA)",
+          "de": "APA",
+          "nota": "Página de título do modo estudante: tudo centralizado, em espaço duplo."
+        },
+        "campos no modo profissional": {
+          "valor": "título, autores, afiliação, nota do autor, título curto",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "destaque do título": {
+          "valor": "negrito",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "linhas antes do título": {
+          "valor": "3 linhas",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "A APA aceita 3 ou 4 linhas abaixo do topo."
+        },
+        "linhas depois do título": {
+          "valor": "1 linha",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "modo": {
+          "valor": "estudante",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA",
+          "nota": "A APA tem dois modos. O trabalho começa no modo estudante e passa para o\nprofissional quando o tipo escolhido no assistente é artigo."
+        },
+        "cabeçalho com título curto": {
+          "valor": "só no modo profissional",
+          "origem": "APA 7 (Student Title Page Guide)",
+          "situacao": {
+            "escolha": [
+              "só no modo profissional",
+              "sempre"
+            ]
+          },
+          "de": "APA"
+        },
+        "página de título (estudante), alinhamento": {
+          "valor": "centralizado",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "entrelinha": {
+          "valor": "duplo",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "página de título (estudante), data": {
+          "valor": "por extenso",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "abertura.dedicatoria": {
+        "existe": {
+          "valor": "não",
+          "origem": "Em branco",
+          "de": "Em branco"
+        }
+      },
+      "abertura.epigrafe": {
+        "existe": {
+          "valor": "não",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "autoria": {
+          "valor": "sim",
+          "origem": "Em branco",
+          "de": "Em branco"
+        }
+      },
+      "abertura.agradecimentos": {
+        "existe": {
+          "valor": "não",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "título": {
+          "valor": "Agradecimentos",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        }
+      },
+      "abertura.resumo": {
+        "existe": {
+          "valor": "sim",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "título em português": {
+          "valor": "Resumo",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "título em inglês": {
+          "valor": "Abstract",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título em espanhol": {
+          "valor": "Resumen",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título em francês": {
+          "valor": "Résumé",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título em italiano": {
+          "valor": "Riassunto",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "título em alemão": {
+          "valor": "Zusammenfassung",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "recuo da primeira linha": {
+          "valor": "nenhum",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA",
+          "nota": "Revisão 8: o resumo sem recuo; as palavras-chave na linha de baixo, com\nrecuo, o rótulo em itálico, separadas por vírgula e sem ponto no fim."
+        },
+        "resumo, no modo estudante": {
+          "valor": "só se o professor pedir",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "situacao": {
+            "escolha": [
+              "só se o professor pedir",
+              "sempre"
+            ]
+          },
+          "de": "APA"
+        },
+        "resumo, no modo profissional": {
+          "valor": "obrigatório",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA"
+        },
+        "resumo, extensão máxima": {
+          "valor": "250 palavras",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA"
+        }
+      },
+      "abertura.resumo.palavrasChave": {
+        "rótulo em português": {
+          "valor": "Palavras-chave:",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA"
+        },
+        "rótulo em inglês": {
+          "valor": "Keywords:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo em espanhol": {
+          "valor": "Palabras clave:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo em francês": {
+          "valor": "Mots-clés :",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo em italiano": {
+          "valor": "Parole chiave:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "rótulo em alemão": {
+          "valor": "Schlüsselwörter:",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "destaque do rótulo": {
+          "valor": "itálico",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA"
+        },
+        "separador": {
+          "valor": "vírgula",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA"
+        },
+        "final": {
+          "valor": "nenhum",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA"
+        },
+        "palavras-chave": {
+          "valor": "opcionais",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "situacao": {
+            "escolha": [
+              "opcionais",
+              "obrigatórias"
+            ]
+          },
+          "de": "APA"
+        },
+        "recuo da primeira linha": {
+          "valor": "como no texto",
+          "origem": "APA 7 (Abstract and Keywords Guide)",
+          "de": "APA"
+        }
+      },
+      "abertura.sumario": {
+        "existe": {
+          "valor": "não",
+          "origem": "Em branco",
+          "de": "Em branco"
+        },
+        "título": {
+          "valor": "Sumário",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        },
+        "ligação até a página": {
+          "valor": "pontilhado",
+          "origem": "valor do código da versão 1",
+          "de": "Em branco"
+        }
+      },
+      "paragrafo": {
+        "espaço extra entre parágrafos": {
+          "valor": "nenhum",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "titulos.nivel1": {
+        "posição": {
+          "valor": "centralizado",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "destaque": {
+          "valor": "negrito",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "texto depois": {
+          "valor": "parágrafo novo",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        }
+      },
+      "titulos.nivel2": {
+        "posição": {
+          "valor": "à esquerda",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "destaque": {
+          "valor": "negrito",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "texto depois": {
+          "valor": "parágrafo novo",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        }
+      },
+      "titulos.nivel3": {
+        "posição": {
+          "valor": "à esquerda",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "destaque": {
+          "valor": "negrito, itálico",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "texto depois": {
+          "valor": "parágrafo novo",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        }
+      },
+      "titulos.nivel4": {
+        "posição": {
+          "valor": "com recuo",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "destaque": {
+          "valor": "negrito",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "texto depois": {
+          "valor": "na mesma linha",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        }
+      },
+      "titulos.nivel5": {
+        "posição": {
+          "valor": "com recuo",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "destaque": {
+          "valor": "negrito, itálico",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        },
+        "texto depois": {
+          "valor": "na mesma linha",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "de": "APA"
+        }
+      },
+      "titulos.semNumero": {
+        "alinhamento": {
+          "valor": "centralizado",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Os rótulos vão em português."
+        },
+        "rótulos de seção, destaque": {
+          "valor": "negrito",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "abertura": {
+        "ordem das partes": {
+          "valor": "página de título, resumo, texto, referências, notas, tabelas, figuras, apêndices",
+          "origem": "APA 7 (checklist do Concise Guide)",
+          "de": "APA"
+        },
+        "ordem das partes, página nova": {
+          "valor": "cada parte",
+          "origem": "APA 7 (checklist do Concise Guide)",
+          "de": "APA"
+        }
+      },
+      "depois.apendice": {
+        "rótulo do apêndice": {
+          "valor": "Apêndice",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "citacoes": {
+        "estilo csl": {
+          "valor": "apa.csl",
+          "origem": "APA 7, capítulos 8 e 9",
+          "de": "APA",
+          "nota": "Onde a APA escreve \"and\", o perfil em português escreve \"e\"."
+        },
+        "modelo, citação entre parênteses": {
+          "valor": "(Autor, ano)",
+          "origem": "APA 7 (checklist para iniciantes)",
+          "de": "APA"
+        },
+        "modelo, citação narrativa": {
+          "valor": "Autor (ano)",
+          "origem": "APA 7 (checklist para iniciantes)",
+          "de": "APA"
+        },
+        "citação, dois autores entre parênteses": {
+          "valor": "&",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Exemplos: (Lima & Costa, 2020) ou Lima e Costa (2020)"
+        },
+        "citação narrativa, separador entre autores": {
+          "valor": "vírgula",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "citação narrativa, antes do último autor": {
+          "valor": "e",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "citação, três ou mais autores": {
+          "valor": "primeiro autor e et al.",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Exemplo: (Zheng et al., 2023), desde a primeira citação."
+        },
+        "citação, obras iguais com et al.": {
+          "valor": "nomes até diferenciar",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "citação, primeira vez com três a cinco autores": {
+          "valor": "primeiro autor e et al.",
+          "origem": "APA 7 (site da APA); a outra forma vem da APA 6, ainda pedida por revistas",
+          "situacao": {
+            "escolha": [
+              "primeiro autor e et al.",
+              "todos os autores"
+            ]
+          },
+          "de": "APA",
+          "nota": "Fora do checklist: algumas revistas (regra da APA 6) pedem todos os autores\nna primeira citação de uma obra com 3 a 5 autores, e et al. dali em diante.\nExemplo: (Monzelli, Navarro, & Cagnin, 2023), depois Monzelli et al. (2023)."
+        },
+        "citação em bloco, a partir de": {
+          "valor": "40 palavras",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Menos de 40 palavras: no parágrafo, entre aspas. 40 ou mais: em bloco."
+        },
+        "citação curta, aspas": {
+          "valor": "duplas",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "citação, página na citação direta": {
+          "valor": "obrigatória",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "citação, rótulo da página": {
+          "valor": "p.",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "citação, rótulo de várias páginas": {
+          "valor": "pp.",
+          "origem": "APA 7 (site da APA: citações diretas)",
+          "de": "APA",
+          "nota": "Acrescentadas na revisão 4 (20/11/2026), para o Apud montar as chamadas."
+        },
+        "citação, traço entre páginas": {
+          "valor": "–",
+          "origem": "APA 7 (site da APA: citações diretas)",
+          "de": "APA"
+        },
+        "citação, mesmo sobrenome": {
+          "valor": "iniciais antes do sobrenome, em qualquer ano",
+          "origem": "APA 7 (site da APA: autores com o mesmo sobrenome)",
+          "de": "APA"
+        },
+        "citação, obra sem autor, título em itálico": {
+          "valor": "livro, relatório, tese, site, rede social",
+          "origem": "APA 7 (site da APA: autor ausente)",
+          "de": "APA"
+        },
+        "citação, obra sem autor, título entre aspas": {
+          "valor": "artigo, capítulo, trabalho em evento, notícia",
+          "origem": "APA 7 (site da APA: autor ausente)",
+          "de": "APA"
+        },
+        "citação, lei": {
+          "valor": "pelo título, sem destaque",
+          "origem": "APA 7 (site da APA: referências jurídicas)",
+          "de": "APA",
+          "nota": "O nome da lei vai sem a data, como a APA faz com o nome das leis (Americans\nwith Disabilities Act, 1990): (Lei nº 10.216, 2001). Na lista, o nome inteiro (revisão 6)."
+        },
+        "citação, sem data, marcador": {
+          "valor": "s.d.",
+          "origem": "APA 7 (site da APA: data ausente), em português",
+          "de": "APA"
+        },
+        "citação curta, passou do limite": {
+          "valor": "avisar",
+          "origem": "decisão de 20/11/2026 sobre a APA 7",
+          "de": "APA",
+          "nota": "Decisão de 20/11/2026: o Apud avisa, sem trocar sozinho por citação em bloco."
+        },
+        "citação direta sem página": {
+          "valor": "avisar",
+          "origem": "decisão de 20/11/2026 sobre a APA 7",
+          "de": "APA",
+          "nota": "Decisão de 20/11/2026: o Apud avisa quando falta a página, sem impedir."
+        },
+        "comunicação pessoal": {
+          "valor": "só no texto, sem referência",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "falas de participantes": {
+          "valor": "no texto, sem referência",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Decisão de 20/11/2026: o tipo de citação \"sem referência\" entra na versão 1."
+        },
+        "citação de citação, expressão": {
+          "valor": "como citado em",
+          "origem": "APA 7 (site da APA: fontes secundárias)",
+          "de": "APA",
+          "nota": "Fora do checklist: estas regras deixam trocar de ABNT para APA sem reescrever\no trabalho. Exemplo: (Freud, 1915, como citado em Costa, 2021)."
+        },
+        "citação de citação, vírgula antes": {
+          "valor": "sim",
+          "origem": "APA 7 (site da APA: fontes secundárias)",
+          "de": "APA"
+        },
+        "citação, destaque seu": {
+          "valor": "ênfase adicionada",
+          "origem": "APA 7 (site da APA: alterações em citações)",
+          "de": "APA",
+          "nota": "A APA põe [ênfase adicionada] logo depois do trecho em itálico, dentro da citação."
+        },
+        "citação, destaque seu, onde": {
+          "valor": "entre colchetes, depois do trecho destacado",
+          "origem": "APA 7 (site da APA: alterações em citações)",
+          "de": "APA"
+        },
+        "citação, tradução sua": {
+          "valor": "tradução nossa",
+          "origem": "uso em trabalhos em português; a APA 7 não fixa",
+          "de": "APA",
+          "nota": "A APA trata a tradução como paráfrase; \"tradução nossa\" é o uso comum em português."
+        },
+        "citação, mesmo autor e ano": {
+          "valor": "letras depois do ano",
+          "origem": "APA 7 (site da APA: mesmo autor e mesma data)",
+          "de": "APA",
+          "nota": "Exemplo: (Souza, 2020a), (Souza, 2020b), também na lista de referências."
+        },
+        "citação, mesmo autor e ano, ordem das letras": {
+          "valor": "pela data completa, depois pelo título",
+          "origem": "APA 7, 9.47 (Purdue OWL; UAB)",
+          "de": "APA",
+          "nota": "Quem tem só o ano vem antes; quem tem a data completa (postagens, notícias)\nsegue a ordem das datas; com a mesma data, a ordem do título (revisão 6)."
+        },
+        "referências, ordem": {
+          "valor": "alfabética pelo sobrenome do primeiro autor",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "referências, autor": {
+          "valor": "Sobrenome, iniciais com ponto",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Exemplo: Sanders, F. A., & Jang, T. D."
+        },
+        "referências, antes do último autor": {
+          "valor": "&",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "referências, prenomes": {
+          "valor": "iniciais",
+          "origem": "APA 7 (site da APA); por extenso é pedido por revistas",
+          "situacao": {
+            "escolha": [
+              "iniciais",
+              "por extenso"
+            ]
+          },
+          "de": "APA",
+          "nota": "Fora do checklist: regras de revista (APA 6), registradas em 20/11/2026.\nExemplo com as duas ligadas: Silva, Maria Lucia. (2009). *Trabalho e população*. São Paulo: Cortez."
+        },
+        "referências, cidade da editora": {
+          "valor": "não mostrar",
+          "origem": "APA 7 (site da APA); mostrar é pedido por revistas",
+          "situacao": {
+            "escolha": [
+              "não mostrar",
+              "mostrar"
+            ]
+          },
+          "de": "APA"
+        },
+        "referências, quantos autores": {
+          "valor": "até 20, todos; com 21 ou mais, os 19 primeiros, reticências e o último",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "referências, título da obra": {
+          "valor": "maiúscula só na primeira palavra e em nomes próprios",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "modelo, artigo": {
+          "valor": "Sobrenome, A. A., & Sobrenome, B. B. (2020). Título do artigo. *Nome da Revista*, *10*(2), 1–15. https://doi.org/10.0000/xxxx",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA",
+          "nota": "Os modelos servem para conferência: quem monta a referência é o estilo CSL.\nNegrito entre ** **, itálico entre * *."
+        },
+        "modelo, livro": {
+          "valor": "Sobrenome, A. A. (2020). *Título do livro: Subtítulo* (2ª ed.). Editora. https://doi.org/10.0000/xxxx",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        },
+        "modelo, tese": {
+          "valor": "Sobrenome, A. A. (2017). *Título: Subtítulo* [Tese de doutorado, Universidade]. https://exemplo.org",
+          "origem": "APA 7 (site da APA: tese publicada)",
+          "de": "APA",
+          "nota": "Tipos acrescentados em 20/11/2026, a partir de dois artigos reais."
+        },
+        "modelo, relatório": {
+          "valor": "Sobrenome, A. A. (2023). *Título* (Nota Técnica nº 103). Editora. https://exemplo.org",
+          "origem": "APA 7 (site da APA: relatório)",
+          "de": "APA"
+        },
+        "modelo, trabalho em evento": {
+          "valor": "Sobrenome, A. A., & Sobrenome, B. B. (2024). Título do trabalho. Em *Anais do Evento* (pp. 15–30). Editora. https://exemplo.org",
+          "origem": "APA 7 (site da APA: anais publicados como livro)",
+          "de": "APA"
+        },
+        "modelo, notícia": {
+          "valor": "Título da notícia. (2024, 3 de julho). *Nome do Jornal*. https://exemplo.org",
+          "origem": "APA 7 (site da APA: artigo de jornal)",
+          "de": "APA"
+        },
+        "modelo, rede social": {
+          "valor": "Sobrenome, A. A. [@perfil]. (2025, 16 de fevereiro). *Texto da postagem* [Vídeo]. Instagram. https://exemplo.org",
+          "origem": "APA 7 (site da APA: Instagram)",
+          "de": "APA"
+        }
+      }
+    },
+    "atalhos": {
+      "pagina": {
+        "margens": {
+          "valor": "2,54 cm",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      },
+      "ilustracoes": {
+        "espaço antes e depois": {
+          "valor": "1 linha",
+          "origem": "APA 7 (site da APA: tabela ou figura na mesma página do texto)",
+          "de": "APA"
+        }
+      },
+      "texto": {
+        "fonte e tamanho": {
+          "valor": "Times New Roman 12 pt",
+          "origem": "APA 7 (Student Paper Setup Guide)",
+          "situacao": {
+            "escolha": [
+              "Times New Roman 12 pt",
+              "Arial 11 pt",
+              "Calibri 11 pt",
+              "Georgia 11 pt",
+              "Aptos 12 pt"
+            ]
+          },
+          "de": "APA"
+        }
+      },
+      "titulos": {
+        "espaço antes e depois": {
+          "valor": "nenhuma",
+          "origem": "APA 7 (site da APA)",
+          "de": "APA"
+        }
+      }
+    }
   },
   "ajustes": {
     "APA": {
@@ -17,7 +1210,7 @@
   "criadoEm": "2026-11-20T00:00:00.000Z",
   "modificadoEm": "2026-11-20T00:00:00.000Z",
   "documento": {
-    "versao": 4,
+    "versao": 5,
     "dados": {
       "tipo": "disciplina",
       "idioma": "pt-BR",

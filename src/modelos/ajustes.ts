@@ -2,15 +2,29 @@
 // trocadas nas Configurações de cada trabalho, sem mexer no modelo. Elas são
 // mais uma camada por cima do modelo (Em branco › ABNT › este trabalho).
 //
-// Até a parte 1d, o .apud guarda as escolhas com os nomes das regras dos
-// perfis da versão 1 ("referências, prenomes": "abreviados"). A tabela de
-// correspondência diz para onde cada nome vai.
+// No .apud, cada escolha tem o caminho do elemento e o nome da propriedade:
+//   "Texto › fonte": "Arial", "Títulos › Nível 2 › destaque": "negrito".
+// As de Citações e referências (as Escolhas do autor) vão só com o nome da
+// regra: "referências, prenomes": "abreviados".
 
 import { listarComE, normalizar } from "../perfis/texto";
-import { destinosDe, type Destino } from "./correspondencia";
-import { atalho, propriedade } from "./elementos";
+import { atalho, elementoPeloCaminho, propriedade } from "./elementos";
 import { somar, valorProprio } from "./herdar";
 import type { Mensagem, ModeloResolvido, ValorNoModelo, ValoresPorElemento } from "./tipos";
+
+interface Destino {
+  elemento: string;
+  propriedade: string;
+}
+
+/** "Títulos › Nível 2 › destaque" → Títulos › Nível 2, destaque; "referências, prenomes" → Citações e referências. */
+export function destinoDaEscolha(chave: string): Destino | undefined {
+  const partes = chave.split(/\s*›\s*/);
+  if (partes.length === 1) return { elemento: "citacoes", propriedade: normalizar(chave) };
+  const nome = partes.pop()!;
+  const el = elementoPeloCaminho(partes.join(" › "));
+  return el ? { elemento: el.id, propriedade: normalizar(nome) } : undefined;
+}
 
 /** De onde vem o valor que o trabalho escolheu. */
 export const ORIGEM_DO_AJUSTE = "configurações do trabalho";
@@ -37,26 +51,18 @@ export function aplicarAjustes(modelo: ModeloResolvido, ajustes: Record<string, 
 
   for (const [nome, escrito] of Object.entries(ajustes)) {
     const erro = (texto: string) => mensagens.push({ gravidade: "erro", texto: `“${nome}”: ${texto}` });
-    let destinos: Destino[];
-    try {
-      destinos = destinosDe(normalizar(nome));
-    } catch {
+    const d = destinoDaEscolha(nome);
+    const def = d && propriedade(d.elemento, d.propriedade);
+    const at = d && !def ? atalho(d.elemento, d.propriedade) : undefined;
+    const v = d && (def || at) ? atual(modelo, { elemento: d.elemento, propriedade: (def?.nome ?? at?.nome)! }) : undefined;
+    if (!d || !v) {
       erro("essa regra não existe no modelo.");
       continue;
     }
-    // Só regras que viram um valor só (ou um atalho) podem ser escolhidas.
-    const [d] = destinos;
-    const v = destinos.length === 1 && d.valor === undefined ? atual(modelo, d) : undefined;
-    if (!v) {
-      erro(destinos.length === 1 && d.valor === undefined ? "essa regra não existe no modelo." : "essa regra é fixa na norma e não pode ser trocada nas configurações do trabalho.");
-      continue;
-    }
-    if (v.situacao.tipo !== "faculdade" && v.situacao.tipo !== "escolha") {
+    if (v.situacao.tipo !== "ajustavel" && v.situacao.tipo !== "escolha") {
       erro("essa regra é fixa na norma e não pode ser trocada nas configurações do trabalho.");
       continue;
     }
-    const def = propriedade(d.elemento, d.propriedade);
-    const at = def ? undefined : atalho(d.elemento, d.propriedade);
     const lido = (def?.tipo ?? at!.tipo).ler(escrito, nome);
     if (!lido.ok) {
       erro(lido.erro);

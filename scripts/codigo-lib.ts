@@ -1,5 +1,5 @@
 // O gabarito do código: o código Typst que o conversor escreve para alguns
-// trabalhos de teste, guardado em perfis/prova/codigo/. Serve para a etapa 1
+// trabalhos de teste, guardado em testes/prova/codigo/. Serve para a etapa 1
 // da versão 2, que troca os perfis pelos modelos em árvore: o conversor novo
 // tem de escrever o mesmo código, letra por letra. Código igual dá PDF igual.
 //
@@ -17,7 +17,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { documentoParaTypst, type OpcoesDoConversor } from "../src/conversor/typst";
 import type { Documento, Referencia, Resumo } from "../src/documento/modelo";
-import { carregarNorma, documentoDeProva, documentoDoTexto, PASTA_PERFIS, PASTA_PROVA } from "./prova-lib";
+import { carregarNorma, documentoDeProva, documentoDoTexto, PASTA_TESTES, PASTA_PROVA } from "./prova-lib";
 
 export const PASTA_DO_CODIGO = join(PASTA_PROVA, "codigo");
 
@@ -52,9 +52,9 @@ function codigo(doc: Documento, arquivo: string, ajustes: Record<string, string>
   return paraOGabarito(documentoParaTypst(doc, n.modelo, { ...opcoes, csl: n.csl }));
 }
 
-/** Um artigo de perfis/artigos, com as escolhas do autor do trabalho.json dele. */
+/** Um artigo de testes/artigos, com as escolhas do autor do trabalho.json dele. */
 function artigo(pasta: string) {
-  const dir = join(PASTA_PERFIS, "artigos", pasta);
+  const dir = join(PASTA_TESTES, "artigos", pasta);
   const trabalho = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8")) as { nome: string; norma: string; ajustes?: Record<string, string> };
   const referencias = JSON.parse(readFileSync(join(dir, "referencias.json"), "utf8")) as Referencia[];
   const { documento } = documentoDoTexto(readFileSync(join(dir, "artigo.md"), "utf8"), referencias, dir);
@@ -117,19 +117,19 @@ export const CASOS: CasoDeCodigo[] = [
         })),
         "abnt.txt",
         {
-          "família da fonte": "Arial",
-          "recuo de parágrafo": "1,5 cm",
-          alinhamento: "à esquerda",
-          "numeração de página, posição": "canto inferior direito",
-          "título nível 2, destaque": "negrito, sublinhado",
-          "ilustração, posição na página": "à esquerda",
-          "ilustrações e tabelas, linhas em branco antes e depois": "0 linha",
-          "citação longa, linhas em branco antes e depois": "2 linhas",
-          "tabelas, espaçamento do corpo": "1,5",
-          "tabelas em mais de uma página, posição das indicações": "à esquerda",
-          "sumário, ligação até a página": "nenhuma",
-          "folha de rosto, rótulo do orientador": "Orientadora:",
-          "palavras-chave, linhas em branco antes": "0 linha",
+          "Texto › fonte": "Arial",
+          "Texto › recuo da primeira linha": "1,5 cm",
+          "Texto › alinhamento": "à esquerda",
+          "Página › Número da página › posição": "canto inferior direito",
+          "Títulos › Nível 2 › destaque": "negrito, sublinhado",
+          "Ilustrações › posição": "à esquerda",
+          "Ilustrações › espaço antes e depois": "0 linha",
+          "Citação longa › espaço antes e depois": "2 linhas",
+          "Ilustrações › Tabela › entrelinha": "1,5",
+          "Ilustrações › Tabela › posição das indicações": "à esquerda",
+          "Abertura › Sumário › ligação até a página": "nenhuma",
+          "Abertura › Folha de rosto › rótulo do orientador": "Orientadora:",
+          "Abertura › Resumo › Palavras-chave › espaço antes": "0 linha",
           "referências, prenomes": "abreviados",
           "autores, quatro ou mais": "primeiro com et al.",
         },
@@ -141,7 +141,7 @@ export const CASOS: CasoDeCodigo[] = [
     descricao: "artigo da UNIVALI (ABNT) com o número da página no centro, embaixo",
     codigo: () => {
       const { documento, trabalho } = artigo("univali-abnt");
-      return codigo(documento, trabalho.norma, { "numeração de página, posição": "centro inferior" }, { titulo: trabalho.nome });
+      return codigo(documento, trabalho.norma, { "Página › Número da página › posição": "centro inferior" }, { titulo: trabalho.nome });
     },
   },
   {
@@ -152,9 +152,9 @@ export const CASOS: CasoDeCodigo[] = [
         provaComo((d) => ({ ...d, dados: { ...d.dados, tipo: "artigo" }, abertura: { ...d.abertura, semIdentificacao: true } })),
         "apa.txt",
         {
-          fonte: "Arial 11 pt",
-          "tabelas, espaçamento do corpo": "simples",
-          "número de página, distância do topo": "1,5 cm",
+          "Texto › fonte e tamanho": "Arial 11 pt",
+          "Ilustrações › Tabela › entrelinha": "simples",
+          "Página › Número da página › distância vertical": "1,5 cm",
           "referências, prenomes": "por extenso",
         },
         { titulo: "Artigo de teste" },

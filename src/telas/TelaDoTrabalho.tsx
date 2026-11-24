@@ -20,7 +20,9 @@ import Previa from "./Previa";
 import { documentoParaTypst } from "../conversor/typst";
 import { arquivosDasImagens } from "../conversor/elementos";
 import { motor } from "../conversor/motor";
-import { modeloEmbutido, normaEmbutida, normasEmbutidas, perfilEmbutido, textoNoModelo } from "../modelos/embutidos";
+import { estilosEmbutidos, modeloEmbutido, normasEmbutidas, textoNoModelo } from "../modelos/embutidos";
+import { normaDoTrabalho, nomeDoModelo } from "../modelos/norma";
+import { perfilDeCitacoes } from "../modelos/ponte";
 import { AparenciaDaNorma } from "../editor/extensoes";
 import { ImagensNoEditor } from "../editor/imagens";
 import { CitacoesNoTexto } from "../editor/citacoes";
@@ -70,17 +72,18 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
     () => new ImagensNoEditor(() => imagens.current, (i) => (imagens.current = [...imagens.current, i])),
     [],
   );
-  // A norma do trabalho, com os ajustes que ele guarda para ela (escolhas do
-  // autor). Trocar a norma muda o perfil do trabalho; os ajustes de cada norma
-  // ficam guardados, e voltar para a anterior encontra as escolhas como estavam.
-  const perfilAtual = useRef(trabalho.perfil);
+  // A norma do trabalho: a cópia do modelo que o trabalho leva no arquivo
+  // (decisão 4 da v2), com as escolhas que ele guarda para esse modelo. Trocar
+  // a norma troca a cópia pela do modelo que vem no Apud; as escolhas de cada
+  // modelo ficam guardadas, e voltar para o anterior as encontra como estavam.
+  const modeloAtual = useRef(trabalho.modelo);
   const ajustes = useRef(trabalho.ajustes);
-  const [nomeDaNorma, setNomeDaNorma] = useState(trabalho.perfil.perfil);
+  const [nomeDaNorma, setNomeDaNorma] = useState(trabalho.modelo.identificacao.nome);
   const norma = useRef<NormaDoTrabalho | null>(null);
   const lerNorma = useRef<() => NormaDoTrabalho>(() => {
     if (!norma.current) {
-      const nome = perfilAtual.current.perfil;
-      norma.current = normaEmbutida(nome, ajustes.current[nome] ?? {});
+      const m = modeloAtual.current;
+      norma.current = normaDoTrabalho(m, estilosEmbutidos(), ajustes.current[m.identificacao.nome] ?? {});
     }
     return norma.current;
   });
@@ -164,7 +167,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
             ...trabalho,
             nome: nomeSalvo.current,
             modificadoEm: new Date().toISOString(),
-            perfil: perfilAtual.current,
+            modelo: modeloAtual.current,
             ajustes: ajustes.current,
             documento: lerDocumento.current(),
           }),
@@ -234,12 +237,12 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
   };
 
   const trocarNorma = (nome: string) => {
-    if (nome === perfilAtual.current.perfil) return;
+    if (nome === modeloAtual.current.identificacao.nome) return;
     try {
-      const { identificacao: id } = normaEmbutida(nome, ajustes.current[nome] ?? {}).perfil;
-      perfilAtual.current = { perfil: id.perfil, versao: id.versao, revisao: id.revisao };
+      const m = modeloEmbutido(nome);
+      modeloAtual.current = m;
       norma.current = null;
-      setNomeDaNorma(id.perfil);
+      setNomeDaNorma(m.identificacao.nome);
       aparencia.mudar(rotuloDaLista());
       citacoes.agendar(0);
       salvamento.houveMudanca();
@@ -248,6 +251,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
       setProblema(`Não consegui trocar a norma: ${(e as Error).message}.`);
     }
   };
+
 
   /** Fonte nova ou editada (o código é o mesmo). O PDF e as citações se refazem. */
   const salvarReferencia = (r: Referencia) => {
@@ -288,11 +292,11 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
 
   /** Uma escolha do autor: grava em ajustes[norma] só o que difere do padrão do perfil. */
   const escolher = (e: EscolhaDoAutor, valor: string) => {
-    const nome = perfilAtual.current.perfil;
+    const nome = modeloAtual.current.identificacao.nome;
     const novos = ajustesComEscolha(ajustes.current, nome, e.chave, valor, e.padrao);
     try {
-      // Confere antes de guardar: um ajuste que a norma não aceita nunca chega ao arquivo.
-      const { problemas } = normaEmbutida(nome, novos[nome] ?? {});
+      // Confere antes de guardar: uma escolha que o modelo não aceita nunca chega ao arquivo.
+      const { problemas } = normaDoTrabalho(modeloAtual.current, estilosEmbutidos(), novos[nome] ?? {});
       if (problemas.length) throw new Error(problemas.map((p) => p.texto).join(" "));
     } catch (erro) {
       setProblema(`Não consegui aplicar essa escolha: ${(erro as Error).message}`);
@@ -313,7 +317,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
   );
 
   const escolhas = useMemo(
-    () => escolhasDoAutor(perfilEmbutido(nomeDaNorma), ajustes.current[nomeDaNorma]),
+    () => escolhasDoAutor(perfilDeCitacoes(modeloAtual.current), ajustes.current[nomeDaNorma]),
     // As escolhas mudam com a norma e com os ajustes (versaoDosDados sobe a cada mudança).
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [nomeDaNorma, versaoDosDados],
@@ -366,7 +370,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
           <span
             className="cab-norma"
             data-tauri-drag-region
-            title={`${perfilAtual.current.perfil} ${perfilAtual.current.versao}, revisão ${perfilAtual.current.revisao}`}
+            title={nomeDoModelo(modeloAtual.current)}
           >
             {nomeDaNorma}
           </span>
@@ -458,7 +462,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
             abertura={abertura.current}
             dados={dados.current}
             nomeDaNorma={nomeDaNorma}
-            modelo={modeloEmbutido(nomeDaNorma)}
+            modelo={modeloAtual.current}
             aoMudar={mudarAbertura}
             aoConfigurar={(aba) => setConfiguracoes({ aba })}
           />
@@ -497,7 +501,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
           dados={dados.current}
           abertura={abertura.current}
           nomeDaNorma={nomeDaNorma}
-          modelo={modeloEmbutido(nomeDaNorma)}
+          modelo={modeloAtual.current}
           normas={normasEmbutidas()}
           escolhas={escolhas}
           aoMudarDados={mudarDados}

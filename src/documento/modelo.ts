@@ -16,14 +16,15 @@
 //   4. Fase 3: citação longa, figura, tabela e nota de rodapé; os dados do
 //      trabalho (título, autores, curso...), os elementos antes do texto
 //      (capa, folha de rosto, resumos...) e as imagens das figuras.
-// Documentos antigos são convertidos ao abrir, sem perder nada (arquivos/formato.ts).
+//   5. Versão 2 do Apud (etapa 1d): o mesmo documento; o arquivo passa a levar a
+//      cópia do modelo. As versões 1 a 4 eram da versão de testes e não abrem mais.
 
 import type { Citacao, Data, Referencia } from "./referencias";
 
 export * from "./referencias";
 
 /** Versão do formato. Sobe quando o formato mudar, para os arquivos antigos serem convertidos. */
-export const VERSAO_DO_FORMATO = 4;
+export const VERSAO_DO_FORMATO = 5;
 
 /** Marcas dentro do texto. Itálico, por exemplo, para palavras estrangeiras. */
 export type Marca = "negrito" | "italico" | "sobrescrito";

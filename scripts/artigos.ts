@@ -1,5 +1,5 @@
 // Os artigos de teste: trabalhos reais montados no Apud, para a conferência
-// final de cada fase. Cada pasta de perfis/artigos tem:
+// final de cada fase. Cada pasta de testes/artigos tem:
 //   artigo.md          o texto, com as citações na forma curta do documento de prova
 //   referencias.json   as fontes, no formato do .apud
 //   trabalho.json      o nome, a norma ("abnt.txt" ou "apa.txt") e as escolhas do autor
@@ -12,7 +12,7 @@
 //                                de conferir as diferenças e explicá-las em diferencas.md.
 //
 // Grava, para cada artigo, o .apud na própria pasta (para abrir no programa) e o
-// PDF em perfis/artigos/saida/. Depois compara com o original e mostra cada
+// PDF em testes/artigos/saida/. Depois compara com o original e mostra cada
 // diferença. O original não é gabarito (ele tem erros): as diferenças são
 // explicadas em diferencas.md, na pasta do artigo.
 
@@ -22,9 +22,9 @@ import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { documentoParaTypst } from "../src/conversor/typst";
 import { escreverArquivo } from "../src/arquivos/formato";
 import type { Referencia } from "../src/documento/modelo";
-import { carregarNorma, compararComGabarito, documentoDoTexto, lerGabarito, mapearImagens, PASTA_PERFIS, rodarTrabalho } from "./prova-lib";
+import { carregarNorma, compararComGabarito, documentoDoTexto, lerGabarito, mapearImagens, PASTA_TESTES, rodarTrabalho } from "./prova-lib";
 
-const PASTA = join(PASTA_PERFIS, "artigos");
+const PASTA = join(PASTA_TESTES, "artigos");
 const SAIDA = join(PASTA, "saida");
 mkdirSync(SAIDA, { recursive: true });
 
@@ -69,7 +69,8 @@ for (const pasta of readdirSync(PASTA, { withFileTypes: true }).filter((d) => d.
     join(dir, trabalho.arquivo),
     escreverArquivo({
       nome: trabalho.nome,
-      perfil: { perfil: id.perfil, versao: id.versao, revisao: id.revisao },
+      // A cópia do modelo, sem as escolhas (elas ficam em ajustes).
+      modelo: carregarNorma(trabalho.norma).modelo,
       ajustes: trabalho.ajustes ? { [id.perfil]: trabalho.ajustes } : {},
       criadoEm: agora,
       modificadoEm: agora,
@@ -97,8 +98,8 @@ for (const pasta of readdirSync(PASTA, { withFileTypes: true }).filter((d) => d.
   if (gravar) writeFileSync(join(dir, trabalho.gabarito), linhas.join("\n"));
 
   console.log(`\n=== ${trabalho.nome} ===`);
-  console.log(`.apud: perfis/artigos/${pasta.name}/${trabalho.arquivo}`);
-  console.log(`PDF:   perfis/artigos/saida/${pasta.name}.pdf`);
+  console.log(`.apud: testes/artigos/${pasta.name}/${trabalho.arquivo}`);
+  console.log(`PDF:   testes/artigos/saida/${pasta.name}.pdf`);
   console.log(`${vistas.size} chamadas diferentes, ${resultado.referencias.length} referências, ${new Set(resultado.avisos).size} avisos`);
   if (existsSync(join(dir, trabalho.gabarito))) {
     const diferencas = compararComGabarito(resultado, lerGabarito(trabalho.gabarito, dir)).filter((d, i, todas) => todas.indexOf(d) === i);
