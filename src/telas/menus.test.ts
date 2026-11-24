@@ -14,7 +14,6 @@ function contexto(p: Partial<ContextoDosMenus> = {}): ContextoDosMenus {
     norma: "ABNT",
     normas: ["ABNT", "APA"],
     temaEscolhido: "sistema",
-    iconeEscolhido: "cobalto",
     painelAberto: null,
     podeCitar: true,
     exportando: false,
@@ -23,7 +22,6 @@ function contexto(p: Partial<ContextoDosMenus> = {}): ContextoDosMenus {
     aoExportar: nada,
     aoAbrirConfiguracoes: nada,
     aoEscolherTema: nada,
-    aoEscolherIcone: nada,
     aoTrocarNorma: nada,
     aoAlternarPainel: nada,
     desfazer: nada,
@@ -46,12 +44,6 @@ describe("menus do cabeçalho", () => {
     expect(temas.map((t) => (t as { rotulo: string }).rotulo)).toEqual(["Claro", "Escuro", "Sistema"]);
     expect(temas.map((t) => (t as { marcado: boolean }).marcado)).toEqual([false, true, false]);
     expect(arquivo.itens.some((i) => i.tipo === "titulo" && i.rotulo.includes("Preferências"))).toBe(true);
-  });
-
-  it("o ícone do programa também mora em Preferências, com cinco opções e o escolhido marcado", () => {
-    const itens = montarMenus(contexto({ iconeEscolhido: "grafite" }))[0].itens.filter((i) => i.id.startsWith("icone-"));
-    expect(itens).toHaveLength(5);
-    expect(itens.filter((i) => i.tipo === "opcao" && i.marcado).map((i) => i.id)).toEqual(["icone-grafite"]);
   });
 
   it("escolher um tema chama a troca com o valor certo", () => {

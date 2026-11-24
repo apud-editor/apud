@@ -5,7 +5,6 @@
 import { ESCOLHAS_DE_TEMA, type EscolhaDeTema } from "../tema/tema";
 import { ATALHOS_DOS_PAINEIS } from "./atalhos";
 import type { AbaDasConfiguracoes } from "./Configuracoes";
-import { ICONES, type IdDoIcone } from "../icone/icone";
 
 export type ItemDeMenu =
   | {
@@ -81,7 +80,6 @@ export interface ContextoDosMenus {
   norma: string;
   normas: string[];
   temaEscolhido: EscolhaDeTema;
-  iconeEscolhido: IdDoIcone;
   /** O painel que está aberto, para o texto do item (abrir ou fechar). */
   painelAberto: "previa" | "referencias" | null;
   podeCitar: boolean;
@@ -91,7 +89,6 @@ export interface ContextoDosMenus {
   aoExportar: () => void;
   aoAbrirConfiguracoes: (aba: AbaDasConfiguracoes) => void;
   aoEscolherTema: (e: EscolhaDeTema) => void;
-  aoEscolherIcone: (id: IdDoIcone) => void;
   aoTrocarNorma: (n: string) => void;
   aoAlternarPainel: (p: "previa" | "referencias") => void;
   desfazer: () => void;
@@ -107,13 +104,6 @@ export function montarMenus(c: ContextoDosMenus): Menu[] {
     rotulo: e.rotulo,
     marcado: e.valor === c.temaEscolhido,
     aoEscolher: () => c.aoEscolherTema(e.valor),
-  }));
-  const icones = ICONES.map<ItemDeMenu>((i) => ({
-    tipo: "opcao",
-    id: `icone-${i.id}`,
-    rotulo: i.nome,
-    marcado: i.id === c.iconeEscolhido,
-    aoEscolher: () => c.aoEscolherIcone(i.id),
   }));
   return [
     {
@@ -147,13 +137,6 @@ export function montarMenus(c: ContextoDosMenus): Menu[] {
           rotulo: "Preferências · Tema do programa",
         },
         ...temas,
-        { tipo: "separador", id: "sep-icone" },
-        {
-          tipo: "titulo",
-          id: "pref-icone",
-          rotulo: "Preferências · Ícone do programa",
-        },
-        ...icones,
       ],
     },
     {

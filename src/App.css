@@ -1830,36 +1830,6 @@ button.linha:hover {
   font-weight: 600;
 }
 
-/* Escolha do ícone do programa (SeletorDeIcone.tsx), ao lado do tema no topo do Painel. */
-.ic-seletor {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.ic-rotulo {
-  color: var(--tinta-suave);
-  font-size: 13px;
-}
-.ic-opcao {
-  display: flex;
-  padding: 3px;
-  border: 1px solid var(--borda-forte);
-  border-radius: 8px;
-  background: var(--cab);
-  cursor: pointer;
-}
-.ic-opcao:hover {
-  background: var(--hov);
-}
-.ic-opcao.on {
-  border-color: var(--destaque);
-  box-shadow: 0 0 0 1px var(--destaque);
-}
-.ic-opcao img {
-  display: block;
-  border-radius: 6px;
-}
-
 /* Controles da janela (ControlesDaJanela.tsx): o programa abre sem a barra do Windows. */
 .jn-controles {
   position: fixed;

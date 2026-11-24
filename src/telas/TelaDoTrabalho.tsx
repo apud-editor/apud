@@ -36,7 +36,6 @@ import BarraDeMenus from "./BarraDeMenus";
 import { montarMenus } from "./menus";
 import { Simbolo } from "../marca/Marca";
 import type { EscolhaDeTema } from "../tema/tema";
-import type { IdDoIcone } from "../icone/icone";
 
 interface Props {
   arquivo: string;
@@ -47,12 +46,9 @@ interface Props {
   /** O tema escolhido e como trocá-lo: fica em Arquivo › Preferências. */
   temaEscolhido: EscolhaDeTema;
   aoEscolherTema: (escolha: EscolhaDeTema) => void;
-  /** O ícone do programa (janela e barra de tarefas): também em Arquivo › Preferências. */
-  iconeEscolhido: IdDoIcone;
-  aoEscolherIcone: (id: IdDoIcone) => void;
 }
 
-export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, temaEscolhido, aoEscolherTema, iconeEscolhido, aoEscolherIcone }: Props) {
+export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, temaEscolhido, aoEscolherTema }: Props) {
   // O "controle remoto" do editor, para os menus (desfazer, inserir...).
   const comandos = useRef<ComandosDoEditor | null>(null);
   const lerTexto = useRef<(() => Bloco[]) | null>(null);
@@ -385,7 +381,6 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
               norma: nomeDaNorma,
               normas: normasEmbutidas(),
               temaEscolhido,
-              iconeEscolhido,
               painelAberto: painel,
               podeCitar: true,
               exportando,
@@ -394,7 +389,6 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
               aoExportar: exportar,
               aoAbrirConfiguracoes: (aba) => setConfiguracoes({ aba }),
               aoEscolherTema,
-              aoEscolherIcone,
               aoTrocarNorma: trocarNorma,
               aoAlternarPainel: alternarPainel,
               desfazer: () => comandos.current?.desfazer(),

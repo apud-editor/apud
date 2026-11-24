@@ -3,7 +3,6 @@ import Painel from "./telas/Painel";
 import TelaDoTrabalho from "./telas/TelaDoTrabalho";
 import { vigiarFechamento } from "./telas/sair";
 import { useTema } from "./tema/useTema";
-import { useIcone } from "./icone/useIcone";
 import ControlesDaJanela from "./janela/ControlesDaJanela";
 import type { Trabalho } from "./arquivos/formato";
 
@@ -15,8 +14,6 @@ export default function App() {
   const [tela, setTela] = useState<Tela>({ tipo: "painel" });
   // O tema vale para o programa todo; o seletor fica no Painel e em Arquivo › Preferências do editor.
   const tema = useTema();
-  // O ícone do programa (janela e barra de tarefas) é escolhido no Painel.
-  const icone = useIcone();
 
   useEffect(() => {
     void vigiarFechamento();
@@ -35,8 +32,6 @@ export default function App() {
           aoVoltar={() => setTela({ tipo: "painel" })}
           temaEscolhido={tema.escolha}
           aoEscolherTema={tema.escolher}
-          iconeEscolhido={icone.escolhido}
-          aoEscolherIcone={icone.escolher}
         />
       ) : (
         <Painel
@@ -45,8 +40,6 @@ export default function App() {
           }
           temaEscolhido={tema.escolha}
           aoEscolherTema={tema.escolher}
-          iconeEscolhido={icone.escolhido}
-          aoEscolherIcone={icone.escolher}
         />
       )}
     </>

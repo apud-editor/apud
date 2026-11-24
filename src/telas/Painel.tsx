@@ -5,8 +5,6 @@ import Assistente from "./Assistente";
 import SeletorDeTema from "../tema/SeletorDeTema";
 import { Logo } from "../marca/Marca";
 import type { EscolhaDeTema } from "../tema/tema";
-import SeletorDeIcone from "../icone/SeletorDeIcone";
-import type { IdDoIcone } from "../icone/icone";
 
 interface Linha {
   arquivo: string;
@@ -19,11 +17,9 @@ interface Props {
   aoAbrir: (arquivo: string, trabalho: Trabalho, novo: boolean) => void;
   temaEscolhido: EscolhaDeTema;
   aoEscolherTema: (escolha: EscolhaDeTema) => void;
-  iconeEscolhido: IdDoIcone;
-  aoEscolherIcone: (id: IdDoIcone) => void;
 }
 
-export default function Painel({ aoAbrir, temaEscolhido, aoEscolherTema, iconeEscolhido, aoEscolherIcone }: Props) {
+export default function Painel({ aoAbrir, temaEscolhido, aoEscolherTema }: Props) {
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [pasta, setPasta] = useState("");
   const [problema, setProblema] = useState<string | null>(null);
@@ -90,7 +86,6 @@ export default function Painel({ aoAbrir, temaEscolhido, aoEscolherTema, iconeEs
           <Logo altura={32} />
         </span>
         <span style={{ flex: 1 }} data-tauri-drag-region />
-        <SeletorDeIcone escolhido={iconeEscolhido} aoEscolher={aoEscolherIcone} />
         <SeletorDeTema escolha={temaEscolhido} aoEscolher={aoEscolherTema} />
       </header>
       <main className="painel">
