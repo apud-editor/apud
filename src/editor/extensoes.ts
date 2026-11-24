@@ -490,7 +490,7 @@ export const ExcecoesDoBloco = Extension.create({
   addGlobalAttributes() {
     return [
       {
-        types: ["paragraph", "heading"],
+        types: ["paragraph", "heading", NO_DA_CITACAO_LONGA],
         attributes: {
           excecoes: {
             default: null,
@@ -513,8 +513,8 @@ export function limparExcecoes(trs: readonly Transaction[], estado: EditorState)
   let tr: Transaction | null = null;
   estado.doc.forEach((no, pos) => {
     const ex = no.attrs.excecoes;
-    if (!ex || (no.type.name !== "paragraph" && no.type.name !== "heading")) return;
-    const elemento = no.type.name === "heading" ? `titulos.nivel${no.attrs.level}` : "paragrafo";
+    if (!ex || (no.type.name !== "paragraph" && no.type.name !== "heading" && no.type.name !== NO_DA_CITACAO_LONGA)) return;
+    const elemento = no.type.name === "heading" ? `titulos.nivel${no.attrs.level}` : no.type.name === NO_DA_CITACAO_LONGA ? "citacaoLonga" : "paragrafo";
     const valem = excecoesQueValem(elemento, ex) ?? null;
     if (JSON.stringify(valem) === JSON.stringify(ex)) return;
     tr = (tr ?? estado.tr).setNodeMarkup(pos, undefined, { ...no.attrs, excecoes: valem });

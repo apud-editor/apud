@@ -93,8 +93,9 @@ fn abrir_com_o_sistema(caminho: &std::path::Path) -> Result<(), String> {
 }
 
 /// As fontes do Windows que o PDF pode usar. Só estes nomes são aceitos.
-const FONTES_ACEITAS: [&str; 8] = [
+const FONTES_ACEITAS: [&str; 16] = [
     "times.ttf", "timesbd.ttf", "timesi.ttf", "timesbi.ttf", "arial.ttf", "arialbd.ttf", "ariali.ttf", "arialbi.ttf",
+    "calibri.ttf", "calibrib.ttf", "calibrii.ttf", "calibriz.ttf", "georgia.ttf", "georgiab.ttf", "georgiai.ttf", "georgiaz.ttf",
 ];
 
 /// Lê uma fonte instalada no Windows (para o PDF sair com a Times New Roman de verdade).

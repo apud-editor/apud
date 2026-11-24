@@ -19,6 +19,8 @@
     "1.1 Objetivos"), que o Apud tira sozinho quando numera.
   - Um título sem número ("Apresentação") e um sem maiúsculas, com "só este".
   - Parágrafos com exceção: centralizado, entrelinha simples, sem recuo.
+  - Duas citações longas: uma como a norma pede e outra com o jeito de uma
+    revista (11 pt, recuo de 2 cm, à esquerda, sem espaço antes e depois).
   - Uma quebra de página à mão antes de um Título 1 (a linha "Página nova" não se repete).
   - Níveis 4 e 5 seguidos de parágrafo (na APA saem na mesma linha do texto).
   - Citações de todos os jeitos e dos 10 tipos de obra; duas escritas à mão,
@@ -127,6 +129,10 @@ fonte: Registro do serviço (2026)
 Uma usuária descreveu assim a chegada ao serviço: “aqui ninguém me apressou” [sem referência: Usuária A]. O supervisor lembrou que o primeiro atendimento define o vínculo [sem referência: R. Melo, comunicação pessoal, 3 de março de 2026].
 
 Este parágrafo começa sem recuo só aqui, para testar a exceção do recuo da primeira linha. {só este: recuo da primeira linha = nenhum}
+
+::: citação-longa
+Quem chega ao serviço em sofrimento precisa, antes de qualquer encaminhamento, ser ouvido sem pressa. A escuta inicial não é uma triagem: é o primeiro cuidado, e muitas vezes é o que decide se a pessoa volta ou não ao serviço na semana seguinte [@dias2025, p. 9]. {só este: tamanho = 11 pt; recuo à esquerda = 2 cm; alinhamento = à esquerda; espaço antes = nenhuma; espaço depois = nenhuma}
+:::
 
 ## Encaminhamento
 

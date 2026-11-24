@@ -117,7 +117,7 @@ export const MARCA_DAS_POSICOES = "apud-posicoes";
 class Leitor {
   constructor(readonly modelo: ModeloResolvido) {}
 
-  private v(elemento: string, propriedade: string) {
+  protected v(elemento: string, propriedade: string) {
     const v = valorEfetivo(this.modelo, elemento, propriedade);
     if (!v) throw new Error(`o modelo ${this.modelo.identificacao.nome} não dá valor a “${propriedade}” em ${elemento}`);
     return v;
@@ -171,6 +171,24 @@ class Leitor {
   }
 }
 
+/** O Leitor de um bloco com exceções "só este": no elemento do bloco, a exceção vem antes do modelo. */
+class LeitorDoBloco extends Leitor {
+  constructor(
+    modelo: ModeloResolvido,
+    private readonly elemento: string,
+    private readonly excecoes: Excecoes,
+  ) {
+    super(modelo);
+  }
+
+  protected v(elemento: string, propriedade: string) {
+    if (elemento !== this.elemento) return super.v(elemento, propriedade);
+    const v = valorNoBloco(this.modelo, elemento, propriedade, this.excecoes);
+    if (!v) throw new Error(`o modelo ${this.modelo.identificacao.nome} não dá valor a “${propriedade}” em ${elemento}`);
+    return v;
+  }
+}
+
 function numero(n: number): string {
   return String(Math.round(n * 1000) / 1000);
 }
@@ -179,9 +197,9 @@ function numero(n: number): string {
 function fontes(familia: string): string {
   const parecidas: Record<string, string> = {
     "times new roman": "Liberation Serif",
-    georgia: "Liberation Serif",
+    georgia: "Gelasio",
     arial: "Liberation Sans",
-    calibri: "Liberation Sans",
+    calibri: "Carlito",
     aptos: "Liberation Sans",
   };
   const reserva = parecidas[familia.toLowerCase()] ?? "Liberation Serif";
@@ -227,9 +245,13 @@ interface Medidas {
     tamanho: string;
     /** Espaço entre as linhas dentro da citação. */
     entre: string;
-    /** Espaço antes e depois do bloco. */
+    /** Espaço antes do bloco. */
     fora: string;
+    /** Espaço depois do bloco. */
+    foraDepois: string;
     ponto: "antes" | "depois" | undefined;
+    /** Só com a exceção "só este" de alinhamento (etapa 3b): senão segue o do texto. */
+    alinhamento?: string;
   };
   ilustracoes: Ilustracoes;
   /** O modelo, para os blocos com exceção (que leem o valor do bloco). */
@@ -479,14 +501,17 @@ const entreLinhas = (k: number) => `${numero((k - 1) * LINHA_SIMPLES)}em`;
 const comLinhas = (entre: string, passo: string, n: number) => (n ? `${entre} + ${numero(n)} * ${passo}` : entre);
 
 /** Citação longa (ABNT) ou em bloco (APA). */
-function citacaoLonga(r: Leitor, entre: string, passo: string): Medidas["citacaoLonga"] {
+function citacaoLonga(r: Leitor, entre: string, passo: string, excecoes?: Excecoes): Medidas["citacaoLonga"] {
   const ponto = r.texto("citacaoLonga", "ponto final");
+  const alinhamento = excecoes && Object.keys(excecoes).includes("alinhamento") ? r.texto("citacaoLonga", "alinhamento") : undefined;
   return {
     recuo: r.medida("citacaoLonga", "recuo à esquerda"),
     tamanho: r.medida("citacaoLonga", "tamanho"),
     entre: entreLinhas(r.numero("citacaoLonga", "entrelinha")),
     fora: comLinhas(entre, passo, r.numero("citacaoLonga", "espaço antes")),
+    foraDepois: comLinhas(entre, passo, r.numero("citacaoLonga", "espaço depois")),
     ponto: ponto === "antes da chamada" ? "antes" : ponto === "depois da chamada" ? "depois" : undefined,
+    ...(alinhamento ? { alinhamento } : {}),
   };
 }
 
@@ -1090,17 +1115,24 @@ function blocoParaTypst(b: Bloco, m: Medidas, e: Escrita): string {
 // Citação longa, figuras e tabelas
 
 function citacaoLongaParaTypst(b: CitacaoLonga, m: Medidas, e: Escrita): string {
-  const c = m.citacaoLonga;
+  // Com "só este" (etapa 3b), as medidas são lidas de novo para este bloco, com as exceções dele.
+  const c = b.excecoes ? citacaoLonga(new LeitorDoBloco(m.modelo, "citacaoLonga", b.excecoes), m.entre, m.passo, b.excecoes) : m.citacaoLonga;
   const corpo = trechosParaTypst(pontoDaCitacaoLonga(b.trechos, c.ponto), e);
+  const alinhar = c.alinhamento
+    ? [`#set par(justify: ${c.alinhamento === "justificado"})`, ...(c.alinhamento === "justificado" ? [] : [`#set align(${ALINHAMENTO_TYPST[c.alinhamento] ?? "left"})`])]
+    : [];
   return [
-    `#block(above: ${c.fora}, below: ${c.fora}, pad(left: ${c.recuo})[`,
+    `#block(above: ${c.fora}, below: ${c.foraDepois}, pad(left: ${c.recuo})[`,
     `#set text(size: ${c.tamanho})`,
     `#set par(first-line-indent: 0pt, leading: ${c.entre}, spacing: ${c.entre})`,
+    ...alinhar,
     `${corpo}`,
     `])`,
     "",
   ].join("\n");
 }
+
+const ALINHAMENTO_TYPST: Record<string, string> = { "à esquerda": "left", centralizado: "center", "à direita": "right" };
 
 /** O número da figura ou tabela, contado na ordem do texto. Na APA, toda ilustração é Figura. */
 function proximoNumero(especie: string, m: Medidas): { rotulo: string; numero: number } {

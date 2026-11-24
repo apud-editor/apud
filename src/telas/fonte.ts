@@ -1,9 +1,12 @@
-// O aviso de fonte faltando na prévia. Só a Times New Roman e a Arial têm reserva
-// com as mesmas medidas (Liberation Serif e Liberation Sans); o aviso vale para as duas.
+// O aviso de fonte faltando na prévia. As quatro fontes que o Apud oferece têm
+// reserva com as mesmas medidas (Liberation Serif, Liberation Sans, Carlito e
+// Gelasio, na pasta public/fontes); o aviso vale para elas.
 
 const FONTES: Record<string, { nome: string; arquivo: string; reserva: string }> = {
   "times new roman": { nome: "Times New Roman", arquivo: "times.ttf", reserva: "Liberation Serif" },
   arial: { nome: "Arial", arquivo: "arial.ttf", reserva: "Liberation Sans" },
+  calibri: { nome: "Calibri", arquivo: "calibri.ttf", reserva: "Carlito" },
+  georgia: { nome: "Georgia", arquivo: "georgia.ttf", reserva: "Gelasio" },
 };
 
 /**

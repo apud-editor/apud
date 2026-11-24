@@ -32,7 +32,7 @@ import type { NormaDoTrabalho } from "../modelos/norma";
 import Gaveta from "./Gaveta";
 import ColunaDeIcones from "./ColunaDeIcones";
 import { painelDoAtalho } from "./atalhos";
-import { escreverTodos, type Escrita } from "../editor/janelinha";
+import { escreverTodos, linhasDaFonte, type Escrita } from "../editor/janelinha";
 import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
 import AberturaEmBlocos from "./AberturaEmBlocos";
 import Configuracoes, { type AbaDasConfiguracoes } from "./Configuracoes";
@@ -550,6 +550,8 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
           aoMudarAbertura={(f) => mudarAbertura(f, true)}
           aoTrocarNorma={trocarNorma}
           aoEscolher={escolher}
+          lerLinhasDaFonte={() => linhasDaFonte(lerNorma.current().modelo)}
+          aoMudarFonte={(escrita) => mudarTodos("texto", escrita)}
           aoFechar={() => setConfiguracoes(null)}
         />
       )}

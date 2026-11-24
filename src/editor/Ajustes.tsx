@@ -17,6 +17,7 @@ import { Icone } from "./icones";
 import { indiceDepoisDeMover, lacunaAoMover, moverBloco, podeMover } from "./mover";
 import {
   blocoAjustavel,
+  desteBloco,
   escreverSoEste,
   excecoesDoBloco,
   linhasDaJanelinha,
@@ -53,7 +54,8 @@ interface PropsDaJanelinha {
   avisos: string[];
   erro: string | null;
   aoMudarAplicarA: (a: AplicarA) => void;
-  aoEscolher: (escrita: Escrita) => void;
+  /** `todosEm`: a escolha vale para todos os iguais desse elemento, qualquer que seja o "Aplicar a" (a fonte do trabalho). */
+  aoEscolher: (escrita: Escrita, todosEm?: string) => void;
   aoVoltar: () => void;
   aoFechar: () => void;
   /** Se o bloco tem para onde andar um lugar. */
@@ -67,7 +69,7 @@ export function JanelinhaDoBloco(p: PropsDaJanelinha) {
     <div
       className="janelinha"
       role="dialog"
-      aria-label={`Ajustes do ${p.nome}`}
+      aria-label={`Ajustes: ${p.nome}`}
       data-ajustes=""
       style={p.style}
       onKeyDown={(ev) => {
@@ -97,7 +99,7 @@ export function JanelinhaDoBloco(p: PropsDaJanelinha) {
         </button>
       </div>
 
-      {p.linhas.map((l) =>
+      {p.linhas.filter((l) => !l.doTrabalho).map((l) =>
         l.forma === "opcoes" ? (
           <div key={l.rotulo}>
             <p className="janelinha-rotulo">
@@ -128,6 +130,27 @@ export function JanelinhaDoBloco(p: PropsDaJanelinha) {
             <span className="janelinha-tg" aria-hidden="true" />
           </button>
         ),
+      )}
+
+      {p.linhas.some((l) => l.doTrabalho) && (
+        <div className="janelinha-trabalho" role="group" aria-label="O trabalho todo">
+          <p className="janelinha-secao">O trabalho todo</p>
+          <p className="dica">A fonte e o tamanho valem para todo o texto, em qualquer bloco.</p>
+          {p.linhas
+            .filter((l) => l.doTrabalho)
+            .map((l) => (
+              <div key={l.rotulo}>
+                <p className="janelinha-rotulo">{l.rotulo}</p>
+                <div className={`janelinha-seg ${l.opcoes.some((o) => o.rotulo.length > 8) ? "janelinha-grade" : ""}`} role="group" aria-label={l.rotulo}>
+                  {l.opcoes.map((o) => (
+                    <button key={o.rotulo} type="button" className={o.ativa ? "on" : ""} aria-pressed={o.ativa} onClick={() => p.aoEscolher(o.escrita, o.todosEm)}>
+                      {o.rotulo}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+        </div>
       )}
 
       {p.erro && (
@@ -379,8 +402,12 @@ export function AjustesDoBloco({
   const lugarDaJanela = folha.current && janela && bloco ? medirBloco(editor, folha.current, janela.indice) : null;
   const modelo = titulos.modelo;
 
-  const escolher = (escrita: Escrita) => {
+  const escolher = (escrita: Escrita, todosEm?: string) => {
     if (!janela || !bloco || !modelo) return;
+    if (todosEm) {
+      const r = aoMudarTodos(todosEm, escrita);
+      return setJanela({ ...janela, erro: r.ok ? null : r.erro, avisos: r.ok ? r.avisos : [] });
+    }
     if (janela.aplicarA === "este") {
       const r = escreverSoEste(modelo, bloco, escrita);
       if (!r.ok) return setJanela({ ...janela, erro: r.erro, avisos: [] });
@@ -419,7 +446,7 @@ export function AjustesDoBloco({
           className="alca"
           data-ajustes=""
           style={{ top: lugarDoAlvo.top, left: Math.max(4, lugarDoAlvo.left - 58) }}
-          aria-label={`Arrastar ${blocoDoAlvo ? `o ${nomeDoBloco(blocoDoAlvo).toLowerCase()}` : "o bloco"} para outro lugar`}
+          aria-label={`Arrastar ${blocoDoAlvo ? `${blocoDoAlvo.tipo === "citação longa" ? "a" : "o"} ${nomeDoBloco(blocoDoAlvo).toLowerCase()}` : "o bloco"} para outro lugar`}
           title="Arraste para mudar de lugar. Com a alça em foco, as setas ↑ e ↓ também movem."
           onMouseDown={(ev) => {
             setJanela(null);
@@ -440,8 +467,8 @@ export function AjustesDoBloco({
           className="engrenagem"
           data-ajustes=""
           style={{ top: lugarDoAlvo.top, left: Math.max(4, lugarDoAlvo.left - 34) }}
-          aria-label={`Ajustes do ${nomeDoBloco(blocoDoAlvo).toLowerCase()} (${ATALHO_DOS_AJUSTES.texto})`}
-          title={`Ajustes deste ${blocoDoAlvo.tipo} (${ATALHO_DOS_AJUSTES.texto})`}
+          aria-label={`Ajustes: ${nomeDoBloco(blocoDoAlvo)} (${ATALHO_DOS_AJUSTES.texto})`}
+          title={`Ajustes ${desteBloco(blocoDoAlvo)} (${ATALHO_DOS_AJUSTES.texto})`}
           onMouseDown={(ev) => ev.preventDefault()}
           onClick={() => (janela?.indice === alvo ? fechar() : abrirPara(alvo))}
         >

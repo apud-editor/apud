@@ -386,7 +386,7 @@ describe("fase 3: blocos novos entre o Apud e o editor", () => {
 
   it("um documento vazio tem a abertura sem blocos e os dados sem título", () => {
     const d = documentoVazio();
-    expect(d.versao).toBe(7);
+    expect(d.versao).toBe(8);
     expect(d.dados).toEqual({ tipo: "disciplina", idioma: "pt-BR", titulo: "", autores: [] });
     expect(d.abertura).toEqual({ blocos: [], guardados: [], semIdentificacao: false });
     expect(d.imagens).toEqual([]);

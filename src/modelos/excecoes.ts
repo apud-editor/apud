@@ -17,7 +17,7 @@
 
 import type { Bloco, Excecoes } from "../documento/modelo";
 import { listarComE, normalizar } from "../perfis/texto";
-import { caminho, elemento as definicaoDoElemento, propriedade as definicaoDaPropriedade } from "./elementos";
+import { atalho as definicaoDoAtalho, caminho, elemento as definicaoDoElemento, propriedade as definicaoDaPropriedade } from "./elementos";
 import { deOndeVem, valorEfetivo } from "./herdar";
 import type { ModeloResolvido, ValorNoModelo } from "./tipos";
 import { COMO_NO_TEXTO } from "./valores";
@@ -30,15 +30,18 @@ import { COMO_NO_TEXTO } from "./valores";
 const PROPRIEDADES_COM_EXCECAO: Record<string, readonly string[]> = {
   paragrafo: ["entrelinha", "alinhamento", "recuo da primeira linha"],
   titulos: ["destaque", "posição", "numerar sozinho", "maiúsculas sozinho", "página nova"],
+  // Etapa 3b: a citação longa (revistas pedem outro recuo, outro tamanho...).
+  citacaoLonga: ["tamanho", "entrelinha", "recuo à esquerda", "espaço antes", "espaço depois", "alinhamento"],
   // Etapa 3a: os blocos da abertura que não ocupam a folha inteira podem ficar sem página nova.
   "abertura.agradecimentos": ["página nova"],
   "abertura.resumo": ["página nova"],
   "abertura.sumario": ["página nova"],
 };
 
-/** O elemento da árvore de um bloco do texto que aceita exceções (parágrafo e título). */
+/** O elemento da árvore de um bloco do texto que aceita exceções (parágrafo, título e citação longa). */
 export function elementoDoBloco(b: Bloco): string | undefined {
   if (b.tipo === "paragrafo") return "paragrafo";
+  if (b.tipo === "citacaoLonga") return "citacaoLonga";
   if (b.tipo === "titulo") return `titulos.nivel${b.nivel}`;
   return undefined;
 }
@@ -140,8 +143,8 @@ export function deOndeVemNoBloco(modelo: ModeloResolvido, elemento: string, prop
 }
 
 /** A procedência em palavras, para a janelinha: "Só neste título", "Do modelo ABNT (Texto)". */
-export function descreverProcedencia(p: Procedencia, bloco: "parágrafo" | "título"): string {
-  if (p.tipo === "bloco") return `Só neste ${bloco}`;
+export function descreverProcedencia(p: Procedencia, bloco: "parágrafo" | "título" | "citação longa"): string {
+  if (p.tipo === "bloco") return `Só ${bloco === "citação longa" ? "nesta" : "neste"} ${bloco}`;
   const onde = definicaoDoElemento(p.elemento).nome;
   if (p.de === "este trabalho") return `Deste trabalho (${onde})`;
   return `Do modelo ${p.de} (${onde})`;
@@ -163,17 +166,31 @@ export function avisoDeNorma(modelo: ModeloResolvido, atual: ValorNoModelo | und
   return `A ${atual.de} pede “${atual.texto}” (${atual.origem}). Com “${textoNovo}”, o trabalho sai da norma neste ponto.`;
 }
 
+/**
+ * O aviso de quando o valor novo fica fora das opções que a norma oferece (a
+ * APA oferece pares de fonte e tamanho: "Calibri 11 pt"). Undefined quando ele
+ * é uma das opções, ou quando o valor não é uma escolha.
+ */
+export function avisoDeEscolha(atual: ValorNoModelo | undefined, textoNovo: string): string | undefined {
+  if (!atual || atual.situacao.tipo !== "escolha") return undefined;
+  if (atual.situacao.opcoes.some((o) => normalizar(o) === normalizar(textoNovo))) return undefined;
+  return `A ${atual.de} oferece ${listarComE(atual.situacao.opcoes)}. Com “${textoNovo}”, o trabalho sai da norma neste ponto.`;
+}
+
 // ---------------------------------------------------------------------------
 // Mudar: "só este" e "todos os iguais"
 
 export type Mudanca<T> = { ok: true; resultado: T; aviso?: string } | { ok: false; erro: string };
 
-/** Lê o valor que a pessoa escolheu pelo tipo da propriedade. */
-function lerValorNovo(elemento: string, propriedade: string, escrito: string): { ok: true; nome: string; texto: string } | { ok: false; erro: string } {
-  const def = definicaoDaPropriedade(elemento, propriedade);
+/**
+ * Lê o valor que a pessoa escolheu pelo tipo da propriedade, ou do atalho
+ * ("fonte e tamanho", que a APA escolhe junto: "Calibri 11 pt").
+ */
+function lerValorNovo(elemento: string, propriedade: string, escrito: string): { ok: true; nome: string; texto: string; atalho: boolean } | { ok: false; erro: string } {
+  const def = definicaoDaPropriedade(elemento, propriedade) ?? definicaoDoAtalho(elemento, propriedade);
   if (!def) return { ok: false, erro: `${caminho(elemento)} não tem “${propriedade}”.` };
   const lido = def.tipo.ler(escrito, def.nome);
-  return lido.ok ? { ok: true, nome: def.nome, texto: lido.texto } : { ok: false, erro: lido.erro };
+  return lido.ok ? { ok: true, nome: def.nome, texto: lido.texto, atalho: !definicaoDaPropriedade(elemento, propriedade) } : { ok: false, erro: lido.erro };
 }
 
 /**
@@ -226,10 +243,10 @@ export function mudarTodos(
   const lido = lerValorNovo(elemento, propriedade, escrito);
   if (!lido.ok) return lido;
   const chave = chaveDaEscolha(elemento, lido.nome);
-  const doModelo = valorEfetivo(base, elemento, lido.nome);
+  const doModelo = lido.atalho ? base.atalhos.get(elemento)?.get(lido.nome) : valorEfetivo(base, elemento, lido.nome);
   const novos = Object.fromEntries(Object.entries(ajustes).filter(([k]) => normalizar(k) !== normalizar(chave)));
   const igual = doModelo && normalizar(doModelo.texto) === normalizar(lido.texto);
   if (!igual) novos[chave] = lido.texto;
-  const aviso = igual ? undefined : avisoDeNorma(base, doModelo, lido.texto);
+  const aviso = igual ? undefined : (avisoDeNorma(base, doModelo, lido.texto) ?? avisoDeEscolha(doModelo, lido.texto));
   return { ok: true, resultado: novos, ...(aviso ? { aviso } : {}) };
 }

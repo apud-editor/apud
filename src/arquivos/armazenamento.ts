@@ -35,7 +35,24 @@ export interface Armazenamento {
 }
 
 /** Arquivos das fontes do Windows que o Apud procura. */
-const FONTES_DO_WINDOWS = ["times.ttf", "timesbd.ttf", "timesi.ttf", "timesbi.ttf", "arial.ttf", "arialbd.ttf", "ariali.ttf", "arialbi.ttf"];
+export const FONTES_DO_WINDOWS = [
+  "times.ttf",
+  "timesbd.ttf",
+  "timesi.ttf",
+  "timesbi.ttf",
+  "arial.ttf",
+  "arialbd.ttf",
+  "ariali.ttf",
+  "arialbi.ttf",
+  "calibri.ttf",
+  "calibrib.ttf",
+  "calibrii.ttf",
+  "calibriz.ttf",
+  "georgia.ttf",
+  "georgiab.ttf",
+  "georgiai.ttf",
+  "georgiaz.ttf",
+];
 
 export const rodandoNoPrograma = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
