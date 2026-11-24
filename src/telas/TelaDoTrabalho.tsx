@@ -20,12 +20,12 @@ import Previa from "./Previa";
 import { documentoParaTypst } from "../conversor/typst";
 import { arquivosDasImagens } from "../conversor/elementos";
 import { motor } from "../conversor/motor";
-import { normaEmbutida, normasEmbutidas, perfilEmbutido } from "../perfis/embutidos";
+import { modeloEmbutido, normaEmbutida, normasEmbutidas, perfilEmbutido, textoNoModelo } from "../modelos/embutidos";
 import { AparenciaDaNorma } from "../editor/extensoes";
 import { ImagensNoEditor } from "../editor/imagens";
 import { CitacoesNoTexto } from "../editor/citacoes";
 import { montarTodas, previaDaCitacao } from "../citacoes/todas";
-import type { NormaDoTrabalho } from "../perfis/norma";
+import type { NormaDoTrabalho } from "../modelos/norma";
 import Gaveta from "./Gaveta";
 import ColunaDeIcones from "./ColunaDeIcones";
 import { painelDoAtalho } from "./atalhos";
@@ -84,7 +84,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
     }
     return norma.current;
   });
-  const rotuloDaLista = () => lerNorma.current().perfil.regras.get("rótulo das referências")?.texto ?? "Referências";
+  const rotuloDaLista = () => textoNoModelo(lerNorma.current().modelo, "referencias", "título") ?? "Referências";
   const aparencia = useMemo(() => new AparenciaDaNorma(rotuloDaLista()), []);
   // O texto de cada citação na norma: o motor monta todas juntas, na ordem do
   // texto, depois de uma pausa, e refaz quando as referências, a norma ou as
@@ -221,9 +221,9 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
     setProblema(null);
     setExportado(null);
     try {
-      const { perfil, csl } = lerNorma.current();
+      const { modelo, csl } = lerNorma.current();
       const doc = lerDocumento.current();
-      const pdf = await motor.pdf(documentoParaTypst(doc, perfil, { titulo: nomeSalvo.current, csl }), arquivosDasImagens(doc));
+      const pdf = await motor.pdf(documentoParaTypst(doc, modelo, { titulo: nomeSalvo.current, csl }), arquivosDasImagens(doc));
       const onde = await armazenamento.exportarPdf(`${nomeSalvo.current}.pdf`, pdf);
       if (onde) setExportado(onde);
     } catch (e) {
@@ -458,7 +458,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
             abertura={abertura.current}
             dados={dados.current}
             nomeDaNorma={nomeDaNorma}
-            perfil={perfilEmbutido(nomeDaNorma)}
+            modelo={modeloEmbutido(nomeDaNorma)}
             aoMudar={mudarAbertura}
             aoConfigurar={(aba) => setConfiguracoes({ aba })}
           />
@@ -497,7 +497,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
           dados={dados.current}
           abertura={abertura.current}
           nomeDaNorma={nomeDaNorma}
-          perfil={perfilEmbutido(nomeDaNorma)}
+          modelo={modeloEmbutido(nomeDaNorma)}
           normas={normasEmbutidas()}
           escolhas={escolhas}
           aoMudarDados={mudarDados}

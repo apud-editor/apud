@@ -80,7 +80,7 @@ for (const pasta of readdirSync(PASTA, { withFileTypes: true }).filter((d) => d.
   // O PDF inteiro, pelo conversor do Apud.
   const pdf = join(SAIDA, `${pasta.name}.pdf`);
   mapearImagens(compilador, lido.documento);
-  const r = compilador.compile({ mainFileContent: documentoParaTypst(lido.documento, norma.perfil, { titulo: trabalho.nome, csl: norma.csl }) });
+  const r = compilador.compile({ mainFileContent: documentoParaTypst(lido.documento, norma.modelo, { titulo: trabalho.nome, csl: norma.csl }) });
   if (!r.result) {
     r.printDiagnostics();
     throw new Error(`o conversor não conseguiu montar ${pasta.name}`);

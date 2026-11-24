@@ -3,14 +3,15 @@ import type { Documento } from "../documento/modelo";
 import { documentoParaTypst } from "../conversor/typst";
 import { arquivosDasImagens } from "../conversor/elementos";
 import { motor } from "../conversor/motor";
-import type { NormaDoTrabalho } from "../perfis/norma";
+import type { NormaDoTrabalho } from "../modelos/norma";
+import { textoNoModelo } from "../modelos/embutidos";
 import { rodandoNoPrograma } from "../arquivos/armazenamento";
 import { avisoDeFonte } from "./fonte";
 import { alturaNaPrevia, lugarDoBloco, rolagemPara, type PosicaoDoBloco } from "./acompanhar";
 
 interface Props {
   lerTexto: React.MutableRefObject<(() => Documento) | null>;
-  /** A norma do trabalho (perfil com os ajustes e estilo CSL), lida a cada montagem. */
+  /** A norma do trabalho (modelo com as escolhas do trabalho e estilo CSL), lida a cada montagem. */
   lerNorma: React.MutableRefObject<() => NormaDoTrabalho>;
   /** Avisa quando o texto muda (a prévia espera uma pausa e remonta). */
   mudancas: EventTarget;
@@ -118,15 +119,15 @@ export default function Previa({ lerTexto, lerNorma, mudancas, nome, aoFechar, c
       ocupado.current = true;
       setSituacao((s) => (s === "pronta" ? s : "montando"));
       try {
-        const { perfil, csl } = lerNorma.current();
-        setSelo(perfil.identificacao.perfil);
+        const { modelo, csl } = lerNorma.current();
+        setSelo(modelo.identificacao.nome);
         const doc = ler();
-        const pronto = await motor.previa(documentoParaTypst(doc, perfil, { titulo: nomeRef.current, csl, marcarBlocos: true }), arquivosDasImagens(doc));
+        const pronto = await motor.previa(documentoParaTypst(doc, modelo, { titulo: nomeRef.current, csl, marcarBlocos: true }), arquivosDasImagens(doc));
         if (!ativo) return;
         posicoes.current = pronto.posicoes;
         setSvg(pronto.svg);
         setSituacao("pronta");
-        const familia = perfil.regras.get("família da fonte")?.texto;
+        const familia = textoNoModelo(modelo, "texto", "fonte");
         setAvisoDaFonte(avisoDeFonte(familia, motor.fontesDoComputador, rodandoNoPrograma));
       } catch (e) {
         if (!ativo) return;

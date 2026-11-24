@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Abertura, DadosDoTrabalho, ElementoDeTexto, Resumo } from "../documento/modelo";
 import CampoDeParagrafos from "../editor/CampoDeParagrafos";
-import type { PerfilResolvido } from "../perfis/tipos";
+import type { ModeloResolvido } from "../modelos/tipos";
 import type { AbaDasConfiguracoes } from "./Configuracoes";
 import { IDIOMAS_DO_RESUMO, elementosDaNorma, idiomaDoProximoResumo, nomeDoIdioma, palavrasChaveDoTexto, palavrasChaveParaTexto } from "./trabalho";
 
@@ -9,7 +9,7 @@ interface Props {
   abertura: Abertura;
   dados: DadosDoTrabalho;
   nomeDaNorma: string;
-  perfil: PerfilResolvido;
+  modelo: ModeloResolvido;
   /**
    * Muda a abertura. Com `redesenhar`, a área se desenha de novo (ligar, desligar,
    * trocar o idioma); escrever num campo não precisa, porque o campo já mostra o que foi escrito.
@@ -34,8 +34,8 @@ const NOMES: Record<Cartao | Texto, string> = {
 const temTexto = (e: ElementoDeTexto) => e.paragrafos.some((p) => p.some((t) => t.texto.trim()));
 
 /** A "Abertura do trabalho": o que vem antes do texto, no topo do editor. */
-export default function AberturaDoTrabalho({ abertura, dados, nomeDaNorma, perfil, aoMudar, aoConfigurar }: Props) {
-  const naNorma = elementosDaNorma(perfil);
+export default function AberturaDoTrabalho({ abertura, dados, nomeDaNorma, modelo, aoMudar, aoConfigurar }: Props) {
+  const naNorma = elementosDaNorma(modelo);
   const algoLigado =
     abertura.capa ||
     abertura.folhaDeRosto ||

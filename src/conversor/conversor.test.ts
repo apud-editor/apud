@@ -5,8 +5,9 @@ import { carregarNorma, carregarPerfil, documentoDeProva, mapearImagens } from "
 import { documentoParaTypst, escaparTexto, letraDaAlinea, MARCA_DAS_POSICOES, MARCA_DO_BLOCO, PONTUACAO_DA_LISTA } from "./typst";
 import { TEXTO_DE_EXEMPLO } from "./exemplo";
 import { documentoVazio, type Documento, type Marca } from "../documento/modelo";
+import { somar, valorProprio } from "../modelos/herdar";
 
-const { perfil } = carregarPerfil("abnt.txt");
+const { modelo: perfil } = carregarPerfil("abnt.txt");
 const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "..", "public", "fontes")] }] });
 
 /** Compila e devolve o PDF; falha o teste com as mensagens do Typst se não compilar. Com o documento, as imagens das figuras vão junto. */
@@ -210,7 +211,7 @@ describe("APA na página", () => {
   const doc = (blocos: Documento["blocos"]): Documento => ({ ...documentoVazio(), referencias: [], blocos });
 
   it("margens de 2,54 cm, espaço duplo, texto à esquerda e número no cabeçalho, alinhado à margem", () => {
-    const typst = documentoParaTypst(doc([{ tipo: "paragrafo", trechos: [{ texto: "texto" }] }]), apa.perfil);
+    const typst = documentoParaTypst(doc([{ tipo: "paragrafo", trechos: [{ texto: "texto" }] }]), apa.modelo);
     expect(typst).toContain("margin: (left: 2.54cm, top: 2.54cm, right: 2.54cm, bottom: 2.54cm)");
     expect(typst).toContain("place(top + right, dx: -2.54cm, dy: 1.27cm");
     expect(typst).toContain("#set par(justify: false, leading: 1.15em, spacing: 1.15em, first-line-indent: (amount: 1.27cm, all: true))");
@@ -225,7 +226,7 @@ describe("APA na página", () => {
         { tipo: "titulo", nivel: 5, trechos: [{ texto: "Já com ponto?" }] },
         { tipo: "paragrafo", trechos: [{ texto: "Texto." }] },
       ]),
-      apa.perfil,
+      apa.modelo,
     );
     expect(typst).toContain("if n == 1 { align(center, x) }");
     expect(typst).toContain("#destaque-do-titulo(4, [Escuta inicial\\.]) Nos primeiros contatos\\.");
@@ -239,7 +240,7 @@ describe("APA na página", () => {
         { tipo: "titulo", nivel: 4, trechos: [{ texto: "Escuta" }] },
         { tipo: "titulo", nivel: 5, trechos: [{ texto: "Primeiros" }] },
       ]),
-      apa.perfil,
+      apa.modelo,
     );
     expect(typst).toContain("#heading(level: 4, numbering: none)[Escuta\\.]");
   });
@@ -249,7 +250,7 @@ describe("APA na página", () => {
       { tipo: "lista", sequencia: true, itens: [{ trechos: [{ texto: "um" }] }, { trechos: [{ texto: "dois" }] }] },
       { tipo: "lista", sequencia: false, itens: [{ trechos: [{ texto: "três" }] }] },
     ]);
-    const typst = documentoParaTypst(listas, apa.perfil);
+    const typst = documentoParaTypst(listas, apa.modelo);
     expect(typst).toContain("#alinea(1.27cm, [1\\.], [um])");
     expect(typst).toContain("#alinea(1.27cm, [2\\.], [dois])");
     expect(typst).toContain("#alinea(1.27cm, [•], [três])");
@@ -258,7 +259,7 @@ describe("APA na página", () => {
 
   it("o documento de prova inteiro compila em APA, com a lista no fim: espaço duplo e recuo nas linhas seguintes", () => {
     const { documento } = documentoDeProva();
-    const typst = documentoParaTypst(documento, apa.perfil, { csl: apa.csl });
+    const typst = documentoParaTypst(documento, apa.modelo, { csl: apa.csl });
     expect(typst).toContain("#align(center, heading(level: 1, numbering: none, outlined: true)[Referências])");
     expect(typst).toContain("hanging-indent: 1.27cm, leading: 1.15em, spacing: 1.15em + 0 * 1.15em");
     expect(paginas(compilar(typst, documento))).toBeGreaterThan(2);
@@ -269,8 +270,8 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
   const PNG = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAD0lEQVR4nGP4z8DAwPAfAAcAAf9+CLHQAAAAAElFTkSuQmCC";
   const normaAbnt = carregarNorma("abnt.txt");
   const normaApa = carregarNorma("apa.txt");
-  const abnt = normaAbnt.perfil;
-  const apa = normaApa.perfil;
+  const abnt = normaAbnt.modelo;
+  const apa = normaApa.modelo;
   const csl = (p: typeof abnt) => ({ csl: p === abnt ? normaAbnt.csl : normaApa.csl });
   // Com citações, o Typst pede a lista de referências no documento.
   const comLista = (d: Documento): Documento => ({ ...d, blocos: [...d.blocos, { tipo: "referencias" }] });
@@ -440,13 +441,15 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     expect(r[2]).toBe(r[3]);
   });
 
-  it("indicações vêm do perfil (texto e posição)", () => {
-    const outro = { ...abnt, regras: new Map(abnt.regras) };
-    const regra = abnt.regras.get("tabelas em mais de uma página, posição das indicações")!;
-    outro.regras.set("tabelas em mais de uma página, posição das indicações", { ...regra, texto: "à esquerda" });
+  it("indicações vêm do modelo (texto e posição)", () => {
+    const outro = carregarNorma("abnt.txt", { "tabelas em mais de uma página, posição das indicações": "à esquerda" }).modelo;
     expect(documentoParaTypst(doc([tabela()]), outro)).toContain("align(left, if aqui");
-    const sem = { ...abnt, regras: new Map(abnt.regras) };
-    sem.regras.delete("tabelas em mais de uma página");
+    // Um modelo em que só o cabeçalho se repete (como no Em branco).
+    const v = valorProprio(abnt, "ilustracoes.tabela", "em mais de uma página")!;
+    const sem = somar(abnt, {
+      diferencas: new Map([["ilustracoes.tabela", new Map([["em mais de uma página", { ...v, valor: { tipo: "opcao" as const, valor: "só o cabeçalho se repete" }, texto: "só o cabeçalho se repete" }]])]]),
+      atalhos: new Map(),
+    });
     const t = documentoParaTypst(doc([tabela()]), sem);
     expect(t).not.toContain("aqui == ini");
     expect(t).toContain("table.header(repeat: true, table.hline(stroke: 0.5pt), [Grupo], [Total], table.hline(stroke: 0.5pt),),");
@@ -485,8 +488,8 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
 describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, resumos, sumário)", () => {
   const normaAbnt = carregarNorma("abnt.txt");
   const normaApa = carregarNorma("apa.txt");
-  const abnt = normaAbnt.perfil;
-  const apa = normaApa.perfil;
+  const abnt = normaAbnt.modelo;
+  const apa = normaApa.modelo;
   const dados = {
     ...documentoVazio().dados,
     titulo: "O acolhimento",
@@ -621,7 +624,7 @@ describe("fase 3, parte 4: abertura (capa, folha de rosto, página de título, r
   it("o documento de prova sai com a abertura nas duas normas", () => {
     const { documento } = documentoDeProva();
     for (const [norma, n] of [[normaAbnt, 8], [normaApa, 4]] as const) {
-      const typst = documentoParaTypst(documento, norma.perfil, { csl: norma.csl });
+      const typst = documentoParaTypst(documento, norma.modelo, { csl: norma.csl });
       compilar(typst, documento);
       expect(inicioDoTexto(typst).contagem).toBe(n);
     }
@@ -645,7 +648,7 @@ describe("pontuação dobrada na lista de referências", () => {
   ];
 
   it("as regras entram só dentro da lista", () => {
-    const typst = documentoParaTypst(doc(refs), norma.perfil, { csl: norma.csl });
+    const typst = documentoParaTypst(doc(refs), norma.modelo, { csl: norma.csl });
     const i = typst.indexOf("let apud-tira-ponto");
     expect(i).toBeGreaterThan(typst.indexOf("set block(spacing:"));
     expect(i).toBeLessThan(typst.indexOf("bibliography("));
@@ -653,14 +656,14 @@ describe("pontuação dobrada na lista de referências", () => {
   });
 
   it("nos endereços da lista, o hífen da quebra de linha não se repete na linha de baixo", () => {
-    const typst = documentoParaTypst(doc(refs), norma.perfil, { csl: norma.csl });
+    const typst = documentoParaTypst(doc(refs), norma.modelo, { csl: norma.csl });
     const i = typst.indexOf(`show link: set text(lang: "en")`);
     expect(i).toBeGreaterThan(typst.indexOf("set block(spacing:"));
     expect(i).toBeLessThan(typst.indexOf("bibliography("));
   });
 
   it("nas duas normas, o PDF compila com título terminado em ? e subtítulo terminado em !", () => {
-    for (const { perfil, csl } of [norma, normaApa]) {
+    for (const { modelo: perfil, csl } of [norma, normaApa]) {
       const d = doc(refs);
       expect(paginas(compilar(documentoParaTypst(d, perfil, { csl }), d))).toBeGreaterThan(0);
     }
@@ -682,7 +685,7 @@ describe("pontuação dobrada na lista de referências", () => {
 });
 
 describe("marcas da prévia (acompanhar o cursor)", () => {
-  const { perfil } = carregarNorma("abnt.txt");
+  const { modelo: perfil } = carregarNorma("abnt.txt");
   const doc: Documento = {
     ...documentoVazio(),
     blocos: [
@@ -713,8 +716,8 @@ describe("marcas da prévia (acompanhar o cursor)", () => {
     const { documento } = documentoDeProva();
     const norma = carregarNorma("abnt.txt");
     mapearImagens(compilador, documento);
-    const sem = paginas(compilar(documentoParaTypst(documento, norma.perfil, { csl: norma.csl }), documento));
-    const com = paginas(compilar(documentoParaTypst(documento, norma.perfil, { csl: norma.csl, marcarBlocos: true }), documento));
+    const sem = paginas(compilar(documentoParaTypst(documento, norma.modelo, { csl: norma.csl }), documento));
+    const com = paginas(compilar(documentoParaTypst(documento, norma.modelo, { csl: norma.csl, marcarBlocos: true }), documento));
     expect(com).toBe(sem);
   });
 });

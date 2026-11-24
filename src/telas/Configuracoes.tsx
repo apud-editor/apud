@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import type { Abertura, DadosDoTrabalho, TipoDeTrabalho } from "../documento/modelo";
 import { prenderTab } from "../editor/foco";
 import type { EscolhaDoAutor } from "../referencias/escolhas";
-import type { PerfilResolvido } from "../perfis/tipos";
+import type { ModeloResolvido } from "../modelos/tipos";
 import CamposDosDados from "./CamposDosDados";
 import EscolhasDoAutor from "./EscolhasDoAutor";
 import { TIPOS, elementosDaNorma } from "./trabalho";
@@ -22,7 +22,7 @@ interface Props {
   abertura: Abertura;
   /** A norma do trabalho (o padrão dela, para saber que elementos ela tem). */
   nomeDaNorma: string;
-  perfil: PerfilResolvido;
+  modelo: ModeloResolvido;
   normas: string[];
   escolhas: EscolhaDoAutor[];
   aoMudarDados: (d: DadosDoTrabalho) => void;
@@ -35,7 +35,7 @@ interface Props {
 /** As Configurações do trabalho: tipo, norma, dados, elementos antes do texto e escolhas do autor. */
 export default function Configuracoes(p: Props) {
   const janela = useRef<HTMLDivElement>(null);
-  const noElementos = elementosDaNorma(p.perfil);
+  const noElementos = elementosDaNorma(p.modelo);
 
   useEffect(() => {
     const aoApertar = (ev: KeyboardEvent) => {

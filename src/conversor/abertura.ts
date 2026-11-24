@@ -4,9 +4,11 @@
 // do trabalho, os rótulos de cada idioma e a data por extenso. Funções puras.
 //
 // A forma de cada elemento na página (medidas, destaques, rótulos da norma)
-// vem do perfil e fica em typst.ts.
+// vem do modelo e fica em typst.ts.
 
 import { ehTexto, type Abertura, type Bloco, type DadosDoTrabalho, type Data, type Resumo } from "../documento/modelo";
+import { valorEfetivo } from "../modelos/herdar";
+import type { ModeloResolvido } from "../modelos/tipos";
 
 // ---------------------------------------------------------------------------
 // Quais elementos saem, e em que ordem
@@ -21,26 +23,28 @@ export type ElementoDaAbertura =
   | { tipo: "resumo"; resumo: Resumo }
   | { tipo: "sumario" };
 
-export type Norma = "abnt" | "apa";
-
-/** As regras que o perfil precisa ter para a norma ter o elemento (uma delas basta). */
-const REGRAS_DOS_ELEMENTOS: Record<ElementoDaAbertura["tipo"], string[]> = {
-  capa: ["capa"],
-  folhaDeRosto: ["folha de rosto"],
-  paginaDeTitulo: ["página de título (estudante), campos"],
-  dedicatoria: ["dedicatória"],
-  agradecimentos: ["agradecimentos"],
-  epigrafe: ["epígrafe"],
-  resumo: ["resumo", "rótulo do resumo"],
-  sumario: ["sumário"],
+/** O elemento da árvore de cada parte da abertura. */
+export const ELEMENTO_DA_ABERTURA: Record<ElementoDaAbertura["tipo"], string> = {
+  capa: "abertura.capa",
+  folhaDeRosto: "abertura.folhaDeRosto",
+  paginaDeTitulo: "abertura.paginaDeTitulo",
+  dedicatoria: "abertura.dedicatoria",
+  agradecimentos: "abertura.agradecimentos",
+  epigrafe: "abertura.epigrafe",
+  resumo: "abertura.resumo",
+  sumario: "abertura.sumario",
 };
 
 /**
- * Se a norma tem o elemento: o perfil precisa ter a regra dele. `tem` diz se o
- * perfil tem uma regra. Serve ao PDF (o que sai) e às telas (o que a norma oferece).
+ * Se o modelo tem o elemento ("existe: sim"). Serve ao PDF (o que sai) e às
+ * telas (o que a norma oferece). A ABNT não tem página de título; a APA não
+ * tem capa, folha de rosto, dedicatória, epígrafe, agradecimentos nem sumário.
  */
-export function existeNaNorma(tem: (regra: string) => boolean) {
-  return (e: ElementoDaAbertura["tipo"]) => REGRAS_DOS_ELEMENTOS[e].some(tem);
+export function existeNoModelo(modelo: ModeloResolvido) {
+  return (e: ElementoDaAbertura["tipo"]) => {
+    const v = valorEfetivo(modelo, ELEMENTO_DA_ABERTURA[e], "existe")?.valor;
+    return v?.tipo === "simnao" && v.valor;
+  };
 }
 
 /**
@@ -50,8 +54,8 @@ export function existeNaNorma(tem: (regra: string) => boolean) {
  *   - APA 7: página de título e resumos. A APA não tem capa, folha de rosto,
  *     dedicatória, epígrafe, agradecimentos nem sumário: eles ficam guardados,
  *     mas não saem (vale a norma).
- * Um elemento só sai se o perfil tem a regra dele (`existe`): um perfil de
- * faculdade pode desligar um elemento, e a APA não tem as regras dos outros.
+ * Um elemento só sai se o modelo o tem (`existe`): o modelo de uma faculdade
+ * pode desligar um elemento, e a APA não tem os outros.
  * Elemento de texto ligado mas vazio (dedicatória sem texto) não sai.
  */
 export function elementosDaAbertura(abertura: Abertura, existe: (elemento: ElementoDaAbertura["tipo"]) => boolean): ElementoDaAbertura[] {
@@ -133,26 +137,18 @@ export function naturezaDoTrabalho(d: DadosDoTrabalho): string {
 // ---------------------------------------------------------------------------
 // Rótulos de cada idioma
 
-interface RotulosDoIdioma {
-  resumo: string;
-  palavrasChave: string;
-}
-
-/** Os rótulos do resumo em cada idioma. O perfil pode trocar os do português e os do inglês. */
-const ROTULOS: Record<string, RotulosDoIdioma> = {
-  pt: { resumo: "Resumo", palavrasChave: "Palavras-chave:" },
-  en: { resumo: "Abstract", palavrasChave: "Keywords:" },
-  es: { resumo: "Resumen", palavrasChave: "Palabras clave:" },
-  fr: { resumo: "Résumé", palavrasChave: "Mots-clés :" },
-  it: { resumo: "Riassunto", palavrasChave: "Parole chiave:" },
-  de: { resumo: "Zusammenfassung", palavrasChave: "Schlüsselwörter:" },
-};
-
 /** "pt-BR" → "pt". */
 export const lingua = (idioma: string) => idioma.toLowerCase().split(/[-_]/)[0];
 
-export function rotulosDoIdioma(idioma: string): RotulosDoIdioma {
-  return ROTULOS[lingua(idioma)] ?? ROTULOS.en;
+const IDIOMAS_NO_MODELO: Record<string, string> = { pt: "português", en: "inglês", es: "espanhol", fr: "francês", it: "italiano", de: "alemão" };
+
+/**
+ * O nome do idioma nas propriedades do modelo ("título em espanhol"). Os
+ * rótulos de cada idioma (Resumo, Abstract, Resumen...) ficam no modelo Em
+ * branco, e a norma pode trocar; um idioma sem rótulo usa os do inglês.
+ */
+export function nomeDoIdiomaNoModelo(idioma: string): string {
+  return IDIOMAS_NO_MODELO[lingua(idioma)] ?? "inglês";
 }
 
 /** O código do idioma para o Typst (hifenização, aspas): "pt-BR" → lang "pt", region "BR". */
@@ -190,7 +186,7 @@ export function tituloCompleto(d: DadosDoTrabalho): { titulo: string; subtitulo:
 }
 
 /**
- * As palavras-chave como saem: separadas pela regra do perfil, com ou sem
+ * As palavras-chave como saem: separadas pelo separador do modelo, com ou sem
  * ponto no fim. As palavras ficam como a pessoa escreveu (o Apud não muda as
  * letras). Um ponto que a pessoa já pôs no fim não fica dobrado.
  */

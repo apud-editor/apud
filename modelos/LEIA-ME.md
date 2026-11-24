@@ -15,8 +15,9 @@ Bloco de Notas.
 Os modelos ABNT e APA continuam os perfis da versão 1 (pasta `perfis/`): cada
 regra foi para o elemento a que pertence, com a mesma origem, a mesma situação
 e o mesmo comentário, e nenhum valor mudou. A tabela de correspondência está em
-`src/modelos/correspondencia.ts`, e um teste confere regra por regra. Até a
-parte 1c, o programa ainda usa os perfis; depois, só os modelos.
+`src/modelos/correspondencia.ts`, e um teste confere regra por regra. Desde a
+parte 1c, o programa usa só os modelos para montar a prévia e o PDF; os
+perfis saem na parte 1d.
 
 ## A árvore de elementos
 

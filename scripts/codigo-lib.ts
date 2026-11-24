@@ -13,12 +13,11 @@
 //                               quando a mudança no código for de propósito.
 
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { documentoParaTypst, type OpcoesDoConversor } from "../src/conversor/typst";
-import { conferirPerfis, formatarMensagem, normaDoTrabalho, type Arquivo } from "../src/perfis";
 import type { Documento, Referencia, Resumo } from "../src/documento/modelo";
-import { documentoDeProva, documentoDoTexto, PASTA_PERFIS, PASTA_PROVA } from "./prova-lib";
+import { carregarNorma, documentoDeProva, documentoDoTexto, PASTA_PERFIS, PASTA_PROVA } from "./prova-lib";
 
 export const PASTA_DO_CODIGO = join(PASTA_PROVA, "codigo");
 
@@ -31,28 +30,16 @@ export interface CasoDeCodigo {
   codigo: () => string;
 }
 
-const lerPasta = (pasta: string, extensao: string): Arquivo[] =>
-  readdirSync(pasta)
-    .filter((n) => n.endsWith(extensao))
-    .map((nome) => ({ nome, conteudo: readFileSync(join(pasta, nome), "utf8") }));
-
-/** O perfil (da pasta perfis/ ou o de exemplo) com os ajustes do caso e o CSL ajustado. */
-function norma(arquivo: string, ajustes: Record<string, string> = {}) {
-  const perfis = [...lerPasta(PASTA_PERFIS, ".txt"), ...lerPasta(join(PASTA_PERFIS, "exemplos"), ".txt")];
-  const r = conferirPerfis(perfis, lerPasta(join(PASTA_PERFIS, "estilos"), ".csl")).find((x) => x.arquivo === arquivo);
-  if (!r?.perfil) throw new Error(`o perfil ${arquivo} tem erros: ${r?.mensagens.map(formatarMensagem).join("; ")}`);
-  const n = normaDoTrabalho(r, lerPasta(join(PASTA_PERFIS, "estilos"), ".csl"), ajustes);
-  if (n.problemas.length) throw new Error(n.problemas.map(formatarMensagem).join("\n"));
-  return n;
-}
+/** O modelo (da pasta modelos/ ou o de exemplo) com as escolhas do caso e o CSL ajustado. */
+const norma = (arquivo: string, ajustes: Record<string, string> = {}) => carregarNorma(arquivo, ajustes);
 
 /**
  * O código como vai para o gabarito:
  *   - o estilo CSL e os dados das referências entram no código como textos
  *     longos (bytes("...")); cada um vira a sua impressão digital (SHA-256) e o
  *     tamanho: o arquivo fica legível, e qualquer letra diferente ainda aparece;
- *   - a primeira linha (um comentário com o nome e a revisão do perfil) não
- *     entra: ela muda quando o perfil vira modelo, e não muda nada no PDF.
+ *   - a primeira linha (um comentário com o nome e a revisão do modelo) não
+ *     entra: ela mudou quando o perfil virou modelo, e não muda nada no PDF.
  */
 export function paraOGabarito(codigo: string): string {
   return codigo.replace(/^\/\/ Gerado pelo Apud .*\n/, "").replace(/bytes\("((?:[^"\\]|\\.)*)"\)/g, (todo, dentro: string) =>
@@ -62,7 +49,7 @@ export function paraOGabarito(codigo: string): string {
 
 function codigo(doc: Documento, arquivo: string, ajustes: Record<string, string> = {}, opcoes: OpcoesDoConversor = {}): string {
   const n = norma(arquivo, ajustes);
-  return paraOGabarito(documentoParaTypst(doc, n.perfil, { ...opcoes, csl: n.csl }));
+  return paraOGabarito(documentoParaTypst(doc, n.modelo, { ...opcoes, csl: n.csl }));
 }
 
 /** Um artigo de perfis/artigos, com as escolhas do autor do trabalho.json dele. */
@@ -175,7 +162,7 @@ export const CASOS: CasoDeCodigo[] = [
   },
   {
     nome: "exemplo-universidade",
-    descricao: "documento de prova com o perfil de exemplo de uma universidade (herda da ABNT)",
+    descricao: "documento de prova com o modelo de exemplo de uma universidade (herda da ABNT)",
     codigo: () => codigo(documentoDeProva().documento, "abnt-universidade-exemplo.txt", {}, { titulo: "Documento de prova" }),
   },
 ];

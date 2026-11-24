@@ -11,7 +11,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
-import { nomeCompleto } from "../src/perfis";
+import { nomeDoModelo } from "../src/modelos/norma";
 import { documentoParaTypst } from "../src/conversor/typst";
 import { escreverArquivo } from "../src/arquivos/formato";
 import {
@@ -56,9 +56,9 @@ writeFileSync(
 {
   const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "public", "fontes")] }] });
   for (const [arquivo, sigla] of [["abnt.txt", "abnt"], ["apa.txt", "apa"]]) {
-    const { perfil, csl } = carregarNorma(arquivo);
+    const { modelo, csl } = carregarNorma(arquivo);
     mapearImagens(compilador, documento);
-    const r = compilador.compile({ mainFileContent: documentoParaTypst(documento, perfil, { titulo: "Documento de prova", csl }) });
+    const r = compilador.compile({ mainFileContent: documentoParaTypst(documento, modelo, { titulo: "Documento de prova", csl }) });
     if (!r.result) {
       r.printDiagnostics();
       throw new Error(`o conversor não conseguiu montar o documento de prova em ${sigla}`);
@@ -80,7 +80,7 @@ for (const norma of NORMAS) {
     for (const r of resultado.referencias) console.log(r);
   }
   if (gravar) {
-    const nome = nomeCompleto(carregarPerfil(norma.perfil).perfil.identificacao);
+    const nome = nomeDoModelo(carregarPerfil(norma.perfil).modelo);
     writeFileSync(join(PASTA_PROVA, norma.gabarito), escreverGabarito(resultado, nome));
     console.log(`\n${norma.gabarito} gravado com a saída atual (${nome}).`);
     continue;

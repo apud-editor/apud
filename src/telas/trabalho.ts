@@ -3,7 +3,7 @@
 // O assistente de "Novo trabalho" e as Configurações usam estas funções: elas
 // decidem quais elementos ligam sozinhos para cada tipo e norma, limpam o que a
 // pessoa digitou e montam o trabalho que vai para o arquivo. A forma de cada
-// elemento na página não está aqui: vem do perfil da norma.
+// elemento na página não está aqui: vem do modelo da norma.
 
 import type { Trabalho } from "../arquivos/formato";
 import {
@@ -15,8 +15,8 @@ import {
   type Resumo,
   type TipoDeTrabalho,
 } from "../documento/modelo";
-import { existeNaNorma, type ElementoDaAbertura } from "../conversor/abertura";
-import type { PerfilResolvido } from "../perfis/tipos";
+import { existeNoModelo, type ElementoDaAbertura } from "../conversor/abertura";
+import type { ModeloResolvido } from "../modelos/tipos";
 
 /** O nome de cada tipo e uma frase que o explica, como aparecem no assistente. */
 export const TIPOS: Array<{ tipo: TipoDeTrabalho; nome: string; explicacao: string }> = [
@@ -36,8 +36,8 @@ export const nomeDoTipo = (tipo: TipoDeTrabalho) => TIPOS.find((t) => t.tipo ===
  *   - APA: a página de título liga em todos os tipos.
  * Só liga o que a norma tem (a APA não tem capa nem sumário).
  */
-export function aberturaPadrao(tipo: TipoDeTrabalho, perfil: PerfilResolvido): Abertura {
-  const tem = existeNaNorma((r) => perfil.regras.has(r));
+export function aberturaPadrao(tipo: TipoDeTrabalho, modelo: ModeloResolvido): Abertura {
+  const tem = existeNoModelo(modelo);
   const a = aberturaVazia();
   const completo = tipo !== "artigo";
   a.capa = completo && tem("capa");
@@ -48,8 +48,8 @@ export function aberturaPadrao(tipo: TipoDeTrabalho, perfil: PerfilResolvido): A
 }
 
 /** Os elementos que a norma tem (o que as Configurações podem ligar). */
-export function elementosDaNorma(perfil: PerfilResolvido): Record<ElementoDaAbertura["tipo"], boolean> {
-  const tem = existeNaNorma((r) => perfil.regras.has(r));
+export function elementosDaNorma(modelo: ModeloResolvido): Record<ElementoDaAbertura["tipo"], boolean> {
+  const tem = existeNoModelo(modelo);
   return {
     capa: tem("capa"),
     folhaDeRosto: tem("folhaDeRosto"),
@@ -139,17 +139,17 @@ export interface RespostasDoAssistente {
  * O trabalho novo, com o que o assistente coletou. O nome do arquivo é o título.
  * O texto começa com um parágrafo vazio, como sempre.
  */
-export function trabalhoNovo(r: RespostasDoAssistente, perfil: PerfilResolvido, agora = new Date()): Trabalho {
+export function trabalhoNovo(r: RespostasDoAssistente, modelo: ModeloResolvido, agora = new Date()): Trabalho {
   const dados = limparDados(r.dados);
-  const id = perfil.identificacao;
+  const id = modelo.identificacao;
   const iso = agora.toISOString();
   const documento = documentoVazio();
   documento.dados = dados;
-  documento.abertura = aberturaPadrao(dados.tipo, perfil);
+  documento.abertura = aberturaPadrao(dados.tipo, modelo);
   if (r.resumo) documento.abertura.resumos = [r.resumo];
   return {
     nome: dados.titulo.slice(0, 80) || "Trabalho sem título",
-    perfil: { perfil: id.perfil, versao: id.versao, revisao: id.revisao },
+    perfil: { perfil: id.nome, versao: id.versao ?? "", revisao: id.revisao },
     ajustes: {},
     criadoEm: iso,
     modificadoEm: iso,

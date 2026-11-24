@@ -13,20 +13,20 @@ import Assistente from "./Assistente";
 import Configuracoes, { ABAS, type AbaDasConfiguracoes } from "./Configuracoes";
 
 const nada = () => {};
-const abnt = carregarPerfil("abnt.txt").perfil;
-const apa = carregarPerfil("apa.txt").perfil;
+const abnt = carregarPerfil("abnt.txt");
+const apa = carregarPerfil("apa.txt");
 
 const abertura = (p: Partial<Abertura> = {}): Abertura => ({ ...aberturaVazia(), ...p });
 const dados = { ...dadosVazios(), titulo: "Meu trabalho", autores: ["Maria Silva"] };
 
 function areaDaAbertura(a: Abertura, norma: "ABNT" | "APA", d = dados) {
   return renderToStaticMarkup(
-    createElement(AberturaDoTrabalho, { abertura: a, dados: d, nomeDaNorma: norma, perfil: norma === "ABNT" ? abnt : apa, aoMudar: nada, aoConfigurar: nada }),
+    createElement(AberturaDoTrabalho, { abertura: a, dados: d, nomeDaNorma: norma, modelo: (norma === "ABNT" ? abnt : apa).modelo, aoMudar: nada, aoConfigurar: nada }),
   );
 }
 
 function configuracoes(aba: AbaDasConfiguracoes, norma: "ABNT" | "APA" = "ABNT", a = abertura()) {
-  const perfil = norma === "ABNT" ? abnt : apa;
+  const { modelo, perfil } = norma === "ABNT" ? abnt : apa;
   return renderToStaticMarkup(
     createElement(Configuracoes, {
       aba,
@@ -34,7 +34,7 @@ function configuracoes(aba: AbaDasConfiguracoes, norma: "ABNT" | "APA" = "ABNT",
       dados,
       abertura: a,
       nomeDaNorma: norma,
-      perfil,
+      modelo,
       normas: ["ABNT", "APA"],
       escolhas: escolhasDoAutor(perfil),
       aoMudarDados: nada,
