@@ -81,15 +81,92 @@ textarea {
 /* Barra de ferramentas */
 
 .ferramentas {
-  min-height: 52px;
+  min-height: 46px;
   flex: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 6px 20px;
-  background: var(--fundo-claro);
+  gap: 2px;
+  padding: 5px 14px;
+  background: var(--cab);
   border-bottom: 1px solid var(--borda);
+}
+
+/* Botões de ícone da barra de ferramentas e da coluna da direita (prefixo fb-: não reusar em outras telas). */
+.fb {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--tinta-suave);
+  cursor: pointer;
+}
+
+.fb:hover:not(:disabled) {
+  background: var(--hov);
+  color: var(--tinta);
+}
+
+.fb.on {
+  background: var(--destaque-claro);
+  color: var(--destaque-escuro);
+}
+
+.fb:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.fb:focus-visible,
+.fb-bloco:focus-visible {
+  outline: 2px solid var(--destaque);
+  outline-offset: 1px;
+}
+
+.fb-sep {
+  flex: none;
+  width: 1px;
+  height: 22px;
+  margin: 0 6px;
+  background: var(--borda-forte);
+}
+
+/* Estilo do bloco (Parágrafo, Título 1...): um seletor com cara de botão. */
+.fb-bloco {
+  flex: none;
+  height: 32px;
+  min-width: 150px;
+  padding: 0 8px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  background: var(--cab);
+  color: var(--tinta);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Coluna estreita de ícones, à direita de tudo. */
+.colicones {
+  flex: none;
+  width: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 12px;
+  background: var(--cab);
+  border-left: 1px solid var(--borda);
+}
+
+.ic {
+  flex: none;
 }
 
 .btn {
@@ -1345,6 +1422,8 @@ button.linha:hover {
 
 /* Barra de opções da figura ou da tabela (aparece quando o cursor está nela). */
 .ferramentas.contexto {
+  gap: 8px;
+  padding: 6px 20px;
   min-height: 44px;
   background: var(--chip);
   border-bottom: 1px solid var(--chip-borda);

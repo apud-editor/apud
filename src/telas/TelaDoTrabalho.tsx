@@ -27,7 +27,8 @@ import { CitacoesNoTexto } from "../editor/citacoes";
 import { montarTodas, previaDaCitacao } from "../citacoes/todas";
 import type { NormaDoTrabalho } from "../perfis/norma";
 import Gaveta from "./Gaveta";
-import { ATALHOS_DOS_PAINEIS, painelDoAtalho } from "./atalhos";
+import ColunaDeIcones from "./ColunaDeIcones";
+import { painelDoAtalho } from "./atalhos";
 import { ajustesComEscolha, escolhasDoAutor, type EscolhaDoAutor } from "../referencias/escolhas";
 import AberturaDoTrabalho from "./AberturaDoTrabalho";
 import Configuracoes, { type AbaDasConfiguracoes } from "./Configuracoes";
@@ -462,30 +463,7 @@ export default function TelaDoTrabalho({ arquivo, trabalho, novo, aoVoltar, tema
             aoConfigurar={(aba) => setConfiguracoes({ aba })}
           />
         }
-        extrasDaBarra={
-          <>
-            <button
-              type="button"
-              className={`btn ${painel === "referencias" ? "on" : ""}`}
-              aria-pressed={painel === "referencias"}
-              aria-keyshortcuts={ATALHOS_DOS_PAINEIS.referencias.texto}
-              title={`Referências (${ATALHOS_DOS_PAINEIS.referencias.texto})`}
-              onClick={() => alternarPainel("referencias")}
-            >
-              Referências
-            </button>
-            <button
-              type="button"
-              className={`btn ${painel === "previa" ? "on" : ""}`}
-              aria-pressed={painel === "previa"}
-              aria-keyshortcuts={ATALHOS_DOS_PAINEIS.previa.texto}
-              title={`Prévia (${ATALHOS_DOS_PAINEIS.previa.texto})`}
-              onClick={() => alternarPainel("previa")}
-            >
-              Prévia
-            </button>
-          </>
-        }
+        colunaDeIcones={<ColunaDeIcones aberto={painel} aoAlternar={alternarPainel} />}
         lateral={
           painel === "previa" ? (
             <Previa

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import type { ChainedCommands } from "@tiptap/core";
 import { EditorContent, useEditor, useEditorState, type Editor as EditorTipTap } from "@tiptap/react";
 import { blocosDoEditor, editorDosBlocos } from "../documento/tiptap";
 import { avisosDeNumeracao, estrutura } from "../documento/estrutura";
@@ -15,6 +16,7 @@ import { ImagensNoEditor, ImagemRecusada, TIPOS_ACEITOS, lerImagemDoArquivo } fr
 import { apagarIlustracao, ilustracaoDoCursor, inserirFigura, inserirTabela, mudarIlustracao } from "./ilustracoes";
 import type { ControlesDosNos } from "./nos";
 import type { ComandosDoEditor } from "./comandos";
+import { Icone, type NomeDoIcone } from "./icones";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -25,8 +27,8 @@ interface Props {
   lerTexto?: React.MutableRefObject<(() => Bloco[]) | null>;
   /** O cursor mudou de bloco (a posição do bloco no texto), para a prévia acompanhar. */
   aoMoverCursor?: (indice: number) => void;
-  /** Botões a mais, no lado direito da barra de ferramentas (como "Prévia"). */
-  extrasDaBarra?: React.ReactNode;
+  /** Coluna estreita de ícones, à direita de tudo (Prévia e Referências). */
+  colunaDeIcones?: React.ReactNode;
   /** Um painel ao lado do texto (como a prévia do PDF). */
   lateral?: React.ReactNode;
   /** O que vem acima do texto, dentro da folha (a "Abertura do trabalho"). */
@@ -52,7 +54,7 @@ export default function Editor({
   aoMudar,
   lerTexto,
   aoMoverCursor,
-  extrasDaBarra,
+  colunaDeIcones,
   lateral,
   antes,
   aparencia: aparenciaDada,
@@ -201,7 +203,6 @@ export default function Editor({
     <div className="area">
       <BarraDeFerramentas
         editor={editor}
-        extras={extrasDaBarra}
         janela={podeCitar ? janela : undefined}
         aoInserir={(o) => controle.aoPedir?.(o)}
       />
@@ -227,6 +228,7 @@ export default function Editor({
           <EditorContent editor={editor} />
         </main>
         {lateral}
+        {colunaDeIcones}
       </div>
       <MenuDeBlocos controle={controle} />
       {estadoDaNota.aberta && (
@@ -307,12 +309,10 @@ function AvisosDoTexto({ citacoes }: { citacoes: CitacoesNoTexto }) {
 
 function BarraDeFerramentas({
   editor,
-  extras,
   janela,
   aoInserir,
 }: {
   editor: EditorTipTap | null;
-  extras?: React.ReactNode;
   janela?: ControleDaJanela;
   aoInserir: (o: "imagem" | "tabela" | "nota") => void;
 }) {
@@ -325,19 +325,26 @@ function BarraDeFerramentas({
             negrito: e.isActive("bold"),
             italico: e.isActive("italic"),
             sobrescrito: e.isActive("superscript"),
+            lista: e.isActive("bulletList"),
+            listaEmSequencia: e.isActive("orderedList"),
+            podeDesfazer: e.can().undo(),
+            podeRefazer: e.can().redo(),
           }
         : null,
   });
-  if (!editor || !estado) return <div className="ferramentas">{extras}</div>;
+  if (!editor || !estado) return <div className="ferramentas" />;
 
   return (
     <div className="ferramentas" role="toolbar" aria-label="Formatação do texto">
+      <Ferramenta nome="desfazer" rotulo="Desfazer (Ctrl+Z)" desligada={!estado.podeDesfazer} aoClicar={() => editor.chain().focus().undo().run()} />
+      <Ferramenta nome="refazer" rotulo="Refazer (Ctrl+Y)" desligada={!estado.podeRefazer} aoClicar={() => editor.chain().focus().redo().run()} />
+      <span className="fb-sep" aria-hidden="true" />
       <label className="oculto" htmlFor="tipo-de-bloco">
         Tipo do bloco
       </label>
       <select
         id="tipo-de-bloco"
-        className="seletor"
+        className="fb-bloco"
         value={estado.bloco}
         onChange={(ev) => {
           const t = TIPOS_DE_BLOCO.find((x) => x.id === ev.target.value);
@@ -351,112 +358,80 @@ function BarraDeFerramentas({
         ))}
       </select>
 
-      <span className="divisor" aria-hidden="true" />
-      <Botao rotulo="Negrito (Ctrl+B)" ligado={estado.negrito} aoClicar={() => editor.chain().focus().toggleBold().run()}>
-        <b>B</b>
-      </Botao>
-      <Botao rotulo="Itálico (Ctrl+I)" ligado={estado.italico} aoClicar={() => editor.chain().focus().toggleItalic().run()}>
-        <i>I</i>
-      </Botao>
-      <Botao
+      <span className="fb-sep" aria-hidden="true" />
+      <Ferramenta nome="negrito" rotulo="Negrito (Ctrl+B)" ligada={estado.negrito} aoClicar={() => editor.chain().focus().toggleBold().run()} />
+      <Ferramenta nome="italico" rotulo="Itálico (Ctrl+I)" ligada={estado.italico} aoClicar={() => editor.chain().focus().toggleItalic().run()} />
+      <Ferramenta
+        nome="sobrescrito"
         rotulo="Sobrescrito (Ctrl+.)"
-        ligado={estado.sobrescrito}
+        ligada={estado.sobrescrito}
         aoClicar={() => editor.chain().focus().toggleSuperscript().run()}
-      >
-        <span>
-          x<sup>2</sup>
-        </span>
-      </Botao>
-      <span className="divisor" aria-hidden="true" />
-      <button
-        type="button"
-        className="btn"
-        title="O que vem depois começa numa página nova (Ctrl+Enter)"
-        onMouseDown={(ev) => {
-          ev.preventDefault();
-          inserirQuebra(editor);
-        }}
-        onKeyDown={(ev) => {
-          if (ev.key === "Enter" || ev.key === " ") {
-            ev.preventDefault();
-            inserirQuebra(editor);
-          }
-        }}
-      >
-        Quebra de página
-      </button>
-      <BotaoDeTexto rotulo="Figura" titulo="Inserir uma figura: escolha a imagem no computador" aoClicar={() => aoInserir("imagem")} />
-      <BotaoDeTexto rotulo="Tabela" titulo="Inserir uma tabela (dá para colar da planilha)" aoClicar={() => aoInserir("tabela")} />
-      <BotaoDeTexto rotulo="Nota de rodapé" titulo="Inserir uma nota de rodapé no ponto do cursor" aoClicar={() => aoInserir("nota")} />
+      />
+      <Ferramenta
+        nome="lista"
+        rotulo="Lista"
+        ligada={estado.lista}
+        aoClicar={() => (editor.chain().focus().toggleBulletList as () => ChainedCommands)().run()}
+      />
+      <Ferramenta
+        nome="listaEmSequencia"
+        rotulo="Lista em sequência"
+        ligada={estado.listaEmSequencia}
+        aoClicar={() => (editor.chain().focus().toggleOrderedList as () => ChainedCommands)().run()}
+      />
+      <span className="fb-sep" aria-hidden="true" />
       {janela && (
-        <button
-          type="button"
-          className="btn"
-          title="Citar uma obra, uma fala ou uma citação de citação (ou digite @ no texto)"
-          onMouseDown={(ev) => {
-            ev.preventDefault();
-            janela.abrirParaInserir("botao", editor.state.selection.to);
-          }}
-          onKeyDown={(ev) => {
-            if (ev.key === "Enter" || ev.key === " ") {
-              ev.preventDefault();
-              janela.abrirParaInserir("botao", editor.state.selection.to);
-            }
-          }}
-        >
-          Citar @
-        </button>
+        <Ferramenta
+          nome="citar"
+          rotulo="Citar @"
+          dica="Citar uma obra, uma fala ou uma citação de citação (ou digite @ no texto)"
+          aoClicar={() => janela.abrirParaInserir("botao", editor.state.selection.to)}
+        />
       )}
-      <span style={{ flex: 1 }} />
-      {extras}
+      <Ferramenta nome="tabela" rotulo="Tabela" dica="Inserir uma tabela (dá para colar da planilha)" aoClicar={() => aoInserir("tabela")} />
+      <Ferramenta nome="figura" rotulo="Figura" dica="Inserir uma figura: escolha a imagem no computador" aoClicar={() => aoInserir("imagem")} />
+      <Ferramenta nome="nota" rotulo="Nota de rodapé" dica="Inserir uma nota de rodapé no ponto do cursor" aoClicar={() => aoInserir("nota")} />
+      <Ferramenta
+        nome="quebraDePagina"
+        rotulo="Quebra de página (Ctrl+Enter)"
+        dica="O que vem depois começa numa página nova (Ctrl+Enter)"
+        aoClicar={() => inserirQuebra(editor)}
+      />
     </div>
   );
 }
 
-function BotaoDeTexto(p: { rotulo: string; titulo: string; aoClicar: () => void }) {
+/** Um botão de ícone da barra. Sem `ligada`, é uma ação; com `ligada` (verdadeiro ou falso), liga e desliga. */
+function Ferramenta(p: {
+  nome: NomeDoIcone;
+  rotulo: string;
+  dica?: string;
+  ligada?: boolean;
+  desligada?: boolean;
+  aoClicar: () => void;
+}) {
+  const alterna = p.ligada !== undefined;
   return (
     <button
       type="button"
-      className="btn"
-      title={p.titulo}
-      // mousedown, e não click: assim o editor não perde a seleção.
-      onMouseDown={(ev) => {
-        ev.preventDefault();
-        p.aoClicar();
-      }}
-      onKeyDown={(ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
-          ev.preventDefault();
-          p.aoClicar();
-        }
-      }}
-    >
-      {p.rotulo}
-    </button>
-  );
-}
-
-function Botao(p: { rotulo: string; ligado: boolean; aoClicar: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      className={`btn quadrado ${p.ligado ? "on" : ""}`}
+      className={`fb ${p.ligada ? "on" : ""}`}
       aria-label={p.rotulo}
-      title={p.rotulo}
-      aria-pressed={p.ligado}
+      title={p.dica ?? p.rotulo}
+      aria-pressed={alterna ? p.ligada : undefined}
+      disabled={p.desligada}
       // mousedown, e não click: assim o editor não perde a seleção.
       onMouseDown={(ev) => {
         ev.preventDefault();
-        p.aoClicar();
+        if (!p.desligada) p.aoClicar();
       }}
       onKeyDown={(ev) => {
         if (ev.key === "Enter" || ev.key === " ") {
           ev.preventDefault();
-          p.aoClicar();
+          if (!p.desligada) p.aoClicar();
         }
       }}
     >
-      {p.children}
+      <Icone nome={p.nome} />
     </button>
   );
 }
