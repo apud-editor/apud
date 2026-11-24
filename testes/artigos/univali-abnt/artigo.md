@@ -3,7 +3,7 @@
 
   "Aqui na rua, não": o artigo do Francisco na versão ABNT, para a conferência
   final da fase 2. O texto é o do original, como está, com as citações na forma
-  curta do documento de prova (perfis/prova/documento-de-prova.md):
+  curta do documento de prova (testes/prova/documento-de-prova.md):
     [@chave]  [@chave, p. 15]  [@a; @b]  @chave  @chave [p. 15]
     [sem referência: Prefeito 01, 2025]
     +direta  marca a citação direta (a norma pede a página)

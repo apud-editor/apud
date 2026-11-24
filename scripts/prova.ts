@@ -1,4 +1,4 @@
-// Roda o documento de prova com os perfis ABNT e APA e compara com o gabarito.
+// Roda o documento de prova com os modelos ABNT e APA e compara com o gabarito.
 //
 // Uso:
 //   npm run prova            confere e mostra só as diferenças
@@ -6,7 +6,7 @@
 //   npm run prova -- --gravar  grava a saída atual como gabarito. Use só
 //                            depois de conferir que as diferenças estão certas.
 //
-// Também grava o PDF das chamadas e referências em perfis/prova/saida/.
+// Também grava o PDF das chamadas e referências em testes/prova/saida/.
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -45,7 +45,7 @@ writeFileSync(
   join(PASTA_PROVA, "saida", "documento-de-prova.apud"),
   escreverArquivo({
     nome: "Documento de prova",
-    perfil: (({ perfil, versao, revisao }) => ({ perfil, versao, revisao }))(carregarPerfil("abnt.txt").perfil.identificacao),
+    modelo: carregarPerfil("abnt.txt").modelo,
     ajustes: {},
     criadoEm: agora,
     modificadoEm: agora,
@@ -64,14 +64,14 @@ writeFileSync(
       throw new Error(`o conversor não conseguiu montar o documento de prova em ${sigla}`);
     }
     writeFileSync(join(PASTA_PROVA, "saida", `documento-de-prova-${sigla}.pdf`), compilador.pdf(r.result));
-    console.log(`Documento de prova inteiro, pelo conversor: perfis/prova/saida/documento-de-prova-${sigla}.pdf`);
+    console.log(`Documento de prova inteiro, pelo conversor: testes/prova/saida/documento-de-prova-${sigla}.pdf`);
   }
 }
 
 for (const norma of NORMAS) {
   const resultado = rodarProva(norma.perfil);
   writeFileSync(join(PASTA_PROVA, "saida", norma.pdf), gerarPdf(resultado.typst));
-  console.log(`\n=== ${norma.perfil} (PDF em perfis/prova/saida/${norma.pdf}) ===`);
+  console.log(`\n=== ${norma.perfil} (PDF em testes/prova/saida/${norma.pdf}) ===`);
 
   if (mostrarTudo || !existsSync(join(PASTA_PROVA, norma.gabarito))) {
     console.log("\n== Chamadas ==");

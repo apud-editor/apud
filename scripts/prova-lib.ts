@@ -15,9 +15,9 @@ import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { criarMotor, citacoesDoTexto } from "../src/citacoes/motor";
 import { escaparTexto, pedacosParaTypst, PONTUACAO_DA_LISTA, registrar } from "../src/conversor/typst";
 import { arquivosDasImagens } from "../src/conversor/elementos";
-import { formatarMensagem, type Arquivo, type PerfilResolvido } from "../src/perfis";
+import { formatarMensagem, type PerfilResolvido } from "../src/perfis";
 import type { EsquemaNorma } from "../src/perfis/esquema";
-import { conferirModelos } from "../src/modelos/conferir";
+import { conferirModelos, type Arquivo } from "../src/modelos/conferir";
 import { valorEfetivo } from "../src/modelos/herdar";
 import { normaDoTrabalho, type NormaDoTrabalho } from "../src/modelos/norma";
 import { esquemaDeCitacoes } from "../src/modelos/ponte";
@@ -35,8 +35,8 @@ import {
   type Trecho,
 } from "../src/documento/modelo";
 
-export const PASTA_PERFIS = join(import.meta.dirname, "..", "perfis");
-export const PASTA_PROVA = join(PASTA_PERFIS, "prova");
+export const PASTA_TESTES = join(import.meta.dirname, "..", "testes");
+export const PASTA_PROVA = join(PASTA_TESTES, "prova");
 
 function lerPasta(pasta: string, extensao: string): Arquivo[] {
   return readdirSync(pasta)
@@ -46,7 +46,7 @@ function lerPasta(pasta: string, extensao: string): Arquivo[] {
 
 export const PASTA_MODELOS = join(import.meta.dirname, "..", "modelos");
 
-const estilos = () => lerPasta(join(PASTA_PERFIS, "estilos"), ".csl");
+const estilos = () => lerPasta(join(PASTA_MODELOS, "estilos"), ".csl");
 
 /**
  * Lê e confere os modelos da pasta modelos/ (e os exemplos); devolve o modelo

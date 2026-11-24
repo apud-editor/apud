@@ -141,7 +141,6 @@ export interface RespostasDoAssistente {
  */
 export function trabalhoNovo(r: RespostasDoAssistente, modelo: ModeloResolvido, agora = new Date()): Trabalho {
   const dados = limparDados(r.dados);
-  const id = modelo.identificacao;
   const iso = agora.toISOString();
   const documento = documentoVazio();
   documento.dados = dados;
@@ -149,7 +148,7 @@ export function trabalhoNovo(r: RespostasDoAssistente, modelo: ModeloResolvido, 
   if (r.resumo) documento.abertura.resumos = [r.resumo];
   return {
     nome: dados.titulo.slice(0, 80) || "Trabalho sem título",
-    perfil: { perfil: id.nome, versao: id.versao ?? "", revisao: id.revisao },
+    modelo,
     ajustes: {},
     criadoEm: iso,
     modificadoEm: iso,

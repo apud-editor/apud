@@ -1,4 +1,4 @@
-// O formato do arquivo .apud.
+// O formato do arquivo .apud (versão 5, a primeira da versão 2 do Apud).
 //
 // É um arquivo de texto (JSON), legível em qualquer editor de texto: se um dia
 // algo der errado, o conteúdo do trabalho ainda pode ser recuperado à mão.
@@ -6,47 +6,34 @@
 //
 //   {
 //     "formato": "apud",
-//     "versao": 4,
+//     "versao": 5,
 //     "nome": "Relato de experiência de estágio",
-//     "perfil": { "perfil": "ABNT", "versao": "2025", "revisao": 3 },
+//     "modelo": { "nome": "ABNT", "versao": "2025", "revisao": 10, "cadeia": [...],
+//                 "valores": { ... }, "atalhos": { ... } },
 //     "ajustes": { "ABNT": { "referências, prenomes": "abreviados" } },
 //     "criadoEm": "2026-11-20T18:40:00.000Z",
 //     "modificadoEm": "2026-11-20T19:02:11.000Z",
-//     "documento": { "versao": 4, "dados": { ... }, "abertura": { ... },
+//     "documento": { "versao": 5, "dados": { ... }, "abertura": { ... },
 //                    "blocos": [ ... ], "referencias": [ ... ], "imagens": [ ... ] }
 //   }
 //
-// "perfil" guarda com que versão da norma o trabalho foi feito: um trabalho já
-// entregue nunca muda sozinho quando o perfil for atualizado.
+// "modelo" é a cópia inteira do modelo do trabalho (decisão 4 da v2), já
+// somada (Em branco + ABNT), com a origem de cada valor: o trabalho abre igual
+// mesmo que um dia o modelo mude (modelos/arquivo.ts).
 //
-// "ajustes" guarda as escolhas do autor e os valores que dependem da faculdade,
-// separados por norma. Quem troca de ABNT para APA e volta encontra as
-// escolhas da ABNT como deixou.
+// "ajustes" guarda as escolhas do trabalho (Escolhas do autor e valores
+// ajustáveis), separadas por modelo. Quem troca de ABNT para APA e volta
+// encontra as escolhas da ABNT como deixou. Cada escolha vai pelo caminho do
+// elemento ("Texto › fonte") ou, nas citações e referências, só pelo nome da
+// regra ("referências, prenomes").
 //
-// Versões do arquivo:
-//   1. Fase 1: nome, perfil, datas e o texto (documento na versão 1).
-//   2. Fase 2: o documento ganha referências e citações (versão 2) e o arquivo
-//      ganha os ajustes.
-//   3. Fase 2: o bloco "lista de referências", que a pessoa põe no texto. Nas
-//      versões de teste com a versão 2, a lista entrava sozinha no fim do
-//      trabalho; ao abrir um desses arquivos, o bloco é acrescentado no fim,
-//      para o PDF continuar igual.
-//   4. Fase 3: citação longa, figura, tabela e nota de rodapé; os dados do
-//      trabalho, a abertura (capa, resumos...) e as imagens, dentro do próprio
-//      arquivo (decisão de 21/11/2026). Ao abrir um arquivo antigo, os dados
-//      começam vazios e a abertura toda desligada: o PDF continua igual.
-// Um arquivo antigo é lido normalmente e passa a ser gravado na versão atual
-// quando o trabalho mudar. Nada se perde: a conversão só acrescenta o que não
-// existia.
-//
-// Arquivo de uma versão mais nova, ou estragado, é recusado com o motivo, e o
-// arquivo no disco fica como está.
+// Os arquivos das versões 1 a 4 são da versão de testes do Apud (a versão 1 do
+// programa) e não abrem mais (decisão do Francisco, 23/11/2026): são recusados
+// com uma mensagem clara e ficam como estão no disco. Arquivo de uma versão
+// mais nova, ou estragado, também é recusado com o motivo, sem ser alterado.
 
 import {
-  aberturaVazia,
-  dadosVazios,
   FORMATOS_DE_IMAGEM,
-  textosDosBlocos,
   TIPOS_DE_REFERENCIA,
   TIPOS_DE_TRABALHO,
   VERSAO_DO_FORMATO,
@@ -68,21 +55,21 @@ import {
   type Trecho,
   type TrechoDeTexto,
 } from "../documento/modelo";
+import { modeloDoArquivo, modeloParaArquivo } from "../modelos/arquivo";
+import type { ModeloResolvido } from "../modelos/tipos";
 
-export const VERSAO_DO_ARQUIVO = 4;
+export const VERSAO_DO_ARQUIVO = 5;
 
-export interface PerfilDoTrabalho {
-  perfil: string;
-  versao: string;
-  revisao: number;
-}
+/** A primeira versão do arquivo na versão 2 do Apud. As anteriores são da versão de testes. */
+export const PRIMEIRA_VERSAO_DA_V2 = 5;
 
-/** Ajustes do trabalho por norma: { "ABNT": { "nome da regra": "valor" } }. */
+/** Escolhas do trabalho por modelo: { "ABNT": { "referências, prenomes": "abreviados", "Texto › fonte": "Arial" } }. */
 export type AjustesDoTrabalho = Record<string, Record<string, string>>;
 
 export interface Trabalho {
   nome: string;
-  perfil: PerfilDoTrabalho;
+  /** A cópia do modelo do trabalho, já somada (sem as escolhas do trabalho, que ficam em ajustes). */
+  modelo: ModeloResolvido;
   ajustes: AjustesDoTrabalho;
   criadoEm: string;
   modificadoEm: string;
@@ -97,7 +84,7 @@ export function escreverArquivo(t: Trabalho): string {
     formato: "apud",
     versao: VERSAO_DO_ARQUIVO,
     nome: t.nome,
-    perfil: t.perfil,
+    modelo: modeloParaArquivo(t.modelo),
     ajustes: t.ajustes,
     criadoEm: t.criadoEm,
     modificadoEm: t.modificadoEm,
@@ -109,9 +96,7 @@ export function escreverArquivo(t: Trabalho): string {
 /**
  * Lê o texto de um arquivo .apud e confere se está inteiro.
  * Nunca "conserta" em silêncio: se algo estiver errado, devolve o motivo, e o
- * arquivo fica como está no disco. Arquivos de versões anteriores são
- * convertidos para a versão atual (só em memória; o disco muda quando o
- * trabalho for salvo).
+ * arquivo fica como está no disco.
  */
 export function lerArquivo(texto: string): Leitura {
   let dados: unknown;
@@ -127,21 +112,21 @@ export function lerArquivo(texto: string): Leitura {
   if (dados.versao > VERSAO_DO_ARQUIVO) {
     return { ok: false, erro: "este trabalho foi feito numa versão mais nova do Apud. Atualize o Apud para abrir" };
   }
-  if (typeof dados.nome !== "string") return { ok: false, erro: "falta o nome do trabalho" };
-  const perfil = dados.perfil;
-  if (!objeto(perfil) || typeof perfil.perfil !== "string" || typeof perfil.versao !== "string" || typeof perfil.revisao !== "number") {
-    return { ok: false, erro: "falta a norma do trabalho" };
+  if (dados.versao < PRIMEIRA_VERSAO_DA_V2) {
+    return { ok: false, erro: "este trabalho foi feito na versão de testes do Apud e não abre nesta versão" };
   }
-  // Versão 1: não havia ajustes.
-  const ajustes = dados.versao === 1 && dados.ajustes === undefined ? {} : conferirAjustes(dados.ajustes);
-  if (!ajustes) return { ok: false, erro: "os ajustes da norma do trabalho estão estragados" };
+  if (typeof dados.nome !== "string") return { ok: false, erro: "falta o nome do trabalho" };
+  const modelo = dados.modelo === undefined ? "falta o modelo do trabalho" : modeloDoArquivo(dados.modelo);
+  if (typeof modelo === "string") return { ok: false, erro: modelo };
+  const ajustes = conferirAjustes(dados.ajustes);
+  if (!ajustes) return { ok: false, erro: "as escolhas do trabalho estão estragadas" };
   const documento = conferirDocumento(dados.documento);
   if (typeof documento === "string") return { ok: false, erro: documento };
   return {
     ok: true,
     trabalho: {
       nome: dados.nome,
-      perfil: { perfil: perfil.perfil, versao: perfil.versao, revisao: perfil.revisao },
+      modelo,
       ajustes,
       criadoEm: typeof dados.criadoEm === "string" ? dados.criadoEm : "",
       modificadoEm: typeof dados.modificadoEm === "string" ? dados.modificadoEm : "",
@@ -167,38 +152,28 @@ function conferirAjustes(v: unknown): AjustesDoTrabalho | null {
   return saida;
 }
 
-/** Devolve o documento conferido (já na versão atual), ou o motivo do erro. */
+/** Devolve o documento conferido, ou o motivo do erro. */
 function conferirDocumento(v: unknown): Documento | string {
   if (!objeto(v) || !Array.isArray(v.blocos)) return "falta o texto do trabalho";
-  if (![1, 2, 3, VERSAO_DO_FORMATO].includes(v.versao as number)) {
-    return "o texto do trabalho está numa versão que este Apud não conhece";
-  }
-  const versao = v.versao as number;
+  if (v.versao !== VERSAO_DO_FORMATO) return "o texto do trabalho está numa versão que este Apud não conhece";
 
-  // Versão 1 → 2: não havia referências; a lista começa vazia.
-  let referencias: Referencia[] = [];
-  if (versao !== 1 || v.referencias !== undefined) {
-    if (!Array.isArray(v.referencias)) return "falta a lista de referências do trabalho";
-    const ids = new Set<string>();
-    for (const [i, r] of v.referencias.entries()) {
-      const ref = conferirReferencia(r);
-      if (!ref) return `a referência ${i + 1} da lista está estragada`;
-      if (ids.has(ref.id)) return `a referência ${i + 1} usa o mesmo código de outra (${ref.id})`;
-      ids.add(ref.id);
-      referencias.push(ref);
-    }
+  if (!Array.isArray(v.referencias)) return "falta a lista de referências do trabalho";
+  const referencias: Referencia[] = [];
+  const ids = new Set<string>();
+  for (const [i, r] of v.referencias.entries()) {
+    const ref = conferirReferencia(r);
+    if (!ref) return `a referência ${i + 1} da lista está estragada`;
+    if (ids.has(ref.id)) return `a referência ${i + 1} usa o mesmo código de outra (${ref.id})`;
+    ids.add(ref.id);
+    referencias.push(ref);
   }
 
   const blocos: Bloco[] = [];
   for (const [i, b] of v.blocos.entries()) {
-    const bloco = conferirBloco(b, versao);
+    const bloco = conferirBloco(b);
     if (!bloco) return `o bloco ${i + 1} do texto está estragado`;
     blocos.push(bloco);
   }
-  if (versao === 2) acrescentarListaNoFim(blocos);
-
-  // Versão 3 → 4: sem dados, abertura desligada e sem imagens. O PDF continua igual.
-  if (versao < 4) return { versao: VERSAO_DO_FORMATO, dados: dadosVazios(), abertura: aberturaVazia(), blocos, referencias, imagens: [] };
 
   const dados = conferirDados(v.dados);
   if (!dados) return "os dados do trabalho (título, autores, curso...) estão estragados";
@@ -218,21 +193,9 @@ function conferirDocumento(v: unknown): Documento | string {
   return { versao: VERSAO_DO_FORMATO, dados, abertura, blocos, referencias, imagens };
 }
 
-/**
- * Versão 2 → 3: a lista de referências entrava sozinha no fim, quando havia
- * citações. Agora é um bloco: ele entra no fim, antes dos parágrafos vazios.
- */
-function acrescentarListaNoFim(blocos: Bloco[]) {
-  const citado = textosDosBlocos(blocos).some((trechos) => trechos.some((t) => "citacao" in t));
-  if (!citado) return;
-  let fim = blocos.length;
-  while (fim > 0 && blocos[fim - 1].tipo === "paragrafo" && (blocos[fim - 1] as { trechos: Trecho[] }).trechos.length === 0) fim--;
-  blocos.splice(fim, 0, { tipo: "referencias" });
-}
-
-function conferirBloco(b: unknown, versao: number): Bloco | null {
+function conferirBloco(b: unknown): Bloco | null {
   if (!objeto(b)) return null;
-  const trechos = (x: unknown) => conferirTrechos(x, versao >= 4);
+  const trechos = (x: unknown) => conferirTrechos(x, true);
   switch (b.tipo) {
     case "paragrafo": {
       const t = trechos(b.trechos);
@@ -246,21 +209,21 @@ function conferirBloco(b: unknown, versao: number): Bloco | null {
       return { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos: t };
     }
     case "lista": {
-      const itens = conferirItens(b.itens, versao);
+      const itens = conferirItens(b.itens);
       if (!itens || typeof b.sequencia !== "boolean") return null;
       return { tipo: "lista", sequencia: b.sequencia, itens };
     }
     case "quebra":
       return { tipo: "quebra" };
     case "referencias":
-      return versao >= 3 ? { tipo: "referencias" } : null;
+      return { tipo: "referencias" };
     // Fase 3 (versão 4)
     case "citacaoLonga": {
-      const t = versao >= 4 ? trechos(b.trechos) : null;
+      const t = trechos(b.trechos);
       return t && { tipo: "citacaoLonga", trechos: t };
     }
     case "figura": {
-      if (versao < 4 || !texto(b.imagem) || !b.imagem) return null;
+      if (!texto(b.imagem) || !b.imagem) return null;
       if (b.especie !== undefined && b.especie !== "grafico" && b.especie !== "quadro") return null;
       if (b.largura !== undefined && !(typeof b.largura === "number" && b.largura >= 10 && b.largura <= 100)) return null;
       const id = conferirIdentificacao(b);
@@ -274,7 +237,7 @@ function conferirBloco(b: unknown, versao: number): Bloco | null {
       };
     }
     case "tabela": {
-      if (versao < 4 || !Array.isArray(b.linhas) || b.linhas.length === 0) return null;
+      if (!Array.isArray(b.linhas) || b.linhas.length === 0) return null;
       const linhas: Trecho[][][] = [];
       for (const linha of b.linhas) {
         if (!Array.isArray(linha) || linha.length === 0) return null;
@@ -311,16 +274,16 @@ function conferirIdentificacao(b: Record<string, unknown>): Identificacao | null
   return { titulo, fonte, ...(b.fontePropria ? { fontePropria: true as const } : {}), ...(nota?.length ? { nota } : {}) };
 }
 
-function conferirItens(v: unknown, versao: number): ItemDeLista[] | null {
+function conferirItens(v: unknown): ItemDeLista[] | null {
   if (!Array.isArray(v) || v.length === 0) return null;
   const itens: ItemDeLista[] = [];
   for (const it of v) {
     if (!objeto(it)) return null;
-    const trechos = conferirTrechos(it.trechos, versao >= 4);
+    const trechos = conferirTrechos(it.trechos, true);
     if (!trechos) return null;
     const item: ItemDeLista = { trechos };
     if (it.subitens !== undefined) {
-      const sub = conferirItens(it.subitens, versao);
+      const sub = conferirItens(it.subitens);
       if (!sub) return null;
       item.subitens = sub;
     }

@@ -1,6 +1,6 @@
 // Testes das chamadas e do documento de prova. O documento de prova passa
 // pelo Typst de verdade, com os estilos CSL ajustados pelos perfis, e a saída
-// é comparada com os gabaritos de perfis/prova/.
+// é comparada com os gabaritos de testes/prova/.
 
 import { describe, expect, it } from "vitest";
 import { compararComGabarito, documentoDeProva, lerGabarito, lerTextoComCitacoes, rodarProva } from "../../scripts/prova-lib";

@@ -6,8 +6,8 @@ dist
 # Arquivos gerados pelo Tauri / Rust
 src-tauri/target
 src-tauri/gen/schemas
-perfis/prova/saida/
+testes/prova/saida/
 
 src-tauri/arquivos/target
 src-tauri/arquivos/Cargo.lock
-perfis/artigos/saida/
+testes/artigos/saida/

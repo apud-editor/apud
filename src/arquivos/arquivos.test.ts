@@ -2,18 +2,42 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { escreverArquivo, lerArquivo, type Trabalho } from "./formato";
-import { aberturaVazia, dadosVazios, documentoVazio, type Referencia } from "../documento/modelo";
+import { documentoVazio, type Referencia } from "../documento/modelo";
+import { estilosEmbutidos, modeloEmbutido } from "../modelos/embutidos";
+import { modeloDoArquivo, modeloParaArquivo } from "../modelos/arquivo";
+import { normaDoTrabalho } from "../modelos/norma";
+import type { ModeloResolvido, ValoresPorElemento } from "../modelos/tipos";
 import { SalvamentoAutomatico } from "./salvamento";
 import type { Armazenamento } from "./armazenamento";
 
 const referencias = JSON.parse(
-  readFileSync(join(import.meta.dirname, "..", "..", "perfis", "prova", "referencias.json"), "utf8"),
+  readFileSync(join(import.meta.dirname, "..", "..", "testes", "prova", "referencias.json"), "utf8"),
 ) as Referencia[];
+
+/**
+ * O modelo sem a linha e o arquivo .txt de onde cada valor veio: isso só serve
+ * para as mensagens de quem escreve o modelo, e não vai para o .apud.
+ */
+function semLugar(m: ModeloResolvido): ModeloResolvido {
+  const limpar = (v: ValoresPorElemento): ValoresPorElemento =>
+    new Map([...v].map(([el, props]) => [el, new Map([...props].map(([p, x]) => [p, (({ arquivo: _a, linha: _l, ...resto }) => resto)(x)]))]));
+  return { ...m, valores: limpar(m.valores), atalhos: limpar(m.atalhos) };
+}
+
+/** O modelo como ele fica guardado no .apud. */
+function copiaNoArquivo(nome: string): ModeloResolvido {
+  const m = modeloDoArquivo(JSON.parse(JSON.stringify(modeloParaArquivo(modeloEmbutido(nome)))));
+  if (typeof m === "string") throw new Error(m);
+  return m;
+}
 
 const trabalho: Trabalho = {
   nome: "Relato de estágio",
-  perfil: { perfil: "ABNT", versao: "2025", revisao: 3 },
-  ajustes: { ABNT: { "referências, prenomes": "abreviados" }, APA: { "citação, primeira vez com três a cinco autores": "todos os autores" } },
+  modelo: copiaNoArquivo("ABNT"),
+  ajustes: {
+    ABNT: { "referências, prenomes": "abreviados", "Texto › fonte": "Arial" },
+    APA: { "citação, primeira vez com três a cinco autores": "todos os autores" },
+  },
   criadoEm: "2026-11-20T18:00:00.000Z",
   modificadoEm: "2026-11-20T18:30:00.000Z",
   documento: {
@@ -41,25 +65,6 @@ const trabalho: Trabalho = {
   },
 };
 
-/** Um arquivo como a fase 1 do Apud gravava (versão 1), escrito à mão. */
-const ARQUIVO_DA_FASE_1 = `{
-  "formato": "apud",
-  "versao": 1,
-  "nome": "Relato antigo",
-  "perfil": { "perfil": "ABNT", "versao": "2025", "revisao": 3 },
-  "criadoEm": "2026-11-20T18:40:00.000Z",
-  "modificadoEm": "2026-11-20T19:02:11.000Z",
-  "documento": {
-    "versao": 1,
-    "blocos": [
-      { "tipo": "titulo", "nivel": 1, "trechos": [{ "texto": "1 Introdução" }] },
-      { "tipo": "paragrafo", "trechos": [{ "texto": "O estágio " }, { "texto": "começou", "marcas": ["negrito"] }, { "texto": "." }] },
-      { "tipo": "quebra" },
-      { "tipo": "lista", "sequencia": true, "itens": [{ "trechos": [{ "texto": "a" }] }] }
-    ]
-  }
-}
-`;
 describe("formato do arquivo .apud", () => {
   it("escreve e lê de volta sem mudar nada", () => {
     expect(lerArquivo(escreverArquivo(trabalho))).toEqual({ ok: true, trabalho });
@@ -79,7 +84,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa arquivo de uma versão mais nova do Apud", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.versao = 5;
+    novo.versao = 6;
     const r = lerArquivo(JSON.stringify(novo));
     expect(r.ok).toBe(false);
     expect(!r.ok && r.erro).toContain("versão mais nova");
@@ -87,7 +92,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa texto numa versão do modelo que este Apud não conhece", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.documento.versao = 5;
+    novo.documento.versao = 6;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
   });
 
@@ -109,71 +114,65 @@ describe("formato do arquivo .apud", () => {
   });
 });
 
-describe("arquivos da fase 1 (versão 1)", () => {
-  it("abrem sem perder nada: o texto fica igual, e entram a lista de referências, os ajustes, os dados e a abertura vazios", () => {
-    const r = lerArquivo(ARQUIVO_DA_FASE_1);
-    expect(r).toEqual({
-      ok: true,
-      trabalho: {
-        nome: "Relato antigo",
-        perfil: { perfil: "ABNT", versao: "2025", revisao: 3 },
-        ajustes: {},
-        criadoEm: "2026-11-20T18:40:00.000Z",
-        modificadoEm: "2026-11-20T19:02:11.000Z",
-        documento: {
-          versao: 4,
-          dados: dadosVazios(),
-          abertura: aberturaVazia(),
-          blocos: JSON.parse(ARQUIVO_DA_FASE_1).documento.blocos,
-          referencias: [],
-          imagens: [],
-        },
-      },
-    });
+describe("arquivos da versão de testes (versões 1 a 4)", () => {
+  const MENSAGEM = "este trabalho foi feito na versão de testes do Apud e não abre nesta versão";
+
+  it("são recusados com uma mensagem clara, qualquer que seja a versão", () => {
+    for (const versao of [1, 2, 3, 4]) {
+      const antigo = JSON.parse(escreverArquivo(trabalho));
+      antigo.versao = versao;
+      delete antigo.modelo;
+      antigo.perfil = { perfil: "ABNT", versao: "2025", revisao: 3 };
+      expect(lerArquivo(JSON.stringify(antigo))).toEqual({ ok: false, erro: MENSAGEM });
+    }
   });
 
-  it("quando o trabalho é salvo, vira a versão atual (4), e ela abre igual", () => {
-    const r = lerArquivo(ARQUIVO_DA_FASE_1);
-    if (!r.ok) throw new Error(r.erro);
-    const gravado = escreverArquivo(r.trabalho);
-    expect(JSON.parse(gravado).versao).toBe(4);
-    expect(JSON.parse(gravado).documento.versao).toBe(4);
-    expect(lerArquivo(gravado)).toEqual(r);
-  });
-
-  it("um arquivo da versão 1 com defeito continua sendo recusado, com o motivo", () => {
-    const ruim = JSON.parse(ARQUIVO_DA_FASE_1);
-    ruim.documento.blocos[1].trechos[1].marcas = ["piscando"];
-    expect(lerArquivo(JSON.stringify(ruim))).toEqual({ ok: false, erro: "o bloco 2 do texto está estragado" });
+  it("um trabalho real gravado na versão 3 (o artigo da UNIVALI) é recusado, e o texto do arquivo não é mexido", () => {
+    const texto = readFileSync(join(import.meta.dirname, "exemplos", "artigo-versao-3.apud"), "utf8");
+    const copia = texto.slice();
+    expect(lerArquivo(texto)).toEqual({ ok: false, erro: MENSAGEM });
+    expect(texto).toBe(copia);
   });
 });
 
-describe("arquivos das versões de teste da fase 2 (versão 2)", () => {
-  const daVersao2 = (blocos: unknown[]) => {
+describe("a cópia do modelo no .apud", () => {
+  const comMudanca = (mudar: (a: any) => void) => {
     const a = JSON.parse(escreverArquivo(trabalho));
-    a.versao = 2;
-    a.documento.versao = 2;
-    a.documento.blocos = blocos;
+    mudar(a);
     return lerArquivo(JSON.stringify(a));
   };
-  const citacao = { citacao: { tipo: "narrativa", obra: { referencia: "lima2018" } } };
 
-  it("com citações: o bloco da lista entra no fim (antes dos parágrafos vazios), como o PDF já saía", () => {
-    const r = daVersao2([{ tipo: "paragrafo", trechos: [citacao] }, { tipo: "paragrafo", trechos: [] }]);
-    expect(r.ok && r.trabalho.documento.blocos).toEqual([
-      { tipo: "paragrafo", trechos: [citacao] },
-      { tipo: "referencias" },
-      { tipo: "paragrafo", trechos: [] },
-    ]);
+  it("vai inteira no arquivo, com a origem de cada valor, e volta igual", () => {
+    const a = JSON.parse(escreverArquivo(trabalho));
+    expect(a.modelo).toMatchObject({ nome: "ABNT", versao: "2025" });
+    expect(a.modelo.cadeia.map((c: any) => c.nome)).toEqual(["Em branco", "ABNT"]);
+    expect(a.modelo.valores.texto.alinhamento).toMatchObject({ valor: "justificado", de: "ABNT" });
+    expect(a.modelo.valores.texto.alinhamento.linha).toBeUndefined();
+    const r = lerArquivo(JSON.stringify(a));
+    expect(r.ok && r.trabalho.modelo).toEqual(semLugar(modeloEmbutido("ABNT")));
   });
 
-  it("sem citações: nada muda", () => {
-    const r = daVersao2([{ tipo: "paragrafo", trechos: [{ texto: "a" }] }]);
-    expect(r.ok && r.trabalho.documento.blocos).toEqual([{ tipo: "paragrafo", trechos: [{ texto: "a" }] }]);
+  it("a APA também vai e volta igual", () => {
+    const t = { ...trabalho, modelo: modeloEmbutido("APA") };
+    const r = lerArquivo(escreverArquivo(t));
+    expect(r.ok && r.trabalho.modelo).toEqual(semLugar(t.modelo));
   });
 
-  it("o bloco da lista só existe a partir da versão 3", () => {
-    expect(daVersao2([{ tipo: "referencias" }])).toEqual({ ok: false, erro: "o bloco 1 do texto está estragado" });
+  it("o trabalho usa a cópia que está no arquivo, não o modelo que vem no Apud", () => {
+    const r = comMudanca((a) => (a.modelo.valores.texto.alinhamento.valor = "à esquerda"));
+    if (!r.ok) throw new Error(r.erro);
+    const norma = normaDoTrabalho(r.trabalho.modelo, estilosEmbutidos(), {});
+    expect(norma.problemas).toEqual([]);
+    expect(norma.modelo.valores.get("texto")?.get("alinhamento")?.texto).toBe("à esquerda");
+  });
+
+  it("recusa a cópia estragada, com o motivo", () => {
+    expect(comMudanca((a) => delete a.modelo)).toEqual({ ok: false, erro: "falta o modelo do trabalho" });
+    expect(comMudanca((a) => (a.modelo.cadeia = []))).toEqual({ ok: false, erro: "a cópia do modelo está estragada (falta de onde ele vem)" });
+    const r = comMudanca((a) => (a.modelo.valores.texto.alinhamento.valor = "torto"));
+    expect(r.ok).toBe(false);
+    expect(!r.ok && r.erro).toMatch(/^a cópia do modelo está estragada: /);
+    expect(comMudanca((a) => (a.modelo.valores.texto["cor inventada"] = { valor: "azul", origem: "", de: "ABNT" })).ok).toBe(false);
   });
 });
 
@@ -230,10 +229,10 @@ describe("referências e citações no .apud", () => {
     expect(r.ok && (r.trabalho.documento.referencias[0] as unknown as Record<string, unknown>).isbn).toBe("978-85-326-0000-0");
   });
 
-  it("recusa ajustes estragados e arquivo da versão 2 sem lista de referências", () => {
+  it("recusa escolhas do trabalho estragadas e arquivo sem lista de referências", () => {
     expect(comMudanca((a) => (a.ajustes = { ABNT: { "referências, prenomes": 3 } }))).toEqual({
       ok: false,
-      erro: "os ajustes da norma do trabalho estão estragados",
+      erro: "as escolhas do trabalho estão estragadas",
     });
     expect(comMudanca((a) => delete a.ajustes).ok).toBe(false);
     expect(comMudanca((a) => delete a.documento.referencias)).toEqual({
@@ -355,7 +354,7 @@ describe("salvamento automático", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Versão 4 (fase 3): blocos novos, dados do trabalho, abertura e imagens
+// Um trabalho com tudo: blocos, dados do trabalho, abertura e imagens
 
 /** Uma imagem PNG de 2 × 1 pixels (vermelho e azul), em base64. */
 const PNG = "iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAIAAAB7QOjdAAAAD0lEQVR4nGP4z8DAwPAfAAcAAf9+CLHQAAAAAElFTkSuQmCC";
@@ -430,16 +429,16 @@ const completo: Trabalho = {
   },
 };
 
-describe("arquivos da versão 4 (fase 3)", () => {
+describe("um trabalho com tudo", () => {
   const comMudanca = (mudar: (a: any) => void) => {
     const a = JSON.parse(escreverArquivo(completo));
     mudar(a);
     return lerArquivo(JSON.stringify(a));
   };
 
-  it("um trabalho com tudo da fase 3 escreve e lê de volta sem mudar nada", () => {
+  it("escreve e lê de volta sem mudar nada", () => {
     const texto = escreverArquivo(completo);
-    expect(JSON.parse(texto).versao).toBe(4);
+    expect(JSON.parse(texto).versao).toBe(5);
     expect(lerArquivo(texto)).toEqual({ ok: true, trabalho: completo });
   });
 
@@ -448,48 +447,9 @@ describe("arquivos da versão 4 (fase 3)", () => {
     expect(r.ok && r.trabalho.documento.abertura.agradecimentos).toEqual(completo.documento.abertura.agradecimentos);
   });
 
-  it("arquivos da versão 3 abrem com os dados vazios, a abertura desligada e sem imagens: o PDF continua igual", () => {
-    const a = JSON.parse(escreverArquivo(trabalho));
-    a.versao = 3;
-    a.documento = { versao: 3, blocos: a.documento.blocos, referencias: a.documento.referencias };
-    const r = lerArquivo(JSON.stringify(a));
-    expect(r).toEqual({ ok: true, trabalho: { ...trabalho, documento: { ...trabalho.documento, dados: dadosVazios(), abertura: aberturaVazia(), imagens: [] } } });
-  });
-
-  it("os blocos novos e a nota de rodapé só existem a partir da versão 4", () => {
-    const daVersao3 = (bloco: unknown) => {
-      const a = JSON.parse(escreverArquivo(trabalho));
-      a.versao = 3;
-      a.documento = { versao: 3, blocos: [bloco], referencias: a.documento.referencias };
-      return lerArquivo(JSON.stringify(a));
-    };
-    expect(daVersao3({ tipo: "citacaoLonga", trechos: [] })).toEqual({ ok: false, erro: "o bloco 1 do texto está estragado" });
-    expect(daVersao3({ tipo: "figura", imagem: "x", titulo: [], fonte: [] }).ok).toBe(false);
-    expect(daVersao3({ tipo: "tabela", linhas: [[[]]], cabecalho: 0, titulo: [], fonte: [] }).ok).toBe(false);
-    expect(daVersao3({ tipo: "paragrafo", trechos: [{ nota: { trechos: [] } }] }).ok).toBe(false);
-  });
-
-  it("um trabalho real gravado na versão 3 (o artigo da UNIVALI, antes da fase 3) abre inteiro", () => {
-    const texto = readFileSync(join(import.meta.dirname, "exemplos", "artigo-versao-3.apud"), "utf8");
-    const antigo = JSON.parse(texto);
-    expect(antigo.versao).toBe(3);
-    const r = lerArquivo(texto);
-    if (!r.ok) throw new Error(r.erro);
-    expect(r.trabalho.documento).toEqual({
-      versao: 4,
-      dados: dadosVazios(),
-      abertura: aberturaVazia(),
-      blocos: antigo.documento.blocos,
-      referencias: antigo.documento.referencias,
-      imagens: [],
-    });
-    expect(r.trabalho.ajustes).toEqual(antigo.ajustes);
-    expect(lerArquivo(escreverArquivo(r.trabalho))).toEqual(r);
-  });
-
   it("os arquivos .apud dos artigos de teste abrem inteiros", () => {
     for (const pasta of ["univali-abnt", "revista-apa"]) {
-      const dir = join(import.meta.dirname, "..", "..", "perfis", "artigos", pasta);
+      const dir = join(import.meta.dirname, "..", "..", "testes", "artigos", pasta);
       const arquivo = JSON.parse(readFileSync(join(dir, "trabalho.json"), "utf8")).arquivo as string;
       const texto = readFileSync(join(dir, arquivo), "utf8");
       const r = lerArquivo(texto);

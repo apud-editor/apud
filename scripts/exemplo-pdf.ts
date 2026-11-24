@@ -1,5 +1,5 @@
 // Gera o PDF de um texto de exemplo com o modelo ABNT, para conferir a
-// paginação. Uso: npm run exemplo-pdf  (o PDF fica em perfis/prova/saida/)
+// paginação. Uso: npm run exemplo-pdf  (o PDF fica em testes/prova/saida/)
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

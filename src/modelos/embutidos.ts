@@ -10,7 +10,7 @@ import type { PerfilResolvido } from "../perfis/tipos";
 import type { ModeloResolvido } from "./tipos";
 
 const textos = import.meta.glob("../../modelos/*.txt", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
-const estilos = import.meta.glob("../../perfis/estilos/*.csl", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+const estilos = import.meta.glob("../../modelos/estilos/*.csl", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
 const comoArquivos = (m: Record<string, string>) => Object.entries(m).map(([caminho, conteudo]) => ({ nome: caminho.split("/").pop()!, conteudo }));
 
@@ -23,6 +23,11 @@ function conferidos(): ResultadoDaConferencia[] {
 /** As normas que vêm no programa, para a escolha da norma do trabalho ("ABNT", "APA"): os modelos que herdam do Em branco. */
 export function normasEmbutidas(): string[] {
   return conferidos().flatMap((r) => (r.resolvido && r.resolvido.cadeia.length === 2 ? [r.resolvido.identificacao.nome] : []));
+}
+
+/** Os estilos CSL das listas de referências (até a etapa 5). */
+export function estilosEmbutidos() {
+  return comoArquivos(estilos);
 }
 
 /** O modelo de uma norma embutida, sem as escolhas do trabalho: o padrão da norma. */

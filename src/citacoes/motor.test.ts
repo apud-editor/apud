@@ -1,5 +1,5 @@
 // Testes do motor de citações: os casos difíceis, nas duas normas, com os
-// perfis de verdade (perfis/abnt.txt e perfis/apa.txt).
+// modelos de verdade (modelos/abnt.txt e modelos/apa.txt).
 
 import { describe, expect, it } from "vitest";
 import { carregarNorma } from "../../scripts/prova-lib";

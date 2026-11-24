@@ -3,7 +3,7 @@
 
   "Aqui na rua, não": a versão do artigo com as alterações pedidas pela
   revista, em APA. O texto e as fontes são diferentes da versão da UNIVALI
-  (perfis/artigos/univali-abnt). Mesma forma curta das citações; os minutos
+  (testes/artigos/univali-abnt). Mesma forma curta das citações; os minutos
   dos vídeos (0:57) e os parágrafos (par. 9) entram como localizador.
   O trabalho usa as escolhas de revista da APA (trabalho.json): todos os
   autores na primeira citação, prenomes por extenso e cidade da editora.

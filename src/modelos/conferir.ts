@@ -190,9 +190,8 @@ export function lerSituacao(texto: string | undefined, tipo: TipoValor, nome: st
   const t = normalizar(texto);
   // "Ajustável": a norma não fixa; o valor é o padrão, e cada trabalho pode trocar
   // (decisão 19 da v2: nos perfis da v1 se chamava "faculdade", mas vale também
-  // para revistas e para quem não está numa faculdade). Por dentro, o tipo ainda
-  // se chama "faculdade", como nos perfis, até a parte 1d.
-  if (t === "ajustavel" || t === "ajustável") return { ok: true, situacao: { tipo: "faculdade" } };
+  // para revistas e para quem não está numa faculdade).
+  if (t === "ajustável" || t === "ajustavel") return { ok: true, situacao: { tipo: "ajustavel" } };
   if (t === "faculdade") return { ok: false, erro: "nos modelos, a situação “faculdade” se chama “ajustável” (vale também para revistas e para quem não está numa faculdade)." };
   if (t === "desligada") return { ok: true, situacao: { tipo: "desligada" } };
   const escolha = texto.trim().match(/^escolha\s*:\s*(.*)$/i);

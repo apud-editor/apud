@@ -138,7 +138,7 @@ export default function Painel({ aoAbrir, temaEscolhido, aoEscolherTema }: Props
                         )}
                       </span>
                       <span>
-                        <span className="selo-norma">{l.trabalho.perfil.perfil}</span>
+                        <span className="selo-norma">{l.trabalho.modelo.identificacao.nome}</span>
                       </span>
                       <span className="data">{quando(l.trabalho.modificadoEm, l.modificado)}</span>
                     </>
