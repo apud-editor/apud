@@ -1,15 +1,20 @@
-// O ⚙ do bloco, a janelinha de ajustes e o quadro de valores da barra (etapa 2c da v2).
+// O ⚙ do bloco, a alça de arrastar, a janelinha de ajustes e o quadro de valores da barra (etapas 2c e 2d da v2).
 // A conta do que mostrar e do que escrever está em janelinha.ts (testada); aqui só se desenha.
 //
 // - O ⚙ aparece na margem do bloco sob o mouse (ou do cursor). Clicar nele, clicar no
 //   quadro da barra ou apertar Alt+F abre a janelinha.
 // - A janelinha escolhe entre "Todos os iguais" (muda o elemento inteiro, nas escolhas do
 //   trabalho) e "Só este" (uma exceção neste bloco). Vale no PDF; o editor não imita o PDF.
+// - A alça ⋮⋮, ao lado do ⚙, arrasta o bloco para outro lugar (arrastar.ts). A janelinha tem
+//   "Mover para cima / para baixo", a saída sem mouse. A conta do movimento está em mover.ts.
 
 import { useEffect, useLayoutEffect, useReducer, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { useEditorState, type Editor as EditorTipTap } from "@tiptap/react";
 import { ehAtalhoDosAjustes, ATALHO_DOS_AJUSTES } from "../telas/atalhos";
+import { useArrastar } from "./arrastar";
+import { destacar } from "./destaque";
 import { Icone } from "./icones";
+import { indiceDepoisDeMover, lacunaAoMover, moverBloco, podeMover } from "./mover";
 import {
   blocoAjustavel,
   escreverSoEste,
@@ -51,6 +56,9 @@ interface PropsDaJanelinha {
   aoEscolher: (escrita: Escrita) => void;
   aoVoltar: () => void;
   aoFechar: () => void;
+  /** Se o bloco tem para onde andar um lugar. */
+  podeMover: { cima: boolean; baixo: boolean };
+  aoMover: (sentido: "cima" | "baixo") => void;
   style?: CSSProperties;
 }
 
@@ -132,6 +140,15 @@ export function JanelinhaDoBloco(p: PropsDaJanelinha) {
           {a}
         </p>
       ))}
+
+      <div className="janelinha-mover" role="group" aria-label="Mudar de lugar">
+        <button type="button" className="btn" disabled={!p.podeMover.cima} onClick={() => p.aoMover("cima")}>
+          <Icone nome="cima" tamanho={15} /> Mover para cima
+        </button>
+        <button type="button" className="btn" disabled={!p.podeMover.baixo} onClick={() => p.aoMover("baixo")}>
+          <Icone nome="baixo" tamanho={15} /> Mover para baixo
+        </button>
+      </div>
 
       <div className="janelinha-pe">
         {p.excecoes.length > 0 && (
@@ -248,6 +265,8 @@ export function AjustesDoBloco({
   const [passando, setPassando] = useState<number | null>(null);
   const [janela, setJanela] = useState<JanelaAberta | null>(null);
   const caixa = useRef<HTMLDivElement>(null);
+  // Durante o arrastar, o bloco sob o mouse não vira o alvo (a alça fica no bloco que se arrasta).
+  const { arrasto, iniciar, emCurso: emArrasto } = useArrastar(editor, folha);
 
   // Cada mudança no texto, ou no tamanho da janela, mexe no lugar dos blocos.
   useEffect(() => {
@@ -265,13 +284,21 @@ export function AjustesDoBloco({
     if (!el) return;
     let quadro = 0;
     const mover = (ev: MouseEvent) => {
-      if ((ev.target as Element | null)?.closest?.("[data-ajustes]")) return;
+      if (emArrasto.current || (ev.target as Element | null)?.closest?.("[data-ajustes]")) return;
       cancelAnimationFrame(quadro);
-      quadro = requestAnimationFrame(() => setPassando(blocoNaAltura(editor, ev.clientY)));
+      quadro = requestAnimationFrame(() => {
+        if (editor.isDestroyed || emArrasto.current) return;
+        const indice = blocoNaAltura(editor, ev.clientY);
+        setPassando(indice);
+        // O contorno tracejado e a etiqueta do bloco sob o mouse (só desenho).
+        destacar(editor.view, { sobre: indice });
+      });
     };
     const sair = () => {
       cancelAnimationFrame(quadro);
+      if (emArrasto.current) return;
       setPassando(null);
+      if (!editor.isDestroyed) destacar(editor.view, { sobre: null });
     };
     el.addEventListener("mousemove", mover);
     el.addEventListener("mouseleave", sair);
@@ -280,7 +307,7 @@ export function AjustesDoBloco({
       el.removeEventListener("mousemove", mover);
       el.removeEventListener("mouseleave", sair);
     };
-  }, [editor, folha]);
+  }, [editor, folha, emArrasto]);
 
   const doCursor = () => editor.state.selection.$from.index(0);
   const abrirPara = (indice: number) => {
@@ -342,9 +369,9 @@ export function AjustesDoBloco({
     if (janela) caixa.current?.scrollIntoView?.({ block: "nearest" });
   }, [janela?.indice, janela?.aplicarA, janela?.avisos.length, janela?.erro]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const alvo = passando !== null && blocoAjustavel(doc.maybeChild(passando)) ? passando : doCursor();
+  const alvo = arrasto?.de ?? (passando !== null && podeMover(doc.maybeChild(passando)) ? passando : doCursor());
   const blocoDoAlvo = blocoAjustavel(doc.maybeChild(alvo));
-  const lugarDoAlvo = folha.current && blocoDoAlvo ? medirBloco(editor, folha.current, alvo) : null;
+  const lugarDoAlvo = folha.current && podeMover(doc.maybeChild(alvo)) ? medirBloco(editor, folha.current, alvo) : null;
   const lugarDaJanela = folha.current && janela && bloco ? medirBloco(editor, folha.current, janela.indice) : null;
   const modelo = titulos.modelo;
 
@@ -362,6 +389,17 @@ export function AjustesDoBloco({
     }
   };
 
+  /** Sobe ou desce o bloco um lugar. Devolve onde ele ficou (ou nulo se não pôde andar). */
+  const moverUm = (indice: number, sentido: "cima" | "baixo"): number | null => {
+    const lacuna = lacunaAoMover(indice, editor.state.doc.childCount, sentido);
+    const tr = lacuna === null ? null : moverBloco(editor.state, indice, lacuna);
+    if (lacuna === null || !tr) return null;
+    editor.view.dispatch(tr);
+    // O cursor foi para o bloco movido: ele passa a ser o alvo da alça e do ⚙.
+    setPassando(null);
+    return indiceDepoisDeMover(indice, lacuna);
+  };
+
   const voltar = () => {
     if (!janela || !bloco) return;
     const no = editor.state.doc.child(janela.indice);
@@ -371,7 +409,28 @@ export function AjustesDoBloco({
 
   return (
     <>
-      {lugarDoAlvo && blocoDoAlvo && (
+      {lugarDoAlvo && (
+        <button
+          type="button"
+          className="alca"
+          data-ajustes=""
+          style={{ top: lugarDoAlvo.top, left: Math.max(4, lugarDoAlvo.left - 58) }}
+          aria-label={`Arrastar ${blocoDoAlvo ? `o ${nomeDoBloco(blocoDoAlvo).toLowerCase()}` : "o bloco"} para outro lugar`}
+          title="Arraste para mudar de lugar. Com a alça em foco, as setas ↑ e ↓ também movem."
+          onMouseDown={(ev) => {
+            setJanela(null);
+            iniciar(alvo, ev);
+          }}
+          onKeyDown={(ev) => {
+            if (ev.key !== "ArrowUp" && ev.key !== "ArrowDown") return;
+            ev.preventDefault();
+            moverUm(alvo, ev.key === "ArrowUp" ? "cima" : "baixo");
+          }}
+        >
+          <Icone nome="alca" tamanho={16} />
+        </button>
+      )}
+      {lugarDoAlvo && blocoDoAlvo && !arrasto && (
         <button
           type="button"
           className="engrenagem"
@@ -385,6 +444,7 @@ export function AjustesDoBloco({
           <Icone nome="engrenagem" tamanho={16} />
         </button>
       )}
+      {arrasto?.linha && <div className="linha-de-soltura" aria-hidden="true" style={{ top: arrasto.linha.top, left: arrasto.linha.left, width: arrasto.linha.largura }} />}
       {janela && bloco && modelo && lugarDaJanela && (
         <div ref={caixa} className="janelinha-lugar" data-ajustes="" style={{ top: lugarDaJanela.top + 32, left: Math.max(8, lugarDaJanela.left - 34) }}>
           <JanelinhaDoBloco
@@ -399,6 +459,11 @@ export function AjustesDoBloco({
             aoEscolher={escolher}
             aoVoltar={voltar}
             aoFechar={fechar}
+            podeMover={{ cima: janela.indice > 0, baixo: janela.indice < doc.childCount - 1 }}
+            aoMover={(sentido) => {
+              const novo = moverUm(janela.indice, sentido);
+              if (novo !== null) setJanela({ ...janela, indice: novo });
+            }}
           />
         </div>
       )}

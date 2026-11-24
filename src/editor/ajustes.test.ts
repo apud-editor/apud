@@ -10,7 +10,11 @@ import { excecoesDoBloco, linhasDaJanelinha, nomeDoBloco, origemDaJanelinha, typ
 const abnt = carregarModelo("abnt.txt");
 const nada = () => {};
 
-function janelinha(bloco: BlocoAjustavel, aplicarA: "todos" | "este", extra: { avisos?: string[]; erro?: string | null } = {}) {
+function janelinha(
+  bloco: BlocoAjustavel,
+  aplicarA: "todos" | "este",
+  extra: { avisos?: string[]; erro?: string | null; podeMover?: { cima: boolean; baixo: boolean } } = {},
+) {
   return renderToStaticMarkup(
     createElement(JanelinhaDoBloco, {
       nome: nomeDoBloco(bloco),
@@ -24,6 +28,8 @@ function janelinha(bloco: BlocoAjustavel, aplicarA: "todos" | "este", extra: { a
       aoEscolher: nada,
       aoVoltar: nada,
       aoFechar: nada,
+      podeMover: extra.podeMover ?? { cima: true, baixo: true },
+      aoMover: nada,
     }),
   );
 }
@@ -56,6 +62,29 @@ describe("a janelinha do parágrafo", () => {
   it("não oferece “Voltar ao do modelo” sem exceção, e o painel completo ainda está apagado", () => {
     expect(html).not.toContain("Voltar ao do modelo");
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Mais opções…<\/button>/);
+  });
+});
+
+describe("mover para cima e para baixo (2d)", () => {
+  /** O botão com esse texto, pelo HTML (cada botão vai de `<button` até `</button>`). */
+  const botao = (html: string, texto: string) => html.split("<button").find((b) => b.includes(`${texto}</button>`)) ?? "";
+
+  it("a janelinha oferece os dois botões", () => {
+    const html = janelinha(paragrafo, "todos");
+    expect(html).toContain('aria-label="Mudar de lugar"');
+    expect(botao(html, "Mover para cima")).not.toBe("");
+    expect(botao(html, "Mover para baixo")).not.toBe("");
+    expect(botao(html, "Mover para cima")).not.toContain("disabled");
+    expect(botao(html, "Mover para baixo")).not.toContain("disabled");
+  });
+
+  it("no primeiro bloco o de cima fica apagado; no último, o de baixo", () => {
+    const primeiro = janelinha(paragrafo, "todos", { podeMover: { cima: false, baixo: true } });
+    expect(botao(primeiro, "Mover para cima")).toContain("disabled");
+    expect(botao(primeiro, "Mover para baixo")).not.toContain("disabled");
+    const ultimo = janelinha(paragrafo, "todos", { podeMover: { cima: true, baixo: false } });
+    expect(botao(ultimo, "Mover para baixo")).toContain("disabled");
+    expect(botao(ultimo, "Mover para cima")).not.toContain("disabled");
   });
 });
 
