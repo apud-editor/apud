@@ -2,6 +2,9 @@
 // A interface chama os comandos abaixo; a lógica de gravação segura fica no
 // módulo apud-arquivos (pasta arquivos/), que tem os próprios testes.
 
+#[cfg(windows)]
+mod icone_win;
+
 use apud_arquivos::{gravar_atomico, traduzir_erro, Pasta};
 use serde::Serialize;
 use std::path::PathBuf;
@@ -148,6 +151,23 @@ async fn exportar_pdf(app: AppHandle, estado: State<'_, Estado>, request: Reques
     Ok(Some(destino.display().to_string()))
 }
 
+/// Troca o ícone da janela e da barra de tarefas (a pessoa escolhe entre os ícones do kit).
+/// A imagem chega em PNG. Só vale no Windows; nos outros sistemas não faz nada.
+#[tauri::command]
+fn definir_icone_da_janela(janela: tauri::WebviewWindow, png: Vec<u8>) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        let imagem = tauri::image::Image::from_bytes(&png).map_err(|e| format!("imagem do ícone inválida: {e}"))?;
+        let hwnd = janela.hwnd().map_err(|e| e.to_string())?;
+        icone_win::definir_icone(hwnd.0 as usize as *mut core::ffi::c_void, imagem.rgba(), imagem.width(), imagem.height())
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (janela, png);
+        Ok(())
+    }
+}
+
 #[tauri::command]
 fn abrir_pdf_exportado(estado: State<Estado>) -> Result<(), String> {
     let caminho = estado.ultimo_pdf.lock().unwrap_or_else(|e| e.into_inner()).clone();
@@ -200,7 +220,8 @@ pub fn run() {
             mostrar_pasta,
             ler_fonte,
             exportar_pdf,
-            abrir_pdf_exportado
+            abrir_pdf_exportado,
+            definir_icone_da_janela
         ])
         .run(tauri::generate_context!())
         .expect("erro ao iniciar o Apud");

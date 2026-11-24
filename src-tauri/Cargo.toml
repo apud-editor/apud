@@ -20,3 +20,7 @@ serde_json = "1"
 apud-arquivos = { path = "arquivos" }
 # Janela "Salvar como" do Windows, para exportar o PDF.
 tauri-plugin-dialog = "2"
+
+# Troca do ícone da barra de tarefas no Windows (o Tauri só troca o ícone pequeno da janela).
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }

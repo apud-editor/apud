@@ -10,12 +10,14 @@ import { arquivoDoIcone, gravarIcone, lerIcone, type IdDoIcone } from "./icone";
 async function pontoNaJanela(id: IdDoIcone): Promise<void> {
   if (!rodandoNoPrograma) return;
   try {
-    const { getCurrentWindow } = await import("@tauri-apps/api/window");
+    const { invoke } = await import("@tauri-apps/api/core");
     const resposta = await fetch(arquivoDoIcone(id));
     const bytes = new Uint8Array(await resposta.arrayBuffer());
-    await getCurrentWindow().setIcon(bytes);
-  } catch {
-    // Sem permissão ou sem a imagem: o ícone do instalador continua, e o programa segue normalmente.
+    // O comando do programa troca o ícone pequeno e o da barra de tarefas (o setIcon do Tauri só troca o pequeno).
+    await invoke("definir_icone_da_janela", { png: Array.from(bytes) });
+  } catch (e) {
+    // O ícone do instalador continua, e o programa segue normalmente.
+    console.error("Não consegui trocar o ícone:", e);
   }
 }
 
