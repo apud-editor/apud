@@ -335,15 +335,23 @@ export function documentoParaTypst(doc: Documento, modelo: ModeloResolvido, opco
   // As citações são montadas na ordem do texto (algumas regras dependem da primeira citação).
   const motor = criarMotor(doc, perfilDeCitacoes(modelo));
   const caminhos = caminhosDasImagens(doc);
+  // A lista de referências sai onde está o primeiro bloco "Lista de referências".
+  // Sem o bloco, o PDF sai sem lista (o editor avisa) e as citações saem só como
+  // texto: as marcas que põem as obras na lista não teriam lista onde entrar, e o
+  // Typst não monta o documento. Um segundo bloco não repete a lista.
+  const temLista = doc.blocos.some((b) => b.tipo === "referencias");
+  let listaJaSaiu = false;
   const escrita: Escrita = {
     motor,
+    semLista: !temLista,
     imagem: (id) => {
       const imagem = doc.imagens.find((im) => im.id === id);
       return imagem ? { imagem, caminho: caminhos.get(id)! } : undefined;
     },
     enfase: enfaseDepoisDoDestaque(r),
     lista: () => {
-      if (!motor.citadas.length) return "";
+      if (listaJaSaiu || !motor.citadas.length) return "";
+      listaJaSaiu = true;
       if (!opcoes.csl) throw new Error("falta o estilo CSL da norma para montar a lista de referências");
       return listaDeReferencias(motor, r, opcoes.csl, medidas);
     },
@@ -855,6 +863,8 @@ interface Escrita {
   enfase?: string;
   /** O Typst da lista de referências, para o bloco da lista. */
   lista: () => string;
+  /** O trabalho não tem o bloco da lista: as citações saem sem as marcas da lista. */
+  semLista?: boolean;
   /**
    * Quando existe, as marcas que põem as obras na lista ficam guardadas aqui
    * em vez de irem no meio do texto. A tabela mede o próprio conteúdo, e o
@@ -1191,7 +1201,7 @@ function trechosParaTypst(trechos: Trecho[], e: Escrita): string {
     .map((t) => {
       if (ehCitacao(t)) {
         const c = e.motor.montar(t.citacao);
-        const marcas = c.obras.map(registrar).join("");
+        const marcas = e.semLista ? "" : c.obras.map(registrar).join("");
         if (e.registros) {
           e.registros.push(marcas);
           return pedacosParaTypst(c.pedacos);
