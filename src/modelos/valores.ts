@@ -35,11 +35,12 @@ function palavra(escritas: string[], leitura: Extract<Leitura, { ok: true }>): T
   };
 }
 
-/** Linhas em branco: "1 linha", "2 linhas" ou "nenhuma" (que é 0). */
+/** Linhas em branco: "1 linha", "2 linhas", "1 linha em branco" ou "nenhuma" (que é 0). */
 export function linhasEmBranco(maximo = 5): TipoValor {
   return ou(
     `um número de linhas, como “1 linha”, ou “nenhuma”`,
     quantidade("linha", "linhas", 0, maximo),
+    quantidade("linha em branco", "linhas em branco", 0, maximo),
     palavra(["nenhuma"], { ok: true, valor: { tipo: "quantidade", numero: 0, unidade: "linhas" }, texto: "nenhuma" }),
   );
 }

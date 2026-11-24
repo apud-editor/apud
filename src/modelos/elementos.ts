@@ -30,18 +30,23 @@ import { ESQUEMA_APA } from "../perfis/esquema-apa";
 import { normalizar, sugerir } from "../perfis/texto";
 import { destaque, espacamento, lista, medida, opcao, simNao, texto, type TipoValor } from "../perfis/valores";
 import type { DefinicaoDeAtalho, DefinicaoDeElemento, DefinicaoDePropriedade, Grupo } from "./tipos";
-import { distanciaLateral, linhasEmBranco, recuo, textoOuNenhum } from "./valores";
+import { distanciaLateral, linhasEmBranco, ou, recuo, textoOuNenhum } from "./valores";
 
 // ---------------------------------------------------------------------------
 // As regras da versão 1 que ficam com o mesmo nome (grupos "norma" e "citações").
 
 const REGRAS_DA_VERSAO_1 = [...ESQUEMA_ABNT.regras, ...ESQUEMA_APA.regras];
 
-/** O tipo que a regra tinha no perfil da versão 1, para ser conferida do mesmo jeito. */
+/**
+ * O tipo que a regra tinha no perfil da versão 1, para ser conferida do mesmo
+ * jeito. Quando a ABNT e a APA tinham a regra com valores diferentes ("referências,
+ * prenomes": por extenso ou abreviados na ABNT; iniciais ou por extenso na APA),
+ * vale qualquer um dos dois.
+ */
 function tipoDaVersao1(chave: string): TipoValor {
-  const definicao = REGRAS_DA_VERSAO_1.find((d) => d.chave === chave);
-  if (!definicao) throw new Error(`a regra “${chave}” não existe nos perfis da versão 1`);
-  return definicao.tipo;
+  const tipos = REGRAS_DA_VERSAO_1.filter((d) => d.chave === chave).map((d) => d.tipo);
+  if (!tipos.length) throw new Error(`a regra “${chave}” não existe nos perfis da versão 1`);
+  return tipos.length === 1 ? tipos[0] : ou(tipos.map((t) => t.descricao).join(" ou "), ...tipos);
 }
 
 /** Regras da versão 1 guardadas como "o que a norma diz", com o mesmo nome e o mesmo tipo. */
@@ -76,7 +81,7 @@ function regrasDeCitacao(): DefinicaoDePropriedade[] {
     if (!secao.includes("citações") && !secao.includes("referências")) continue;
     if (FORAM_PARA_OUTROS_ELEMENTOS.has(d.chave) || vistas.has(d.chave)) continue;
     vistas.add(d.chave);
-    saida.push({ nome: d.chave, tipo: d.tipo, grupo: "citações" });
+    saida.push({ nome: d.chave, tipo: tipoDaVersao1(d.chave), grupo: "citações" });
   }
   return saida;
 }

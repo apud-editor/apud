@@ -114,7 +114,7 @@ describe("leitura do arquivo de modelo", () => {
         "== Títulos › Nível 1 ==",
         "# A norma não diz como.",
         "# Segunda linha.",
-        "destaque: negrito | NBR 6024 | faculdade",
+        "destaque: negrito | NBR 6024 | ajustável",
         "",
         "# solto, separado por linha em branco",
         "",
@@ -126,13 +126,13 @@ describe("leitura do arquivo de modelo", () => {
     expect(lido.secoes).toHaveLength(1);
     expect(lido.secoes[0]).toMatchObject({ caminho: "Títulos › Nível 1", nota: "comentário da seção" });
     expect(lido.secoes[0].valores).toEqual([
-      { nome: "destaque", valor: "negrito", origem: "NBR 6024", situacao: "faculdade", linha: 10, nota: "A norma não diz como. Segunda linha." },
+      { nome: "destaque", valor: "negrito", origem: "NBR 6024", situacao: "ajustável", linha: 10, nota: "A norma não diz como.\nSegunda linha." },
       { nome: "posição", valor: "centralizado", origem: "APA 7", situacao: undefined, linha: 14 },
     ]);
   });
 
   it("explica os erros de escrita com o número da linha", () => {
-    const lido = lerModelo(["modelo: X", "fonte: Arial | Manual", "== Texto ==", "fonte Arial | Manual", "fonte: Arial", "tamanho: 12 pt | faculdade", "== Texto"].join("\n"));
+    const lido = lerModelo(["modelo: X", "fonte: Arial | Manual", "== Texto ==", "fonte Arial | Manual", "fonte: Arial", "tamanho: 12 pt | ajustável", "== Texto"].join("\n"));
     expect(lido.mensagens.map((m) => [m.linha, m.texto.split(".")[0]])).toEqual([
       [2, "a linha “fonte” está antes da primeira seção"],
       [4, "falta o sinal de dois-pontos entre o nome e o valor"],
@@ -162,6 +162,9 @@ describe("conferência dos modelos", () => {
     expect(erros([filho("== Texto ==\nalinhamento: justificar | x")])[0]).toMatch(/não é um valor aceito para “alinhamento”. .*Você quis dizer “justificado”\?/);
     expect(erros([filho("== Texto ==\nfonte: Arial | x | escolha: Times New Roman, Calibri")])[0]).toMatch(/não está entre as opções da escolha/);
     expect(erros([filho("== Texto ==\nfonte: Arial | x | talvez")])[0]).toMatch(/não é uma situação conhecida/);
+    expect(erros([filho("== Texto ==\nfonte: Arial | x | faculdade")])).toEqual([
+      "nos modelos, a situação “faculdade” se chama “ajustável” (vale também para revistas e para quem não está numa faculdade).",
+    ]);
   });
 
   it("cada propriedade recebe um valor só em cada elemento, nem pela linha nem pelo atalho", () => {
@@ -212,7 +215,7 @@ describe("conferência dos modelos", () => {
 
 describe("herança entre modelos", () => {
   it("o que o modelo de baixo não diz vem do Em branco; o que diz, vale por cima", () => {
-    const m = resolvido(filho("== Texto ==\n# Manual da faculdade.\nfonte: Arial | Manual X | faculdade"));
+    const m = resolvido(filho("== Texto ==\n# Manual da faculdade.\nfonte: Arial | Manual X | ajustável"));
     expect(valorProprio(m, "texto", "fonte")).toMatchObject({ texto: "Arial", origem: "Manual X", situacao: { tipo: "faculdade" }, de: "Teste", nota: "Manual da faculdade." });
     expect(valorProprio(m, "texto", "tamanho")).toMatchObject({ texto: "12 pt", de: "Em branco" });
   });

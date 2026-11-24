@@ -1,7 +1,7 @@
 // As duas heranças dos modelos.
 //
 // 1. Entre modelos (resolver): começa pelo Em branco e, por cima, os valores
-//    de cada modelo da cadeia (ABNT, depois a faculdade...). O último a dizer
+//    de cada modelo da cadeia (ABNT, depois o modelo de uma faculdade ou revista...). O último a dizer
 //    vale. Cada valor guarda de que modelo veio.
 // 2. Entre elementos (valorEfetivo): o Nível 2 que não diz a fonte usa a de
 //    Títulos; Títulos que não diz usa a do Texto.
