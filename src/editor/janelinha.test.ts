@@ -8,11 +8,13 @@ import { editorDosBlocos } from "../documento/tiptap";
 import type { Bloco } from "../documento/modelo";
 import { ControleDaBarra, extensoesDoApud } from "./extensoes";
 import {
+  FONTES_DO_TRABALHO,
   alternarDestaque,
   blocoAjustavel,
   escreverSoEste,
   escreverTodos,
   excecoesDoBloco,
+  linhasDaFonte,
   linhasDaJanelinha,
   nomeDoBloco,
   origemDaJanelinha,
@@ -24,6 +26,7 @@ const abnt = carregarModelo("abnt.txt");
 const apa = carregarModelo("apa.txt");
 
 const paragrafo = (excecoes?: BlocoAjustavel["excecoes"]): BlocoAjustavel => ({ elemento: "paragrafo", tipo: "parágrafo", excecoes });
+const citacao = (excecoes?: BlocoAjustavel["excecoes"]): BlocoAjustavel => ({ elemento: "citacaoLonga", tipo: "citação longa", excecoes });
 const titulo = (nivel: 1 | 2 | 3, excecoes?: BlocoAjustavel["excecoes"]): BlocoAjustavel => ({ elemento: `titulos.nivel${nivel}`, tipo: "título", nivel, excecoes });
 
 const linha = (linhas: ReturnType<typeof linhasDaJanelinha>, rotulo: string) => linhas.find((l) => l.rotulo === rotulo)!;
@@ -45,10 +48,11 @@ describe("o bloco do cursor", () => {
     expect(nomeDoBloco(blocoAjustavel(d.child(1))!)).toBe("Título 2");
   });
 
-  it("os outros blocos ainda não têm", () => {
-    const d = doc([{ tipo: "quebra" }, { tipo: "citacaoLonga", trechos: [{ texto: "x" }] }]);
+  it("a citação longa também tem, com as exceções dela; os outros blocos ainda não", () => {
+    const d = doc([{ tipo: "quebra" }, { tipo: "citacaoLonga", trechos: [{ texto: "x" }], excecoes: { tamanho: "11 pt" } }]);
     expect(blocoAjustavel(d.child(0))).toBeNull();
-    expect(blocoAjustavel(d.child(1))).toBeNull();
+    expect(blocoAjustavel(d.child(1))).toEqual({ elemento: "citacaoLonga", tipo: "citação longa", excecoes: { tamanho: "11 pt" } });
+    expect(nomeDoBloco(blocoAjustavel(d.child(1))!)).toBe("Citação longa");
     expect(blocoAjustavel(undefined)).toBeNull();
   });
 });
@@ -66,7 +70,7 @@ describe("o destaque como interruptores", () => {
 describe("as linhas do parágrafo", () => {
   it("mostram o que a ABNT pede: 1,5, justificado, com recuo", () => {
     const linhas = linhasDaJanelinha(abnt, "disciplina", paragrafo(), "todos");
-    expect(linhas.map((l) => l.rotulo)).toEqual(["Espaçamento entre linhas", "Alinhamento", "Recuo da primeira linha"]);
+    expect(linhas.map((l) => l.rotulo)).toEqual(["Espaçamento entre linhas", "Alinhamento", "Recuo da primeira linha", "Fonte do trabalho", "Tamanho da letra"]);
     expect(ativas(linhas[0])).toEqual(["1,5"]);
     expect(ativas(linhas[1])).toEqual(["Justificado"]);
     expect(ativas(linhas[2])).toEqual(["Sim"]);
@@ -92,6 +96,88 @@ describe("as linhas do parágrafo", () => {
     expect(linha(este, "Alinhamento").deExcecao).toBe(true);
     expect(linha(este, "Espaçamento entre linhas").deExcecao).toBe(false);
     expect(ativas(linha(todos, "Alinhamento"))).toEqual(["Justificado"]);
+  });
+});
+
+describe("as linhas da citação longa", () => {
+  it("na ABNT: 10 pt, simples, recuo de 4 cm, justificada, uma linha antes e depois", () => {
+    const linhas = linhasDaJanelinha(abnt, "disciplina", citacao(), "todos");
+    expect(linhas.map((l) => l.rotulo)).toEqual(["Tamanho da letra", "Espaçamento entre linhas", "Recuo à esquerda", "Alinhamento", "Espaço antes e depois"]);
+    expect(linhas.map((l) => ativas(l))).toEqual([["10"], ["1"], ["4 cm"], ["Justificado"], ["1 linha"]]);
+  });
+
+  it("na APA: o tamanho do texto, espaço duplo, recuo de 1,27 cm", () => {
+    const linhas = linhasDaJanelinha(apa, "disciplina", citacao(), "todos");
+    expect(ativas(linha(linhas, "Tamanho da letra"))).toEqual(["12"]);
+    expect(ativas(linha(linhas, "Espaçamento entre linhas"))).toEqual(["2"]);
+    expect(ativas(linha(linhas, "Recuo à esquerda"))).toEqual(["1,27 cm"]);
+  });
+
+  it("“espaço antes e depois” escreve as duas propriedades de uma vez", () => {
+    const linhas = linhasDaJanelinha(abnt, "disciplina", citacao(), "todos");
+    expect(linha(linhas, "Espaço antes e depois").opcoes[1].escrita).toEqual([
+      ["espaço antes", "1 linha"],
+      ["espaço depois", "1 linha"],
+    ]);
+  });
+
+  it("a exceção de uma citação vale só nela, e o alto da janelinha diz isso", () => {
+    const bloco = citacao({ tamanho: "11 pt", "recuo à esquerda": "2 cm" });
+    const linhas = linhasDaJanelinha(abnt, "disciplina", bloco, "este");
+    expect(ativas(linha(linhas, "Tamanho da letra"))).toEqual(["11"]);
+    expect(linha(linhas, "Tamanho da letra").deExcecao).toBe(true);
+    expect(linha(linhas, "Alinhamento").deExcecao).toBe(false);
+    expect(origemDaJanelinha(abnt, bloco, "este")).toBe("Só nesta citação longa: tamanho, recuo à esquerda. O resto vem do modelo.");
+    const r = escreverSoEste(abnt, citacao(), [["alinhamento", "à esquerda"]]);
+    expect(r).toEqual({ ok: true, excecoes: { alinhamento: "à esquerda" }, avisos: [] });
+  });
+
+  it("a fonte e o tamanho do trabalho aparecem só no parágrafo", () => {
+    expect(linhasDaJanelinha(abnt, "disciplina", citacao(), "todos").some((l) => l.doTrabalho)).toBe(false);
+    expect(linhasDaJanelinha(abnt, "disciplina", paragrafo(), "todos").filter((l) => l.doTrabalho).map((l) => l.rotulo)).toEqual(["Fonte do trabalho", "Tamanho da letra"]);
+  });
+});
+
+describe("a fonte e o tamanho do trabalho", () => {
+  it("as quatro fontes mais usadas, e o tamanho de 10 a 14", () => {
+    const [fonte, tamanho] = linhasDaFonte(abnt);
+    expect(fonte.opcoes.map((o) => o.rotulo)).toEqual([...FONTES_DO_TRABALHO]);
+    expect(tamanho.opcoes.map((o) => o.rotulo)).toEqual(["10", "11", "12", "13", "14"]);
+    expect(ativas(fonte)).toEqual(["Times New Roman"]);
+    expect(ativas(tamanho)).toEqual(["12"]);
+    expect([...fonte.opcoes, ...tamanho.opcoes].every((o) => o.todosEm === "texto")).toBe(true);
+  });
+
+  it("na ABNT, a fonte e o tamanho são escritos cada um sozinho", () => {
+    const [fonte, tamanho] = linhasDaFonte(abnt);
+    expect(fonte.opcoes[2].escrita).toEqual([["fonte", "Calibri"]]);
+    expect(tamanho.opcoes[0].escrita).toEqual([["tamanho", "10 pt"]]);
+  });
+
+  it("na APA, trocar a fonte leva o tamanho que a APA pede para ela; trocar o tamanho mantém a fonte", () => {
+    const [fonte, tamanho] = linhasDaFonte(apa);
+    expect(fonte.opcoes.map((o) => o.escrita)).toEqual([
+      [["fonte e tamanho", "Times New Roman 12 pt"]],
+      [["fonte e tamanho", "Arial 11 pt"]],
+      [["fonte e tamanho", "Calibri 11 pt"]],
+      [["fonte e tamanho", "Georgia 11 pt"]],
+    ]);
+    expect(tamanho.opcoes[1].escrita).toEqual([["fonte e tamanho", "Times New Roman 11 pt"]]);
+  });
+
+  it("escrever “todos” muda o trabalho todo, com aviso quando sai da norma", () => {
+    const calibri = escreverTodos(abnt, {}, "texto", [["fonte", "Calibri"]]);
+    expect(calibri.ok && calibri.ajustes).toEqual({ "Texto › fonte": "Calibri" });
+    // A ABNT não fixa a fonte: sem aviso. O tamanho 12 ela fixa: trocar avisa.
+    expect(calibri.ok && calibri.avisos).toEqual([]);
+    const onze = escreverTodos(abnt, {}, "texto", [["tamanho", "11 pt"]]);
+    expect(onze.ok && onze.ajustes).toEqual({ "Texto › tamanho": "11 pt" });
+    expect(onze.ok && onze.avisos.length).toBe(1);
+    const par = escreverTodos(apa, {}, "texto", [["fonte e tamanho", "Georgia 11 pt"]]);
+    expect(par.ok && par.ajustes).toEqual({ "Texto › fonte e tamanho": "Georgia 11 pt" });
+    expect(par.ok && par.avisos).toEqual([]);
+    const fora = escreverTodos(apa, {}, "texto", [["fonte e tamanho", "Georgia 14 pt"]]);
+    expect(fora.ok && fora.avisos).toEqual(["A APA oferece “Times New Roman 12 pt”, “Arial 11 pt”, “Calibri 11 pt”, “Georgia 11 pt” e “Aptos 12 pt”. Com “Georgia 14 pt”, o trabalho sai da norma neste ponto."]);
   });
 });
 
@@ -228,6 +314,11 @@ describe("o quadro de valores da barra", () => {
     expect(quadroDosValores(abnt, "disciplina", titulo(1, { "numerar sozinho": "não", "página nova": "não" }))).toBe(
       "No PDF: Título 1 · negrito, maiúsculas · sem número",
     );
+  });
+
+  it("citação longa: tamanho, espaçamento e recuo", () => {
+    expect(quadroDosValores(abnt, "disciplina", citacao())).toBe("No PDF: Citação longa · 10 pt · esp. simples · recuo 4 cm");
+    expect(quadroDosValores(abnt, "disciplina", citacao({ "recuo à esquerda": "0 cm", tamanho: "12 pt" }))).toBe("No PDF: Citação longa · 12 pt · esp. simples · sem recuo");
   });
 
   it("outros blocos não têm quadro", () => {

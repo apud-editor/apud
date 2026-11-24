@@ -828,6 +828,19 @@ button.linha:hover {
   color: var(--destaque);
 }
 
+/* Fonte e tamanho do trabalho, nas Configurações (etapa 3b). */
+.linha-da-fonte {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0;
+  flex-wrap: wrap;
+}
+.rotulo-da-fonte {
+  width: 70px;
+  font-size: 14px;
+}
+
 /* Lista de referências no texto: um bloco que mostra o título da norma. */
 .texto .lista-referencias {
   margin: 18px 0;
@@ -2477,6 +2490,30 @@ button.ab-pagina-nova:focus {
 }
 .janelinha .dica {
   margin: 4px 0 0;
+}
+/* "O trabalho todo" (etapa 3b): a fonte e o tamanho, separados do "Aplicar a". */
+.janelinha-trabalho {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--borda);
+}
+.janelinha-secao {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.janelinha-seg.janelinha-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.janelinha-seg.janelinha-grade button + button {
+  border-left: 0;
+}
+.janelinha-seg.janelinha-grade button:nth-child(even) {
+  border-left: 1px solid var(--borda-forte);
+}
+.janelinha-seg.janelinha-grade button:nth-child(n + 3) {
+  border-top: 1px solid var(--borda-forte);
 }
 .janelinha-rotulo {
   margin: 12px 0 5px;

@@ -14,7 +14,7 @@
 
 import { listarComE, normalizar } from "../perfis/texto";
 import { atalho, elementoPeloCaminho, propriedade } from "./elementos";
-import { avisoDeNorma } from "./excecoes";
+import { avisoDeEscolha, avisoDeNorma } from "./excecoes";
 import { somar, valorEfetivo } from "./herdar";
 import type { Mensagem, ModeloResolvido, ValorNoModelo, ValoresPorElemento } from "./tipos";
 
@@ -82,11 +82,16 @@ export function aplicarAjustes(modelo: ModeloResolvido, ajustes: Record<string, 
       erro(lido.erro);
       continue;
     }
-    if (v.situacao.tipo === "escolha" && !v.situacao.opcoes.includes(lido.texto)) {
-      erro(`escolha uma das opções: ${listarComE(v.situacao.opcoes)}.`);
+    // Fora das opções da norma: nas regras de citação, não vale; na aparência (a fonte e o
+    // tamanho da APA, escolhidos em par), vale com aviso, como um valor fixo (etapa 3b).
+    const daAparencia = def ? def.grupo === "aparência" || def.grupo === "opções" : !!at;
+    const opcoes = v.situacao.tipo === "escolha" ? v.situacao.opcoes : null;
+    const foraDasOpcoes = !!opcoes && !opcoes.includes(lido.texto);
+    if (opcoes && foraDasOpcoes && !daAparencia) {
+      erro(`escolha uma das opções: ${listarComE(opcoes)}.`);
       continue;
     }
-    const aviso = foraDaNorma ? avisoDeNorma(modelo, v, lido.texto) : undefined;
+    const aviso = foraDaNorma ? avisoDeNorma(modelo, v, lido.texto) : foraDasOpcoes ? avisoDeEscolha(v, lido.texto) : undefined;
     if (aviso) mensagens.push({ gravidade: "aviso", texto: `“${nome}”: ${aviso}` });
     const novo: ValorNoModelo = { valor: lido.valor, texto: lido.texto, origem: ORIGEM_DO_AJUSTE, situacao: v.situacao, de: "este trabalho" };
     if (def) {

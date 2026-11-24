@@ -83,7 +83,7 @@ function blocosDoNo(no: JSONContent): Bloco[] {
     case NO_DA_LISTA_DE_REFERENCIAS:
       return [{ tipo: "referencias" }];
     case NO_DA_CITACAO_LONGA:
-      return [{ tipo: "citacaoLonga", trechos: trechosDe(no) }];
+      return [{ tipo: "citacaoLonga", trechos: trechosDe(no), ...excecoesDe(no) }];
     case NO_DA_FIGURA: {
       const especie = ESPECIES_DE_ILUSTRACAO.find((e) => e !== "figura" && e === no.attrs?.especie) as "grafico" | "quadro" | undefined;
       const largura = Number(no.attrs?.largura);
@@ -119,7 +119,7 @@ function blocosDoNo(no: JSONContent): Bloco[] {
  * entrega ao arquivo uma exceção que o faria ser recusado ao abrir.
  */
 function excecoesDe(no: JSONContent): { excecoes?: Excecoes } {
-  const elemento = no.type === "heading" ? `titulos.nivel${nivelValido(no.attrs?.level)}` : "paragrafo";
+  const elemento = no.type === "heading" ? `titulos.nivel${nivelValido(no.attrs?.level)}` : no.type === NO_DA_CITACAO_LONGA ? "citacaoLonga" : "paragrafo";
   const ex = excecoesQueValem(elemento, no.attrs?.excecoes);
   return ex ? { excecoes: ex } : {};
 }
@@ -254,7 +254,7 @@ function noDoBloco(b: Bloco): JSONContent {
     case "lista":
       return noDaLista(b.itens, b.sequencia);
     case "citacaoLonga":
-      return comTexto({ type: NO_DA_CITACAO_LONGA }, b.trechos);
+      return comTexto(b.excecoes ? { type: NO_DA_CITACAO_LONGA, attrs: { excecoes: { ...b.excecoes } } } : { type: NO_DA_CITACAO_LONGA }, b.trechos);
     case "figura":
       return {
         type: NO_DA_FIGURA,

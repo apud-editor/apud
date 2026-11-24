@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import { carregarPerfil } from "../../scripts/prova-lib";
 import { aberturaVazia, dadosVazios, type Abertura } from "../documento/modelo";
 import { escolhasDoAutor } from "../referencias/escolhas";
+import { linhasDaFonte } from "../editor/janelinha";
 import AberturaEmBlocos from "./AberturaEmBlocos";
 import Assistente from "./Assistente";
 import Configuracoes, { ABAS, type AbaDasConfiguracoes } from "./Configuracoes";
@@ -41,6 +42,8 @@ function configuracoes(aba: AbaDasConfiguracoes, norma: "ABNT" | "APA" = "ABNT",
       aoMudarAbertura: nada,
       aoTrocarNorma: nada,
       aoEscolher: nada,
+      lerLinhasDaFonte: () => linhasDaFonte(modelo),
+      aoMudarFonte: () => ({ ok: true as const, avisos: [] }),
       aoFechar: nada,
     }),
   );
@@ -93,6 +96,15 @@ describe("Configurações do trabalho", () => {
     expect(html).toContain("Trabalho de disciplina");
     expect(html).toContain('aria-pressed="true"');
     expect(html).toContain("português do Brasil");
+  });
+
+  it("aba Trabalho: fonte e tamanho do trabalho, com o valor da norma marcado (3b)", () => {
+    const html = configuracoes("trabalho");
+    expect(html).toContain("<legend>Fonte e tamanho</legend>");
+    expect(html).toMatch(/aria-label="Fonte do trabalho".*aria-pressed="true"[^>]*>Times New Roman<\/button>/s);
+    expect(html).toMatch(/aria-label="Tamanho da letra".*aria-pressed="true"[^>]*>12<\/button>/s);
+    for (const f of ["Arial", "Calibri", "Georgia"]) expect(html).toContain(`>${f}</button>`);
+    expect(html).toContain("como a ABNT pede");
   });
 });
 

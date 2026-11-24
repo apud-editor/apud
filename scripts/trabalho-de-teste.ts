@@ -36,7 +36,7 @@ function comMarcas(t: Trecho): Trecho[] {
 
 /** "{só este: alinhamento = centralizado; entrelinha = simples}" no fim do texto vira exceções do bloco. */
 function tirarExcecoes(b: Bloco): Bloco {
-  if (b.tipo !== "paragrafo" && b.tipo !== "titulo") return b;
+  if (b.tipo !== "paragrafo" && b.tipo !== "titulo" && b.tipo !== "citacaoLonga") return b;
   const ultimo = b.trechos[b.trechos.length - 1];
   const m = ultimo && "texto" in ultimo ? ultimo.texto.match(/\s*\{só este:([^}]*)\}\s*$/) : null;
   if (!m) return b;

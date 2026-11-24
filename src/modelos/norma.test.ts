@@ -34,8 +34,11 @@ describe("escolhas do trabalho por cima do modelo", () => {
     expect(texto(modelo!, "texto", "fonte")).toBe("Arial");
     expect(texto(modelo!, "pagina.numero", "tamanho")).toBe("11 pt");
     expect(modelo!.atalhos.get("texto")?.get("fonte e tamanho")?.texto).toBe("Arial 11 pt");
-    expect(aplicarAjustes(apa, { "Texto › fonte e tamanho": "Arial 12 pt" }).mensagens.map((m) => m.texto)).toEqual([
-      "“Texto › fonte e tamanho”: escolha uma das opções: “Times New Roman 12 pt”, “Arial 11 pt”, “Calibri 11 pt”, “Georgia 11 pt” e “Aptos 12 pt”.",
+    // Um par fora das opções da APA (etapa 3b) é aceito, com aviso de que o trabalho sai da norma.
+    const fora = aplicarAjustes(apa, { "Texto › fonte e tamanho": "Arial 12 pt" });
+    expect(texto(fora.modelo!, "texto", "tamanho")).toBe("12 pt");
+    expect(fora.mensagens.map((m) => [m.gravidade, m.texto])).toEqual([
+      ["aviso", "“Texto › fonte e tamanho”: A APA oferece “Times New Roman 12 pt”, “Arial 11 pt”, “Calibri 11 pt”, “Georgia 11 pt” e “Aptos 12 pt”. Com “Arial 12 pt”, o trabalho sai da norma neste ponto."],
     ]);
   });
 

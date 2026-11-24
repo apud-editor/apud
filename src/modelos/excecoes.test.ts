@@ -20,11 +20,12 @@ const abnt = carregarModelo("abnt.txt");
 const apa = carregarModelo("apa.txt");
 
 describe("o elemento de cada bloco", () => {
-  it("parágrafo e título aceitam exceções; os outros blocos, ainda não", () => {
+  it("parágrafo, título e citação longa aceitam exceções; os outros blocos, ainda não", () => {
     expect(elementoDoBloco({ tipo: "paragrafo", trechos: [] })).toBe("paragrafo");
     expect(elementoDoBloco({ tipo: "titulo", nivel: 3, trechos: [] })).toBe("titulos.nivel3");
     expect(elementoDoBloco({ tipo: "quebra" })).toBeUndefined();
-    expect(elementoDoBloco({ tipo: "citacaoLonga", trechos: [] })).toBeUndefined();
+    expect(elementoDoBloco({ tipo: "citacaoLonga", trechos: [] })).toBe("citacaoLonga");
+    expect(propriedadesComExcecao("citacaoLonga")).toEqual(["tamanho", "entrelinha", "recuo à esquerda", "espaço antes", "espaço depois", "alinhamento"]);
     expect(propriedadesComExcecao("paragrafo")).toEqual(["entrelinha", "alinhamento", "recuo da primeira linha"]);
     expect(propriedadesComExcecao("titulos.nivel2")).toEqual(["destaque", "posição", "numerar sozinho", "maiúsculas sozinho", "página nova"]);
     expect(propriedadesComExcecao("listas")).toEqual([]);

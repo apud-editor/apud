@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Abertura, DadosDoTrabalho, TipoDeTrabalho } from "../documento/modelo";
 import { prenderTab } from "../editor/foco";
+import type { Escrita, LinhaDaJanelinha } from "../editor/janelinha";
 import type { EscolhaDoAutor } from "../referencias/escolhas";
 import type { ModeloResolvido } from "../modelos/tipos";
 import CamposDosDados from "./CamposDosDados";
@@ -28,6 +29,10 @@ interface Props {
   aoMudarAbertura: (fazer: (a: Abertura) => Abertura) => void;
   aoTrocarNorma: (nome: string) => void;
   aoEscolher: (e: EscolhaDoAutor, valor: string) => void;
+  /** As linhas "Fonte do trabalho" e "Tamanho da letra", lidas do modelo com as escolhas de agora (as mesmas do ⚙ do parágrafo). */
+  lerLinhasDaFonte: () => LinhaDaJanelinha[];
+  /** Muda a fonte ou o tamanho do trabalho todo ("todos os iguais" no elemento Texto). */
+  aoMudarFonte: (escrita: Escrita) => { ok: true; avisos: string[] } | { ok: false; erro: string };
   aoFechar: () => void;
 }
 
@@ -123,6 +128,7 @@ export default function Configuracoes(p: Props) {
                 </div>
                 <p className="dica-form">Trocar de norma não apaga nada: o texto, os dados e as referências continuam, e o PDF muda de forma.</p>
               </fieldset>
+              <FonteDoTrabalho lerLinhas={p.lerLinhasDaFonte} aoMudar={p.aoMudarFonte} nomeDaNorma={p.nomeDaNorma} />
               <fieldset className="grupo-form">
                 <legend>Avaliação cega</legend>
                 <label className="marcar-form">
@@ -145,5 +151,52 @@ export default function Configuracoes(p: Props) {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Fonte e tamanho do trabalho (etapa 3b): os mesmos botões do ⚙ do parágrafo.
+ * Quando a escolha sai do que a norma pede, o Apud aceita e avisa.
+ */
+export function FonteDoTrabalho(p: {
+  lerLinhas: () => LinhaDaJanelinha[];
+  aoMudar: (escrita: Escrita) => { ok: true; avisos: string[] } | { ok: false; erro: string };
+  nomeDaNorma: string;
+}) {
+  // Depois de mudar, as linhas são lidas de novo (o modelo com a escolha nova).
+  const [, setVez] = useState(0);
+  const [mensagens, setMensagens] = useState<{ avisos: string[]; erro: string | null }>({ avisos: [], erro: null });
+  const escolher = (escrita: Escrita) => {
+    const r = p.aoMudar(escrita);
+    setMensagens(r.ok ? { avisos: r.avisos, erro: null } : { avisos: [], erro: r.erro });
+    setVez((v) => v + 1);
+  };
+  return (
+    <fieldset className="grupo-form">
+      <legend>Fonte e tamanho</legend>
+      {p.lerLinhas().map((l) => (
+        <div key={l.rotulo} className="linha-da-fonte">
+          <span className="rotulo-da-fonte">{l.rotulo === "Fonte do trabalho" ? "Fonte" : "Tamanho"}</span>
+          <div className="seletor-norma" role="group" aria-label={l.rotulo}>
+            {l.opcoes.map((o) => (
+              <button key={o.rotulo} type="button" className={`seg ${o.ativa ? "on" : ""}`} aria-pressed={o.ativa} onClick={() => escolher(o.escrita)}>
+                {o.rotulo}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      {mensagens.erro && (
+        <p className="aviso-form" role="alert">
+          {mensagens.erro}
+        </p>
+      )}
+      {mensagens.avisos.map((a) => (
+        <p key={a} className="aviso-form" role="status">
+          {a}
+        </p>
+      ))}
+      <p className="dica-form">Vale para todo o texto. As citações longas, as notas e as legendas continuam menores, como a {p.nomeDaNorma} pede. Também dá para mudar no ⚙ de qualquer parágrafo.</p>
+    </fieldset>
   );
 }

@@ -6,7 +6,11 @@ import type { Pedido, Resposta } from "./motor.worker";
 import type { ArquivoDoTypst } from "./elementos";
 import { armazenamento } from "../arquivos/armazenamento";
 
-/** Fontes de reserva que vêm com o Apud (pasta public/fontes), com as mesmas medidas da Times e da Arial. */
+/**
+ * Fontes de reserva que vêm com o Apud (pasta public/fontes), com as mesmas
+ * medidas das fontes do Windows: Liberation Serif (Times New Roman), Liberation
+ * Sans (Arial), Carlito (Calibri) e Gelasio (Georgia). Todas com licença OFL.
+ */
 const FONTES_DE_RESERVA = [
   "LiberationSerif-Regular.ttf",
   "LiberationSerif-Bold.ttf",
@@ -16,6 +20,14 @@ const FONTES_DE_RESERVA = [
   "LiberationSans-Bold.ttf",
   "LiberationSans-Italic.ttf",
   "LiberationSans-BoldItalic.ttf",
+  "Carlito-Regular.ttf",
+  "Carlito-Bold.ttf",
+  "Carlito-Italic.ttf",
+  "Carlito-BoldItalic.ttf",
+  "Gelasio-Regular.ttf",
+  "Gelasio-Bold.ttf",
+  "Gelasio-Italic.ttf",
+  "Gelasio-BoldItalic.ttf",
 ];
 
 type Espera = { resolver: (r: Resposta) => void };

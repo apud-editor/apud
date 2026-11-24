@@ -1,4 +1,4 @@
-// O formato do arquivo .apud (versão 7; a versão 5 foi a primeira da versão 2 do Apud).
+// O formato do arquivo .apud (versão 8; a versão 5 foi a primeira da versão 2 do Apud).
 //
 // É um arquivo de texto (JSON), legível em qualquer editor de texto: se um dia
 // algo der errado, o conteúdo do trabalho ainda pode ser recuperado à mão.
@@ -6,14 +6,14 @@
 //
 //   {
 //     "formato": "apud",
-//     "versao": 7,
+//     "versao": 8,
 //     "nome": "Relato de experiência de estágio",
 //     "modelo": { "nome": "ABNT", "versao": "2025", "revisao": 10, "cadeia": [...],
 //                 "valores": { ... }, "atalhos": { ... } },
 //     "ajustes": { "ABNT": { "referências, prenomes": "abreviados" } },
 //     "criadoEm": "2026-11-20T18:40:00.000Z",
 //     "modificadoEm": "2026-11-20T19:02:11.000Z",
-//     "documento": { "versao": 7, "dados": { ... }, "abertura": { ... },
+//     "documento": { "versao": 8, "dados": { ... }, "abertura": { ... },
 //                    "blocos": [ ... ], "referencias": [ ... ], "imagens": [ ... ] }
 //   }
 //
@@ -46,6 +46,11 @@
 // epígrafe ou agradecimentos desligados mas com texto ficam guardados. Ele é
 // gravado na versão 7 quando o trabalho muda. A versão subiu para que um Apud
 // antigo recuse o arquivo, em vez de não achar a abertura e perdê-la.
+//
+// Versão 8 (etapa 3b): a citação longa pode ter exceções "só este" (tamanho,
+// entrelinha, recuo à esquerda, espaço antes e depois, alinhamento). A versão
+// subiu para que um Apud que só conhece a 7 recuse o arquivo em vez de apagar
+// essas exceções ao salvar. Um arquivo da versão 7 abre como está.
 //
 // Os arquivos das versões 1 a 4 são da versão de testes do Apud (a versão 1 do
 // programa) e não abrem mais (decisão do Francisco, 23/11/2026): são recusados
@@ -85,7 +90,7 @@ import { conferirExcecoes } from "../modelos/excecoes";
 import { ELEMENTO_DA_ABERTURA } from "../conversor/abertura";
 import type { ModeloResolvido } from "../modelos/tipos";
 
-export const VERSAO_DO_ARQUIVO = 7;
+export const VERSAO_DO_ARQUIVO = 8;
 
 /** A primeira versão do arquivo na versão 2 do Apud. As anteriores são da versão de testes. */
 export const PRIMEIRA_VERSAO_DA_V2 = 5;
@@ -255,7 +260,10 @@ function conferirBloco(b: unknown): Bloco | string | null {
     // Fase 3 (versão 4)
     case "citacaoLonga": {
       const t = trechos(b.trechos);
-      return t && { tipo: "citacaoLonga", trechos: t };
+      if (!t) return null;
+      // Versão 8 (etapa 3b): a citação longa também pode ter "só este".
+      const ex = excecoesDoBloco(b, "citacaoLonga");
+      return typeof ex === "string" ? ex : { tipo: "citacaoLonga", trechos: t, ...ex };
     }
     case "figura": {
       if (!texto(b.imagem) || !b.imagem) return null;

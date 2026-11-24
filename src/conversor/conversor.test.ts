@@ -85,6 +85,22 @@ describe("conversor para o Typst", () => {
     expect(typst).toContain("first-line-indent: (amount: 1.25cm, all: true)");
   });
 
+  it("Calibri e Georgia usam no PDF a reserva de mesmas medidas (Carlito e Gelasio) quando faltam, e o texto sai com elas", () => {
+    for (const [fonte, reserva] of [
+      ["Calibri", "Carlito"],
+      ["Georgia", "Gelasio"],
+    ]) {
+      const modelo = aplicarAjustes(perfil, { "Texto › fonte": fonte, "Texto › tamanho": "11 pt" }).modelo!;
+      const typst = documentoParaTypst(TEXTO_DE_EXEMPLO, modelo);
+      expect(typst).toContain(`font: ("${fonte}", "${reserva}"), size: 11pt`);
+      const pdf = Buffer.from(compilar(typst)).toString("latin1");
+      // Negrito e itálico do texto de exemplo também saem na reserva.
+      expect(pdf).toMatch(new RegExp(`/BaseFont\\s*/[A-Z]{6}\\+${reserva}\\w*-Regular`));
+      expect(pdf).toMatch(new RegExp(`/BaseFont\\s*/[A-Z]{6}\\+${reserva}\\w*-Bold`));
+      expect(pdf).toMatch(new RegExp(`/BaseFont\\s*/[A-Z]{6}\\+${reserva}\\w*-Italic`));
+    }
+  });
+
   it("entrelinha 1,5 como no Word: 20,7 pt entre as linhas, em Times 12", () => {
     const paragrafo = "palavra ".repeat(200);
     const marca = (n: string) => `#context [#metadata(here().position()) <${n}>]`;
@@ -387,6 +403,21 @@ describe("fase 3: citação longa, notas, figuras e tabelas no PDF", () => {
     expect(typst).toContain("#set text(size: 12pt)");
     expect(typst).toContain("#set par(first-line-indent: 0pt, leading: 1.15em, spacing: 1.15em)");
     expect(typst).toContain(String.raw`Termina aqui\. #cite(label("r"), form: none)\(Silva\, 2019\, p\. 15\)` + "\n");
+    expect(() => compilar(typst)).not.toThrow();
+  });
+
+  it("uma citação longa com exceções (pedido de revista) sai do jeito dela, e só ela", () => {
+    const diferente: Documento["blocos"][number] = {
+      tipo: "citacaoLonga",
+      trechos: [{ texto: "Outro trecho longo." }],
+      excecoes: { tamanho: "11 pt", "recuo à esquerda": "2 cm", alinhamento: "à esquerda", "espaço antes": "nenhuma", "espaço depois": "nenhuma" },
+    };
+    const typst = documentoParaTypst(comLista(doc([longa, diferente])), abnt, csl(abnt));
+    // A primeira segue o modelo; a segunda, as exceções.
+    expect(typst).toContain("#block(above: 0.575em + 1 * 1.725em, below: 0.575em + 1 * 1.725em, pad(left: 4cm)[");
+    expect(typst).toContain("#block(above: 0.575em, below: 0.575em, pad(left: 2cm)[\n#set text(size: 11pt)");
+    expect(typst).toContain("#set par(justify: false)\n#set align(left)");
+    expect(typst.match(/#set align\(left\)/g)).toHaveLength(1);
     expect(() => compilar(typst)).not.toThrow();
   });
 

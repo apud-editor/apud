@@ -84,7 +84,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa arquivo de uma versão mais nova do Apud", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.versao = 8;
+    novo.versao = 9;
     const r = lerArquivo(JSON.stringify(novo));
     expect(r.ok).toBe(false);
     expect(!r.ok && r.erro).toContain("versão mais nova");
@@ -92,7 +92,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa texto numa versão do modelo que este Apud não conhece", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.documento.versao = 8;
+    novo.documento.versao = 9;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
     novo.documento.versao = 4;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
@@ -125,6 +125,28 @@ describe("formato do arquivo .apud", () => {
     expect(lerArquivo(JSON.stringify(arquivo))).toMatchObject({ ok: false, erro: expect.stringMatching(/^o bloco 4 do texto está estragado: /) });
   });
 
+  it("guarda as exceções da citação longa (versão 8) e recusa uma que ela não aceita", () => {
+    const arquivo = JSON.parse(escreverArquivo(trabalho));
+    arquivo.documento.blocos[3] = { tipo: "citacaoLonga", trechos: [{ texto: "Citação." }], excecoes: { Tamanho: "11 pt", "recuo à esquerda": "2 cm", alinhamento: "À esquerda" } };
+    const r = lerArquivo(JSON.stringify(arquivo));
+    expect(r.ok && r.trabalho.documento.blocos[3]).toEqual({
+      tipo: "citacaoLonga",
+      trechos: [{ texto: "Citação." }],
+      excecoes: { tamanho: "11 pt", "recuo à esquerda": "2 cm", alinhamento: "à esquerda" },
+    });
+    arquivo.documento.blocos[3].excecoes = { fonte: "Arial" };
+    expect(lerArquivo(JSON.stringify(arquivo))).toEqual({ ok: false, erro: "o bloco 4 do texto está estragado: “fonte” não pode ser uma exceção de Citação longa" });
+  });
+
+  it("abre um arquivo da versão 7 sem mudar nada e grava na versão 8", () => {
+    const antigo = JSON.parse(escreverArquivo(trabalho));
+    antigo.versao = 7;
+    antigo.documento.versao = 7;
+    const r = lerArquivo(JSON.stringify(antigo));
+    expect(r).toEqual({ ok: true, trabalho });
+    expect(JSON.parse(escreverArquivo(trabalho)).versao).toBe(8);
+  });
+
   /** A abertura como as versões 5 e 6 guardavam: caixas de marcar. */
   const aberturaDaVersao6 = {
     capa: true,
@@ -142,7 +164,7 @@ describe("formato do arquivo .apud", () => {
   };
 
   for (const versao of [5, 6]) {
-    it(`abre um arquivo da versão ${versao}, converte a abertura em blocos sem perder nada e grava na versão 7`, () => {
+    it(`abre um arquivo da versão ${versao}, converte a abertura em blocos sem perder nada e grava na versão 8`, () => {
       const antigo = JSON.parse(escreverArquivo(trabalho));
       antigo.versao = versao;
       antigo.documento.versao = versao;
@@ -150,7 +172,7 @@ describe("formato do arquivo .apud", () => {
       const r = lerArquivo(JSON.stringify(antigo));
       if (!r.ok) throw new Error(r.erro);
       expect(r.trabalho.documento.blocos).toEqual(trabalho.documento.blocos);
-      expect(r.trabalho.documento.versao).toBe(7);
+      expect(r.trabalho.documento.versao).toBe(8);
       expect(r.trabalho.documento.abertura).toEqual({
         blocos: [
           { tipo: "capa" },
@@ -165,7 +187,7 @@ describe("formato do arquivo .apud", () => {
         semIdentificacao: true,
       });
       const regravado = JSON.parse(escreverArquivo(r.trabalho));
-      expect([regravado.versao, regravado.documento.versao]).toEqual([7, 7]);
+      expect([regravado.versao, regravado.documento.versao]).toEqual([8, 8]);
       expect(lerArquivo(JSON.stringify(regravado))).toEqual(r);
     });
   }
@@ -505,6 +527,7 @@ const completo: Trabalho = {
       },
       {
         tipo: "citacaoLonga",
+        excecoes: { tamanho: "11 pt", "espaço antes": "nenhuma", "espaço depois": "nenhuma" },
         trechos: [{ texto: "Uma citação longa " }, { citacao: { tipo: "parenteses", direta: true, obras: [{ referencia: "silva2019", localizador: { tipo: "pagina", valor: "15" } }] } }],
       },
       {
@@ -542,7 +565,7 @@ describe("um trabalho com tudo", () => {
 
   it("escreve e lê de volta sem mudar nada", () => {
     const texto = escreverArquivo(completo);
-    expect(JSON.parse(texto).versao).toBe(7);
+    expect(JSON.parse(texto).versao).toBe(8);
     expect(lerArquivo(texto)).toEqual({ ok: true, trabalho: completo });
   });
 

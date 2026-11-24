@@ -42,7 +42,7 @@ describe("a janelinha do parágrafo", () => {
 
   it("é uma janela com nome, de onde vem e o aviso de que vale no PDF", () => {
     expect(html).toContain('role="dialog"');
-    expect(html).toContain('aria-label="Ajustes do Parágrafo"');
+    expect(html).toContain('aria-label="Ajustes: Parágrafo"');
     expect(html).toContain("Do modelo ABNT");
     expect(html).toContain("Vale no PDF. Veja o efeito na Prévia.");
   });
@@ -62,6 +62,27 @@ describe("a janelinha do parágrafo", () => {
   it("não oferece “Voltar ao do modelo” sem exceção, e o painel completo ainda está apagado", () => {
     expect(html).not.toContain("Voltar ao do modelo");
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Mais opções…<\/button>/);
+  });
+});
+
+describe("a fonte e o tamanho do trabalho no ⚙ do parágrafo (3b)", () => {
+  const html = janelinha(paragrafo, "este");
+
+  it("ficam numa parte própria, “O trabalho todo”, que vale mesmo em “Só este”", () => {
+    expect(html).toContain('aria-label="O trabalho todo"');
+    const parte = html.slice(html.indexOf('aria-label="O trabalho todo"'));
+    expect(parte).toContain("A fonte e o tamanho valem para todo o texto, em qualquer bloco.");
+    expect(parte).toMatch(/aria-pressed="true"[^>]*>Times New Roman<\/button>/);
+    for (const f of ["Arial", "Calibri", "Georgia"]) expect(parte).toMatch(new RegExp(`aria-pressed="false"[^>]*>${f}</button>`));
+    expect(parte).toMatch(/aria-pressed="true"[^>]*>12<\/button>/);
+  });
+
+  it("a citação longa tem a janelinha dela, sem a parte do trabalho todo", () => {
+    const citacao = janelinha({ elemento: "citacaoLonga", tipo: "citação longa" }, "todos");
+    expect(citacao).toContain('aria-label="Ajustes: Citação longa"');
+    expect(citacao).toContain("Recuo à esquerda");
+    expect(citacao).toContain("Espaço antes e depois");
+    expect(citacao).not.toContain("O trabalho todo");
   });
 });
 

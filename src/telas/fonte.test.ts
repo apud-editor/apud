@@ -17,7 +17,7 @@ describe("aviso de fonte faltando", () => {
   });
   it("no navegador, ou fonte sem reserva própria: não avisa", () => {
     expect(avisoDeFonte("Times New Roman", [], false)).toBeNull();
-    expect(avisoDeFonte("Calibri", [], true)).toBeNull();
+    expect(avisoDeFonte("Aptos", [], true)).toBeNull();
     expect(avisoDeFonte(undefined, [], true)).toBeNull();
   });
 });

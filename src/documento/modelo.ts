@@ -25,13 +25,16 @@
 //      mais os textos "guardados" (tirados da abertura sem perder o que foi
 //      escrito). Um documento das versões 5 e 6, com as caixas de marcar, é
 //      convertido ao abrir (arquivos/formato.ts), sem perder nada.
+//   8. Etapa 3b: a citação longa também pode ter exceções "só este" (tamanho,
+//      entrelinha, recuo, espaço antes e depois, alinhamento). Um documento da
+//      versão 7 é o mesmo, sem essas exceções, e abre como está.
 
 import type { Citacao, Data, Referencia } from "./referencias";
 
 export * from "./referencias";
 
 /** Versão do formato. Sobe quando o formato mudar, para os arquivos antigos serem convertidos. */
-export const VERSAO_DO_FORMATO = 7;
+export const VERSAO_DO_FORMATO = 8;
 
 /** A versão mais antiga do documento que este Apud lê (a primeira da versão 2). */
 export const PRIMEIRA_VERSAO_DO_FORMATO = 5;
@@ -135,6 +138,8 @@ export interface ListaDeReferencias {
 export interface CitacaoLonga {
   tipo: "citacaoLonga";
   trechos: Trecho[];
+  /** "Só este" (etapa 3b): a revista pede outra forma só para esta citação. */
+  excecoes?: Excecoes;
 }
 
 /**
@@ -309,7 +314,7 @@ export interface Abertura {
 
 /** O trabalho inteiro: os dados, a abertura, o texto, as referências e as imagens. */
 export interface Documento {
-  /** Ao abrir, um documento das versões 5 e 6 passa a ser da 7 (a abertura é convertida em blocos). */
+  /** Ao abrir, um documento das versões 5 a 7 passa a ser da 8 (nas 5 e 6, a abertura é convertida em blocos). */
   versao: typeof VERSAO_DO_FORMATO;
   dados: DadosDoTrabalho;
   abertura: Abertura;
