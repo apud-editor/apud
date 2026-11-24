@@ -3,6 +3,7 @@ import { armazenamento, rodandoNoPrograma } from "../arquivos/armazenamento";
 import { escreverArquivo, lerArquivo, type Trabalho } from "../arquivos/formato";
 import Assistente from "./Assistente";
 import SeletorDeTema from "../tema/SeletorDeTema";
+import { Logo } from "../marca/Marca";
 import type { EscolhaDeTema } from "../tema/tema";
 
 interface Linha {
@@ -81,7 +82,9 @@ export default function Painel({ aoAbrir, temaEscolhido, aoEscolherTema }: Props
   return (
     <div className="tela">
       <header className="topo">
-        <span className="marca">Apud</span>
+        <span className="topo-logo mk-gatilho">
+          <Logo altura={32} />
+        </span>
         <span style={{ flex: 1 }} />
         <SeletorDeTema escolha={temaEscolhido} aoEscolher={aoEscolherTema} />
       </header>

@@ -1,0 +1,78 @@
+/* Logo e símbolo do Apud (componentes em Marca.tsx).
+   Todas as classes começam com "mk-" para não esbarrar nas de outras telas. */
+
+.mk-logo,
+.mk-simbolo {
+  display: block;
+  flex: none;
+  color: var(--logo); /* as letras usam currentColor */
+}
+
+.mk-acento {
+  fill: var(--destaque); /* ponto, linha e cursor: azul cobalto (azul claro no escuro) */
+}
+
+.mk-linha,
+.mk-cursor {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+/* "Digitando": a linha encolhe e o cursor corre atrás dela e volta.
+   Acontece uma vez cada vez que o mouse entra ou o teclado chega no botão. */
+.mk-gatilho:hover .mk-linha,
+.mk-gatilho:focus-visible .mk-linha {
+  animation: mk-linha 0.8s ease 1;
+}
+.mk-gatilho:hover .mk-simbolo .mk-cursor,
+.mk-gatilho:focus-visible .mk-simbolo .mk-cursor {
+  animation: mk-cursor-simbolo 0.8s ease 1;
+}
+.mk-gatilho:hover .mk-logo .mk-cursor,
+.mk-gatilho:focus-visible .mk-logo .mk-cursor {
+  animation: mk-cursor-logo 0.8s ease 1;
+}
+
+@keyframes mk-linha {
+  0% {
+    transform: scaleX(1);
+  }
+  45% {
+    transform: scaleX(0.22);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+@keyframes mk-cursor-simbolo {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(-456px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes mk-cursor-logo {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(-243px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Quem pediu menos movimento no sistema vê a marca parada. */
+@media (prefers-reduced-motion: reduce) {
+  .mk-gatilho:hover .mk-linha,
+  .mk-gatilho:hover .mk-cursor,
+  .mk-gatilho:focus-visible .mk-linha,
+  .mk-gatilho:focus-visible .mk-cursor {
+    animation: none;
+  }
+}

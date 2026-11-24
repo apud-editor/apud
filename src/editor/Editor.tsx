@@ -14,6 +14,7 @@ import { ControleDaNota, inserirNota, trocarNota } from "./notas";
 import { ImagensNoEditor, ImagemRecusada, TIPOS_ACEITOS, lerImagemDoArquivo } from "./imagens";
 import { apagarIlustracao, ilustracaoDoCursor, inserirFigura, inserirTabela, mudarIlustracao } from "./ilustracoes";
 import type { ControlesDosNos } from "./nos";
+import type { ComandosDoEditor } from "./comandos";
 
 interface Props {
   /** Os blocos do texto. As referências não passam pelo editor: a tela do trabalho as guarda. */
@@ -42,6 +43,8 @@ interface Props {
   aoCadastrarReferencia?: () => void;
   /** As imagens do trabalho (as figuras buscam e guardam aqui). Sem isto, o editor não aceita figuras novas. */
   imagens?: ImagensNoEditor;
+  /** Recebe o "controle remoto" do editor (desfazer, inserir...), para os menus do cabeçalho. */
+  comandos?: React.MutableRefObject<ComandosDoEditor | null>;
 }
 
 export default function Editor({
@@ -58,6 +61,7 @@ export default function Editor({
   previaDaCitacao,
   aoCadastrarReferencia,
   imagens: imagensDadas,
+  comandos,
 }: Props) {
   const controle = useMemo(() => new ControleDaBarra(), []);
   const janela = useMemo(() => new ControleDaJanela(), []);
@@ -165,6 +169,24 @@ export default function Editor({
     // escolherImagem só depende do editor e das imagens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor, controle, notaCtl, imagens]);
+
+  // O controle remoto para os menus do cabeçalho: faz o mesmo que os botões da barra.
+  useEffect(() => {
+    if (!comandos || !editor) return;
+    comandos.current = {
+      desfazer: () => void editor.chain().focus().undo().run(),
+      refazer: () => void editor.chain().focus().redo().run(),
+      inserir: (o) => {
+        if (o === "quebra") inserirQuebra(editor);
+        else if (o === "citacao") janela.abrirParaInserir("botao", editor.state.selection.to);
+        else controle.aoPedir?.(o);
+      },
+      podeCitar,
+    };
+    return () => {
+      comandos.current = null;
+    };
+  }, [editor, comandos, controle, janela, podeCitar]);
 
   /** Aplica o que a janela decidiu e refaz as citações já. */
   const aplicar = (fazer: (e: NonNullable<typeof editor>) => void) => {

@@ -9,7 +9,7 @@ type Tela = { tipo: "painel" } | { tipo: "trabalho"; arquivo: string; trabalho: 
 
 export default function App() {
   const [tela, setTela] = useState<Tela>({ tipo: "painel" });
-  // O tema vale para o programa todo; o seletor fica no Painel.
+  // O tema vale para o programa todo; o seletor fica no Painel e em Arquivo › Preferências do editor.
   const tema = useTema();
 
   useEffect(() => {
@@ -24,6 +24,8 @@ export default function App() {
         trabalho={tela.trabalho}
         novo={tela.novo}
         aoVoltar={() => setTela({ tipo: "painel" })}
+        temaEscolhido={tema.escolha}
+        aoEscolherTema={tema.escolher}
       />
     );
   }

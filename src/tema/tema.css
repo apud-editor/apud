@@ -63,6 +63,7 @@
   --borda-forte: #c9d1e3;
 
   --tinta: #262626; /* texto: grafite, nunca preto puro */
+  --logo: #262626; /* letras da logo e do símbolo: grafite */
   --tinta-suave: #5f6573; /* texto de apoio */
   --discreto: #6b7280; /* texto discreto */
 
@@ -115,6 +116,7 @@
   --borda-forte: #4a4d56;
 
   --tinta: #ecedef;
+  --logo: #ffffff; /* letras da logo e do símbolo: branco */
   --tinta-suave: #a9afbd;
   --discreto: #8b90a0;
 
