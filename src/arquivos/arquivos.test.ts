@@ -84,7 +84,7 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa arquivo de uma versão mais nova do Apud", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.versao = 6;
+    novo.versao = 7;
     const r = lerArquivo(JSON.stringify(novo));
     expect(r.ok).toBe(false);
     expect(!r.ok && r.erro).toContain("versão mais nova");
@@ -92,7 +92,9 @@ describe("formato do arquivo .apud", () => {
 
   it("recusa texto numa versão do modelo que este Apud não conhece", () => {
     const novo = JSON.parse(escreverArquivo(trabalho));
-    novo.documento.versao = 6;
+    novo.documento.versao = 7;
+    expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
+    novo.documento.versao = 4;
     expect(lerArquivo(JSON.stringify(novo))).toEqual({ ok: false, erro: "o texto do trabalho está numa versão que este Apud não conhece" });
   });
 
@@ -100,6 +102,39 @@ describe("formato do arquivo .apud", () => {
     const ruim = JSON.parse(escreverArquivo(trabalho));
     ruim.documento.blocos[3].trechos = "texto solto";
     expect(lerArquivo(JSON.stringify(ruim))).toEqual({ ok: false, erro: "o bloco 4 do texto está estragado" });
+  });
+
+  it("guarda as exceções “só este” de parágrafos e títulos e lê de volta iguais", () => {
+    const com = structuredClone(trabalho);
+    com.documento.blocos[0] = { tipo: "titulo", nivel: 1, trechos: [{ texto: "Introdução" }], excecoes: { posição: "centralizado" } };
+    com.documento.blocos[3] = { ...(com.documento.blocos[3] as object), excecoes: { alinhamento: "centralizado", entrelinha: "simples" } } as never;
+    const texto = escreverArquivo(com);
+    expect(JSON.parse(texto).documento.blocos[3].excecoes).toEqual({ alinhamento: "centralizado", entrelinha: "simples" });
+    const r = lerArquivo(texto);
+    expect(r.ok && r.trabalho.documento.blocos).toEqual(com.documento.blocos);
+  });
+
+  it("escreve as exceções do jeito do Apud e recusa uma estragada, dizendo qual", () => {
+    const arquivo = JSON.parse(escreverArquivo(trabalho));
+    arquivo.documento.blocos[3].excecoes = { Alinhamento: "Centralizado", entrelinha: "1.5" };
+    const r = lerArquivo(JSON.stringify(arquivo));
+    expect(r.ok && r.trabalho.documento.blocos[3]).toMatchObject({ excecoes: { alinhamento: "centralizado", entrelinha: "1,5" } });
+    arquivo.documento.blocos[3].excecoes = { fonte: "Arial" };
+    expect(lerArquivo(JSON.stringify(arquivo))).toEqual({ ok: false, erro: "o bloco 4 do texto está estragado: “fonte” não pode ser uma exceção de Parágrafo" });
+    arquivo.documento.blocos[3].excecoes = { alinhamento: "torto" };
+    expect(lerArquivo(JSON.stringify(arquivo))).toMatchObject({ ok: false, erro: expect.stringMatching(/^o bloco 4 do texto está estragado: /) });
+  });
+
+  it("abre um arquivo da versão 5 (sem exceções) como está, e grava na versão 6", () => {
+    const antigo = JSON.parse(escreverArquivo(trabalho));
+    antigo.versao = 5;
+    antigo.documento.versao = 5;
+    const r = lerArquivo(JSON.stringify(antigo));
+    if (!r.ok) throw new Error(r.erro);
+    expect(r.trabalho.documento.blocos).toEqual(trabalho.documento.blocos);
+    expect(r.trabalho.documento.versao).toBe(6);
+    const regravado = JSON.parse(escreverArquivo(r.trabalho));
+    expect([regravado.versao, regravado.documento.versao]).toEqual([6, 6]);
   });
 
   it("abre os arquivos da versão de teste que guardava a escolha de numerar", () => {
@@ -438,7 +473,7 @@ describe("um trabalho com tudo", () => {
 
   it("escreve e lê de volta sem mudar nada", () => {
     const texto = escreverArquivo(completo);
-    expect(JSON.parse(texto).versao).toBe(5);
+    expect(JSON.parse(texto).versao).toBe(6);
     expect(lerArquivo(texto)).toEqual({ ok: true, trabalho: completo });
   });
 

@@ -18,13 +18,18 @@
 //      (capa, folha de rosto, resumos...) e as imagens das figuras.
 //   5. Versão 2 do Apud (etapa 1d): o mesmo documento; o arquivo passa a levar a
 //      cópia do modelo. As versões 1 a 4 eram da versão de testes e não abrem mais.
+//   6. Etapa 2 da versão 2: as exceções "só este" nos parágrafos e títulos. Um
+//      arquivo da versão 5 é o mesmo documento sem exceções e abre como está.
 
 import type { Citacao, Data, Referencia } from "./referencias";
 
 export * from "./referencias";
 
 /** Versão do formato. Sobe quando o formato mudar, para os arquivos antigos serem convertidos. */
-export const VERSAO_DO_FORMATO = 5;
+export const VERSAO_DO_FORMATO = 6;
+
+/** A versão mais antiga do documento que este Apud lê (a primeira da versão 2). */
+export const PRIMEIRA_VERSAO_DO_FORMATO = 5;
 
 /** Marcas dentro do texto. Itálico, por exemplo, para palavras estrangeiras. */
 export type Marca = "negrito" | "italico" | "sobrescrito";
@@ -64,6 +69,14 @@ export const ehTexto = (t: Trecho): t is TrechoDeTexto => "texto" in t;
 export type NivelDeTitulo = 1 | 2 | 3 | 4 | 5;
 
 /**
+ * As exceções de um bloco ("só este", decisão 5 da v2): o nome da propriedade
+ * e o valor como texto, como nos modelos ({ "alinhamento": "centralizado" }).
+ * Valem só para este bloco, por cima do elemento (modelos/excecoes.ts). Um
+ * bloco sem exceções não tem o campo.
+ */
+export type Excecoes = Record<string, string>;
+
+/**
  * Um título. O número (1, 1.1, 2...) é escrito pela própria pessoa, no começo
  * do texto ("1.1 Contexto"); sem número escrito, o título sai sem número.
  */
@@ -71,11 +84,13 @@ export interface Titulo {
   tipo: "titulo";
   nivel: NivelDeTitulo;
   trechos: Trecho[];
+  excecoes?: Excecoes;
 }
 
 export interface Paragrafo {
   tipo: "paragrafo";
   trechos: Trecho[];
+  excecoes?: Excecoes;
 }
 
 export interface ItemDeLista {
@@ -258,6 +273,7 @@ export interface Abertura {
 
 /** O trabalho inteiro: os dados, a abertura, o texto, as referências e as imagens. */
 export interface Documento {
+  /** Ao abrir, um documento da versão 5 passa a ser da 6 (é o mesmo, sem exceções). */
   versao: typeof VERSAO_DO_FORMATO;
   dados: DadosDoTrabalho;
   abertura: Abertura;

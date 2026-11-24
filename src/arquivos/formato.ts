@@ -1,4 +1,4 @@
-// O formato do arquivo .apud (versão 5, a primeira da versão 2 do Apud).
+// O formato do arquivo .apud (versão 6; a versão 5 foi a primeira da versão 2 do Apud).
 //
 // É um arquivo de texto (JSON), legível em qualquer editor de texto: se um dia
 // algo der errado, o conteúdo do trabalho ainda pode ser recuperado à mão.
@@ -6,14 +6,14 @@
 //
 //   {
 //     "formato": "apud",
-//     "versao": 5,
+//     "versao": 6,
 //     "nome": "Relato de experiência de estágio",
 //     "modelo": { "nome": "ABNT", "versao": "2025", "revisao": 10, "cadeia": [...],
 //                 "valores": { ... }, "atalhos": { ... } },
 //     "ajustes": { "ABNT": { "referências, prenomes": "abreviados" } },
 //     "criadoEm": "2026-11-20T18:40:00.000Z",
 //     "modificadoEm": "2026-11-20T19:02:11.000Z",
-//     "documento": { "versao": 5, "dados": { ... }, "abertura": { ... },
+//     "documento": { "versao": 6, "dados": { ... }, "abertura": { ... },
 //                    "blocos": [ ... ], "referencias": [ ... ], "imagens": [ ... ] }
 //   }
 //
@@ -27,6 +27,14 @@
 // elemento ("Texto › fonte") ou, nas citações e referências, só pelo nome da
 // regra ("referências, prenomes").
 //
+// Versão 6 (etapa 2 da v2): parágrafos e títulos podem ter exceções ("só este"):
+//   { "tipo": "paragrafo", "trechos": [...], "excecoes": { "alinhamento": "centralizado" } }
+// Cada exceção é conferida pelo tipo da propriedade; uma estragada recusa o
+// arquivo. A versão subiu para proteger as exceções: um Apud que só conhece a
+// versão 5 recusa o arquivo, em vez de abrir e apagar as exceções ao salvar.
+// Um arquivo da versão 5 é o mesmo trabalho, sem exceções: abre como está e é
+// gravado na versão 6 quando o trabalho muda.
+//
 // Os arquivos das versões 1 a 4 são da versão de testes do Apud (a versão 1 do
 // programa) e não abrem mais (decisão do Francisco, 23/11/2026): são recusados
 // com uma mensagem clara e ficam como estão no disco. Arquivo de uma versão
@@ -36,6 +44,7 @@ import {
   FORMATOS_DE_IMAGEM,
   TIPOS_DE_REFERENCIA,
   TIPOS_DE_TRABALHO,
+  PRIMEIRA_VERSAO_DO_FORMATO,
   VERSAO_DO_FORMATO,
   type Abertura,
   type Autor,
@@ -45,6 +54,7 @@ import {
   type Data,
   type Documento,
   type ElementoDeTexto,
+  type Excecoes,
   type Identificacao,
   type Imagem,
   type ItemDeLista,
@@ -56,9 +66,10 @@ import {
   type TrechoDeTexto,
 } from "../documento/modelo";
 import { modeloDoArquivo, modeloParaArquivo } from "../modelos/arquivo";
+import { conferirExcecoes } from "../modelos/excecoes";
 import type { ModeloResolvido } from "../modelos/tipos";
 
-export const VERSAO_DO_ARQUIVO = 5;
+export const VERSAO_DO_ARQUIVO = 6;
 
 /** A primeira versão do arquivo na versão 2 do Apud. As anteriores são da versão de testes. */
 export const PRIMEIRA_VERSAO_DA_V2 = 5;
@@ -155,7 +166,9 @@ function conferirAjustes(v: unknown): AjustesDoTrabalho | null {
 /** Devolve o documento conferido, ou o motivo do erro. */
 function conferirDocumento(v: unknown): Documento | string {
   if (!objeto(v) || !Array.isArray(v.blocos)) return "falta o texto do trabalho";
-  if (v.versao !== VERSAO_DO_FORMATO) return "o texto do trabalho está numa versão que este Apud não conhece";
+  if (typeof v.versao !== "number" || v.versao < PRIMEIRA_VERSAO_DO_FORMATO || v.versao > VERSAO_DO_FORMATO) {
+    return "o texto do trabalho está numa versão que este Apud não conhece";
+  }
 
   if (!Array.isArray(v.referencias)) return "falta a lista de referências do trabalho";
   const referencias: Referencia[] = [];
@@ -172,6 +185,7 @@ function conferirDocumento(v: unknown): Documento | string {
   for (const [i, b] of v.blocos.entries()) {
     const bloco = conferirBloco(b);
     if (!bloco) return `o bloco ${i + 1} do texto está estragado`;
+    if (typeof bloco === "string") return `o bloco ${i + 1} do texto está estragado: ${bloco}`;
     blocos.push(bloco);
   }
 
@@ -193,20 +207,24 @@ function conferirDocumento(v: unknown): Documento | string {
   return { versao: VERSAO_DO_FORMATO, dados, abertura, blocos, referencias, imagens };
 }
 
-function conferirBloco(b: unknown): Bloco | null {
+/** O bloco conferido; null se estiver estragado; um texto com o motivo, quando há um (exceção estragada). */
+function conferirBloco(b: unknown): Bloco | string | null {
   if (!objeto(b)) return null;
   const trechos = (x: unknown) => conferirTrechos(x, true);
   switch (b.tipo) {
     case "paragrafo": {
       const t = trechos(b.trechos);
-      return t && { tipo: "paragrafo", trechos: t };
+      if (!t) return null;
+      const ex = excecoesDoBloco(b, "paragrafo");
+      return typeof ex === "string" ? ex : { tipo: "paragrafo", trechos: t, ...ex };
     }
     case "titulo": {
       const t = trechos(b.trechos);
       const nivel = b.nivel;
       if (!t || ![1, 2, 3, 4, 5].includes(nivel as number)) return null;
       // (Uma versão de teste guardava "numerado"; hoje o número é escrito no texto, e o campo é ignorado.)
-      return { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos: t };
+      const ex = excecoesDoBloco(b, `titulos.nivel${nivel}`);
+      return typeof ex === "string" ? ex : { tipo: "titulo", nivel: nivel as 1 | 2 | 3 | 4 | 5, trechos: t, ...ex };
     }
     case "lista": {
       const itens = conferirItens(b.itens);
@@ -259,6 +277,14 @@ function conferirBloco(b: unknown): Bloco | null {
     default:
       return null;
   }
+}
+
+/** As exceções de um parágrafo ou título ({} quando não há), ou o motivo do erro. */
+function excecoesDoBloco(b: Record<string, unknown>, elemento: string): { excecoes?: Excecoes } | string {
+  if (b.excecoes === undefined) return {};
+  const c = conferirExcecoes(elemento, b.excecoes);
+  if (!c.ok) return c.erro;
+  return c.excecoes ? { excecoes: c.excecoes } : {};
 }
 
 /** Título, fonte e nota de uma figura ou tabela. */

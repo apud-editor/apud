@@ -2,7 +2,7 @@
 
 Editor de texto acadêmico em que você escreve o conteúdo e a ferramenta aplica a norma (ABNT ou APA) sozinha.
 
-**Estado atual:** versão 2 em construção. A etapa 1 trocou os perfis de norma por modelos em árvore (pasta `modelos/`), sem mudar o que a pessoa vê; os trabalhos são gravados no .apud versão 5, que leva uma cópia do modelo.
+**Estado atual:** versão 2 em construção. A etapa 1 trocou os perfis de norma por modelos em árvore (pasta `modelos/`), sem mudar o que a pessoa vê; os trabalhos são gravados no .apud versão 6, que leva uma cópia do modelo e, desde a etapa 2, as exceções "só este" de parágrafos e títulos.
 
 ## Como o projeto é organizado
 

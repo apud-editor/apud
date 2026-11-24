@@ -2,6 +2,11 @@
 // trocadas nas Configurações de cada trabalho, sem mexer no modelo. Elas são
 // mais uma camada por cima do modelo (Em branco › ABNT › este trabalho).
 //
+// Etapa 2: o "Todos os iguais" da janelinha do ⚙ também grava aqui. Ele pode
+// mudar a aparência e as opções de um elemento mesmo quando a norma fixa o
+// valor (decisão do Francisco, 24/11/2026): a escolha vale, com um aviso de
+// que o trabalho sai da norma. As regras de citação fixas continuam fixas.
+//
 // No .apud, cada escolha tem o caminho do elemento e o nome da propriedade:
 //   "Texto › fonte": "Arial", "Títulos › Nível 2 › destaque": "negrito".
 // As de Citações e referências (as Escolhas do autor) vão só com o nome da
@@ -9,7 +14,8 @@
 
 import { listarComE, normalizar } from "../perfis/texto";
 import { atalho, elementoPeloCaminho, propriedade } from "./elementos";
-import { somar, valorProprio } from "./herdar";
+import { avisoDeNorma } from "./excecoes";
+import { somar, valorEfetivo } from "./herdar";
 import type { Mensagem, ModeloResolvido, ValorNoModelo, ValoresPorElemento } from "./tipos";
 
 interface Destino {
@@ -29,16 +35,21 @@ export function destinoDaEscolha(chave: string): Destino | undefined {
 /** De onde vem o valor que o trabalho escolheu. */
 export const ORIGEM_DO_AJUSTE = "configurações do trabalho";
 
-/** O valor que o modelo dá ao destino: o da propriedade, ou o do atalho, como escrito. */
+/**
+ * O valor que o modelo dá ao destino: o do atalho, como escrito, ou o que vale
+ * para a propriedade (o do elemento ou o de um elemento de cima: o Parágrafo
+ * segue a entrelinha do Texto).
+ */
 function atual(modelo: ModeloResolvido, d: Destino): ValorNoModelo | undefined {
   if (!propriedade(d.elemento, d.propriedade) && atalho(d.elemento, d.propriedade)) return modelo.atalhos.get(d.elemento)?.get(d.propriedade);
-  return valorProprio(modelo, d.elemento, d.propriedade);
+  return valorEfetivo(modelo, d.elemento, d.propriedade);
 }
 
 /**
  * Aplica as escolhas de um trabalho sobre o modelo. Devolve o modelo com as
  * escolhas, ou só as mensagens de erro, se alguma não for aceita (aí nada se
- * aplica: o trabalho continua com os valores do modelo).
+ * aplica: o trabalho continua com os valores do modelo). As mensagens de aviso
+ * (valor que sai da norma) não impedem: o modelo volta junto com elas.
  */
 export function aplicarAjustes(modelo: ModeloResolvido, ajustes: Record<string, string>): { modelo?: ModeloResolvido; mensagens: Mensagem[] } {
   const mensagens: Mensagem[] = [];
@@ -59,7 +70,10 @@ export function aplicarAjustes(modelo: ModeloResolvido, ajustes: Record<string, 
       erro("essa regra não existe no modelo.");
       continue;
     }
-    if (v.situacao.tipo !== "ajustavel" && v.situacao.tipo !== "escolha") {
+    // Fixa na norma: só a aparência e as opções de um elemento podem sair dela (com aviso).
+    // (Um valor escrito por um atalho, como a fonte da APA, que se escolhe junto com o tamanho, continua fixo.)
+    const foraDaNorma = v.situacao.tipo === "confirmada" && !v.atalho && !!def && (def.grupo === "aparência" || def.grupo === "opções");
+    if (v.situacao.tipo !== "ajustavel" && v.situacao.tipo !== "escolha" && !foraDaNorma) {
       erro("essa regra é fixa na norma e não pode ser trocada nas configurações do trabalho.");
       continue;
     }
@@ -72,6 +86,8 @@ export function aplicarAjustes(modelo: ModeloResolvido, ajustes: Record<string, 
       erro(`escolha uma das opções: ${listarComE(v.situacao.opcoes)}.`);
       continue;
     }
+    const aviso = foraDaNorma ? avisoDeNorma(modelo, v, lido.texto) : undefined;
+    if (aviso) mensagens.push({ gravidade: "aviso", texto: `“${nome}”: ${aviso}` });
     const novo: ValorNoModelo = { valor: lido.valor, texto: lido.texto, origem: ORIGEM_DO_AJUSTE, situacao: v.situacao, de: "este trabalho" };
     if (def) {
       por(diferencas, d.elemento).set(def.nome, novo);
@@ -85,6 +101,6 @@ export function aplicarAjustes(modelo: ModeloResolvido, ajustes: Record<string, 
     }
   }
 
-  if (mensagens.length) return { mensagens };
+  if (mensagens.some((m) => m.gravidade === "erro")) return { mensagens: mensagens.filter((m) => m.gravidade === "erro") };
   return { modelo: somar(modelo, { diferencas, atalhos }), mensagens };
 }

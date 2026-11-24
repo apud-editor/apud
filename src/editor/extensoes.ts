@@ -24,6 +24,7 @@ import { arrobaRapido, ControleDoArroba } from "./arroba";
 import { ControleDoReconhecimento, reconhecerCitacaoEscrita } from "./reconhecer";
 import { citacaoSelecionada, colagemDoApud } from "./citar";
 import { nosDaFase3, type ControlesDosNos } from "./nos";
+import { excecoesQueValem } from "../modelos/excecoes";
 import { colarNaGrade, cursorNaGrade, gradeDoTextoColado, tabelaDaPlanilha } from "./ilustracoes";
 
 // ---------------------------------------------------------------------------
@@ -471,6 +472,54 @@ function citacaoNoEditor(descrever: DescreverCitacao, citacoes: CitacoesNoTexto,
 
 // ---------------------------------------------------------------------------
 
+/**
+ * As exceções "só este" de um parágrafo ou título (etapa 2): um atributo do nó,
+ * guardado como está no modelo do documento ({ "alinhamento": "centralizado" }).
+ *   - Enter no fim do bloco começa um bloco sem a exceção; Enter no meio
+ *     divide o bloco, e as duas partes ficam com ela (como no Word).
+ *   - Trocar o tipo do bloco (parágrafo para título, Título 1 para Título 2)
+ *     deixa só as exceções que o elemento novo aceita: um parágrafo com outra
+ *     entrelinha vira um título sem ela.
+ *   - O texto colado não traz exceções.
+ * O bloco com exceção leva data-excecao, para a tela marcar.
+ */
+export const ExcecoesDoBloco = Extension.create({
+  name: "excecoesDoBloco",
+  addGlobalAttributes() {
+    return [
+      {
+        types: ["paragraph", "heading"],
+        attributes: {
+          excecoes: {
+            default: null,
+            keepOnSplit: false,
+            parseHTML: () => null,
+            renderHTML: (attrs) => (attrs.excecoes ? { "data-excecao": "" } : {}),
+          },
+        },
+      },
+    ];
+  },
+  addProseMirrorPlugins() {
+    return [new Plugin({ key: new PluginKey("excecoesQueValem"), appendTransaction: (trs, _antes, estado) => limparExcecoes(trs, estado) })];
+  },
+});
+
+/** Depois de cada mudança no texto, tira dos blocos as exceções que o elemento deles não aceita (o bloco mudou de tipo). */
+export function limparExcecoes(trs: readonly Transaction[], estado: EditorState): Transaction | null {
+  if (!trs.some((t) => t.docChanged)) return null;
+  let tr: Transaction | null = null;
+  estado.doc.forEach((no, pos) => {
+    const ex = no.attrs.excecoes;
+    if (!ex || (no.type.name !== "paragraph" && no.type.name !== "heading")) return;
+    const elemento = no.type.name === "heading" ? `titulos.nivel${no.attrs.level}` : "paragrafo";
+    const valem = excecoesQueValem(elemento, ex) ?? null;
+    if (JSON.stringify(valem) === JSON.stringify(ex)) return;
+    tr = (tr ?? estado.tr).setNodeMarkup(pos, undefined, { ...no.attrs, excecoes: valem });
+  });
+  return tr;
+}
+
 export function extensoesDoApud(
   controle: ControleDaBarra,
   descrever: DescreverCitacao = descricaoSimples,
@@ -497,6 +546,7 @@ export function extensoesDoApud(
     }),
     Superscript,
     QuebraDePagina,
+    ExcecoesDoBloco,
     Placeholder.configure({
       placeholder: ({ node }) => {
         switch (node.type.name) {
