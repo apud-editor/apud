@@ -5,7 +5,8 @@
 //
 // Os casos cobrem as duas normas, a abertura inteira, as marcas da prévia, os
 // dois artigos de teste, as escolhas do autor e os valores de faculdade que
-// mudam a página (fonte, recuo, alinhamento, posição do número...).
+// mudam a página (fonte, recuo, alinhamento, posição do número...). Desde a
+// etapa 2, também as exceções "só este" em parágrafos e títulos.
 //
 // Uso:
 //   npm run codigo              confere com o gabarito e mostra o que mudou
@@ -64,6 +65,21 @@ function artigo(pasta: string) {
 /** O documento de prova com outro tipo de trabalho, e a abertura mudada. */
 function provaComo(mudar: (d: Documento) => Documento): Documento {
   return mudar(structuredClone(documentoDeProva().documento));
+}
+
+/**
+ * Põe exceções "só este" (etapa 2) em blocos do documento: o n-ésimo bloco de
+ * um tipo (contando de 0) recebe as exceções dadas.
+ */
+function comExcecoes(doc: Documento, pedidos: Array<{ tipo: "paragrafo" | "titulo"; nivel?: number; n: number; excecoes: Record<string, string> }>): Documento {
+  const d = structuredClone(doc);
+  for (const p of pedidos) {
+    const iguais = d.blocos.filter((b) => b.tipo === p.tipo && (p.nivel === undefined || (b.tipo === "titulo" && b.nivel === p.nivel)));
+    const bloco = iguais[p.n];
+    if (!bloco || (bloco.tipo !== "paragrafo" && bloco.tipo !== "titulo")) throw new Error(`não achei o bloco ${p.n} do tipo ${p.tipo}`);
+    bloco.excecoes = p.excecoes;
+  }
+  return d;
 }
 
 const resumoEmEspanhol: Resumo = {
@@ -158,6 +174,38 @@ export const CASOS: CasoDeCodigo[] = [
           "referências, prenomes": "por extenso",
         },
         { titulo: "Artigo de teste" },
+      ),
+  },
+  {
+    nome: "excecoes-abnt",
+    descricao: "artigo da UNIVALI (ABNT) com exceções “só este” em parágrafos e títulos, e o Parágrafo à esquerda para todos (etapa 2)",
+    codigo: () => {
+      const { documento, trabalho } = artigo("univali-abnt");
+      const doc = comExcecoes(documento, [
+        { tipo: "titulo", nivel: 1, n: 0, excecoes: { posição: "centralizado", destaque: "itálico" } },
+        { tipo: "titulo", nivel: 2, n: 1, excecoes: { destaque: "negrito, sublinhado" } },
+        { tipo: "paragrafo", n: 1, excecoes: { alinhamento: "centralizado", entrelinha: "simples" } },
+        { tipo: "paragrafo", n: 2, excecoes: { "recuo da primeira linha": "nenhum" } },
+        { tipo: "paragrafo", n: 3, excecoes: { alinhamento: "justificado" } },
+        { tipo: "paragrafo", n: 4, excecoes: { alinhamento: "à direita", entrelinha: "duplo" } },
+      ]);
+      return codigo(doc, trabalho.norma, { ...trabalho.ajustes, "Parágrafo › alinhamento": "à esquerda" }, { titulo: trabalho.nome });
+    },
+  },
+  {
+    nome: "excecoes-apa",
+    descricao: "documento de prova em APA com exceções: títulos de nível 4 (um deles na mesma linha do texto), título de nível 1 à esquerda e parágrafo sem recuo (etapa 2)",
+    codigo: () =>
+      codigo(
+        comExcecoes(documentoDeProva().documento, [
+          { tipo: "titulo", nivel: 4, n: 0, excecoes: { destaque: "itálico" } },
+          { tipo: "titulo", nivel: 4, n: 1, excecoes: { destaque: "sublinhado" } },
+          { tipo: "titulo", nivel: 1, n: 1, excecoes: { posição: "à esquerda" } },
+          { tipo: "paragrafo", n: 0, excecoes: { "recuo da primeira linha": "nenhum" } },
+        ]),
+        "apa.txt",
+        {},
+        { titulo: "Documento de prova" },
       ),
   },
   {

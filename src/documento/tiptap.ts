@@ -27,6 +27,7 @@ import {
   ORDEM_DAS_MARCAS,
   type Bloco,
   type Citacao,
+  type Excecoes,
   type Identificacao,
   type ItemDeLista,
   type Marca,
@@ -34,6 +35,7 @@ import {
   type NotaDeRodape,
   type Trecho,
 } from "./modelo";
+import { excecoesQueValem } from "../modelos/excecoes";
 
 /** Nome do nó das citações no editor (extensão em editor/extensoes.ts). */
 export const NO_DA_CITACAO = "citacao";
@@ -73,9 +75,9 @@ export function blocosDoEditor(json: JSONContent): Bloco[] {
 function blocosDoNo(no: JSONContent): Bloco[] {
   switch (no.type) {
     case "paragraph":
-      return [{ tipo: "paragrafo", trechos: trechosDe(no) }];
+      return [{ tipo: "paragrafo", trechos: trechosDe(no), ...excecoesDe(no) }];
     case "heading":
-      return [{ tipo: "titulo", nivel: nivelValido(no.attrs?.level), trechos: trechosDe(no) }];
+      return [{ tipo: "titulo", nivel: nivelValido(no.attrs?.level), trechos: trechosDe(no), ...excecoesDe(no) }];
     case "quebraDePagina":
       return [{ tipo: "quebra" }];
     case NO_DA_LISTA_DE_REFERENCIAS:
@@ -109,6 +111,17 @@ function blocosDoNo(no: JSONContent): Bloco[] {
       return trechos.length ? [{ tipo: "paragrafo", trechos }] : [];
     }
   }
+}
+
+/**
+ * As exceções "só este" do nó (etapa 2), como estão no modelo do documento.
+ * Só entram as que o elemento do bloco aceita, com valor certo: o editor nunca
+ * entrega ao arquivo uma exceção que o faria ser recusado ao abrir.
+ */
+function excecoesDe(no: JSONContent): { excecoes?: Excecoes } {
+  const elemento = no.type === "heading" ? `titulos.nivel${nivelValido(no.attrs?.level)}` : "paragrafo";
+  const ex = excecoesQueValem(elemento, no.attrs?.excecoes);
+  return ex ? { excecoes: ex } : {};
 }
 
 /** Título, fonte e nota de uma figura ou tabela. */
@@ -231,9 +244,9 @@ export function editorDosBlocos(blocos: Bloco[]): JSONContent {
 function noDoBloco(b: Bloco): JSONContent {
   switch (b.tipo) {
     case "paragrafo":
-      return comTexto({ type: "paragraph" }, b.trechos);
+      return comTexto(b.excecoes ? { type: "paragraph", attrs: { excecoes: { ...b.excecoes } } } : { type: "paragraph" }, b.trechos);
     case "titulo":
-      return comTexto({ type: "heading", attrs: { level: b.nivel } }, b.trechos);
+      return comTexto({ type: "heading", attrs: { level: b.nivel, ...(b.excecoes ? { excecoes: { ...b.excecoes } } : {}) } }, b.trechos);
     case "quebra":
       return { type: "quebraDePagina" };
     case "referencias":

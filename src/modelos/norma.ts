@@ -23,6 +23,8 @@ export interface NormaDoTrabalho {
   csl: string;
   /** Escolhas do trabalho que não puderam ser aplicadas (o modelo segue sem elas). */
   problemas: Mensagem[];
+  /** Escolhas do trabalho aplicadas que tiram o trabalho da norma (valor fixo mudado com "Todos os iguais"). */
+  avisos: Mensagem[];
 }
 
 /**
@@ -33,17 +35,20 @@ export interface NormaDoTrabalho {
 export function normaDoTrabalho(base: ModeloResolvido, estilos: Estilo[], ajustes: Record<string, string> = {}): NormaDoTrabalho {
   let modelo = base;
   let problemas: Mensagem[] = [];
+  let avisos: Mensagem[] = [];
   if (Object.keys(ajustes).length) {
     const ajustado = aplicarAjustes(base, ajustes);
-    if (ajustado.modelo) modelo = ajustado.modelo;
-    else problemas = ajustado.mensagens;
+    if (ajustado.modelo) {
+      modelo = ajustado.modelo;
+      avisos = ajustado.mensagens;
+    } else problemas = ajustado.mensagens;
   }
   const perfil = perfilDeCitacoes(modelo);
   const nomeDoCsl = perfil.regras.get("estilo csl")?.texto;
   const estilo = estilos.find((e) => e.nome === nomeDoCsl);
   const esquema = esquemaDeCitacoes(modelo);
   if (!estilo || !esquema) throw new Error(`não achei o estilo de citação ${nomeDoCsl ?? "(nenhum)"} do modelo ${modelo.identificacao.nome}`);
-  return { modelo, perfil, csl: aplicarPerfilNoCsl(estilo.conteudo, perfil, esquema), problemas };
+  return { modelo, perfil, csl: aplicarPerfilNoCsl(estilo.conteudo, perfil, esquema), problemas, avisos };
 }
 
 /** "ABNT 2025, revisão 10" ou "ABNT – Universidade X, revisão 2". */

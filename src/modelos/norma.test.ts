@@ -40,14 +40,31 @@ describe("escolhas do trabalho por cima do modelo", () => {
   });
 
   it("recusa regra fixa, regra que não existe e valor fora do tipo, e aí não aplica nada", () => {
-    const r = aplicarAjustes(abnt, { "Texto › entrelinha": "duplo", "regra inventada": "x", "Texto › recuo da primeira linha": "muito", "Elemento › inventado": "x", "Texto › fonte": "Arial" });
+    const r = aplicarAjustes(abnt, { "Texto › fonte menor": "11 pt", "regra inventada": "x", "Texto › recuo da primeira linha": "muito", "Elemento › inventado": "x", "Texto › fonte": "Arial" });
     expect(r.modelo).toBeUndefined();
     expect(r.mensagens.map((m) => m.texto)).toEqual([
-      "“Texto › entrelinha”: essa regra é fixa na norma e não pode ser trocada nas configurações do trabalho.",
+      "“Texto › fonte menor”: essa regra é fixa na norma e não pode ser trocada nas configurações do trabalho.",
       "“regra inventada”: essa regra não existe no modelo.",
       expect.stringMatching(/^“Texto › recuo da primeira linha”: .*precisa ser/),
       "“Elemento › inventado”: essa regra não existe no modelo.",
     ]);
+  });
+
+  it("a aparência fixa na norma muda com aviso (o trabalho sai da norma); a escolha vale", () => {
+    const r = aplicarAjustes(abnt, { "Texto › entrelinha": "duplo", "Parágrafo › alinhamento": "centralizado" });
+    expect(r.mensagens).toEqual([
+      {
+        gravidade: "aviso",
+        texto: "“Texto › entrelinha”: A ABNT pede “1,5” (NBR 14724:2024 (UFV 2026)). Com “duplo”, o trabalho sai da norma neste ponto.",
+      },
+    ]);
+    expect(texto(r.modelo!, "paragrafo", "entrelinha")).toBe("duplo");
+    // O Parágrafo segue o alinhamento do Texto, que é ajustável na ABNT: muda sem aviso.
+    expect(valorEfetivo(r.modelo!, "paragrafo", "alinhamento")).toMatchObject({ texto: "centralizado", de: "este trabalho", situacao: { tipo: "ajustavel" } });
+    expect(texto(r.modelo!, "texto", "alinhamento")).toBe("justificado");
+    const norma = carregarNorma("abnt.txt", { "Texto › entrelinha": "duplo" });
+    expect(norma.problemas).toEqual([]);
+    expect(norma.avisos).toHaveLength(1);
   });
 
   it("na APA, a fonte sozinha não se troca: só o par fonte e tamanho", () => {
