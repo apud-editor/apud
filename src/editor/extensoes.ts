@@ -26,6 +26,7 @@ import { citacaoSelecionada, colagemDoApud } from "./citar";
 import { nosDaFase3, type ControlesDosNos } from "./nos";
 import { excecoesQueValem } from "../modelos/excecoes";
 import { TitulosDoTrabalho, titulosAutomaticos } from "./titulos";
+import { destaqueDosBlocos } from "./destaque";
 import { colarNaGrade, cursorNaGrade, gradeDoTextoColado, tabelaDaPlanilha } from "./ilustracoes";
 
 // ---------------------------------------------------------------------------
@@ -551,6 +552,7 @@ export function extensoesDoApud(
     QuebraDePagina,
     ExcecoesDoBloco,
     titulosAutomaticos(titulos),
+    destaqueDosBlocos,
     Placeholder.configure({
       placeholder: ({ node }) => {
         switch (node.type.name) {

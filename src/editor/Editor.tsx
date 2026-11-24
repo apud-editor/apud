@@ -22,6 +22,7 @@ import { ControleDoArroba, type ItemDoArroba } from "./arroba";
 import { ondeFica, type Posicao } from "./posicao";
 import { ControleDoReconhecimento, transformarEmCitacao } from "./reconhecer";
 import { TitulosDoTrabalho, tirarNumerosEscritos } from "./titulos";
+import { destacar } from "./destaque";
 import { numeraSozinho } from "../modelos/titulos";
 import { AjustesDoBloco, ControleDosAjustes, QuadroNaBarra, type MudarTodos } from "./Ajustes";
 
@@ -95,6 +96,8 @@ export default function Editor({
   /** Foto grande leva alguns segundos para ser preparada: a tela avisa. */
   const [preparandoImagem, setPreparandoImagem] = useState(false);
   const [blocos, setBlocos] = useState(inicial);
+  // "Ver elementos": a etiqueta do tipo na margem de todos os blocos de uma vez. Desligado por padrão.
+  const [verElementos, setVerElementos] = useState(false);
   const espera = useRef<number>(0);
   const aoMudarRef = useRef(aoMudar);
   aoMudarRef.current = aoMudar;
@@ -133,6 +136,10 @@ export default function Editor({
   }, [editor, lerTexto]);
 
   useEffect(() => () => window.clearTimeout(espera.current), []);
+
+  useEffect(() => {
+    if (editor && !editor.isDestroyed) destacar(editor.view, { verTudo: verElementos });
+  }, [editor, verElementos]);
 
   // Com a numeração automática, o número escrito à mão nos títulos sai do texto:
   // ao abrir o trabalho e quando o modelo muda (Ctrl+Z desfaz). A Estrutura se refaz.
@@ -252,6 +259,8 @@ export default function Editor({
         aoInserir={(o) => controle.aoPedir?.(o)}
         titulos={titulos}
         ajustes={ajustesCtl}
+        verElementos={verElementos}
+        aoAlternarVerElementos={() => setVerElementos((v) => !v)}
       />
       <BarraDaIlustracao editor={editor} aoEscolherImagem={escolherImagem} />
       {preparandoImagem && (
@@ -371,12 +380,16 @@ function BarraDeFerramentas({
   aoInserir,
   titulos,
   ajustes,
+  verElementos,
+  aoAlternarVerElementos,
 }: {
   editor: EditorTipTap | null;
   janela?: ControleDaJanela;
   aoInserir: (o: "imagem" | "tabela" | "nota") => void;
   titulos: TitulosDoTrabalho;
   ajustes: ControleDosAjustes;
+  verElementos: boolean;
+  aoAlternarVerElementos: () => void;
 }) {
   const estado = useEditorState({
     editor,
@@ -460,6 +473,29 @@ function BarraDeFerramentas({
         dica="O que vem depois começa numa página nova (Ctrl+Enter)"
         aoClicar={() => inserirQuebra(editor)}
       />
+      {/* À direita da barra. Em janelas estreitas, só o ícone. */}
+      <span className="fb-resto" aria-hidden="true" />
+      <button
+        type="button"
+        className={`fb fb-texto ${verElementos ? "on" : ""}`}
+        aria-label="Ver elementos"
+        aria-pressed={verElementos}
+        title="Mostra o tipo de cada elemento (Título 1, Parágrafo, Lista…) na margem esquerda"
+        // mousedown, e não click: assim o editor não perde a seleção.
+        onMouseDown={(ev) => {
+          ev.preventDefault();
+          aoAlternarVerElementos();
+        }}
+        onKeyDown={(ev) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            aoAlternarVerElementos();
+          }
+        }}
+      >
+        <Icone nome="etiquetas" />
+        <span className="fb-rotulo">Ver elementos</span>
+      </button>
     </div>
   );
 }

@@ -290,12 +290,14 @@ textarea {
   margin: 0 0 18px;
 }
 
-/* O tipo de cada bloco, escrito na margem esquerda (como no protótipo). */
+/* O tipo de cada bloco, escrito na margem esquerda (como no protótipo). Fica escondido: só aparece no
+   bloco sob o mouse, no do cursor, ou em todos com "Ver elementos" (etapa 2d). */
 .texto > *::after {
   position: absolute;
   top: 0.35em;
-  left: -116px;
+  left: -134px;
   width: 72px;
+  opacity: 0;
   text-align: right;
   font-size: 11.5px;
   font-weight: 400;
@@ -305,6 +307,12 @@ textarea {
   text-transform: none;
   color: var(--tinta-suave);
   pointer-events: none;
+}
+
+.texto > .bloco-sobre::after,
+.texto.ver-elementos > *::after,
+.texto.ProseMirror-focused > .bloco-selecionado::after {
+  opacity: 1;
 }
 
 .texto > p::after {
@@ -2278,4 +2286,110 @@ button.linha:hover {
 }
 .quadro-valores svg {
   flex: none;
+}
+
+/* Etapa 2d: contorno do bloco, alça de arrastar e linha cobalto. */
+
+/* Tracejado fino ao passar o mouse; contínuo em cobalto no bloco do cursor (só com o editor em foco). */
+.texto > .bloco-sobre:not(.quebra) {
+  outline: 1px dashed var(--borda-forte);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+.texto.ProseMirror-focused > .bloco-selecionado:not(.quebra) {
+  outline: 1.5px solid var(--destaque);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+.texto > .bloco-arrastado {
+  opacity: 0.45;
+}
+
+/* A alça ⋮⋮ fica entre a etiqueta e o ⚙. */
+.alca {
+  position: absolute;
+  z-index: 4;
+  width: 20px;
+  height: 28px;
+  margin-top: 4px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--tinta-suave);
+  cursor: grab;
+}
+.alca:hover,
+.alca:focus-visible {
+  background: var(--cab);
+  color: var(--destaque);
+  border-color: var(--destaque);
+}
+body.arrastando-bloco,
+body.arrastando-bloco * {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+/* Onde o bloco vai cair. */
+.linha-de-soltura {
+  position: absolute;
+  z-index: 5;
+  height: 0;
+  margin-top: -1px;
+  border-top: 2px solid var(--destaque);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.linha-de-soltura::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: -5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--destaque);
+}
+
+/* "Mover para cima / para baixo" na janelinha. */
+.janelinha-mover {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.janelinha-mover .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  font-size: 13px;
+}
+.janelinha-mover .btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* "Ver elementos": o último botão da barra, à direita. */
+.fb-resto {
+  flex: 1 1 0;
+}
+.fb.fb-texto {
+  width: auto;
+  gap: 6px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+@media (max-width: 1180px) {
+  .fb-rotulo {
+    display: none;
+  }
+  .fb.fb-texto {
+    width: 36px;
+    padding: 0;
+  }
 }
