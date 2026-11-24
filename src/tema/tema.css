@@ -93,6 +93,8 @@
   --erro-citacao: #f9dcd8;
   --erro-citacao-texto: #8a1c12;
   --erro-realce: #c0392b;
+  --fechar-fundo: #c42b1c; /* o vermelho do botão Fechar da janela (texto branco, 5,7:1) */
+  --fechar-texto: #ffffff;
   --perigo-fundo: #b3261e;
   --perigo-texto: #ffffff;
 
@@ -145,6 +147,8 @@
   --erro-citacao: #4a2623;
   --erro-citacao-texto: #ffc9c2;
   --erro-realce: #e5645a;
+  --fechar-fundo: #c42b1c;
+  --fechar-texto: #ffffff;
   --perigo-fundo: #f2877e;
   --perigo-texto: #3b0a07;
 

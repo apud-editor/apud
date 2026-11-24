@@ -1829,3 +1829,73 @@ button.linha:hover {
   font-size: 12px;
   font-weight: 600;
 }
+
+/* Escolha do ícone do programa (SeletorDeIcone.tsx), ao lado do tema no topo do Painel. */
+.ic-seletor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ic-rotulo {
+  color: var(--tinta-suave);
+  font-size: 13px;
+}
+.ic-opcao {
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--borda-forte);
+  border-radius: 8px;
+  background: var(--cab);
+  cursor: pointer;
+}
+.ic-opcao:hover {
+  background: var(--hov);
+}
+.ic-opcao.on {
+  border-color: var(--destaque);
+  box-shadow: 0 0 0 1px var(--destaque);
+}
+.ic-opcao img {
+  display: block;
+  border-radius: 6px;
+}
+
+/* Controles da janela (ControlesDaJanela.tsx): o programa abre sem a barra do Windows. */
+.jn-controles {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  height: 32px;
+}
+.jn-botao {
+  width: 46px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--tinta);
+  cursor: default;
+}
+.jn-botao:hover {
+  background: var(--hov);
+}
+.jn-botao:focus-visible {
+  outline-offset: -3px;
+}
+.jn-fechar:hover {
+  background: var(--fechar-fundo);
+  color: var(--fechar-texto);
+}
+/* Os cabeçalhos deixam o canto livre para os controles, e o espaço vazio deles arrasta a janela. */
+.jn-sem-barra .topo,
+.jn-sem-barra .cab {
+  padding-right: 158px;
+}
+.topo-logo > svg {
+  pointer-events: none;
+}

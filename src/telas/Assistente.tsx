@@ -77,8 +77,8 @@ export default function Assistente({ aoCriar, aoCancelar }: Props) {
 
   return (
     <div className="tela">
-      <header className="topo">
-        <span className="topo-logo mk-gatilho">
+      <header className="topo" data-tauri-drag-region>
+        <span className="topo-logo mk-gatilho" data-tauri-drag-region>
           <Logo altura={32} />
         </span>
         <span className="barra" aria-hidden="true">

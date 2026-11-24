@@ -5,11 +5,25 @@
 import { ESCOLHAS_DE_TEMA, type EscolhaDeTema } from "../tema/tema";
 import { ATALHOS_DOS_PAINEIS } from "./atalhos";
 import type { AbaDasConfiguracoes } from "./Configuracoes";
+import { ICONES, type IdDoIcone } from "../icone/icone";
 
 export type ItemDeMenu =
-  | { tipo: "acao"; id: string; rotulo: string; atalho?: string; desativado?: boolean; aoEscolher: () => void }
+  | {
+      tipo: "acao";
+      id: string;
+      rotulo: string;
+      atalho?: string;
+      desativado?: boolean;
+      aoEscolher: () => void;
+    }
   /** Uma escolha entre várias (a norma, o tema): mostra qual está marcada. */
-  | { tipo: "opcao"; id: string; rotulo: string; marcado: boolean; aoEscolher: () => void }
+  | {
+      tipo: "opcao";
+      id: string;
+      rotulo: string;
+      marcado: boolean;
+      aoEscolher: () => void;
+    }
   | { tipo: "titulo"; id: string; rotulo: string }
   | { tipo: "separador"; id: string };
 
@@ -25,12 +39,17 @@ export function ehEscolhivel(item: ItemDeMenu): boolean {
 }
 
 /** O próximo item escolhível andando `passo` (1 ou -1) a partir de `atual` (-1 = nenhum), dando a volta. -1 se não há nenhum. */
-export function proximoItem(itens: ItemDeMenu[], atual: number, passo: 1 | -1): number {
+export function proximoItem(
+  itens: ItemDeMenu[],
+  atual: number,
+  passo: 1 | -1,
+): number {
   const n = itens.length;
   if (n === 0) return -1;
   let i = atual;
   for (let volta = 0; volta < n; volta++) {
-    i = atual === -1 && passo === -1 && volta === 0 ? n - 1 : (i + passo + n) % n;
+    i =
+      atual === -1 && passo === -1 && volta === 0 ? n - 1 : (i + passo + n) % n;
     if (ehEscolhivel(itens[i])) return i;
   }
   return -1;
@@ -41,12 +60,17 @@ export function primeiroItem(itens: ItemDeMenu[]): number {
 }
 
 export function ultimoItem(itens: ItemDeMenu[]): number {
-  for (let i = itens.length - 1; i >= 0; i--) if (ehEscolhivel(itens[i])) return i;
+  for (let i = itens.length - 1; i >= 0; i--)
+    if (ehEscolhivel(itens[i])) return i;
   return -1;
 }
 
 /** O menu vizinho da barra, dando a volta (Seta direita e esquerda). */
-export function menuVizinho(total: number, atual: number, passo: 1 | -1): number {
+export function menuVizinho(
+  total: number,
+  atual: number,
+  passo: 1 | -1,
+): number {
   if (total === 0) return -1;
   return (atual + passo + total) % total;
 }
@@ -57,6 +81,7 @@ export interface ContextoDosMenus {
   norma: string;
   normas: string[];
   temaEscolhido: EscolhaDeTema;
+  iconeEscolhido: IdDoIcone;
   /** O painel que está aberto, para o texto do item (abrir ou fechar). */
   painelAberto: "previa" | "referencias" | null;
   podeCitar: boolean;
@@ -66,6 +91,7 @@ export interface ContextoDosMenus {
   aoExportar: () => void;
   aoAbrirConfiguracoes: (aba: AbaDasConfiguracoes) => void;
   aoEscolherTema: (e: EscolhaDeTema) => void;
+  aoEscolherIcone: (id: IdDoIcone) => void;
   aoTrocarNorma: (n: string) => void;
   aoAlternarPainel: (p: "previa" | "referencias") => void;
   desfazer: () => void;
@@ -82,37 +108,113 @@ export function montarMenus(c: ContextoDosMenus): Menu[] {
     marcado: e.valor === c.temaEscolhido,
     aoEscolher: () => c.aoEscolherTema(e.valor),
   }));
+  const icones = ICONES.map<ItemDeMenu>((i) => ({
+    tipo: "opcao",
+    id: `icone-${i.id}`,
+    rotulo: i.nome,
+    marcado: i.id === c.iconeEscolhido,
+    aoEscolher: () => c.aoEscolherIcone(i.id),
+  }));
   return [
     {
       id: "arquivo",
       rotulo: "Arquivo",
       itens: [
-        { tipo: "acao", id: "voltar", rotulo: "Voltar para a lista de trabalhos", aoEscolher: c.aoVoltar },
-        { tipo: "acao", id: "exportar", rotulo: c.exportando ? "Montando o PDF…" : "Exportar PDF", desativado: c.exportando, aoEscolher: c.aoExportar },
+        {
+          tipo: "acao",
+          id: "voltar",
+          rotulo: "Voltar para a lista de trabalhos",
+          aoEscolher: c.aoVoltar,
+        },
+        {
+          tipo: "acao",
+          id: "exportar",
+          rotulo: c.exportando ? "Montando o PDF…" : "Exportar PDF",
+          desativado: c.exportando,
+          aoEscolher: c.aoExportar,
+        },
         { tipo: "separador", id: "sep-config" },
-        { tipo: "acao", id: "configuracoes", rotulo: "Configurações do trabalho…", aoEscolher: () => c.aoAbrirConfiguracoes("dados") },
+        {
+          tipo: "acao",
+          id: "configuracoes",
+          rotulo: "Configurações do trabalho…",
+          aoEscolher: () => c.aoAbrirConfiguracoes("dados"),
+        },
         { tipo: "separador", id: "sep-pref" },
-        { tipo: "titulo", id: "pref-tema", rotulo: "Preferências · Tema do programa" },
+        {
+          tipo: "titulo",
+          id: "pref-tema",
+          rotulo: "Preferências · Tema do programa",
+        },
         ...temas,
+        { tipo: "separador", id: "sep-icone" },
+        {
+          tipo: "titulo",
+          id: "pref-icone",
+          rotulo: "Preferências · Ícone do programa",
+        },
+        ...icones,
       ],
     },
     {
       id: "editar",
       rotulo: "Editar",
       itens: [
-        { tipo: "acao", id: "desfazer", rotulo: "Desfazer", atalho: "Ctrl+Z", aoEscolher: c.desfazer },
-        { tipo: "acao", id: "refazer", rotulo: "Refazer", atalho: "Ctrl+Y", aoEscolher: c.refazer },
+        {
+          tipo: "acao",
+          id: "desfazer",
+          rotulo: "Desfazer",
+          atalho: "Ctrl+Z",
+          aoEscolher: c.desfazer,
+        },
+        {
+          tipo: "acao",
+          id: "refazer",
+          rotulo: "Refazer",
+          atalho: "Ctrl+Y",
+          aoEscolher: c.refazer,
+        },
       ],
     },
     {
       id: "inserir",
       rotulo: "Inserir",
       itens: [
-        ...(c.podeCitar ? [{ tipo: "acao", id: "citar", rotulo: "Citação (@)", aoEscolher: () => c.inserir("citacao") } as ItemDeMenu] : []),
-        { tipo: "acao", id: "figura", rotulo: "Figura…", aoEscolher: () => c.inserir("imagem") },
-        { tipo: "acao", id: "tabela", rotulo: "Tabela", aoEscolher: () => c.inserir("tabela") },
-        { tipo: "acao", id: "nota", rotulo: "Nota de rodapé", aoEscolher: () => c.inserir("nota") },
-        { tipo: "acao", id: "quebra", rotulo: "Quebra de página", atalho: "Ctrl+Enter", aoEscolher: () => c.inserir("quebra") },
+        ...(c.podeCitar
+          ? [
+              {
+                tipo: "acao",
+                id: "citar",
+                rotulo: "Citação (@)",
+                aoEscolher: () => c.inserir("citacao"),
+              } as ItemDeMenu,
+            ]
+          : []),
+        {
+          tipo: "acao",
+          id: "figura",
+          rotulo: "Figura…",
+          aoEscolher: () => c.inserir("imagem"),
+        },
+        {
+          tipo: "acao",
+          id: "tabela",
+          rotulo: "Tabela",
+          aoEscolher: () => c.inserir("tabela"),
+        },
+        {
+          tipo: "acao",
+          id: "nota",
+          rotulo: "Nota de rodapé",
+          aoEscolher: () => c.inserir("nota"),
+        },
+        {
+          tipo: "acao",
+          id: "quebra",
+          rotulo: "Quebra de página",
+          atalho: "Ctrl+Enter",
+          aoEscolher: () => c.inserir("quebra"),
+        },
       ],
     },
     {
@@ -120,9 +222,20 @@ export function montarMenus(c: ContextoDosMenus): Menu[] {
       rotulo: "Modelo",
       itens: [
         { tipo: "titulo", id: "norma", rotulo: "Norma do trabalho" },
-        ...c.normas.map<ItemDeMenu>((n) => ({ tipo: "opcao", id: `norma-${n}`, rotulo: n, marcado: n === c.norma, aoEscolher: () => c.aoTrocarNorma(n) })),
+        ...c.normas.map<ItemDeMenu>((n) => ({
+          tipo: "opcao",
+          id: `norma-${n}`,
+          rotulo: n,
+          marcado: n === c.norma,
+          aoEscolher: () => c.aoTrocarNorma(n),
+        })),
         { tipo: "separador", id: "sep-elementos" },
-        { tipo: "acao", id: "elementos", rotulo: "Elementos do trabalho…", aoEscolher: () => c.aoAbrirConfiguracoes("elementos") },
+        {
+          tipo: "acao",
+          id: "elementos",
+          rotulo: "Elementos do trabalho…",
+          aoEscolher: () => c.aoAbrirConfiguracoes("elementos"),
+        },
       ],
     },
     {
@@ -132,21 +245,32 @@ export function montarMenus(c: ContextoDosMenus): Menu[] {
         {
           tipo: "acao",
           id: "lista",
-          rotulo: c.painelAberto === "referencias" ? "Fechar a lista de referências" : "Abrir a lista de referências",
+          rotulo:
+            c.painelAberto === "referencias"
+              ? "Fechar a lista de referências"
+              : "Abrir a lista de referências",
           atalho: ATALHOS_DOS_PAINEIS.referencias.texto,
           aoEscolher: () => c.aoAlternarPainel("referencias"),
         },
         {
           tipo: "acao",
           id: "previa",
-          rotulo: c.painelAberto === "previa" ? "Fechar a prévia do PDF" : "Abrir a prévia do PDF",
+          rotulo:
+            c.painelAberto === "previa"
+              ? "Fechar a prévia do PDF"
+              : "Abrir a prévia do PDF",
           atalho: ATALHOS_DOS_PAINEIS.previa.texto,
           aoEscolher: () => c.aoAlternarPainel("previa"),
         },
         ...(c.temEscolhasDoAutor
           ? ([
               { tipo: "separador", id: "sep-escolhas" },
-              { tipo: "acao", id: "escolhas", rotulo: "Escolhas do autor…", aoEscolher: () => c.aoAbrirConfiguracoes("escolhas") },
+              {
+                tipo: "acao",
+                id: "escolhas",
+                rotulo: "Escolhas do autor…",
+                aoEscolher: () => c.aoAbrirConfiguracoes("escolhas"),
+              },
             ] as ItemDeMenu[])
           : []),
       ],

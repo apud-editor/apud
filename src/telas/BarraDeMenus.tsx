@@ -115,7 +115,7 @@ export default function BarraDeMenus({ menus }: Props) {
   };
 
   return (
-    <div className="mn-barra" role="menubar" aria-label="Menus do trabalho" ref={raiz}>
+    <div className="mn-barra" role="menubar" aria-label="Menus do trabalho" ref={raiz} data-tauri-drag-region>
       {menus.map((m, i) => (
         <div key={m.id} className="mn-menu">
           <button
