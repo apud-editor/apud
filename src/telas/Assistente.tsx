@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import type { Trabalho } from "../arquivos/formato";
 import type { DadosDoTrabalho, TipoDeTrabalho } from "../documento/modelo";
-import { normasEmbutidas, perfilEmbutido } from "../perfis/embutidos";
+import { modeloEmbutido, normasEmbutidas } from "../modelos/embutidos";
 import CamposDosDados from "./CamposDosDados";
 import { Logo } from "../marca/Marca";
 import {
@@ -23,8 +23,8 @@ const PASSOS = ["Tipo e norma", "Dados", "Resumo"] as const;
 
 /** O que o Apud deixa ligado para o tipo e a norma escolhidos, em frases simples (para o passo 3). */
 function frasesDoQueLiga(tipo: TipoDeTrabalho, norma: string): string[] {
-  const perfil = perfilEmbutido(norma);
-  const a = aberturaPadrao(tipo, perfil);
+  const modelo = modeloEmbutido(norma);
+  const a = aberturaPadrao(tipo, modelo);
   const lista: string[] = [];
   if (a.capa) lista.push("capa");
   if (a.folhaDeRosto) lista.push("folha de rosto");
@@ -68,7 +68,7 @@ export default function Assistente({ aoCriar, aoCancelar }: Props) {
     criando.current = true;
     try {
       const resumo = comResumo ? resumoDoAssistente(dados.idioma, textoDoResumo, palavras) : null;
-      aoCriar(trabalhoNovo({ dados, resumo }, perfilEmbutido(norma)));
+      aoCriar(trabalhoNovo({ dados, resumo }, modeloEmbutido(norma)));
     } catch (e) {
       criando.current = false;
       setErro(`Não consegui montar o trabalho: ${(e as Error).message}.`);

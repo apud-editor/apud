@@ -13,7 +13,7 @@ import {
   naturezaDoTrabalho,
   palavrasChave,
   repetirTituloNoTexto,
-  rotulosDoIdioma,
+  nomeDoIdiomaNoModelo,
 } from "./abertura";
 
 const texto = (t: string) => [[{ texto: t }]];
@@ -107,10 +107,11 @@ describe("natureza do trabalho", () => {
 
 describe("rótulos, datas, nomes e palavras-chave", () => {
   it("rótulos do resumo por idioma; idioma sem rótulo usa o inglês", () => {
-    expect(rotulosDoIdioma("pt-BR").resumo).toBe("Resumo");
-    expect(rotulosDoIdioma("es").resumo).toBe("Resumen");
-    expect(rotulosDoIdioma("fr").palavrasChave).toBe("Mots-clés :");
-    expect(rotulosDoIdioma("xx").resumo).toBe("Abstract");
+    // Os rótulos ficam no modelo Em branco ("título em espanhol: Resumen"); aqui, o nome do idioma.
+    expect(nomeDoIdiomaNoModelo("pt-BR")).toBe("português");
+    expect(nomeDoIdiomaNoModelo("es")).toBe("espanhol");
+    expect(nomeDoIdiomaNoModelo("fr")).toBe("francês");
+    expect(nomeDoIdiomaNoModelo("xx")).toBe("inglês");
   });
 
   it("data por extenso, com o que se sabe dela", () => {

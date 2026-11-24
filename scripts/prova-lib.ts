@@ -15,9 +15,13 @@ import { NodeCompiler } from "@myriaddreamin/typst-ts-node-compiler";
 import { criarMotor, citacoesDoTexto } from "../src/citacoes/motor";
 import { escaparTexto, pedacosParaTypst, PONTUACAO_DA_LISTA, registrar } from "../src/conversor/typst";
 import { arquivosDasImagens } from "../src/conversor/elementos";
-import { conferirPerfis, formatarMensagem, normaDoTrabalho, type Arquivo, type NormaDoTrabalho } from "../src/perfis";
-import type { PerfilResolvido } from "../src/perfis";
+import { formatarMensagem, type Arquivo, type PerfilResolvido } from "../src/perfis";
 import type { EsquemaNorma } from "../src/perfis/esquema";
+import { conferirModelos } from "../src/modelos/conferir";
+import { valorEfetivo } from "../src/modelos/herdar";
+import { normaDoTrabalho, type NormaDoTrabalho } from "../src/modelos/norma";
+import { esquemaDeCitacoes } from "../src/modelos/ponte";
+import type { ModeloResolvido } from "../src/modelos/tipos";
 import {
   documentoVazio,
   type Bloco,
@@ -40,28 +44,34 @@ function lerPasta(pasta: string, extensao: string): Arquivo[] {
     .map((nome) => ({ nome, conteudo: readFileSync(join(pasta, nome), "utf8") }));
 }
 
+export const PASTA_MODELOS = join(import.meta.dirname, "..", "modelos");
+
 const estilos = () => lerPasta(join(PASTA_PERFIS, "estilos"), ".csl");
 
-function conferido(arquivo: string) {
-  const resultados = conferirPerfis(lerPasta(PASTA_PERFIS, ".txt"), estilos());
+/**
+ * Lê e confere os modelos da pasta modelos/ (e os exemplos); devolve o modelo
+ * do arquivo pedido ("abnt.txt", "apa.txt" ou o exemplo da universidade).
+ */
+export function carregarModelo(arquivo: string): ModeloResolvido {
+  const exemplos = lerPasta(join(PASTA_MODELOS, "exemplos"), ".txt");
+  const resultados = conferirModelos([...lerPasta(PASTA_MODELOS, ".txt"), ...exemplos]);
   const r = resultados.find((x) => x.arquivo === arquivo);
-  if (!r?.perfil || !r.esquema) {
+  if (!r?.resolvido) {
     const erros = r?.mensagens.map(formatarMensagem).join("\n") ?? "arquivo não encontrado";
-    throw new Error(`o perfil ${arquivo} tem erros:\n${erros}`);
+    throw new Error(`o modelo ${arquivo} tem erros:\n${erros}`);
   }
-  return r;
+  return r.resolvido;
 }
 
-/** Lê e confere os perfis da pasta; devolve o da norma pedida. */
-export function carregarPerfil(arquivo: string): { perfil: PerfilResolvido; esquema: EsquemaNorma; csl: string } {
-  const r = conferido(arquivo);
-  const { csl } = normaDoTrabalho(r, estilos());
-  return { perfil: r.perfil!, esquema: r.esquema!, csl };
+/** O modelo, as regras de citação (na forma que o motor lê), o esquema do CSL e o CSL ajustado. */
+export function carregarPerfil(arquivo: string): { modelo: ModeloResolvido; perfil: PerfilResolvido; esquema: EsquemaNorma; csl: string } {
+  const { modelo, perfil, csl } = carregarNorma(arquivo);
+  return { modelo, perfil, esquema: esquemaDeCitacoes(modelo)!, csl };
 }
 
-/** A norma com os ajustes de um trabalho (escolhas do autor). Ajuste com erro para o teste. */
+/** A norma com as escolhas de um trabalho (escolhas do autor). Escolha com erro para o teste. */
 export function carregarNorma(arquivo: string, ajustes: Record<string, string> = {}): NormaDoTrabalho {
-  const norma = normaDoTrabalho(conferido(arquivo), estilos(), ajustes);
+  const norma = normaDoTrabalho(carregarModelo(arquivo), estilos(), ajustes);
   if (norma.problemas.length) throw new Error(norma.problemas.map(formatarMensagem).join("\n"));
   return norma;
 }
@@ -321,7 +331,7 @@ export function htmlParaTexto(html: string): string {
 
 /**
  * Monta as chamadas e a lista do documento de prova com o motor do Apud, no
- * Typst, com o perfil (e ajustes do trabalho, se houver), e devolve como saíram.
+ * Typst, com o modelo (e as escolhas do trabalho, se houver), e devolve como saíram.
  */
 export function rodarProva(arquivoDoPerfil: string, ajustes: Record<string, string> = {}): ResultadoDaProva {
   return rodarTrabalho(documentoDeProva(), carregarNorma(arquivoDoPerfil, ajustes));
@@ -329,9 +339,9 @@ export function rodarProva(arquivoDoPerfil: string, ajustes: Record<string, stri
 
 /** O mesmo que rodarProva, para qualquer trabalho (os artigos de teste, por exemplo). */
 export function rodarTrabalho({ documento, escritas }: { documento: Documento; escritas: string[] }, norma: NormaDoTrabalho): ResultadoDaProva & { avisos: string[] } {
-  const { perfil, csl } = norma;
+  const { perfil, csl, modelo } = norma;
   const motor = criarMotor(documento, perfil);
-  const titulo = perfil.regras.get("rótulo das referências")?.texto ?? "Referências";
+  const titulo = valorEfetivo(modelo, "referencias", "título")?.texto ?? "Referências";
   // Na ordem do texto, para o motor saber qual é a primeira citação de cada obra.
   const avisos: string[] = [];
   const chamadas = citacoesDoTexto(documento.blocos).map((c, i) => {

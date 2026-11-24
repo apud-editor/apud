@@ -1,4 +1,4 @@
-// Gera o PDF de um texto de exemplo com o perfil ABNT, para conferir a
+// Gera o PDF de um texto de exemplo com o modelo ABNT, para conferir a
 // paginação. Uso: npm run exemplo-pdf  (o PDF fica em perfis/prova/saida/)
 
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -8,8 +8,8 @@ import { carregarPerfil, PASTA_PROVA } from "./prova-lib";
 import { documentoParaTypst } from "../src/conversor/typst";
 import { TEXTO_DE_EXEMPLO } from "../src/conversor/exemplo";
 
-const { perfil } = carregarPerfil("abnt.txt");
-const typst = documentoParaTypst(TEXTO_DE_EXEMPLO, perfil, { titulo: "Texto de exemplo" });
+const { modelo } = carregarPerfil("abnt.txt");
+const typst = documentoParaTypst(TEXTO_DE_EXEMPLO, modelo, { titulo: "Texto de exemplo" });
 const compilador = NodeCompiler.create({ fontArgs: [{ fontPaths: [join(import.meta.dirname, "..", "public", "fontes")] }] });
 const r = compilador.compile({ mainFileContent: typst });
 if (!r.result) {

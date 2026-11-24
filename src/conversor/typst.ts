@@ -1,11 +1,13 @@
-// O conversor: junta o texto do trabalho (blocos) com o perfil da norma e
+// O conversor: junta o texto do trabalho (blocos) com o modelo da norma e
 // escreve o código Typst, que o motor Typst transforma em páginas.
 //
-// Todas as medidas vêm do perfil (margens, fonte, entrelinhas, recuos, títulos,
-// listas, número de página). Nada de norma fica escrito aqui: mudar o perfil
-// muda o PDF. Os perfis da ABNT e da APA dão nomes diferentes a algumas regras
-// ("margens, esquerda" e "margens"; "família da fonte" e "fonte"); a classe
-// Regras lê as duas formas.
+// Todas as medidas vêm do modelo (margens, fonte, entrelinhas, recuos, títulos,
+// listas, número de página), lidas na árvore de elementos (versão 2, etapa 1c):
+// cada valor é o do elemento ou, se ele não diz, o do elemento de cima. Nada de
+// norma fica escrito aqui, e não há caminhos "se é ABNT, se é APA": o que muda
+// entre as normas vem dos valores do modelo (por exemplo, a figura da APA, com
+// o número em negrito e o título em itálico na linha de baixo, é a Identificação
+// com "título na linha de baixo: sim").
 //
 // O que fica com a pessoa (decisão de 20/11/2026): as letras dos títulos saem
 // como ela escreveu (o Apud não põe em maiúsculas), o número do título é o que
@@ -14,12 +16,12 @@
 // de referências". Tudo o que sai no PDF tem um lugar no editor.
 //
 // Citações e referências (fase 2): cada citação é montada pelo motor de
-// citações (citacoes/motor.ts) com as regras do perfil, e uma marca invisível
+// citações (citacoes/motor.ts) com as regras de citação do modelo, e uma marca invisível
 // põe a obra na lista. A lista é montada pelo estilo CSL dentro do Typst, só
 // com as obras citadas.
 //
 // Citação longa, notas de rodapé, figuras e tabelas (fase 3): a forma de
-// cada um vem do perfil (recuo, fonte menor, espaço simples, fios da tabela).
+// cada um vem do modelo (recuo, fonte menor, espaço simples, fios da tabela).
 // As figuras e tabelas são numeradas sozinhas, na ordem do texto; na ABNT,
 // cada espécie de ilustração (Figura, Gráfico, Quadro) tem a sua contagem.
 // As imagens não vão dentro do código: o motor as recebe como arquivos
@@ -29,7 +31,7 @@
 // agradecimentos, epígrafe, resumos e sumário (ABNT), ou página de título e
 // resumos (APA). Cada elemento ocupa a própria folha, e o texto começa na
 // folha seguinte. A ordem e a frase da natureza ficam em abertura.ts; a forma,
-// aqui, pelo perfil. Sem nenhum elemento ligado, o PDF sai como antes.
+// aqui, pelo modelo. Sem nenhum elemento ligado, o PDF sai como antes.
 //
 // Entrelinhas como no Word: no Word, a linha "simples" mede 1,15 vez o tamanho
 // da fonte (Times 12 pt = 13,8 pt), e 1,5 linha mede 1,5 vez isso (20,7 pt).
@@ -58,18 +60,19 @@ import {
   anoDoTrabalho,
   dataPorExtenso,
   elementosDaAbertura,
-  existeNaNorma,
+  existeNoModelo,
   idiomaParaTypst,
   juntarNomes,
-  lingua,
   naturezaDoTrabalho,
   palavrasChave,
   repetirTituloNoTexto,
-  rotulosDoIdioma,
+  nomeDoIdiomaNoModelo,
   type ElementoDaAbertura,
 } from "./abertura";
 import { separarNumero } from "../documento/estrutura";
-import type { PerfilResolvido, Valor } from "../perfis";
+import { valorEfetivo } from "../modelos/herdar";
+import { perfilDeCitacoes } from "../modelos/ponte";
+import type { ModeloResolvido } from "../modelos/tipos";
 import { criarMotor, temGrifo, type Motor, type Pedaco } from "../citacoes/motor";
 
 /** Altura da linha simples, em "em" (vezes o tamanho da fonte), como no Word. */
@@ -96,103 +99,62 @@ export const MARCA_DO_BLOCO = "apud-bloco";
 export const MARCA_DAS_POSICOES = "apud-posicoes";
 
 // ---------------------------------------------------------------------------
-// Leitura das regras do perfil
+// Leitura do modelo
 
-class Regras {
-  constructor(readonly perfil: PerfilResolvido) {}
+class Leitor {
+  constructor(readonly modelo: ModeloResolvido) {}
 
-  /** O texto de uma regra, ou undefined se o perfil não tem a regra. */
-  talvez(chave: string): string | undefined {
-    const r = this.perfil.regras.get(chave);
-    return r && r.situacao.tipo !== "desligada" ? r.texto : undefined;
-  }
-
-  tem(chave: string): boolean {
-    return this.talvez(chave) !== undefined;
-  }
-
-  /** A primeira das regras que o perfil tem (os perfis dão nomes diferentes à mesma regra). */
-  primeira(...chaves: string[]): string {
-    const chave = chaves.find((c) => this.tem(c));
-    if (!chave) throw new Error(`o perfil ${this.perfil.identificacao.perfil} não tem a regra "${chaves[0]}"`);
-    return chave;
-  }
-
-  private valor(chave: string): Valor {
-    const r = this.perfil.regras.get(chave);
-    if (!r) throw new Error(`o perfil ${this.perfil.identificacao.perfil} não tem a regra "${chave}"`);
-    return r.valor;
-  }
-
-  medida(chave: string): string {
-    const v = this.valor(chave);
-    if (v.tipo !== "medida") throw new Error(`a regra "${chave}" precisa ser uma medida`);
-    return `${numero(v.numero)}${v.unidade}`;
-  }
-
-  numero(chave: string): number {
-    const v = this.valor(chave);
-    if (v.tipo === "espacamento" || v.tipo === "quantidade" || v.tipo === "medida") return v.numero;
-    throw new Error(`a regra "${chave}" precisa ser um número`);
-  }
-
-  opcao(chave: string): string {
-    const v = this.valor(chave);
-    if (v.tipo === "opcao" || v.tipo === "texto") return v.valor;
-    throw new Error(`a regra "${chave}" precisa ser uma opção`);
-  }
-
-  destaque(chave: string) {
-    const v = this.valor(chave);
-    if (v.tipo !== "destaque") throw new Error(`a regra "${chave}" precisa ser um destaque`);
+  private v(elemento: string, propriedade: string) {
+    const v = valorEfetivo(this.modelo, elemento, propriedade);
+    if (!v) throw new Error(`o modelo ${this.modelo.identificacao.nome} não dá valor a “${propriedade}” em ${elemento}`);
     return v;
   }
 
-  // --- Regras com nomes diferentes na ABNT e na APA ---
-
-  /** Margens: ABNT dá uma por lado; APA, uma só para todos. */
-  margens() {
-    if (this.tem("margens, esquerda")) {
-      return {
-        esquerda: this.medida("margens, esquerda"),
-        superior: this.medida("margens, superior"),
-        direita: this.medida("margens, direita"),
-        inferior: this.medida("margens, inferior"),
-      };
-    }
-    const todas = this.medida("margens");
-    return { esquerda: todas, superior: todas, direita: todas, inferior: todas };
+  /** O valor como texto ("justificado", "canto superior direito"). */
+  texto(elemento: string, propriedade: string): string {
+    return this.v(elemento, propriedade).texto;
   }
 
-  /** Fonte: ABNT tem família e tamanho; APA, as duas juntas ("Times New Roman 12 pt"). */
-  fonte(): { familia: string; tamanho: string } {
-    if (this.tem("família da fonte")) return { familia: this.opcao("família da fonte"), tamanho: this.medida("tamanho da fonte") };
-    const m = this.opcao("fonte").match(/^(.*?)\s+(\d+(?:[.,]\d+)?)\s*pt$/);
-    if (!m) throw new Error(`a regra "fonte" precisa ter a família e o tamanho, como "Times New Roman 12 pt"`);
-    return { familia: m[1], tamanho: `${m[2].replace(",", ".")}pt` };
+  /** Um texto que pode ser "nenhuma" (vazio). */
+  textoOuVazio(elemento: string, propriedade: string): string {
+    const v = this.v(elemento, propriedade).valor;
+    return v.tipo === "texto" ? v.valor : "";
   }
 
-  /** Tamanho menor (ABNT: número de página, citações longas, notas). Sem a regra, o mesmo do texto. */
-  fonteMenor(): string {
-    return this.tem("fonte menor") ? this.medida("fonte menor") : this.fonte().tamanho;
+  /** Uma medida para o Typst: "1.25cm", "12pt". Zero sai como "0pt". */
+  medida(elemento: string, propriedade: string): string {
+    const v = this.v(elemento, propriedade).valor;
+    if (v.tipo !== "medida") throw new Error(`“${propriedade}” em ${elemento} precisa ser uma medida`);
+    return v.numero === 0 ? "0pt" : `${numero(v.numero)}${v.unidade}`;
   }
 
-  lista(chave: string): string[] {
-    const r = this.perfil.regras.get(chave);
-    return r && r.situacao.tipo !== "desligada" && r.valor.tipo === "lista" ? r.valor.itens : [];
+  /** Um número: entrelinha (1, 1,5, 2), linhas em branco, medida. */
+  numero(elemento: string, propriedade: string): number {
+    const v = this.v(elemento, propriedade).valor;
+    if (v.tipo === "espacamento" || v.tipo === "quantidade" || v.tipo === "medida") return v.numero;
+    throw new Error(`“${propriedade}” em ${elemento} precisa ser um número`);
   }
 
-  /** ABNT: se a parte do trabalho está em "fonte menor, onde" ou em "espaço simples, onde". */
-  menor(parte: string): boolean {
-    return this.lista("fonte menor, onde").includes(parte);
-  }
-  simples(parte: string): boolean {
-    return this.lista("espaço simples, onde").includes(parte);
+  destaque(elemento: string, propriedade: string) {
+    const v = this.v(elemento, propriedade).valor;
+    if (v.tipo !== "destaque") throw new Error(`“${propriedade}” em ${elemento} precisa ser um destaque`);
+    return v;
   }
 
-  /** Um número de linhas em branco (0 quando o perfil não tem a regra). */
-  linhas(chave: string): number {
-    return this.tem(chave) ? this.numero(chave) : 0;
+  lista(elemento: string, propriedade: string): string[] {
+    const v = this.v(elemento, propriedade).valor;
+    return v.tipo === "lista" ? v.itens : [];
+  }
+
+  sim(elemento: string, propriedade: string): boolean {
+    const v = this.v(elemento, propriedade).valor;
+    return v.tipo === "simnao" && v.valor;
+  }
+
+  /** Uma regra de citação (elemento Citações e referências), ou undefined se o modelo não a tem. */
+  citacao(chave: string): string | undefined {
+    const v = this.modelo.valores.get("citacoes")?.get(chave);
+    return v && v.situacao.tipo !== "desligada" ? v.texto : undefined;
   }
 }
 
@@ -229,7 +191,7 @@ export function escaparTexto(s: string): string {
 
 // ---------------------------------------------------------------------------
 
-/** As medidas que os blocos usam, já lidas do perfil. */
+/** As medidas que os blocos usam, já lidas do modelo. */
 interface Medidas {
   /** Espaço entre as caixas das linhas (entrelinhas). */
   entre: string;
@@ -259,12 +221,25 @@ interface Medidas {
   ilustracoes: Ilustracoes;
 }
 
-/** A forma das figuras e tabelas, lida do perfil. */
+/** A forma das figuras e tabelas, lida do modelo. */
 interface Ilustracoes {
-  /** "abnt": "Figura 1 – Título" numa linha, fonte embaixo; "apa": número em negrito, título em itálico na linha de baixo e "Nota." */
-  estilo: "abnt" | "apa";
   /** O nome que vai antes do número, pela espécie ("Figura", "Gráfico", "Quadro", "Tabela"). */
   rotulo: (especie: string) => string;
+  /** Qual contagem a espécie usa: a dela, se o modelo a tem; senão a da primeira (na APA, tudo é Figura). */
+  chave: (especie: string) => string;
+  /** "Figura 1" com o destaque do número; o título com o dele, na mesma linha (com o separador) ou na de baixo. */
+  destaqueDoNumero: (x: string) => string;
+  destaqueDoTitulo: (x: string) => string;
+  tituloNaLinhaDeBaixo: boolean;
+  /** Espaço entre a identificação e o que vem embaixo. */
+  entreDaIdentificacao: string;
+  /** A fonte vai dentro da nota ("Nota. ... Fonte"), em vez de "Fonte: ..." e depois a nota. */
+  fonteDentroDaNota: boolean;
+  destaqueDoRotuloDaNota: (x: string) => string;
+  /** O título e a fonte na largura da ilustração (ABNT), ou na largura do texto. */
+  naLarguraDaIlustracao: boolean;
+  /** A tabela na largura do conteúdo, no meio da página (IBGE), ou na largura do texto. */
+  tabelaNaLarguraDoConteudo: boolean;
   /** Contagem de cada espécie, na ordem do texto. */
   contagem: Map<string, number>;
   separador: string;
@@ -284,7 +259,7 @@ interface Ilustracoes {
   /**
    * Tabela em mais de uma página (IBGE, 8.3): número e título repetidos em cada
    * página, com as indicações da primeira, das do meio e da última. Null: só o
-   * cabeçalho se repete (APA).
+   * cabeçalho se repete.
    */
   continuidade: { continua: string; continuacao: string; conclusao: string; direita: boolean } | null;
   /** Largura do texto na página, em cm, para a largura padrão das figuras. */
@@ -292,22 +267,28 @@ interface Ilustracoes {
 }
 
 /** Escreve o código Typst do trabalho. */
-export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opcoes: OpcoesDoConversor = {}): string {
-  const r = new Regras(perfil);
-  const k = r.numero("entrelinhas");
+export function documentoParaTypst(doc: Documento, modelo: ModeloResolvido, opcoes: OpcoesDoConversor = {}): string {
+  const r = new Leitor(modelo);
+  const k = r.numero("texto", "entrelinha");
   const entre = `${numero((k - 1) * LINHA_SIMPLES)}em`;
   const passo = `${numero(k * LINHA_SIMPLES)}em`;
-  const justificado = r.opcao("alinhamento") === "justificado";
-  const fonte = r.fonte();
-  const margens = r.margens();
+  const justificado = r.texto("texto", "alinhamento") === "justificado";
+  const fonte = { familia: r.texto("texto", "fonte"), tamanho: r.medida("texto", "tamanho") };
+  const margens = {
+    esquerda: r.medida("pagina", "margem esquerda"),
+    superior: r.medida("pagina", "margem superior"),
+    direita: r.medida("pagina", "margem direita"),
+    inferior: r.medida("pagina", "margem inferior"),
+  };
 
   const linhas: string[] = [];
   const l = (s = "") => linhas.push(s);
-  const elementos = elementosDaAbertura(doc.abertura, existeNaNorma((k) => r.tem(k)));
+  const elementos = elementosDaAbertura(doc.abertura, existeNoModelo(modelo));
   // ABNT: o número só aparece a partir da primeira folha do texto. APA: desde a página de título.
-  const esconderAteOTexto = elementos.length > 0 && r.talvez("numeração de página, mostrar desde") === "primeira folha do texto";
+  const esconderAteOTexto = elementos.length > 0 && r.texto("pagina.numero", "mostrar desde") === "primeira folha do texto";
+  const id = modelo.identificacao;
 
-  l(`// Gerado pelo Apud com o perfil ${perfil.identificacao.perfil} ${perfil.identificacao.versao}, revisão ${perfil.identificacao.revisao}.`);
+  l(`// Gerado pelo Apud com o modelo ${id.nome}${id.versao ? ` ${id.versao}` : ""}, revisão ${id.revisao}.`);
   if (opcoes.titulo) l(`#set document(title: ${texto(opcoes.titulo)})`);
 
   // Página e número de página
@@ -315,7 +296,7 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   l(`  paper: "a4",`);
   l(`  margin: (left: ${margens.esquerda}, top: ${margens.superior}, right: ${margens.direita}, bottom: ${margens.inferior}),`);
   // Sem abertura, o texto começa na página 1. Com ela, a contagem e o lugar onde o número aparece seguem a norma.
-  const numeroDaPagina = `place(${lugarDoNumero(r, margens.direita)}, text(size: ${r.fonteMenor()}, top-edge: "cap-height", bottom-edge: "baseline", counter(page).display("1")))`;
+  const numeroDaPagina = `place(${lugarDoNumero(r, margens.direita)}, text(size: ${r.medida("pagina.numero", "tamanho")}, top-edge: "cap-height", bottom-edge: "baseline", counter(page).display("1")))`;
   if (esconderAteOTexto) {
     l(`  foreground: context { let i = query(<apud-texto>); if i.len() == 0 or here().page() >= i.first().location().page() { ${numeroDaPagina} } },`);
   } else {
@@ -327,7 +308,7 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   l(
     `#set text(font: ${fontes(fonte.familia)}, size: ${fonte.tamanho}, lang: "pt", region: "BR", top-edge: 0.8em, bottom-edge: -0.35em, hyphenate: false, overhang: false)`,
   );
-  const recuo = r.medida("recuo de parágrafo");
+  const recuo = r.medida("texto", "recuo da primeira linha");
   l(`#set par(justify: ${justificado}, leading: ${entre}, spacing: ${entre}, first-line-indent: (amount: ${recuo}, all: true))`);
 
   // Títulos
@@ -335,11 +316,11 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
     entre,
     passo,
     recuo,
-    naMesmaLinha: new Set(([1, 2, 3, 4, 5] as NivelDeTitulo[]).filter((n) => r.talvez(`título nível ${n}, texto depois`) === "na mesma linha")),
-    finalNaMesmaLinha: r.talvez("títulos na mesma linha, final") === "ponto" ? "." : "",
+    naMesmaLinha: new Set(([1, 2, 3, 4, 5] as NivelDeTitulo[]).filter((n) => r.texto(`titulos.nivel${n}`, "texto depois") === "na mesma linha")),
+    finalNaMesmaLinha: r.texto("titulos", "final na mesma linha") === "ponto" ? "." : "",
     listas: listas(r),
-    citacaoLonga: citacaoLonga(r, k, entre, passo),
-    ilustracoes: ilustracoes(r, k, entre, passo, margens),
+    citacaoLonga: citacaoLonga(r, entre, passo),
+    ilustracoes: ilustracoes(r, entre, passo, margens),
   };
   escreverTitulos(l, r, medidas);
   escreverNotas(l, r, justificado);
@@ -352,7 +333,7 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
   l();
 
   // As citações são montadas na ordem do texto (algumas regras dependem da primeira citação).
-  const motor = criarMotor(doc, perfil);
+  const motor = criarMotor(doc, perfilDeCitacoes(modelo));
   const caminhos = caminhosDasImagens(doc);
   const escrita: Escrita = {
     motor,
@@ -373,7 +354,7 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
     l(`#metadata("texto") <apud-texto>`);
   }
   // APA: o título do trabalho se repete no começo do texto.
-  if (r.talvez("início do texto") === "repete o título do trabalho" && repetirTituloNoTexto(doc.dados, doc.blocos)) {
+  if (r.sim("titulos.repetido", "repetir no começo do texto") && repetirTituloNoTexto(doc.dados, doc.blocos)) {
     l(`#heading(level: 1, numbering: none, outlined: false)[${tituloParaTypst(doc, (x) => x)}]`);
     l();
   }
@@ -405,40 +386,36 @@ export function documentoParaTypst(doc: Documento, perfil: PerfilResolvido, opco
 }
 
 /**
- * Onde fica o número da página. ABNT: a uma distância das bordas (2 cm do topo
- * e da direita). APA: no cabeçalho, a uma distância do topo, alinhado à
- * margem direita.
+ * Onde fica o número da página: no canto ou no centro, a uma distância da borda
+ * de cima (ou de baixo) e da lateral. A lateral pode ser "na margem": alinhado
+ * à margem direita do texto (APA, como o cabeçalho do Word).
  */
-function lugarDoNumero(r: Regras, margemDireita: string): string {
-  const posicao = r.opcao(r.primeira("numeração de página, posição", "número de página, posição"));
-  if (r.tem("numeração de página, distância das bordas")) {
-    const d = r.medida("numeração de página, distância das bordas");
-    if (posicao === "canto inferior direito") return `bottom + right, dx: -${d}, dy: -${d}`;
-    if (posicao === "centro inferior") return `bottom + center, dy: -${d}`;
-    return `top + right, dx: -${d}, dy: ${d}`;
-  }
-  const topo = r.medida("número de página, distância do topo");
-  return `top + right, dx: -${margemDireita}, dy: ${topo}`;
+function lugarDoNumero(r: Leitor, margemDireita: string): string {
+  const posicao = r.texto("pagina.numero", "posição");
+  const vertical = r.medida("pagina.numero", "distância vertical");
+  const lateral = r.texto("pagina.numero", "distância lateral") === "na margem" ? margemDireita : r.medida("pagina.numero", "distância lateral");
+  if (posicao === "canto inferior direito") return `bottom + right, dx: -${lateral}, dy: -${vertical}`;
+  if (posicao === "centro inferior") return `bottom + center, dy: -${vertical}`;
+  return `top + right, dx: -${lateral}, dy: ${vertical}`;
 }
 
-/** O marcador dos itens de lista, pelas regras do perfil. */
-function listas(r: Regras): Medidas["listas"] {
-  // ABNT: alíneas a), b) nas duas formas de lista; sub-alíneas com travessão.
-  if (r.tem("alíneas, marcador")) {
-    const sub = r.talvez("sub-alíneas, marcador") === "travessão" ? "—" : "–";
-    return {
-      recuo: r.medida("alíneas, recuo"),
-      recuoSub: r.medida("sub-alíneas, recuo a mais"),
-      marcador: (_s, nivel, i) => (nivel === 0 ? `${letraDaAlinea(i)})` : sub),
-    };
-  }
-  // APA: números só nas listas em sequência; marcadores nas outras.
-  const numerado = r.opcao("listas em sequência, marcador");
-  const marca = r.opcao("listas sem sequência, marcador");
+/**
+ * O marcador dos itens de lista. O modelo dá um molde para cada tipo de lista:
+ * com "a" (a), b), c)), com "1" (1., 2., 3.) ou um sinal fixo (•). A sub-lista
+ * usa o mesmo molde ou um traço próprio (ABNT: sub-alínea com travessão).
+ */
+function listas(r: Leitor): Medidas["listas"] {
+  const emSequencia = r.texto("listas", "marcador em sequência");
+  const semSequencia = r.texto("listas", "marcador sem sequência");
+  const sub = r.texto("listas", "marcador da sub-lista");
+  const pelo = (molde: string, i: number) => (molde.includes("a") ? molde.replace("a", letraDaAlinea(i)) : molde.includes("1") ? molde.replace("1", String(i + 1)) : molde);
   return {
-    recuo: r.medida("listas, recuo"),
-    recuoSub: r.medida("sub-listas, recuo a mais"),
-    marcador: (sequencia, _n, i) => (sequencia ? numerado.replace("1", String(i + 1)) : marca),
+    recuo: r.medida("listas", "recuo à esquerda"),
+    recuoSub: r.medida("listas", "recuo a mais da sub-lista"),
+    marcador: (sequencia, nivel, i) => {
+      if (nivel > 0 && sub !== "igual ao da lista") return sub === "travessão" ? "—" : "–";
+      return pelo(sequencia ? emSequencia : semSequencia, i);
+    },
   };
 }
 
@@ -449,14 +426,13 @@ const entreLinhas = (k: number) => `${numero((k - 1) * LINHA_SIMPLES)}em`;
 const comLinhas = (entre: string, passo: string, n: number) => (n ? `${entre} + ${numero(n)} * ${passo}` : entre);
 
 /** Citação longa (ABNT) ou em bloco (APA). */
-function citacaoLonga(r: Regras, k: number, entre: string, passo: string): Medidas["citacaoLonga"] {
-  const abnt = r.tem("citação longa, recuo");
-  const ponto = r.talvez("citação em bloco, ponto final") ?? r.talvez("citação, ponto final");
+function citacaoLonga(r: Leitor, entre: string, passo: string): Medidas["citacaoLonga"] {
+  const ponto = r.texto("citacaoLonga", "ponto final");
   return {
-    recuo: r.medida(abnt ? "citação longa, recuo" : "citação em bloco, recuo"),
-    tamanho: r.menor("citações longas") ? r.fonteMenor() : r.fonte().tamanho,
-    entre: r.simples("citações longas") ? entreLinhas(1) : entreLinhas(k),
-    fora: comLinhas(entre, passo, r.linhas("citação longa, linhas em branco antes e depois")),
+    recuo: r.medida("citacaoLonga", "recuo à esquerda"),
+    tamanho: r.medida("citacaoLonga", "tamanho"),
+    entre: entreLinhas(r.numero("citacaoLonga", "entrelinha")),
+    fora: comLinhas(entre, passo, r.numero("citacaoLonga", "espaço antes")),
     ponto: ponto === "antes da chamada" ? "antes" : ponto === "depois da chamada" ? "depois" : undefined,
   };
 }
@@ -464,61 +440,70 @@ function citacaoLonga(r: Regras, k: number, entre: string, passo: string): Medid
 /** Os nomes das espécies, sem acento e em minúsculas, para achar "Gráfico" pela espécie "grafico". */
 const semAcento = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-function continuidadeDaTabela(r: Regras): Ilustracoes["continuidade"] {
-  if (r.talvez("tabelas em mais de uma página") !== "número, título e cabeçalho repetidos em cada página") return null;
-  const [continua, continuacao, conclusao] = r.tem("tabelas em mais de uma página, indicações")
-    ? r.lista("tabelas em mais de uma página, indicações")
-    : ["(continua)", "(continuação)", "(conclusão)"];
-  return { continua, continuacao, conclusao, direita: r.talvez("tabelas em mais de uma página, posição das indicações") !== "à esquerda" };
+function continuidadeDaTabela(r: Leitor): Ilustracoes["continuidade"] {
+  if (r.texto("ilustracoes.tabela", "em mais de uma página") !== "número, título e cabeçalho repetidos em cada página") return null;
+  const [continua, continuacao, conclusao] = r.lista("ilustracoes.tabela", "indicações");
+  return { continua, continuacao, conclusao, direita: r.texto("ilustracoes.tabela", "posição das indicações") !== "à esquerda" };
 }
 
-function ilustracoes(r: Regras, k: number, entre: string, passo: string, margens: ReturnType<Regras["margens"]>): Ilustracoes {
-  const apa = r.tem("tabelas e figuras, número");
+/** Negrito, itálico e sublinhado de um destaque, em volta de um código já escrito. As letras ficam como estão. */
+function aplicarDestaque(d: { negrito: boolean; italico: boolean; sublinhado: boolean }, x: string): string {
+  let s = x;
+  if (d.negrito) s = `#strong[${s}]`;
+  if (d.italico) s = `#emph[${s}]`;
+  if (d.sublinhado) s = `#underline[${s}]`;
+  return s;
+}
+
+function ilustracoes(r: Leitor, entre: string, passo: string, margens: { esquerda: string; direita: string }): Ilustracoes {
   const separadores: Record<string, string> = { travessão: " – ", hífen: " - ", ponto: ". ", "dois-pontos": ": " };
-  const tipos = r.lista("ilustração, tipos");
-  const rotuloDaFigura = r.talvez("figura, rótulo");
-  const rotuloDaTabela = r.talvez("tabelas, rótulo") ?? r.talvez("tabela, rótulo") ?? "Tabela";
+  const especies = r.lista("ilustracoes", "espécies");
+  const achar = (especie: string) => especies.find((t) => semAcento(t) === especie);
+  const rotuloDaTabela = r.texto("ilustracoes.tabela", "rótulo");
   const cm = (m: string) => parseFloat(m) * (m.endsWith("mm") ? 0.1 : 1);
-  const corpo = r.tem("tabelas, espaçamento do corpo") ? r.numero("tabelas, espaçamento do corpo") : k;
-  const rodapeSimples = !apa && r.simples("fontes de ilustrações e tabelas");
+  const corpo = r.numero("ilustracoes.tabela", "entrelinha");
+  const numero_ = r.destaque("ilustracoes.identificacao", "destaque do número");
+  const titulo_ = r.destaque("ilustracoes.identificacao", "destaque do título");
+  const rotuloDaNota_ = r.destaque("ilustracoes.fonte", "destaque do rótulo da nota");
   return {
-    estilo: apa ? "apa" : "abnt",
-    rotulo: (especie) => {
-      if (especie === "tabela") return rotuloDaTabela;
-      if (rotuloDaFigura) return rotuloDaFigura;
-      return tipos.find((t) => semAcento(t) === especie) ?? tipos[0] ?? "Figura";
-    },
+    rotulo: (especie) => (especie === "tabela" ? rotuloDaTabela : (achar(especie) ?? especies[0] ?? "Figura")),
+    chave: (especie) => (especie === "tabela" || achar(especie) ? especie : semAcento(especies[0] ?? "Figura")),
+    destaqueDoNumero: (x) => aplicarDestaque(numero_, x),
+    destaqueDoTitulo: (x) => aplicarDestaque(titulo_, x),
+    tituloNaLinhaDeBaixo: r.sim("ilustracoes.identificacao", "título na linha de baixo"),
+    entreDaIdentificacao: entreLinhas(r.numero("ilustracoes.identificacao", "entrelinha")),
+    fonteDentroDaNota: r.sim("ilustracoes.fonte", "fonte dentro da nota"),
+    destaqueDoRotuloDaNota: (x) => aplicarDestaque(rotuloDaNota_, x),
+    naLarguraDaIlustracao: r.texto("ilustracoes", "largura do título e da fonte") === "largura da ilustração",
+    tabelaNaLarguraDoConteudo: r.texto("ilustracoes.tabela", "largura") === "largura do conteúdo",
     contagem: new Map(),
-    separador: separadores[r.talvez("ilustração, separador do título") ?? "travessão"] ?? " – ",
-    rotuloDaFonte: r.talvez("ilustração, rótulo da fonte") ?? "Fonte:",
-    fonteSua: r.talvez("ilustração, fonte quando é sua") ?? "",
-    rotuloDaNota: r.talvez("tabelas e figuras, rótulo da nota") ?? "Nota.",
-    fora: comLinhas(entre, passo, r.linhas(apa ? "tabelas e figuras, linhas em branco antes e depois" : "ilustrações e tabelas, linhas em branco antes e depois")),
-    centralizada: (r.talvez("ilustração, posição na página") ?? r.talvez("figuras, posição da imagem")) !== "à esquerda",
-    tamanhoDoRodape: !apa && r.menor("fontes de ilustrações e tabelas") ? r.fonteMenor() : r.fonte().tamanho,
-    entreDoRodape: rodapeSimples ? entreLinhas(1) : apa && r.tem("tabelas, espaçamento de número, título e nota") ? entreLinhas(r.numero("tabelas, espaçamento de número, título e nota")) : entre,
+    separador: separadores[r.texto("ilustracoes.identificacao", "separador")] ?? " – ",
+    rotuloDaFonte: r.texto("ilustracoes.fonte", "rótulo da fonte"),
+    fonteSua: r.textoOuVazio("ilustracoes.fonte", "fonte quando é sua"),
+    rotuloDaNota: r.texto("ilustracoes.fonte", "rótulo da nota"),
+    fora: comLinhas(entre, passo, r.numero("ilustracoes", "espaço antes")),
+    centralizada: r.texto("ilustracoes", "posição") !== "à esquerda",
+    tamanhoDoRodape: r.medida("ilustracoes.fonte", "tamanho"),
+    entreDoRodape: entreLinhas(r.numero("ilustracoes.fonte", "entrelinha")),
     entreDoCorpo: entreLinhas(corpo),
     respiroDaCelula: `${numero(((corpo - 1) * LINHA_SIMPLES) / 2 + 0.15)}em`,
-    fios: r.talvez("tabelas, fios") === "acima e abaixo do cabeçalho e no fim, sem fios nas laterais",
-    alinhar: r.talvez("tabelas, alinhamento") === "cabeçalho ao centro, primeira coluna à esquerda, demais ao centro",
+    fios: r.texto("ilustracoes.tabela", "fios") === "acima e abaixo do cabeçalho e no fim, sem fios nas laterais",
+    alinhar: r.texto("ilustracoes.tabela", "alinhamento das células") === "cabeçalho ao centro, primeira coluna à esquerda, demais ao centro",
     continuidade: continuidadeDaTabela(r),
     larguraDoTexto: 21 - cm(margens.esquerda) - cm(margens.direita),
   };
 }
 
 /**
- * Notas de rodapé: o filete, a fonte e o espaço vêm do perfil. Na ABNT, as
+ * Notas de rodapé: o filete, a fonte e o espaço vêm do modelo. Na ABNT, as
  * linhas seguintes ficam sob a primeira letra da nota (o número numa coluna
  * própria); na APA, a nota corre como no Word.
  */
-function escreverNotas(l: (s?: string) => void, r: Regras, justificado: boolean) {
-  const abnt = r.tem("notas de rodapé, linhas seguintes");
-  const tamanho = abnt ? (r.menor("notas de rodapé") ? r.fonteMenor() : r.fonte().tamanho) : r.tem("notas de rodapé, tamanho da fonte") ? r.medida("notas de rodapé, tamanho da fonte") : r.fonte().tamanho;
-  const entre = abnt
-    ? r.simples("notas de rodapé") ? entreLinhas(1) : entreLinhas(r.numero("entrelinhas"))
-    : entreLinhas(r.tem("notas de rodapé, espaçamento") ? r.numero("notas de rodapé, espaçamento") : 1);
-  const filete = r.tem("notas de rodapé, filete") ? r.medida("notas de rodapé, filete") : "5cm";
-  const sob = r.talvez("notas de rodapé, linhas seguintes") === "alinhadas sob a primeira letra";
+function escreverNotas(l: (s?: string) => void, r: Leitor, justificado: boolean) {
+  const tamanho = r.medida("nota", "tamanho");
+  const entre = entreLinhas(r.numero("nota", "entrelinha"));
+  const filete = r.medida("nota", "filete");
+  const sob = r.texto("nota", "linhas seguintes") === "alinhadas sob a primeira letra";
   // O filete fica numa caixa da altura de meia linha, para não encostar no texto da nota.
   l(`#set footnote.entry(separator: box(height: 0.5em, line(length: ${filete}, stroke: 0.5pt)), clearance: ${numero(LINHA_SIMPLES)}em, gap: ${entre}, indent: 0pt)`);
   l(`#show footnote.entry: it => {`);
@@ -530,12 +515,12 @@ function escreverNotas(l: (s?: string) => void, r: Regras, justificado: boolean)
 }
 
 /** A regra de destaque de cada nível de título, como função do Typst, e a forma de cada nível. */
-function escreverTitulos(l: (s?: string) => void, r: Regras, m: Medidas) {
-  const antes = r.tem("títulos, espaço antes") ? r.numero("títulos, espaço antes") : 0;
-  const depois = r.tem("títulos, espaço depois") ? r.numero("títulos, espaço depois") : 0;
+function escreverTitulos(l: (s?: string) => void, r: Leitor, m: Medidas) {
+  const antes = r.numero("titulos", "espaço antes");
+  const depois = r.numero("titulos", "espaço depois");
   l(`#let destaque-do-titulo(n, x) = {`);
   for (let nivel = 1; nivel <= 5; nivel++) {
-    const d = r.destaque(`título nível ${nivel}, destaque`);
+    const d = r.destaque(`titulos.nivel${nivel}`, "destaque");
     // "Maiúsculas" não é aplicado: o título sai com as letras que a pessoa escreveu.
     let x = "x";
     if (d.negrito) x = `strong(${x})`;
@@ -548,7 +533,7 @@ function escreverTitulos(l: (s?: string) => void, r: Regras, m: Medidas) {
   // Posição de cada nível (APA): centralizado, à esquerda ou com recuo de parágrafo.
   l(`#let posicao-do-titulo(n, x) = {`);
   for (let nivel = 1; nivel <= 5; nivel++) {
-    const p = r.talvez(`título nível ${nivel}, posição`);
+    const p = r.texto(`titulos.nivel${nivel}`, "posição");
     const x = p === "centralizado" ? "align(center, x)" : p === "com recuo" ? `pad(left: ${m.recuo}, x)` : "x";
     l(`  ${nivel === 1 ? "if" : "else if"} n == ${nivel} { ${x} }`);
   }
@@ -565,21 +550,15 @@ function escreverTitulos(l: (s?: string) => void, r: Regras, m: Medidas) {
   l(`  block(width: 100%, above: ${m.entre} + ${numero(antes)} * ${m.passo}, below: ${m.entre} + ${numero(depois)} * ${m.passo}, sticky: true, posicao-do-titulo(it.level, corpo))`);
   l(`}`);
   // Os títulos não têm tamanho próprio: usam o da fonte do texto.
-  l(`#show heading: set text(size: ${r.fonte().tamanho}, weight: "regular")`);
+  l(`#show heading: set text(size: ${r.medida("titulos", "tamanho")}, weight: "regular")`);
 }
 
 // ---------------------------------------------------------------------------
 // Abertura: os elementos antes do texto
 
 /** Aplica negrito, itálico e sublinhado de uma regra de destaque. As letras ficam como estão. */
-function comDestaque(r: Regras, chave: string, x: string): string {
-  if (!r.tem(chave)) return x;
-  const d = r.destaque(chave);
-  let s = x;
-  if (d.negrito) s = `#strong[${s}]`;
-  if (d.italico) s = `#emph[${s}]`;
-  if (d.sublinhado) s = `#underline[${s}]`;
-  return s;
+function comDestaque(r: Leitor, elemento: string, propriedade: string, x: string): string {
+  return aplicarDestaque(r.destaque(elemento, propriedade), x);
 }
 
 /** O título do trabalho, com o subtítulo depois de dois-pontos. `destacar` vale só para o título. */
@@ -594,9 +573,9 @@ function tituloParaTypst(doc: Documento, destacar: (x: string) => string): strin
  * que não entra no sumário. Na ABNT, os títulos sem número têm o destaque do
  * nível 1: as maiúsculas valem para os rótulos (que são do Apud, não da pessoa).
  */
-function rotuloDeSecao(rotulo: string, r: Regras): string {
-  const maiusculas = r.talvez("títulos sem número, destaque") === "igual ao nível 1" && r.destaque("título nível 1, destaque").maiusculas;
-  const centralizado = r.talvez("títulos sem número, alinhamento") === "centralizado" || r.talvez("rótulos de seção, alinhamento") === "centralizado";
+function rotuloDeSecao(rotulo: string, r: Leitor): string {
+  const maiusculas = r.destaque("titulos.semNumero", "destaque").maiusculas;
+  const centralizado = r.texto("titulos.semNumero", "alinhamento") === "centralizado";
   const t = `heading(level: 1, numbering: none, outlined: false)[${escaparTexto(maiusculas ? rotulo.toLocaleUpperCase("pt-BR") : rotulo)}]`;
   return centralizado ? `#align(center, ${t})` : `#${t}`;
 }
@@ -604,27 +583,27 @@ function rotuloDeSecao(rotulo: string, r: Regras): string {
 /** Linhas como um parágrafo só, separadas por quebra de linha. Linhas vazias saem. */
 const emLinhas = (linhas: (string | undefined)[]) => linhas.filter((x): x is string => !!x && x.trim() !== "").join(" \\\n");
 
-function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: Regras, m: Medidas, e: Escrita): string[] {
+function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: Leitor, m: Medidas, e: Escrita): string[] {
   const d = doc.dados;
   const cego = doc.abertura.semIdentificacao;
   const autores = cego ? [] : d.autores.map((a) => escaparTexto(a.trim())).filter(Boolean);
   const ano = anoDoTrabalho(d);
-  const justificado = r.opcao("alinhamento") === "justificado";
+  const justificado = r.texto("texto", "alinhamento") === "justificado";
   const partes: string[] = [];
-  const contarACapa = r.talvez("numeração de página, contar desde") === "capa";
+  const contarACapa = r.texto("pagina.numero", "contar desde") === "capa";
   const paragrafos = (ps: TrechoDeTexto[][]) =>
     ps.filter((p) => p.some((t) => t.texto.trim())).map((p) => trechosParaTypst(p, e)).join("\n\n");
   // Uma folha inteira, sem recuo de parágrafo; o pagebreak fecha a folha.
   const folha = (corpo: string) => `#block(width: 100%, height: 100%, {\n  set par(first-line-indent: 0pt, justify: false)\n  ${corpo}\n})\n#pagebreak()\n`;
-  const campos = (chave: string) => r.lista(chave).map((c) => c.replace(" (opcional)", ""));
+  const campos = (elemento: string, propriedade = "campos") => r.lista(elemento, propriedade).map((c) => c.replace(" (opcional)", ""));
 
   for (const el of elementos) {
     switch (el.tipo) {
       case "capa": {
-        const c = campos("capa, campos");
+        const c = campos("abertura.capa");
         const quer = (x: string) => c.length === 0 || c.includes(x);
         const instituicao = quer("instituição") ? emLinhas([d.instituicao && escaparTexto(d.instituicao.trim()), d.curso && escaparTexto(d.curso.trim())]) : "";
-        const titulo = d.titulo.trim() && quer("título") ? tituloParaTypst(doc, (x) => comDestaque(r, "capa, destaque do título", x)) : "";
+        const titulo = d.titulo.trim() && quer("título") ? tituloParaTypst(doc, (x) => comDestaque(r, "abertura.capa", "destaque do título", x)) : "";
         const pe = emLinhas([quer("cidade") ? d.cidade && escaparTexto(d.cidade.trim()) : undefined, quer("ano") && ano ? String(ano) : undefined]);
         const autor = quer("autor") ? emLinhas(autores) : "";
         // Sem instituição, a capa começa pelo autor (NBR 14724: a instituição é opcional).
@@ -636,15 +615,15 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: R
         break;
       }
       case "folhaDeRosto": {
-        const c = campos("folha de rosto, campos");
+        const c = campos("abertura.folhaDeRosto");
         const quer = (x: string) => c.length === 0 || c.includes(x);
-        const titulo = d.titulo.trim() && quer("título") ? tituloParaTypst(doc, (x) => comDestaque(r, "folha de rosto, destaque do título", x)) : "";
+        const titulo = d.titulo.trim() && quer("título") ? tituloParaTypst(doc, (x) => comDestaque(r, "abertura.folhaDeRosto", "destaque do título", x)) : "";
         const natureza = quer("natureza") ? naturezaDoTrabalho(d) : "";
-        const rotulo = r.talvez(d.tipo === "disciplina" ? "folha de rosto, rótulo do professor" : "folha de rosto, rótulo do orientador") ?? "";
+        const rotulo = r.texto("abertura.folhaDeRosto", d.tipo === "disciplina" ? "rótulo do professor" : "rótulo do orientador");
         const orientador = quer("orientador") && !cego && d.orientador?.trim() ? `${escaparTexto(rotulo)} ${escaparTexto(d.orientador.trim())}`.trim() : "";
-        const simples = r.simples("natureza do trabalho");
-        const entre = simples ? entreLinhas(1) : m.entre;
-        const tamanho = r.menor("natureza do trabalho") ? `set text(size: ${r.fonteMenor()})\n` : "";
+        const entre = entreLinhas(r.numero("abertura.folhaDeRosto.natureza", "entrelinha"));
+        const tamanhoDaNatureza = r.medida("abertura.folhaDeRosto.natureza", "tamanho");
+        const tamanho = tamanhoDaNatureza !== r.medida("texto", "tamanho") ? `set text(size: ${tamanhoDaNatureza})\n` : "";
         const ladoDireito = [natureza && escaparTexto(natureza), orientador].filter(Boolean).join("\n\n");
         const meio = ladoDireito
           ? `[#v(2 * ${m.passo})#pad(left: 50%, {\n  ${tamanho}set par(justify: true, leading: ${entre}, spacing: ${m.passo})\n  [${ladoDireito}]\n})]`
@@ -655,11 +634,11 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: R
         break;
       }
       case "paginaDeTitulo": {
-        const profissional = d.tipo === "artigo" && r.talvez("modo, quando o trabalho é artigo") === "profissional";
-        const c = campos(profissional ? "página de título (profissional), campos" : "página de título (estudante), campos");
+        const profissional = d.tipo === "artigo" && r.texto("abertura.paginaDeTitulo", "modo quando o trabalho é artigo") === "profissional";
+        const c = campos("abertura.paginaDeTitulo", profissional ? "campos no modo profissional" : "campos no modo estudante");
         const quer = (x: string) => c.length === 0 || c.includes(x);
         // Na APA, o subtítulo é parte do título: o destaque vale para os dois.
-        const titulo = d.titulo.trim() ? comDestaque(r, "página de título (estudante), destaque do título", tituloParaTypst(doc, (x) => x)) : "";
+        const titulo = d.titulo.trim() ? comDestaque(r, "abertura.paginaDeTitulo", "destaque do título", tituloParaTypst(doc, (x) => x)) : "";
         const filiacao = [d.curso?.trim(), d.instituicao?.trim()].filter(Boolean).map((x) => escaparTexto(x!)).join(", ");
         const linhasAbaixo = [
           quer("autor") || quer("autores") ? escaparTexto(juntarNomes(cego ? [] : d.autores)) : undefined,
@@ -668,9 +647,9 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: R
           quer("professor") && !cego && d.orientador?.trim() ? escaparTexto(d.orientador.trim()) : undefined,
           quer("data de entrega") && d.dataDeEntrega ? escaparTexto(dataPorExtenso(d.dataDeEntrega)) : undefined,
         ];
-        const antes = r.linhas("página de título (estudante), linhas antes do título");
-        const depois = r.linhas("página de título (estudante), linhas em branco depois do título");
-        const k = r.tem("página de título (estudante), espaçamento") ? r.numero("página de título (estudante), espaçamento") : r.numero("entrelinhas");
+        const antes = r.numero("abertura.paginaDeTitulo", "linhas antes do título");
+        const depois = r.numero("abertura.paginaDeTitulo", "linhas depois do título");
+        const k = r.numero("abertura.paginaDeTitulo", "entrelinha");
         const entre = entreLinhas(k);
         partes.push(
           `#{\n  set par(first-line-indent: 0pt, justify: false, leading: ${entre}, spacing: ${entre})\n  set align(center)\n  v(${numero(antes)} * ${m.passo})\n  [${titulo}]\n  v(${numero(depois)} * ${m.passo})\n  [${emLinhas(linhasAbaixo)}]\n}\n#pagebreak()\n`,
@@ -681,12 +660,12 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: R
       case "epigrafe": {
         // NBR 14724: no pé da página, do meio para a direita, sem título.
         const el2 = el.tipo === "dedicatoria" ? doc.abertura.dedicatoria : doc.abertura.epigrafe;
-        const autoria = el.tipo === "epigrafe" && r.talvez("epígrafe, autor") === "sim" && doc.abertura.epigrafe.autoria.trim() ? `\n\n#align(right)[${escaparTexto(doc.abertura.epigrafe.autoria.trim())}]` : "";
+        const autoria = el.tipo === "epigrafe" && r.sim("abertura.epigrafe", "autoria") && doc.abertura.epigrafe.autoria.trim() ? `\n\n#align(right)[${escaparTexto(doc.abertura.epigrafe.autoria.trim())}]` : "";
         partes.push(folha(`align(bottom, pad(left: 50%, {\n  set par(justify: ${justificado}, leading: ${m.entre}, spacing: ${m.entre})\n  [${paragrafos(el2.paragrafos)}${autoria}]\n}))`));
         break;
       }
       case "agradecimentos": {
-        const rotulo = r.talvez("agradecimentos, título") ?? "Agradecimentos";
+        const rotulo = r.texto("abertura.agradecimentos", "título");
         partes.push(`${rotuloDeSecao(rotulo, r)}\n${paragrafos(doc.abertura.agradecimentos.paragrafos)}\n#pagebreak()\n`);
         break;
       }
@@ -704,38 +683,36 @@ function aberturaParaTypst(doc: Documento, elementos: ElementoDaAbertura[], r: R
 /**
  * Um resumo, na própria folha: o título do trabalho no idioma (se houver), o
  * rótulo (RESUMO, ABSTRACT...), o texto num parágrafo só e as palavras-chave.
- * O rótulo do português e do inglês vem do perfil; o dos outros idiomas, de abertura.ts.
+ * O rótulo de cada idioma vem do modelo (o Em branco tem os de português,
+ * inglês, espanhol, francês, italiano e alemão; um idioma sem rótulo usa o do inglês).
  */
-function resumoParaTypst(resumo: Resumo, r: Regras, m: Medidas, e: Escrita): string {
-  const ling = lingua(resumo.idioma);
-  const padrao = rotulosDoIdioma(resumo.idioma);
-  const rotulo =
-    ling === "pt" ? (r.talvez("resumo, título") ?? r.talvez("rótulo do resumo") ?? padrao.resumo) : ling === "en" ? (r.talvez("resumo em língua estrangeira, título") ?? padrao.resumo) : padrao.resumo;
-  const rotuloDasPalavras =
-    ling === "pt" ? (r.talvez("palavras-chave, rótulo") ?? padrao.palavrasChave) : ling === "en" ? (r.talvez("resumo em língua estrangeira, rótulo das palavras-chave") ?? padrao.palavrasChave) : padrao.palavrasChave;
-  const k = r.tem("resumo, espaçamento") ? r.numero("resumo, espaçamento") : r.numero("entrelinhas");
+function resumoParaTypst(resumo: Resumo, r: Leitor, m: Medidas, e: Escrita): string {
+  const idioma = nomeDoIdiomaNoModelo(resumo.idioma);
+  const rotulo = r.texto("abertura.resumo", `título em ${idioma}`);
+  const rotuloDasPalavras = r.texto("abertura.resumo.palavrasChave", `rótulo em ${idioma}`);
+  const k = r.numero("abertura.resumo", "entrelinha");
   const entre = entreLinhas(k);
   const passo = `${numero(k * LINHA_SIMPLES)}em`;
-  const recuo = (chave: string) => (r.talvez(chave) === "como no texto" ? m.recuo : "0pt");
-  const separador = (r.talvez("palavras-chave, separador") ?? "ponto e vírgula") as "ponto e vírgula" | "vírgula" | "ponto";
-  const final = (r.talvez("palavras-chave, final") ?? "ponto") as "ponto" | "nenhum";
+  const recuo = (elemento: string) => r.medida(elemento, "recuo da primeira linha");
+  const separador = r.texto("abertura.resumo.palavrasChave", "separador") as "ponto e vírgula" | "vírgula" | "ponto";
+  const final = r.texto("abertura.resumo.palavrasChave", "final") as "ponto" | "nenhum";
   const palavras = palavrasChave(resumo.palavrasChave, separador, final);
   const { lang, region } = idiomaParaTypst(resumo.idioma);
-  const justificado = r.opcao("alinhamento") === "justificado";
+  const justificado = r.texto("texto", "alinhamento") === "justificado";
   const linhas = [
     resumo.titulo?.trim() ? `#align(center, block(below: ${m.passo})[#strong[${escaparTexto(resumo.titulo.trim())}]])` : "",
     rotuloDeSecao(rotulo, r),
     `#{`,
     `  set text(lang: ${texto(lang)}${region ? `, region: ${texto(region)}` : ""})`,
-    `  set par(justify: ${justificado}, leading: ${entre}, spacing: ${entre}, first-line-indent: (amount: ${recuo("resumo, recuo da primeira linha")}, all: true))`,
+    `  set par(justify: ${justificado}, leading: ${entre}, spacing: ${entre}, first-line-indent: (amount: ${recuo("abertura.resumo")}, all: true))`,
     `  [${trechosParaTypst(resumo.trechos, e)}]`,
   ];
   if (palavras) {
-    const n = r.linhas("palavras-chave, linhas em branco antes");
+    const n = r.numero("abertura.resumo.palavrasChave", "espaço antes");
     linhas.push(`  parbreak()`);
     if (n) linhas.push(`  v(${numero(n)} * ${passo})`);
-    linhas.push(`  set par(first-line-indent: (amount: ${recuo("palavras-chave, recuo da primeira linha")}, all: true))`);
-    linhas.push(`  [${comDestaque(r, "palavras-chave, destaque do rótulo", escaparTexto(rotuloDasPalavras))} ${escaparTexto(palavras)}]`);
+    linhas.push(`  set par(first-line-indent: (amount: ${recuo("abertura.resumo.palavrasChave")}, all: true))`);
+    linhas.push(`  [${comDestaque(r, "abertura.resumo.palavrasChave", "destaque do rótulo", escaparTexto(rotuloDasPalavras))} ${escaparTexto(palavras)}]`);
   }
   linhas.push(`}`, `#pagebreak()`, "");
   return linhas.filter((x) => x !== "").join("\n") + "\n";
@@ -747,14 +724,14 @@ function resumoParaTypst(resumo: Resumo, r: Regras, m: Medidas, e: Escrita): str
  * ficam à esquerda, numa coluna da largura do número mais longo, e os títulos
  * alinhados depois dela, com o mesmo destaque do texto.
  */
-function sumarioParaTypst(doc: Documento, r: Regras, m: Medidas): string {
-  const rotulo = r.talvez("sumário, título") ?? "Sumário";
+function sumarioParaTypst(doc: Documento, r: Leitor, m: Medidas): string {
+  const rotulo = r.texto("abertura.sumario", "título");
   const numeros = doc.blocos.flatMap((b) => {
     if (b.tipo !== "titulo") return [];
     const { numero: n } = numeroDoTitulo(b.trechos);
     return n ? [`destaque-do-titulo(${b.nivel}, [${escaparTexto(n)}])`] : [];
   });
-  const ligacao = r.talvez("sumário, ligação até a página") === "nenhuma" ? "h(1fr)" : "box(width: 1fr, repeat(gap: 0.15em)[.])";
+  const ligacao = r.texto("abertura.sumario", "ligação até a página") === "nenhuma" ? "h(1fr)" : "box(width: 1fr, repeat(gap: 0.15em)[.])";
   return [
     rotuloDeSecao(rotulo, r),
     `#{`,
@@ -834,24 +811,22 @@ export const PONTUACAO_DA_LISTA = String.raw`
 
 /**
  * O título e a lista de referências, onde a pessoa pôs o bloco. O título vem
- * do perfil e tem a forma de um título de nível 1 sem número, centralizado se
- * o perfil manda (ABNT: REFERÊNCIAS; APA: Referências). A lista vem do CSL:
+ * do modelo e tem a forma de um título de nível 1 sem número, centralizado se
+ * o modelo manda (ABNT: REFERÊNCIAS; APA: Referências). A lista vem do CSL:
  *   - ABNT: espaço simples e uma linha em branco entre as referências;
  *   - APA: o espaço do texto, sem linha em branco, e as linhas seguintes recuadas.
  */
-function listaDeReferencias(motor: Motor, r: Regras, csl: string, m: Medidas): string {
-  const rotulo = r.talvez("rótulo das referências") ?? "Referências";
-  const centralizado =
-    r.talvez("títulos sem número, alinhamento") === "centralizado" || r.talvez("rótulos de seção, alinhamento") === "centralizado";
+function listaDeReferencias(motor: Motor, r: Leitor, csl: string, m: Medidas): string {
+  const rotulo = r.texto("referencias", "título");
+  const centralizado = r.texto("titulos.semNumero", "alinhamento") === "centralizado";
   const titulo = `heading(level: 1, numbering: none, outlined: true)[${escaparTexto(rotulo)}]`;
-  const simples = (r.talvez("espaço simples, onde") ?? "").includes("referências");
-  const linhasEmBranco = r.perfil.regras.get("referências, entre uma e outra")?.valor;
-  const branco = linhasEmBranco?.tipo === "quantidade" ? linhasEmBranco.numero : 0;
+  const simples = r.numero("referencias", "entrelinha") === 1;
+  const branco = r.numero("referencias", "espaço entre as referências");
   const passoSimples = `${numero(LINHA_SIMPLES)}em`;
   const entreLinhas = simples ? "0em" : m.entre;
   const entreReferencias = simples ? `${branco} * ${passoSimples}` : `${m.entre} + ${branco} * ${passoSimples}`;
-  const justificar = !["à esquerda"].includes(r.talvez("referências, alinhamento") ?? r.opcao("alinhamento"));
-  const pendente = r.tem("referências, recuo das linhas seguintes") ? r.medida("referências, recuo das linhas seguintes") : "0pt";
+  const justificar = r.texto("referencias", "alinhamento") !== "à esquerda";
+  const pendente = r.medida("referencias", "recuo das linhas seguintes");
   const dados = JSON.stringify(motor.referenciasDoTypst);
   return [
     centralizado ? `#align(center, ${titulo})` : `#${titulo}`,
@@ -889,9 +864,9 @@ interface Escrita {
 }
 
 /** Na APA, o destaque seu vai dentro da citação, depois do trecho em itálico: "[ênfase adicionada]". */
-function enfaseDepoisDoDestaque(r: Regras): string | undefined {
-  if (r.talvez("citação, destaque seu, onde") !== "entre colchetes, depois do trecho destacado") return undefined;
-  const expressao = r.talvez("citação, destaque seu");
+function enfaseDepoisDoDestaque(r: Leitor): string | undefined {
+  if (r.citacao("citação, destaque seu, onde") !== "entre colchetes, depois do trecho destacado") return undefined;
+  const expressao = r.citacao("citação, destaque seu");
   return expressao ? `[${expressao}]` : undefined;
 }
 
@@ -984,7 +959,7 @@ function citacaoLongaParaTypst(b: CitacaoLonga, m: Medidas, e: Escrita): string 
 /** O número da figura ou tabela, contado na ordem do texto. Na APA, toda ilustração é Figura. */
 function proximoNumero(especie: string, m: Medidas): { rotulo: string; numero: number } {
   const il = m.ilustracoes;
-  const chave = il.estilo === "apa" && especie !== "tabela" ? "figura" : especie;
+  const chave = il.chave(especie);
   const n = (il.contagem.get(chave) ?? 0) + 1;
   il.contagem.set(chave, n);
   return { rotulo: il.rotulo(chave), numero: n };
@@ -1000,29 +975,32 @@ function identificacao(b: Identificacao, especie: string, m: Medidas, e: Escrita
   const il = m.ilustracoes;
   const { rotulo, numero: n } = proximoNumero(especie, m);
   const titulo = trechosParaTypst(b.titulo, e);
-  const fonte = b.fontePropria ? (il.estilo === "abnt" ? escaparTexto(il.fonteSua) : "") : trechosParaTypst(b.fonte, e);
+  const fonte = b.fontePropria ? escaparTexto(il.fonteSua) : trechosParaTypst(b.fonte, e);
   const nota = b.nota ? trechosParaTypst(b.nota, e) : "";
   const linha = (conteudo: string, abaixo: string) => `#block(above: 0pt, below: ${abaixo}, sticky: true)[${conteudo}]`;
   // Um pouco de ar entre a imagem ou o último fio da tabela e a fonte, mesmo em espaço simples.
   const rodape = (conteudo: string) =>
     `#block(above: ${il.entreDoRodape} + 0.3em, below: 0pt)[#set text(size: ${il.tamanhoDoRodape}); #set par(leading: ${il.entreDoRodape}, spacing: ${il.entreDoRodape}); ${conteudo}]`;
-  if (il.estilo === "apa") {
-    const corpoDaNota = [nota, fonte].filter(Boolean).join(" ");
+  // Embaixo: "Nota. ... Fonte" (a fonte dentro da nota), ou "Fonte: ..." e depois a nota.
+  const corpoDaNota = [nota, fonte].filter(Boolean).join(" ");
+  const abaixo = il.fonteDentroDaNota
+    ? corpoDaNota
+      ? [rodape(`${il.destaqueDoRotuloDaNota(escaparTexto(il.rotuloDaNota))} ${corpoDaNota}`)]
+      : []
+    : [...(fonte ? [rodape(`${escaparTexto(il.rotuloDaFonte)} ${fonte}`)] : []), ...(nota ? [rodape(nota)] : [])];
+  // Em cima: "Figura 1" e o título na linha de baixo, ou "Figura 1 – Título" numa linha só.
+  if (il.tituloNaLinhaDeBaixo) {
+    const t = il.destaqueDoTitulo(titulo);
     return {
-      acima: [linha(`#strong[${escaparTexto(`${rotulo} ${n}`)}]`, il.entreDoRodape), linha(`#emph[${titulo}]`, il.entreDoRodape)],
-      abaixo: corpoDaNota ? [rodape(`#emph[${escaparTexto(il.rotuloDaNota)}] ${corpoDaNota}`)] : [],
-      titulo: `#emph[${titulo}]`,
+      acima: [linha(il.destaqueDoNumero(escaparTexto(`${rotulo} ${n}`)), il.entreDaIdentificacao), linha(t, il.entreDaIdentificacao)],
+      abaixo,
+      titulo: t,
       numero: n,
     };
   }
   const sep = titulo ? escaparTexto(il.separador) : "";
-  const completo = `${escaparTexto(`${rotulo} ${n}`)}${sep}${titulo}`;
-  return {
-    acima: [linha(completo, m.entre)],
-    abaixo: [...(fonte ? [rodape(`${escaparTexto(il.rotuloDaFonte)} ${fonte}`)] : []), ...(nota ? [rodape(nota)] : [])],
-    titulo: completo,
-    numero: n,
-  };
+  const completo = `${il.destaqueDoNumero(escaparTexto(`${rotulo} ${n}`))}${sep}${il.destaqueDoTitulo(titulo)}`;
+  return { acima: [linha(completo, il.entreDaIdentificacao)], abaixo, titulo: completo, numero: n };
 }
 
 function figuraParaTypst(b: Figura, m: Medidas, e: Escrita): string {
@@ -1034,8 +1012,8 @@ function figuraParaTypst(b: Figura, m: Medidas, e: Escrita): string {
     ? `#image(${texto(achada.caminho)}, width: 100%)`
     : `#rect(width: 100%, height: 4cm, stroke: 0.5pt + gray, align(center + horizon, text(size: ${il.tamanhoDoRodape})[Imagem não encontrada no arquivo]))`;
   const lugar = il.centralizada ? "center" : "left";
-  // ABNT: título, fonte e nota na largura da ilustração. APA: na largura do texto, e a imagem no meio.
-  if (il.estilo === "abnt") {
+  // Título, fonte e nota na largura da ilustração (ABNT), ou na largura do texto, com a imagem no meio (APA).
+  if (il.naLarguraDaIlustracao) {
     return [
       `#block(above: ${il.fora}, below: ${il.fora}, breakable: false, width: 100%, align(${lugar}, block(width: ${numero(largura)}%)[`,
       `#set align(left)`,
@@ -1080,7 +1058,7 @@ function tabelaParaTypst(b: Tabela, m: Medidas, escrita: Escrita): string {
   const cabecalho = b.linhas.slice(0, b.cabecalho);
   const corpo = b.linhas.slice(b.cabecalho);
   // Sem linhas no corpo não há o que continuar (e as marcas não teriam onde ficar).
-  const continuidade = il.estilo === "abnt" && corpo.length > 0 ? il.continuidade : null;
+  const continuidade = corpo.length > 0 ? il.continuidade : null;
   const inicio = `apud-tabela-${n}-inicio`;
   const fim = `apud-tabela-${n}-fim`;
   // As marcas vão na primeira célula da primeira e da última linha do corpo:
@@ -1132,7 +1110,7 @@ function tabelaParaTypst(b: Tabela, m: Medidas, escrita: Escrita): string {
   ].join("\n");
   const partes = (gradeFinal: string, comTitulo = true) =>
     [`#set align(left)`, `#set par(first-line-indent: 0pt, justify: false)`, ...(comTitulo ? acima : []), `#block(above: 0pt, below: 0pt, ${gradeFinal})`, ...abaixo].join("\n");
-  if (il.estilo === "abnt") {
+  if (il.tabelaNaLarguraDoConteudo) {
     // A largura do conteúdo, no meio da página. Se o título for mais largo, a
     // tabela se estica até ele, e os fios ficam na largura da identificação.
     const lugar = il.centralizada ? "center" : "left";
@@ -1151,7 +1129,7 @@ function tabelaParaTypst(b: Tabela, m: Medidas, escrita: Escrita): string {
       "",
     ].join("\n");
   }
-  // APA: a largura do texto; a primeira coluna no tamanho do conteúdo, as outras divididas.
+  // Na largura do texto: a primeira coluna no tamanho do conteúdo, as outras divididas (APA).
   const larguras = colunas > 1 ? `(auto, ..((1fr,) * ${colunas - 1}))` : `(1fr,)`;
   return [`#block(above: ${il.fora}, below: ${il.fora}, width: 100%, {`, grade, `[${e.registros!.join("")}`, partes(`grade(${larguras})`), `]`, `})`, ""].join("\n");
 }

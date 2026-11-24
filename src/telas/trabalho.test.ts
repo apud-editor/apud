@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { carregarPerfil } from "../../scripts/prova-lib";
-import { elementosDaAbertura } from "../conversor/abertura";
+import { elementosDaAbertura, existeNoModelo } from "../conversor/abertura";
 import { lerArquivo, escreverArquivo } from "../arquivos/formato";
 import { dadosVazios, type DadosDoTrabalho } from "../documento/modelo";
 import {
@@ -17,8 +17,8 @@ import {
   trabalhoNovo,
 } from "./trabalho";
 
-const abnt = carregarPerfil("abnt.txt").perfil;
-const apa = carregarPerfil("apa.txt").perfil;
+const abnt = carregarPerfil("abnt.txt").modelo;
+const apa = carregarPerfil("apa.txt").modelo;
 const dados = (p: Partial<DadosDoTrabalho> = {}): DadosDoTrabalho => ({ ...dadosVazios(), titulo: "Um título", autores: ["Maria Silva"], ...p });
 
 describe("elementos que ligam sozinhos", () => {
@@ -118,8 +118,7 @@ describe("trabalho novo", () => {
     expect(lido.ok).toBe(true);
     if (!lido.ok) return;
     expect(lido.trabalho.documento).toEqual(t.documento);
-    const tem = (r: string) => abnt.regras.has(r);
-    const tipos = elementosDaAbertura(lido.trabalho.documento.abertura, (e) => ({ capa: tem("capa"), folhaDeRosto: tem("folha de rosto"), sumario: tem("sumário"), resumo: tem("resumo") })[e as "capa"] ?? false).map((e) => e.tipo);
+    const tipos = elementosDaAbertura(lido.trabalho.documento.abertura, existeNoModelo(abnt)).map((e) => e.tipo);
     expect(tipos).toEqual(["capa", "folhaDeRosto", "resumo", "sumario"]);
   });
 

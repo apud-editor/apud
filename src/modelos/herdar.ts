@@ -56,6 +56,23 @@ export function resolver(cadeia: Modelo[]): ModeloResolvido {
   };
 }
 
+/**
+ * Põe mais uma camada por cima de um modelo já somado (as escolhas de um
+ * trabalho, por exemplo). O modelo de entrada não muda.
+ */
+export function somar(modelo: ModeloResolvido, camada: Pick<Modelo, "diferencas" | "atalhos">): ModeloResolvido {
+  const valores = copiar(modelo.valores);
+  const atalhos = copiar(modelo.atalhos);
+  for (const [elemento, props] of camada.atalhos) {
+    if (!atalhos.has(elemento)) atalhos.set(elemento, new Map());
+    for (const [nome, v] of props) atalhos.get(elemento)!.set(nome, v);
+  }
+  for (const [elemento, props] of camada.diferencas) {
+    for (const [propriedade, v] of props) porCima(valores, atalhos, elemento, propriedade, v);
+  }
+  return { ...modelo, valores, atalhos };
+}
+
 /** O valor que o próprio elemento tem no modelo, sem olhar os elementos de cima. */
 export function valorProprio(modelo: ModeloResolvido, elemento: string, propriedade: string): ValorNoModelo | undefined {
   return modelo.valores.get(elemento)?.get(propriedade);
